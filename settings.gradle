@@ -1,0 +1,2 @@
+rootProject.name = "MR_MFPD_Application"
+include ':app'
