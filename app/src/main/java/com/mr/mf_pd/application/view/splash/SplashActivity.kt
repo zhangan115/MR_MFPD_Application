@@ -20,10 +20,10 @@ class SplashActivity : BaseActivity() {
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        TODO("Not yet implemented")
+
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        TODO("Not yet implemented")
+
     }
 }
