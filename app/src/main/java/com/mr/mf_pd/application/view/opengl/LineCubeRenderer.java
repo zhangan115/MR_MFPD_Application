@@ -13,7 +13,13 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+/**
+ * @anchor: andy
+ * @date: 2018-11-09
+ * @description:
+ */
 public class LineCubeRenderer implements GLSurfaceView.Renderer {
+
     private final FloatBuffer vertexBuffer;
 
     private int mProgram;
@@ -47,7 +53,7 @@ public class LineCubeRenderer implements GLSurfaceView.Renderer {
             0.25f, -0.75f, 0.0f //V3
     };
 
-    public LineCubeRenderer(int mProgram) {
+    public LineCubeRenderer() {
         //分配内存空间,每个浮点型占4字节空间
         vertexBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -55,7 +61,6 @@ public class LineCubeRenderer implements GLSurfaceView.Renderer {
         //传入指定的坐标数据
         vertexBuffer.put(vertexPoints);
         vertexBuffer.position(0);
-        this.mProgram = mProgram;
     }
 
     @Override
@@ -63,11 +68,10 @@ public class LineCubeRenderer implements GLSurfaceView.Renderer {
         //设置背景颜色
         GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
         //编译
-
-//        final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_linecube_shader));
-//        final int fragmentShaderId = ShaderUtils.compileFragmentShader(ResReadUtils.readResource(R.raw.fragment_linecube_shader));
-//        //链接程序片段
-//        mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId);
+        final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_linecube_shader));
+        final int fragmentShaderId = ShaderUtils.compileFragmentShader(ResReadUtils.readResource(R.raw.fragment_linecube_shader));
+        //链接程序片段
+        mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId);
         //使用程序片段
         GLES30.glUseProgram(mProgram);
 

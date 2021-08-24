@@ -1,5 +1,7 @@
 package com.mr.mf_pd.application.view.opengl
 
+import android.graphics.Color
+import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -28,12 +30,8 @@ class OpenGlActivity : BaseActivity() {
 
     override fun initView(savedInstanceState: Bundle?) {
         val contentLayout = findViewById<LinearLayout>(R.id.contentLayout)
-
-//        glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
-
-
-        var mProgram : Int
-        Thread(Runnable {
+        var mProgram: Int
+        Thread {
             //编译
             val vertexShaderId =
                 ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_linecube_shader))
@@ -47,10 +45,15 @@ class OpenGlActivity : BaseActivity() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
-                glSurfaceView.setRenderer(LineCubeRenderer(mProgram))
+                glSurfaceView.setEGLContextClientVersion(3)
+//                glSurfaceView.setRenderer(IndicesCubeRenderer())
+                glSurfaceView.setRenderer(LineCubeRenderer())
+//                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
+
+
                 contentLayout.addView(glSurfaceView)
             }
-        }).start()
+        }.start()
 
     }
 }
