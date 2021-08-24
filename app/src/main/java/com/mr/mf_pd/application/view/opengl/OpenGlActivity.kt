@@ -46,8 +46,8 @@ class OpenGlActivity : BaseActivity() {
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
                 glSurfaceView.setEGLContextClientVersion(3)
-//                glSurfaceView.setRenderer(IndicesCubeRenderer())
-                glSurfaceView.setRenderer(LineCubeRenderer())
+                glSurfaceView.setRenderer(IndicesCubeRenderer())
+//                glSurfaceView.setRenderer(LineCubeRenderer())
 //                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
 
 
