@@ -1,10 +1,12 @@
-package com.mr.mf_pd.application.view.opengl;
+package com.mr.mf_pd.application.view.opengl.demo;
 
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
 
 import com.mr.mf_pd.application.R;
+import com.mr.mf_pd.application.view.opengl.utils.ResReadUtils;
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

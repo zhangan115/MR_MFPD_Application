@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.opengl;
+package com.mr.mf_pd.application.view.opengl.utils;
 
 import android.opengl.GLES30;
 

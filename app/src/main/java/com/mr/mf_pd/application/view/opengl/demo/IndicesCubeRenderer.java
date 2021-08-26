@@ -1,10 +1,13 @@
-package com.mr.mf_pd.application.view.opengl;
+package com.mr.mf_pd.application.view.opengl.demo;
 
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 
 import com.mr.mf_pd.application.R;
+import com.mr.mf_pd.application.view.opengl.utils.ResReadUtils;
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -123,12 +126,13 @@ public class IndicesCubeRenderer implements GLSurfaceView.Renderer {
         GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
         //启用颜色顶点属性
         GLES30.glEnableVertexAttribArray(1);
-
+        Log.d("za", "onSurfaceCreated");
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES30.glViewport(0, 0, width, height);
+        Log.d("za", "onSurfaceChanged");
     }
 
     @Override
@@ -136,6 +140,7 @@ public class IndicesCubeRenderer implements GLSurfaceView.Renderer {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
 
         GLES30.glDrawElements(GL10.GL_TRIANGLES, indices.length, GL10.GL_UNSIGNED_SHORT, indicesBuffer);
-
+        Log.d("za", "onDrawFrame");
+//        GLES30.glClearColor(0.4f,0.6f,0.5f,1);
     }
 }

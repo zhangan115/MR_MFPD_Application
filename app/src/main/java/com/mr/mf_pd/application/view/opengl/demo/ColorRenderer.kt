@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.opengl
+package com.mr.mf_pd.application.view.opengl.demo
 
 import android.graphics.Color
 import android.opengl.GLES30
