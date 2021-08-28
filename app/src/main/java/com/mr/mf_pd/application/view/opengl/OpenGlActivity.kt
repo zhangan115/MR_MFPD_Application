@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import com.anson.support.base.BaseActivity
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.view.opengl.demo.IndicesCubeRenderer
+import com.mr.mf_pd.application.view.opengl.demo.SimpleRenderer
 import com.mr.mf_pd.application.view.opengl.study.PointRenderer
 
 class OpenGlActivity : BaseActivity() {
@@ -40,6 +41,7 @@ class OpenGlActivity : BaseActivity() {
 //                glSurfaceView.setRenderer(LineCubeRenderer())
 //                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
                 glSurfaceView.setRenderer(PointRenderer())
+//                glSurfaceView.setRenderer(SimpleRenderer())
         contentLayout.addView(glSurfaceView)
     }
 }

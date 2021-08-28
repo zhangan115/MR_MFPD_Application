@@ -1,14 +1,18 @@
 package com.mr.mf_pd.application.view.opengl.study;
 
+import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
+
+import com.mr.mf_pd.application.R;
+import com.mr.mf_pd.application.view.opengl.utils.ResReadUtils;
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
 public class PointRenderer implements GLSurfaceView.Renderer {
@@ -16,20 +20,13 @@ public class PointRenderer implements GLSurfaceView.Renderer {
     private final FloatBuffer vertexBuffer;
 
     float[] pointVFA = {
-            0.1f, 0.1f, 0.0f,
-            -0.1f, 0.1f, 0.0f,
-            -0.1f, -0.1f, 0.0f,
-            0.1f, -0.1f, 0.0f,
+            0.1f, 0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
     };
 
-    private final String _pointVertexShaderCode = "attribute vec4 aPosition;" +
-            "void main() {" +
-            "    gl_PointSize = 15;" +
-            "    gl_Position = aPosition;" +
-            "}";
-    private int pointProgram;
-    private int pointVertexShader;
-    private int pointFragmentShader;
+
+    private int mProgram;
 
     public PointRenderer() {
         vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
@@ -42,12 +39,13 @@ public class PointRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
-        pointVertexShader = loadShader(GLES30.GL_VERTEX_SHADER,_pointVertexShaderCode);
-        pointFragmentShader = loadShader(GLES30.GL_FRAGMENT_SHADER,_pointVertexShaderCode);
-        pointProgram = GLES30.glCreateProgram();
-        GLES30.glAttachShader(pointProgram, pointVertexShader);
-        GLES30.glAttachShader(pointProgram, pointFragmentShader);
-        GLES30.glLinkProgram(pointProgram);
+
+        final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_shader_point_1));
+        final int fragmentShaderId = ShaderUtils.compileFragmentShader(ResReadUtils.readResource(R.raw.fragment_shader_point_1));
+        //链接程序片段
+        mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId);
+        //使用程序片段
+        GLES30.glUseProgram(mProgram);
     }
 
     @Override
@@ -57,15 +55,13 @@ public class PointRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-        GLES30.glClear(GL10.GL_COLOR_BUFFER_BIT|GL10.GL_DEPTH_BUFFER_BIT);
-        GLES30.glUseProgram(pointProgram);
 
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
+            GLES30.glVertexAttribPointer(0,3, GLES30.GL_FLOAT,false,0,vertexBuffer);
+        GLES30.glEnableVertexAttribArray(0);
+
+        GLES30.glDrawArrays(GLES30.GL_POINTS,0,3);
+        GLES30.glDisableVertexAttribArray(0);
     }
 
-    private int loadShader(int type,String source){
-        int shader = GLES30.glCreateShader(type);
-        GLES30.glShaderSource(shader,source);
-        GLES30.glCompileShader(shader);
-        return shader;
-    }
 }
