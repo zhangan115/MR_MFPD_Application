@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.opengl.study;
 
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.mr.mf_pd.application.R;
@@ -16,30 +15,17 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class PointRenderer implements GLSurfaceView.Renderer {
-
-    private final FloatBuffer vertexBuffer;
-
-    float[] pointVFA = {
-            0.5f, 0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-    };
+public class LineRenderer implements GLSurfaceView.Renderer {
 
 
     private int mProgram;
 
-    public PointRenderer() {
-        vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        vertexBuffer.put(pointVFA);
-        vertexBuffer.position(0);
+    public LineRenderer() {
+
     }
 
     @Override
-    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfssig) {
+    public void onSurfaceCreated(GL10 gl10, EGLConfig config) {
         GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
         final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_shader_point_1));
@@ -58,14 +44,15 @@ public class PointRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl10) {
         float random = (float) Math.random();
-        Log.d("za",   "random value is " + random);
+
         float[] pointVFA = {
-                0.5f * random + 0.5f, 0.5f * random + 0.5f, 0.0f,
+                0.5f, 0.5f, 0.0f,
                 -0.5f, 0.5f, 0.0f,
                 -0.5f, -0.5f, 0.0f,
                 0.5f, -0.5f, 0.0f,
         };
-        FloatBuffer  vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
+
+        FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         vertexBuffer.put(pointVFA);
@@ -75,7 +62,10 @@ public class PointRenderer implements GLSurfaceView.Renderer {
         GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer);
         GLES30.glEnableVertexAttribArray(0);
 
-        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, 4);
+        GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, 0, 3);
+        GLES30.glLineWidth(20);
+
+//        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, pointVFA.length / 3);
         GLES30.glDisableVertexAttribArray(0);
     }
 

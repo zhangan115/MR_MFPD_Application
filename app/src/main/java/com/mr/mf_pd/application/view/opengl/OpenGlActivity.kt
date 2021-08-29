@@ -9,7 +9,9 @@ import com.anson.support.base.BaseActivity
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.view.opengl.demo.IndicesCubeRenderer
 import com.mr.mf_pd.application.view.opengl.demo.SimpleRenderer
+import com.mr.mf_pd.application.view.opengl.study.LineRenderer
 import com.mr.mf_pd.application.view.opengl.study.PointRenderer
+import com.mr.mf_pd.application.view.opengl.study.RectangleRenderer
 
 class OpenGlActivity : BaseActivity() {
 
@@ -40,7 +42,9 @@ class OpenGlActivity : BaseActivity() {
 //        glSurfaceView.setRenderer(IndicesCubeRenderer())
 //                glSurfaceView.setRenderer(LineCubeRenderer())
 //                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
-                glSurfaceView.setRenderer(PointRenderer())
+//                glSurfaceView.setRenderer(PointRenderer())
+//                glSurfaceView.setRenderer(LineRenderer())
+                glSurfaceView.setRenderer(RectangleRenderer())
 //                glSurfaceView.setRenderer(SimpleRenderer())
         contentLayout.addView(glSurfaceView)
     }
