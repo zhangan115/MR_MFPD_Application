@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">多功能局方仪</string>
+    <string name="ok">确定</string>
+    <string name="sure">确定</string>
+    <string name="cancel">取消</string>
+    <string name="next">下一步</string>
+    <string name="no_data">暂时没有数据</string>
+    <string name="more">更多</string>
+    <string name="history_data">历史数据</string>
+    <string name="filter_data">选择数据</string>
+    <string name="menu_finish">完成</string>
+    <string name="check_photo">查看照片</string>
+    <string name="take_photo">拍照</string>
+    <string name="choose_photo">选择照片</string>
+    <string name="check_net">内容加载失败，请检查网络</string>
+    <string name="reload">重新加载</string>
+    <string name="no_data_str">暂无数据</string>
+    <string name="save">保存</string>
 </resources>

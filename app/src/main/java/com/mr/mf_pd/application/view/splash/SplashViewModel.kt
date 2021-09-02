@@ -2,9 +2,8 @@ package com.mr.mf_pd.application.view.splash
 
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.repository.impl.UserRepository
-
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.internal.operators.single.SingleCreate
+import io.reactivex.Single
+import io.reactivex.internal.operators.single.SingleCreate
 
 
 import java.util.concurrent.TimeUnit

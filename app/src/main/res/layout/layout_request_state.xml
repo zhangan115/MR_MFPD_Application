@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="state"
+            type="int" />
+
+        <import type="android.view.View" />
+
+        <import type="com.mr.mf_pd.application.common.ConstantInt" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{state == ConstantInt.REQUEST_STATE_LOADING?View.VISIBLE:View.GONE}"
+            tools:visibility="gone">
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                style="?android:progressBarStyleLargeInverse"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerInParent="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{state == ConstantInt.REQUEST_STATE_EMPTY?View.VISIBLE:View.GONE}"
+            tools:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_color">
+
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="165dp"
+                    android:src="@mipmap/img_null" />
+
+                <TextView
+                    android:id="@+id/no_data_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/icon"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="22dp"
+                    android:text="@string/no_data_str"
+                    android:textColor="#ff999999"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:visibility="@{state == ConstantInt.REQUEST_STATE_ERROR?View.VISIBLE:View.GONE}"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/error_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="165dp"
+                android:src="@drawable/img_internet" />
+
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/error_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="22dp"
+                android:text="@string/check_net"
+                android:textColor="#ff999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/reload_tv"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_below="@+id/text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="66dp"
+                android:layout_marginRight="60dp"
+                android:background="@drawable/shape_common_bg"
+                android:gravity="center"
+                android:text="@string/reload"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+    </FrameLayout>
+</layout>

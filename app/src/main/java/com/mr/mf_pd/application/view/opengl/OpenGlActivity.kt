@@ -3,35 +3,15 @@ package com.mr.mf_pd.application.view.opengl
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
-import com.anson.support.base.BaseActivity
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.view.opengl.demo.IndicesCubeRenderer
-import com.mr.mf_pd.application.view.opengl.demo.SimpleRenderer
-import com.mr.mf_pd.application.view.opengl.study.LineRenderer
-import com.mr.mf_pd.application.view.opengl.study.PointRenderer
+import com.mr.mf_pd.application.view.base.BaseActivity
 import com.mr.mf_pd.application.view.opengl.study.RectangleRenderer
 
 class OpenGlActivity : BaseActivity() {
 
-    override fun getContentView(): Int {
-        return R.layout.activity_open_gl
-    }
-
-    override fun getToolBar(): Toolbar? {
-        return null
-    }
-
-    override fun getToolBarTitleView(): TextView? {
-        return null
-    }
-
-    override fun initData(savedInstanceState: Bundle?) {
-
-    }
-
-    override fun initView(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_open_gl)
         val contentLayout = findViewById<LinearLayout>(R.id.contentLayout)
         val glSurfaceView = GLSurfaceView(this)
         glSurfaceView.layoutParams = LinearLayout.LayoutParams(
@@ -44,7 +24,7 @@ class OpenGlActivity : BaseActivity() {
 //                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
 //                glSurfaceView.setRenderer(PointRenderer())
 //                glSurfaceView.setRenderer(LineRenderer())
-                glSurfaceView.setRenderer(RectangleRenderer())
+        glSurfaceView.setRenderer(RectangleRenderer())
 //                glSurfaceView.setRenderer(SimpleRenderer())
         contentLayout.addView(glSurfaceView)
     }

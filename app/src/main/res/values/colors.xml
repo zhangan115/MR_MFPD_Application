@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="colorPrimary">#006569</color>
+    <color name="colorPrimaryDark">#006569</color>
+    <color name="colorAccent">#006569</color>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +12,50 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--背景色-->
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorCommonGreyBg">#F8F8F8</color>
+    <color name="colorCommonWhiteBg">@color/colorWhite</color>
+
+    <color name="gray_divide">#cccccc</color>
+    <color name="dialog_hint">#888888</color>
+    <color name="dialog_cancel">#454545</color>
+    <color name="dialog_title">#666666</color>
+    <color name="bg_color">#ffffff</color>
+
+    <!--  text color  -->
+    <color name="text_title">#333333</color>
+    <color name="text_content">#454545</color>
+    <color name="text_yellow">#EAB602</color>
+    <color name="text_grey">#999999</color>
+    <!--  input color  -->
+    <color name="color_input_bg">#F4F4F4</color>
+    <color name="color_input_frame">#CCCCCC</color>
+    <color name="color_input_hint">#BBBBBB</color>
+    <!--  button color  -->
+    <color name="button_disabled_bg">#DDDDDD</color>
+    <color name="button_disabled_text">#BBBBBB</color>
+    <color name="button_enable_bg">@color/colorPrimary</color>
+    <color name="button_enable_text">@color/colorWhite</color>
+    <color name="text_label">@color/dialog_cancel</color>
+    <color name="text_black">@color/buttonEnableColor</color>
+    <color name="buttonEnableColor">#333333</color>
+    <color name="buttonDisabledColor">#F6F6F6</color>
+    <color name="colorTransparent">#00FFFFFF</color>
+
+    <color name="color_divide">#e6e6e6</color>
+    <!-- main bg color   -->
+    <color name="main_yellow_color">#ffe6b406</color>
+    <color name="main_blue_color">#02948F</color>
+    <color name="main_red_color">#D6011F</color>
+    <color name="line_select_color">#028A81</color>
+    <!-- line color   -->
+    <color name="line_chart_color_1">#f6b433</color>
+    <color name="line_chart_color_2">#69A7fb</color>
+    <color name="line_chart_color_3">#58ce79</color>
+    <color name="line_chart_color_4">#f05340</color>
+    <color name="line_chart_color_5">#ED60DF</color>
+
+    <color name="chart_line">#C1C1C1</color>
 </resources>
