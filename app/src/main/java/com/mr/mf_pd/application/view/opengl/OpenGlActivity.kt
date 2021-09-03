@@ -9,11 +9,15 @@ import com.mr.mf_pd.application.view.opengl.study.RectangleRenderer
 
 class OpenGlActivity : BaseActivity() {
 
+    private var rendererSet = false
+    private lateinit var glSurfaceView: GLSurfaceView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_open_gl)
         val contentLayout = findViewById<LinearLayout>(R.id.contentLayout)
-        val glSurfaceView = GLSurfaceView(this)
+        glSurfaceView = GLSurfaceView(this)
         glSurfaceView.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
@@ -24,8 +28,31 @@ class OpenGlActivity : BaseActivity() {
 //                glSurfaceView.setRenderer(ColorRenderer(Color.GRAY))
 //                glSurfaceView.setRenderer(PointRenderer())
 //                glSurfaceView.setRenderer(LineRenderer())
+        //                glSurfaceView.setRenderer(LineRenderer())
+        glSurfaceView.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         glSurfaceView.setRenderer(RectangleRenderer())
 //                glSurfaceView.setRenderer(SimpleRenderer())
         contentLayout.addView(glSurfaceView)
+        rendererSet = true;
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (rendererSet){
+            glSurfaceView.onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (rendererSet){
+            glSurfaceView.onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+
 }

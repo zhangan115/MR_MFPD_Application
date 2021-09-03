@@ -42,8 +42,15 @@
             android:screenOrientation="nosensor"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar.White"
-            android:windowSoftInputMode="adjustPan|stateHidden">
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity
+            android:name=".view.opengl.OpenGlActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="nosensor"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar.Gray"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
     </application>
 
 </manifest>

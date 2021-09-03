@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.ext.bindLifeCycle
 import com.mr.mf_pd.application.view.main.MainActivity
+import com.mr.mf_pd.application.view.opengl.OpenGlActivity
 
 class SplashActivity : AbsBaseActivity<SplashDataBinding>() {
 
@@ -28,7 +29,8 @@ class SplashActivity : AbsBaseActivity<SplashDataBinding>() {
 
     override fun requestData() {
         viewModel.start().bindLifeCycle(this).subscribe { _ ->
-            startActivity(Intent(this, MainActivity::class.java))
+//            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, OpenGlActivity::class.java))
             finish()
         }
     }
