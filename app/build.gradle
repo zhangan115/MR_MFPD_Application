@@ -24,7 +24,7 @@ android {
         mf_pd_default {
             applicationId "com.mr.mf_pd.application"
             dimension "default"
-            resValue "string", "app_name", "MRSmart-PD"
+            resValue "string", "app_name", "MR Smart-PD"
             manifestPlaceholders = [
                     TASK_AFFINITY_VALUE: "android.task.mr.mf_pd",
                     PACKAGE_NAME       : applicationId,

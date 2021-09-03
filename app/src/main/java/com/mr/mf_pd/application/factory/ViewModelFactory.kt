@@ -51,8 +51,6 @@ class ViewModelFactory constructor(
                 MainViewModel(userRepository)
             isAssignableFrom(SplashViewModel::class.java) ->
                 SplashViewModel(userRepository)
-//            isAssignableFrom(ImageFragment::class.java) ->
-//                ImageViewModel()
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
