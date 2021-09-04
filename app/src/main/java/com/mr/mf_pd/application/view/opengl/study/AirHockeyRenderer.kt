@@ -1,6 +1,8 @@
 package com.mr.mf_pd.application.view.opengl.study
 
+import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -9,8 +11,8 @@ import javax.microedition.khronos.opengles.GL10
 
 class AirHockeyRenderer : GLSurfaceView.Renderer {
 
-    val BYTES_PER_FLOAT = 4
-   lateinit var vertexBuffer: FloatBuffer
+   private val BYTES_PER_FLOAT = 4
+   private lateinit var vertexBuffer: FloatBuffer
 
     constructor(){
         var tableVertices  =floatArrayOf(
@@ -31,14 +33,17 @@ class AirHockeyRenderer : GLSurfaceView.Renderer {
 
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-
+        Log.d("za", "onSurfaceCreated")
+        GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        TODO("Not yet implemented")
+        Log.d("za", "onSurfaceChanged")
+        GLES30.glViewport(0, 0, width, height)
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        TODO("Not yet implemented")
+        Log.d("za", "onDrawFrame")
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
     }
 }

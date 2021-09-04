@@ -27,7 +27,6 @@ public class PointRenderer implements GLSurfaceView.Renderer {
             0.5f, -0.5f, 0.0f,
     };
 
-
     private int mProgram;
 
     public PointRenderer() {
