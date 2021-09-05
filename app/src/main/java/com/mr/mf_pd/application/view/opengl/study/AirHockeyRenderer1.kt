@@ -13,35 +13,38 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL
 import javax.microedition.khronos.opengles.GL10
 
-class AirHockeyRenderer : GLSurfaceView.Renderer {
+class AirHockeyRenderer1 : GLSurfaceView.Renderer {
 
     private var vertexData: FloatBuffer
-    private var uColorLocation = 0
+    private var aColorLocation = 0
     private var aPositionLocation = 0
 
 
     companion object {
         private const val POSITION_COMPONENT_COUNT = 2
         private const val BYTES_PER_FLOAT = 4
-        private const val U_COLOR = "u_Color"
+        private const val COLOR_COMPONENT_COUNT = 3
+        private const val A_COLOR = "a_Color"
         private const val A_POSITION = "a_Position"
+        private const val STRIDE =
+            (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT
     }
 
     init {
         val tableVertices = floatArrayOf(
             //三角
-            0f,0f,
-            -0.5f, -0.5f,
-            0.5f, -0.5f,
-            0.5f,0.5f,
-            -0.5f,0.5f,
-            -0.5f, -0.5f,
+            0f, 0f, 1f, 1f, 1f,
+            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+            0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+            0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
+            -0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
+            -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
             //线
-            -0.5f, 0f,
-            0.5f, 0f,
+            -0.5f, 0f, 1.0f, 0f, 0f,
+            0.5f, 0f, 1.0f, 0f, 0f,
             //
-            0f, -0.25f,
-            0f, 0.2f
+            0f, -0.25f, 0f, 1f, 0f,
+            0f, 0.2f, 0f, 0f, 1f
         )
         vertexData = ByteBuffer.allocateDirect(tableVertices.size * BYTES_PER_FLOAT)
             .order(ByteOrder.nativeOrder())
@@ -63,7 +66,7 @@ class AirHockeyRenderer : GLSurfaceView.Renderer {
         GLES30.glUseProgram(program)
         ShaderUtils.validProgram(program)
 
-        uColorLocation = GLES30.glGetUniformLocation(program, U_COLOR)
+        aColorLocation = GLES30.glGetAttribLocation(program, A_COLOR)
         aPositionLocation = GLES30.glGetAttribLocation(program, A_POSITION)
 
         vertexData.position(0)
@@ -72,11 +75,17 @@ class AirHockeyRenderer : GLSurfaceView.Renderer {
             POSITION_COMPONENT_COUNT,
             GLES30.GL_FLOAT,
             false,
-            0,
+            STRIDE,
             vertexData
         )
         GLES30.glEnableVertexAttribArray(aPositionLocation)
 
+        vertexData.position(POSITION_COMPONENT_COUNT)
+        GLES30.glVertexAttribPointer(
+            aColorLocation, COLOR_COMPONENT_COUNT, GLES30.GL_FLOAT, false,
+            STRIDE, vertexData
+        )
+        GLES30.glEnableVertexAttribArray(aColorLocation)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -88,15 +97,12 @@ class AirHockeyRenderer : GLSurfaceView.Renderer {
         Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
-        GLES30.glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f)
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6)
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, 0, 6)
 
-        GLES30.glUniform4f(uColorLocation, 1.0f, 0f, 0f, 1.0f)
         GLES30.glDrawArrays(GLES30.GL_LINES, 6, 2)
 
-        GLES30.glUniform4f(uColorLocation, 0f, 1.0f, 0f, 1.0f)
         GLES30.glDrawArrays(GLES30.GL_POINTS, 8, 1)
-        GLES30.glUniform4f(uColorLocation, 0f, 0f, 1.0f, 1.0f)
+
         GLES30.glDrawArrays(GLES30.GL_POINTS, 9, 1)
     }
 }

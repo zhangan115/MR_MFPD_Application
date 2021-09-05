@@ -1,81 +1,68 @@
-package com.mr.mf_pd.application.view.opengl.study;
+package com.mr.mf_pd.application.view.opengl.study
 
-import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
-import android.text.format.DateUtils;
-import android.util.Log;
+import android.opengl.GLES30
+import android.opengl.GLSurfaceView
+import android.util.Log
+import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.view.opengl.utils.ResReadUtils.readResource
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils.compileFragmentShader
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils.compileVertexShader
+import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils.linkProgram
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.FloatBuffer
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
-import com.mr.mf_pd.application.R;
-import com.mr.mf_pd.application.view.opengl.utils.ResReadUtils;
-import com.mr.mf_pd.application.view.opengl.utils.ShaderUtils;
+class PointRenderer : GLSurfaceView.Renderer {
+    private val vertexBuffer: FloatBuffer
+    var pointVFA = floatArrayOf(
+        0.5f, 0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f
+    )
+    private var mProgram = 0
+    override fun onSurfaceCreated(gl10: GL10, eglConfssig: EGLConfig) {
+        GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f)
+        val vertexShaderId = compileVertexShader(readResource(R.raw.vertex_shader_point_1))
+        val fragmentShaderId = compileFragmentShader(readResource(R.raw.fragment_shader_point_1))
+        //链接程序片段
+        mProgram = linkProgram(vertexShaderId, fragmentShaderId)
+        //使用程序片段
+        GLES30.glUseProgram(mProgram)
+    }
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+    override fun onSurfaceChanged(gl10: GL10, width: Int, height: Int) {
+        GLES30.glViewport(0, 0, width, height)
+    }
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-public class PointRenderer implements GLSurfaceView.Renderer {
-
-    private final FloatBuffer vertexBuffer;
-
-    float[] pointVFA = {
-            0.5f, 0.5f, 0.0f,
+    override fun onDrawFrame(gl10: GL10) {
+        val random = Math.random().toFloat()
+        Log.d("za", "random value is $random")
+        val pointVFA = floatArrayOf(
+            0.5f * random + 0.5f, 0.5f * random + 0.5f, 0.0f,
             -0.5f, 0.5f, 0.0f,
             -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-    };
-
-    private int mProgram;
-
-    public PointRenderer() {
-        vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        vertexBuffer.put(pointVFA);
-        vertexBuffer.position(0);
+            0.5f, -0.5f, 0.0f
+        )
+        val vertexBuffer = ByteBuffer.allocateDirect(pointVFA.size * 4)
+            .order(ByteOrder.nativeOrder())
+            .asFloatBuffer()
+        vertexBuffer.put(pointVFA)
+        vertexBuffer.position(0)
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer)
+        GLES30.glEnableVertexAttribArray(0)
+        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, 4)
+        GLES30.glDisableVertexAttribArray(0)
     }
 
-    @Override
-    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfssig) {
-        GLES30.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
-
-        final int vertexShaderId = ShaderUtils.compileVertexShader(ResReadUtils.readResource(R.raw.vertex_shader_point_1));
-        final int fragmentShaderId = ShaderUtils.compileFragmentShader(ResReadUtils.readResource(R.raw.fragment_shader_point_1));
-        //链接程序片段
-        mProgram = ShaderUtils.linkProgram(vertexShaderId, fragmentShaderId);
-        //使用程序片段
-        GLES30.glUseProgram(mProgram);
+    init {
+        vertexBuffer = ByteBuffer.allocateDirect(pointVFA.size * 4)
+            .order(ByteOrder.nativeOrder())
+            .asFloatBuffer()
+        vertexBuffer.put(pointVFA)
+        vertexBuffer.position(0)
     }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl10, int width, int height) {
-        GLES30.glViewport(0, 0, width, height);
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl10) {
-        float random = (float) Math.random();
-        Log.d("za",   "random value is " + random);
-        float[] pointVFA = {
-                0.5f * random + 0.5f, 0.5f * random + 0.5f, 0.0f,
-                -0.5f, 0.5f, 0.0f,
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-        };
-        FloatBuffer  vertexBuffer = ByteBuffer.allocateDirect(pointVFA.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        vertexBuffer.put(pointVFA);
-        vertexBuffer.position(0);
-
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
-        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertexBuffer);
-        GLES30.glEnableVertexAttribArray(0);
-
-        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, 4);
-        GLES30.glDisableVertexAttribArray(0);
-    }
-
 }
