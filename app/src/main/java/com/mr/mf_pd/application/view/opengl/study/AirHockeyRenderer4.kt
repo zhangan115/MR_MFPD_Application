@@ -50,7 +50,7 @@ class AirHockeyRenderer4(var context: Context) : GLSurfaceView.Renderer {
         )
         Matrix.setIdentityM(modelMatrix, 0)
 
-        Matrix.translateM(modelMatrix, 0, 0f, 0f, -2.5f)
+        Matrix.translateM(modelMatrix, 0, 0f, 0f, -3f)
         Matrix.rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f)
 
         val temp = FloatArray(16)
