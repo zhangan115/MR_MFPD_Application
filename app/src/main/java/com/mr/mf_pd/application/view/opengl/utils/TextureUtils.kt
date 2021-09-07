@@ -7,6 +7,7 @@ import android.opengl.GLUtils
 import android.util.Log
 
 object TextureUtils {
+
     private const val TAG = "TextureUtils"
 
     @JvmStatic

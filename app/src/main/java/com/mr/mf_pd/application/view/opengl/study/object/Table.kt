@@ -1,7 +1,8 @@
 package com.mr.mf_pd.application.view.opengl.study.`object`
 
+import android.opengl.GLES30
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.view.opengl.study.TextureShaderProgram
+import com.mr.mf_pd.application.view.opengl.study.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.study.data.VertexArray
 
 class Table {
@@ -11,24 +12,38 @@ class Table {
         private const val STRIDE =
             (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COUNT) * Constants.BYTES_PER_FLOAT
         private val VERTEX_DATA = floatArrayOf(
-            //三角
+            //X Y S T
             0f, 0f, 0.5f, 0.5f,
             -0.5f, -0.8f, 0f, 0.9f,
-            0.5f, -0.8f, 01f, 0.9f,
+            0.5f, -0.8f, 1f, 0.9f,
             0.5f, 0.8f, 1f, 0.1f,
             -0.5f, 0.8f, 0f, 0.1f,
             -0.5f, -0.8f, 0f, 0.9f,
         )
     }
 
-    private val vertexArray:VertexArray
+    private val vertexArray: VertexArray
 
     init {
         vertexArray = VertexArray(VERTEX_DATA)
     }
 
-    public fun bindData(textureProgram: TextureShaderProgram){
+    fun bindData(textureProgram: TextureShaderProgram) {
+        vertexArray.setVertexAttributePointer(
+            0,
+            textureProgram.positionAttributeLocation,
+            POSITION_COMPONENT_COUNT, STRIDE
+        )
+        vertexArray.setVertexAttributePointer(
+            POSITION_COMPONENT_COUNT,
+            textureProgram.textureCoordinatesAttributeLocation,
+            TEXTURE_COORDINATES_COUNT,
+            STRIDE
+        )
+    }
 
+    fun draw() {
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, 0, 6)
     }
 
 }

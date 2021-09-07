@@ -106,4 +106,18 @@ object ShaderUtils {
         Log.d(TAG,GLES30.glGetProgramInfoLog(programObjectId))
         return programStatus[0] != 0
     }
+
+    /**
+     *
+     */
+    fun buildProgram(vertexShaderSource:String,fragmentShaderSource:String):Int{
+        val program:Int
+        val vertexShader = compileVertexShader(vertexShaderSource)
+        val fragmentShader = compileFragmentShader(fragmentShaderSource)
+
+        program = linkProgram(vertexShader,fragmentShader)
+        validProgram(program)
+
+        return program
+    }
 }

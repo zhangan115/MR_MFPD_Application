@@ -6,7 +6,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-object ResReadUtils {
+public object ResReadUtils {
     /**
      * 读取资源
      *
@@ -14,7 +14,7 @@ object ResReadUtils {
      * @return
      */
     @JvmStatic
-    fun readResource(resourceId: Int): String {
+   open fun readResource(resourceId: Int): String {
         val builder = StringBuilder()
         try {
             val inputStream = MRApplication.instance.resources.openRawResource(resourceId)
@@ -32,4 +32,5 @@ object ResReadUtils {
         }
         return builder.toString()
     }
+
 }
