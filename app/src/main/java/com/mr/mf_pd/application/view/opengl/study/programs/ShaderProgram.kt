@@ -15,30 +15,30 @@ abstract class ShaderProgram protected constructor(
     context: Context?, vertexShaderResourceId: Int,
     fragmentShaderResourceId: Int
 ) {
-    // Shader program
     @JvmField
-    protected val program: Int = com.mr.mf_pd.application.view.opengl.utils.ShaderUtils.buildProgram(
-       com.mr.mf_pd.application.view.opengl.utils.ResReadUtils.readResource(vertexShaderResourceId),
-        com.mr.mf_pd.application.view.opengl.utils.ResReadUtils.readResource(fragmentShaderResourceId)
-    )
+    protected val program: Int =
+        com.mr.mf_pd.application.view.opengl.utils.ShaderUtils.buildProgram(
+            com.mr.mf_pd.application.view.opengl.utils.ResReadUtils.readResource(
+                vertexShaderResourceId
+            ),
+            com.mr.mf_pd.application.view.opengl.utils.ResReadUtils.readResource(
+                fragmentShaderResourceId
+            )
+        )
 
     fun useProgram() {
-        // Set the current OpenGL shader program to this program.
         GLES30.glUseProgram(program)
     }
 
     companion object {
         // Uniform constants
         open val U_MATRIX = "u_Matrix"
+        open val U_COLOR = "u_Color"
         open val U_TEXTURE_UNIT = "u_TextureUnit"
 
         // Attribute constants
         open val A_POSITION = "a_Position"
         open val A_COLOR = "a_Color"
         open val A_TEXTURE_COORDINATES = "a_TextureCoordinates"
-    }
-
-    init {
-
     }
 }

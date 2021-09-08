@@ -16,24 +16,24 @@ class ColorShaderProgram(context: Context?) : ShaderProgram(
     context, R.raw.simple_vertex_shader,
     R.raw.simple_fragment_shader
 ) {
-    // Uniform locations
-    private val uMatrixLocation: Int
-
-    // Attribute locations
+    val uMatrixLocation: Int
     val aPositionLocation: Int
     val aColorLocation: Int
+    val uColorLocation: Int
 
 
     fun setUniforms(matrix: FloatArray?) {
-        // Pass the matrix into the shader program.
         GLES30.glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+    }
 
+    fun setUniforms(matrix: FloatArray?, r: Float, g: Float, b: Float) {
+        GLES30.glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+        GLES30.glUniform4f(uColorLocation, r, g, b, 1f)
     }
 
     init {
-
-        // Retrieve uniform locations for the shader program.
         uMatrixLocation = GLES30.glGetUniformLocation(program, U_MATRIX)
+        uColorLocation = GLES30.glGetUniformLocation(program, U_COLOR)
 
         aPositionLocation = GLES30.glGetAttribLocation(program, A_POSITION)
         aColorLocation = GLES30.glGetAttribLocation(program, A_COLOR)

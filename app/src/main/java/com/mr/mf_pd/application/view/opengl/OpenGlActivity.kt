@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.view.base.BaseActivity
-import com.mr.mf_pd.application.view.opengl.study.*
+import com.mr.mf_pd.application.view.opengl.study.AirHockeyRenderer5
 
 class OpenGlActivity : BaseActivity() {
 
@@ -35,7 +35,8 @@ class OpenGlActivity : BaseActivity() {
 //        glSurfaceView.setRenderer(AirHockeyRenderer1())
 //        glSurfaceView.setRenderer(AirHockeyRenderer2())
 //        glSurfaceView.setRenderer(AirHockeyRenderer3())
-        glSurfaceView.setRenderer(AirHockeyRenderer4(this))
+//        glSurfaceView.setRenderer(AirHockeyRenderer4(this))
+        glSurfaceView.setRenderer(AirHockeyRenderer5(this))
 //                glSurfaceView.setRenderer(SimpleRenderer())
         contentLayout.addView(glSurfaceView)
         rendererSet = true;
