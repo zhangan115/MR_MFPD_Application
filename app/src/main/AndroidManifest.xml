@@ -34,10 +34,7 @@
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar.Gray"
             android:windowSoftInputMode="adjustPan|stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".view.main.MainActivity"
@@ -53,7 +50,12 @@
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar.Gray"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+            android:windowSoftInputMode="adjustPan|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

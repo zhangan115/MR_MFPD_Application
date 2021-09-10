@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.view.airhockey.`object`.Puck
 import com.mr.mf_pd.application.view.airhockey.`object`.Table
 import com.mr.mf_pd.application.view.airhockey.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.airhockey.programs.TextureShaderProgram
+import com.mr.mf_pd.application.view.airhockey.utils.Geometry
 import com.mr.mf_pd.application.view.airhockey.utils.MatrixUtils
 import com.mr.mf_pd.application.view.airhockey.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
@@ -28,6 +29,7 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val viewMatrix = FloatArray(16)
     private val viewProjectionMatrix = FloatArray(16)
     private val modelViewProjectionMatrix = FloatArray(16)
+    private val invertedViewProjectionMatrix = FloatArray(16)
 
     private var table: Table = Table()
     private var puck: Puck
@@ -37,9 +39,64 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var colorProgram: ColorShaderProgram
     private var texture: Int = 0
 
+    private var malletPressed = false//木棰是否被按下
+    private lateinit var blueMalletPosition: Geometry.Point//木棰位置
+
     init {
-        puck = Puck(0.06f, 0.02f, 128)
-        mallet = Mallet(0.08f, 0.15f, 128)
+        puck = Puck(0.06f, 0.02f, 32)
+        mallet = Mallet(0.08f, 0.15f, 32)
+    }
+
+    fun handleTouchPress(normalizedX: Float, normalizedY: Float) {
+        Log.d("za", "handleTouchPress normalizedX$normalizedX normalizedY$normalizedY")
+        val ray: Geometry.Ray = convertNormalized2DPointToRay(normalizedX, normalizedY)
+        val malletBoundingSphere = Geometry.Sphere(
+            Geometry.Point(
+                blueMalletPosition.x,
+                blueMalletPosition.y,
+                blueMalletPosition.z
+            ), mallet.height / 2f
+        )
+
+        malletPressed = Geometry.intersects(malletBoundingSphere, ray)
+
+        Log.d("za", "malletPressed$malletPressed")
+
+    }
+
+    fun handleTouchDrag(normalizedX: Float, normalizedY: Float) {
+        Log.d("za", "handleTouchDrag normalizedX$normalizedX normalizedY$normalizedY")
+        if (malletPressed) {
+            val ray = convertNormalized2DPointToRay(normalizedX, normalizedY)
+            val plane = Geometry.Plane(Geometry.Point(0f, 0f, 0f), Geometry.Vector(0f, 1f, 0f))
+            val touchPoint = Geometry.intersectionPoint(ray, plane)
+            blueMalletPosition = Geometry.Point(touchPoint.x, mallet.height / 2f, touchPoint.z)
+        }
+    }
+
+    private fun convertNormalized2DPointToRay(
+        normalizedX: Float,
+        normalizedY: Float
+    ): Geometry.Ray {
+        val nearPointNdc = floatArrayOf(normalizedX, normalizedY, -1f, 1f)
+        val farPointNdc = floatArrayOf(normalizedX, normalizedY, 1f, 1f)
+        val nearPointWord = FloatArray(4)
+        val farPointWord = FloatArray(4)
+        Matrix.multiplyMV(nearPointWord, 0, invertedViewProjectionMatrix, 0, nearPointNdc, 0)
+        Matrix.multiplyMV(farPointWord, 0, invertedViewProjectionMatrix, 0, farPointNdc, 0)
+        divideByW(nearPointWord)
+        divideByW(farPointWord)
+        val nearPointRay: Geometry.Point =
+            Geometry.Point(nearPointWord[0], nearPointWord[1], nearPointWord[2])
+        val farPointRay: Geometry.Point =
+            Geometry.Point(farPointWord[0], farPointWord[1], farPointWord[2])
+        return Geometry.Ray(nearPointRay, Geometry.vectorBetween(nearPointRay, farPointRay))
+    }
+
+    private fun divideByW(vector: FloatArray) {
+        vector[0] /= vector[3]
+        vector[1] /= vector[3]
+        vector[2] /= vector[3]
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -50,16 +107,25 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorProgram = ColorShaderProgram(context)
 
         texture = TextureUtils.loadTexture(context, R.drawable.air_hockey_surface)
+
+        //初始化木棰位置
+        blueMalletPosition = Geometry.Point(0f, mallet.height / 2f, 0.4f)
+
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         Log.d("za", "onSurfaceChanged")
         GLES30.glViewport(0, 0, width, height)
         MatrixUtils.perspectiveM(
-            projectionMatrix, 45f, width.toFloat()
+            projectionMatrix, 60f, width.toFloat()
                     / height.toFloat(), 1f, 10f
         )
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 1.6f, 2.6f, 0f, 0f, 0f, 0f, 1f, 0f)
+        Matrix.setLookAtM(
+            viewMatrix, 0,
+            0f, 1.6f, 2.6f,
+            0f, 0f, 0f,
+            0f, 1f, 0f
+        )
 
     }
 
@@ -67,7 +133,7 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
+        Matrix.invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0)
         positionTableInScene()
         textureProgram.useProgram()
         textureProgram.setUniforms(modelViewProjectionMatrix, texture)
@@ -80,8 +146,8 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         mallet.bindData(colorProgram)
         mallet.draw()
 
-        positionObjectInScene(0f, mallet.height / 2f, 0.4f)
-        colorProgram.setUniforms(modelViewProjectionMatrix, 0f, 1f, 0f)
+        positionObjectInScene(blueMalletPosition.x, blueMalletPosition.y, blueMalletPosition.z)
+        colorProgram.setUniforms(modelViewProjectionMatrix, 0f, 0f, 1f)
         mallet.draw()
 
         positionObjectInScene(0f, puck.height / 2f, 0f)

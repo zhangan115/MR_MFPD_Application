@@ -7,18 +7,18 @@ import com.mr.mf_pd.application.view.airhockey.data.VertexArray
 
 open class Table {
     companion object {
-        private const val POSITION_COMPONENT_COUNT = 2
+        private const val POSITION_COMPONENT_COUNT = 3
         private const val TEXTURE_COORDINATES_COUNT = 2
         private const val STRIDE =
             (POSITION_COMPONENT_COUNT + TEXTURE_COORDINATES_COUNT) * Constants.BYTES_PER_FLOAT
         private val VERTEX_DATA = floatArrayOf(
-            //X Y S T
-            0f, 0f, 0.5f, 0.5f,
-            -0.5f, -0.8f, 0f, 0.9f,
-            0.5f, -0.8f, 1f, 0.9f,
-            0.5f, 0.8f, 1f, 0.1f,
-            -0.5f, 0.8f, 0f, 0.1f,
-            -0.5f, -0.8f, 0f, 0.9f,
+            //X Y Z S T
+            0f, 0f,0f, 0.5f, 0.5f,
+            -0.8f, -0.8f,0f, 0f, 0.9f,
+            0.8f, -0.8f, 0f,1f, 0.9f,
+            0.8f, 0.8f, 0f,1f, 0.1f,
+            -0.8f, 0.8f, 0f,0f, 0.1f,
+            -0.8f, -0.8f, 0f,0f, 0.9f,
         )
     }
 
