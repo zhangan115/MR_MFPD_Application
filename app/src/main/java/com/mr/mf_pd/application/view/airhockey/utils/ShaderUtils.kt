@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.opengl.utils
+package com.mr.mf_pd.application.view.airhockey.utils
 
 import android.opengl.GLES30
 import android.util.Log

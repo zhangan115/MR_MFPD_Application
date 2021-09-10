@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.opengl.utils
+package com.mr.mf_pd.application.view.airhockey.utils
 
 import android.content.Context
 import android.graphics.BitmapFactory

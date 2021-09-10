@@ -48,7 +48,7 @@
             android:theme="@style/AppTheme.NoActionBar.White"
             android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity
-            android:name=".view.opengl.OpenGlActivity"
+            android:name=".view.airhockey.AirHockeyActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"

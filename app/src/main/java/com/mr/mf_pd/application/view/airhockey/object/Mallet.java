@@ -1,9 +1,8 @@
-package com.mr.mf_pd.application.view.opengl.puck;
+package com.mr.mf_pd.application.view.airhockey.object;
 
-import com.mr.mf_pd.application.view.opengl.object.ObjectBuilder;
-import com.mr.mf_pd.application.view.opengl.study.data.VertexArray;
-import com.mr.mf_pd.application.view.opengl.study.programs.ColorShaderProgram;
-import com.mr.mf_pd.application.view.opengl.utils.Geometry;
+import com.mr.mf_pd.application.view.airhockey.data.VertexArray;
+import com.mr.mf_pd.application.view.airhockey.programs.ColorShaderProgram;
+import com.mr.mf_pd.application.view.airhockey.utils.Geometry;
 
 import java.util.List;
 
@@ -16,14 +15,14 @@ public class Mallet {
     private final List<ObjectBuilder.DrawCommand> drawList;
 
     public Mallet(float radius, float height, int numPointsAroundMallet) {
-        ObjectBuilder.GenerateData generateData = ObjectBuilder
+        ObjectBuilder.GeneratedData generatedData = ObjectBuilder
                 .createMallet(new Geometry.Point(0f, 0f, 0f)
                         , radius, height, numPointsAroundMallet);
         this.radius = radius;
         this.height = height;
 
-        vertexArray = new VertexArray(generateData.vertexData);
-        drawList = generateData.drawList;
+        vertexArray = new VertexArray(generatedData.vertexData);
+        drawList = generatedData.drawList;
     }
 
     public void bindData(ColorShaderProgram colorProgram) {

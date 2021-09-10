@@ -1,11 +1,11 @@
-package com.mr.mf_pd.application.view.opengl.study.`object`
+package com.mr.mf_pd.application.view.airhockey.`object`
 
 import android.opengl.GLES30
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.view.opengl.study.programs.TextureShaderProgram
-import com.mr.mf_pd.application.view.opengl.study.data.VertexArray
+import com.mr.mf_pd.application.view.airhockey.programs.TextureShaderProgram
+import com.mr.mf_pd.application.view.airhockey.data.VertexArray
 
-class Table {
+open class Table {
     companion object {
         private const val POSITION_COMPONENT_COUNT = 2
         private const val TEXTURE_COORDINATES_COUNT = 2

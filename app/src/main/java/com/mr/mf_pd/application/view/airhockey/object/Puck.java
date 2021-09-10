@@ -1,9 +1,8 @@
-package com.mr.mf_pd.application.view.opengl.puck;
+package com.mr.mf_pd.application.view.airhockey.object;
 
-import com.mr.mf_pd.application.view.opengl.object.ObjectBuilder;
-import com.mr.mf_pd.application.view.opengl.study.data.VertexArray;
-import com.mr.mf_pd.application.view.opengl.study.programs.ColorShaderProgram;
-import com.mr.mf_pd.application.view.opengl.utils.Geometry;
+import com.mr.mf_pd.application.view.airhockey.data.VertexArray;
+import com.mr.mf_pd.application.view.airhockey.programs.ColorShaderProgram;
+import com.mr.mf_pd.application.view.airhockey.utils.Geometry;
 
 import java.util.List;
 
@@ -16,12 +15,12 @@ public class Puck {
     private final List<ObjectBuilder.DrawCommand> drawList;
 
     public Puck(float radius, float height, int numPointsAroundPuck) {
-        ObjectBuilder.GenerateData generateData = ObjectBuilder
+        ObjectBuilder.GeneratedData generatedData = ObjectBuilder
                 .createPuck(new Geometry.Cylinder(new Geometry.Point(0f, 0f, 0f), radius, height), numPointsAroundPuck);
         this.radius = radius;
         this.height = height;
-        this.vertexArray = new VertexArray(generateData.vertexData);
-        this.drawList = generateData.drawList;
+        this.vertexArray = new VertexArray(generatedData.vertexData);
+        this.drawList = generatedData.drawList;
     }
 
     public void bindData(ColorShaderProgram colorProgram) {

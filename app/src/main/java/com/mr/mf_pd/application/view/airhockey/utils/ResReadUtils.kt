@@ -1,12 +1,12 @@
-package com.mr.mf_pd.application.view.opengl.utils
+package com.mr.mf_pd.application.view.airhockey.utils
 
+import android.content.Context
 import android.content.res.Resources.NotFoundException
-import com.mr.mf_pd.application.app.MRApplication
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-public object ResReadUtils {
+object ResReadUtils {
     /**
      * 读取资源
      *
@@ -14,10 +14,10 @@ public object ResReadUtils {
      * @return
      */
     @JvmStatic
-   open fun readResource(resourceId: Int): String {
+    fun readResource(context: Context, resourceId: Int): String {
         val builder = StringBuilder()
         try {
-            val inputStream = MRApplication.instance.resources.openRawResource(resourceId)
+            val inputStream = context.resources.openRawResource(resourceId)
             val streamReader = InputStreamReader(inputStream)
             val bufferedReader = BufferedReader(streamReader)
             var textLine: String?
