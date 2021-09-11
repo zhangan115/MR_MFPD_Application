@@ -29,7 +29,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>() {
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
             val intent = Intent(this,DeviceCheckActivity::class.java)
-//            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,dataList[position])
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,dataList[position])
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {

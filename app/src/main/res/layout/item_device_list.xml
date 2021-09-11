@@ -41,7 +41,7 @@
                     android:id="@+id/text1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{deviceBean.deviceName}"
+                    android:text="@{deviceBean.deviceNameAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="15sp"
                     android:textStyle="bold"
@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="40dp"
-                    android:text="@{deviceBean.serialNo}"
+                    android:text="@{deviceBean.serialNoAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="15sp"
                     tools:text="TextView" />
@@ -68,7 +68,7 @@
                     android:id="@+id/text3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{deviceBean.RSSI}"
+                    android:text="@{deviceBean.RSSIAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="12sp"
                     tools:text="TextView" />
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:src="@mipmap/card_icon_battery2"
-                    android:visibility="@{deviceBean.powerState == 1?View.GONE:View.VISIBLE}" />
+                    android:visibility="@{deviceBean.powerStateAttr == 1?View.GONE:View.VISIBLE}" />
 
                 <ImageView
                     android:id="@+id/powerIcon1"
@@ -87,14 +87,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
                     android:src="@mipmap/card_icon_battery1"
-                    android:visibility="@{deviceBean.powerState == 1?View.VISIBLE:View.GONE}" />
+                    android:visibility="@{deviceBean.powerStateAttr == 1?View.VISIBLE:View.GONE}" />
 
                 <TextView
                     android:id="@+id/text4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
-                    android:text="@{deviceBean.power}"
+                    android:text="@{deviceBean.powerAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="16dp"
-                android:text="@{deviceBean.versionCode}"
+                android:text="@{deviceBean.versionCodeAttr}"
                 android:textColor="@color/text_title"
                 android:textSize="12sp"
                 tools:text="TextView" />

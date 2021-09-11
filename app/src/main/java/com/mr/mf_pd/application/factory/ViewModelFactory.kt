@@ -26,6 +26,9 @@ import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
+import com.mr.mf_pd.application.view.uhf.CheckUHFViewModel
+import com.mr.mf_pd.application.view.uhf.prpd.UHFPrPdViewModel
+import com.mr.mf_pd.application.view.uhf.prps.UHFPrPsViewModel
 
 
 /**
@@ -51,6 +54,12 @@ class ViewModelFactory constructor(
                 MainViewModel(userRepository)
             isAssignableFrom(SplashViewModel::class.java) ->
                 SplashViewModel(userRepository)
+            isAssignableFrom(CheckUHFViewModel::class.java) ->
+                CheckUHFViewModel(dataRepository)
+            isAssignableFrom(UHFPrPsViewModel::class.java) ->
+                UHFPrPsViewModel(dataRepository)
+            isAssignableFrom(UHFPrPdViewModel::class.java) ->
+                UHFPrPdViewModel(dataRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
