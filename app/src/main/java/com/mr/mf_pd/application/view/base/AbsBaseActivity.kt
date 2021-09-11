@@ -33,11 +33,10 @@ abstract class AbsBaseActivity<T : ViewDataBinding> : BaseActivity() {
     open var showClose = false
     open var noDataLayout: View? = null
     open var netWorkErrorLayout: View? = null
-    open var showDarkIcon = false
+    open var showDarkIcon = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         getSaveState(savedInstanceState)
         initThem()
         dataBinding = DataBindingUtil.setContentView(this, getContentView())

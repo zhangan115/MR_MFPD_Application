@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#006569</color>
+    <color name="colorPrimary">@color/colorWhite</color>
     <color name="colorPrimaryDark">#006569</color>
     <color name="colorAccent">#006569</color>
 
@@ -18,15 +18,17 @@
     <color name="colorCommonGreyBg">#F8F8F8</color>
     <color name="colorCommonWhiteBg">@color/colorWhite</color>
 
-    <color name="gray_divide">#cccccc</color>
+    <color name="gray_divide">#C1C1C1</color>
     <color name="dialog_hint">#888888</color>
     <color name="dialog_cancel">#454545</color>
     <color name="dialog_title">#666666</color>
     <color name="bg_color">#ffffff</color>
 
     <!--  text color  -->
-    <color name="text_title">#333333</color>
-    <color name="text_content">#454545</color>
+    <color name="text_title">#121212</color>
+    <color name="text_first_content">#121212</color>
+    <color name="text_secondary_content">#888888</color>
+
     <color name="text_yellow">#EAB602</color>
     <color name="text_grey">#999999</color>
     <!--  input color  -->
@@ -58,4 +60,29 @@
     <color name="line_chart_color_5">#ED60DF</color>
 
     <color name="chart_line">#C1C1C1</color>
+    <!--  Item背景颜色  -->
+    <color name="color_item_bg">#D0ECF4</color>
+    <color name="color_item_bg_normal">@color/color_item_bg</color>
+    <color name="color_item_bg_press">#88D0ECF4</color>
+    <!--  蓝色背景颜色  -->
+    <color name="color_blue_bg">#ffcef4ff</color>
+    <color name="color_blue_bg_normal">@color/color_blue_bg</color>
+    <color name="color_blue_bg_press">#88cef4ff</color>
+    <!--  粉色背景颜色-->
+    <color name="color_pink_bg">#fffcebeb</color>
+    <color name="color_pink_bg_normal">@color/color_pink_bg</color>
+    <color name="color_pink_bg_press">#88fcebeb</color>
+    <!--  黄色背景颜色-->
+    <color name="color_yellow_bg">#fff0f7e4</color>
+    <color name="color_yellow_bg_normal">@color/color_yellow_bg</color>
+    <color name="color_yellow_bg_press">#88f0f7e4</color>
+    <!--  紫色背景颜色-->
+    <color name="color_purple_bg">#DFE8FF</color>
+    <color name="color_purple_bg_normal">@color/color_purple_bg</color>
+    <color name="color_purple_bg_press">#88DFE8FF</color>
+    <!--  小item背景颜色-->
+    <color name="color_item_litter_bg">#F6F6F7</color>
+    <color name="color_item_litter_bg_normal">@color/color_item_litter_bg</color>
+    <color name="color_item_litter_bg_press">#88F6F6F7</color>
+
 </resources>

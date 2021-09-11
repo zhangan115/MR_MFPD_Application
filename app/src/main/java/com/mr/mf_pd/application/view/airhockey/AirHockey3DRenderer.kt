@@ -87,9 +87,9 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         divideByW(nearPointWord)
         divideByW(farPointWord)
         val nearPointRay: Geometry.Point =
-            Geometry.Point(nearPointWord[0], nearPointWord[1], nearPointWord[2])
+            Geometry.Point(nearPointWord[0], nearPointWord[1], -nearPointWord[2])
         val farPointRay: Geometry.Point =
-            Geometry.Point(farPointWord[0], farPointWord[1], farPointWord[2])
+            Geometry.Point(farPointWord[0], farPointWord[1], -farPointWord[2])
         return Geometry.Ray(nearPointRay, Geometry.vectorBetween(nearPointRay, farPointRay))
     }
 
@@ -98,6 +98,7 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         vector[1] /= vector[3]
         vector[2] /= vector[3]
     }
+
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         Log.d("za", "onSurfaceCreated")
@@ -130,7 +131,7 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        Log.d("za", "onDrawFrame")
+//        Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         Matrix.invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0)

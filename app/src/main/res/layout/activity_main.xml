@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data class="MainDataBinding">
+
         <variable
             name="vm"
             type="com.mr.mf_pd.application.view.main.MainViewModel" />
@@ -30,24 +31,193 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorWhite">
 
+                <ImageView
+                    android:id="@+id/drawerBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@mipmap/label_icon_more" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="@{vm.appName}"
-                    android:textColor="#333333"
-                    android:textSize="20sp" />
+                    android:text="@string/app_name"
+                    android:textColor="@color/text_title"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
 
             </RelativeLayout>
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/toolbarLayout">
+                android:layout_below="@id/toolbarLayout"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="15dp"
+                    android:drawablePadding="3dp"
+                    android:text="设备"
+                    android:textColor="@color/text_title"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@mipmap/icon_equipment" />
+
+                <com.scwang.smartrefresh.layout.SmartRefreshLayout
+                    android:id="@+id/refreshLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    app:srlAccentColor="@color/colorPrimary"
+                    app:srlEnablePreviewInEditMode="true">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:scrollbars="none" />
+
+                </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 
-            </FrameLayout>
+                <include layout="@layout/layout_divide_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="15dp"
+                    android:drawablePadding="3dp"
+                    android:text="导航"
+                    android:textColor="@color/text_title"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@mipmap/icon_navigation" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="30dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/checkDataLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_blue_bg"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:src="@mipmap/navigation_icon_data" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="13dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="检测数据"
+                            android:textColor="@color/text_title"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:text="数据浏览查看"
+                            android:textColor="@color/text_secondary_content"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/checkTaskLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_pink_bg"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:src="@mipmap/navigation_icon_task" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="13dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="检测任务"
+                            android:textColor="@color/text_title"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:text="任务查看与管理"
+                            android:textColor="@color/text_secondary_content"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/settingLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/selector_yellow_bg"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:src="@mipmap/navigation_icon_setting" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="13dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="常规设置"
+                            android:textColor="@color/text_title"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:text="设置与调试"
+                            android:textColor="@color/text_secondary_content"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
         </RelativeLayout>
 
         <LinearLayout
