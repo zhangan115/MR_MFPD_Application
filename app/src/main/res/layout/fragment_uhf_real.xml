@@ -2,25 +2,22 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="UHFPrPdDataBinding">
+    <data class="UHFRealDataBinding">
+
+        <import type="android.view.View" />
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.uhf.prpd.UHFPrPdViewModel" />
-
-        <import type="android.view.View" />
+            type="com.mr.mf_pd.application.view.uhf.real.UHFRealModelViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        app:toast="@{vm.toastStr}"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:toast="@{vm.toastStr}">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PRPD" />
+
     </LinearLayout>
 </layout>

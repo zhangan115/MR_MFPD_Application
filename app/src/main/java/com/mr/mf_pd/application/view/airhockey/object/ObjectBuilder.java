@@ -1,11 +1,13 @@
 package com.mr.mf_pd.application.view.airhockey.object;
 
 import android.opengl.GLES30;
+import android.util.Log;
 
 
 import com.mr.mf_pd.application.view.airhockey.utils.Geometry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,6 +38,11 @@ public class ObjectBuilder {
      */
     private static int sizeOfCircleInVertices(int numPoints) {
         return 1 + (numPoints + 1);
+    }
+
+
+    private static int sizeOfPoint2DChartLinesInVertices(int row, int column) {
+        return (row + 1) * (column + 1);
     }
 
     /**
@@ -75,6 +82,13 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
+    public static GeneratedData createPoint2DChartLines(int row, int column) {
+        int size = sizeOfPoint2DChartLinesInVertices(row, column);
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appPoint2DLines(row, column);
+        return builder.Build();
+    }
+
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
         int size = sizeOfCircleInVertices(numPoints) * 2 + sizeOfOpenCylinderInVertices(numPoints) * 2;
         ObjectBuilder builder = new ObjectBuilder(size);
@@ -98,6 +112,41 @@ public class ObjectBuilder {
         builder.appendOpenCylinder(handleCylinder, numPoints);
 
         return builder.Build();
+    }
+
+    private void appPoint2DLines(int row, int column) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
+        float xStep = (1 - Point2DChartLine.offsetXPointValueStart + 1 - Point2DChartLine.offsetXPointValueEnd) / column;
+        float yStep = (1 - Point2DChartLine.offsetYPointValueBottom + 1 - Point2DChartLine.offsetYPointValueTop) / row;
+        float startX = -1 + Point2DChartLine.offsetXPointValueStart;
+        float yPosition = -1 + Point2DChartLine.offsetYPointValueBottom;
+        for (int i = 0; i <= row; i++) {
+            float xPosition = startX;
+            for (int j = 0; j <= column; j++) {
+                vertexData[offset++] = xPosition;
+                vertexData[offset++] = yPosition;
+                vertexData[offset++] = 0f;
+                xPosition = xPosition + xStep;
+            }
+            yPosition = yPosition + yStep;
+        }
+        Log.d("za", Arrays.toString(vertexData));
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, numVertices));
+    }
+
+    private void appPoint2DXLines(float startX,int row, int column) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
+        for (int i = 0; i <= row; i++) {
+
+        }
+        Log.d("za", Arrays.toString(vertexData));
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, numVertices));
+    }
+
+    private void appPoint2DYLines(float startX,int row, int column) {
+
     }
 
     /**

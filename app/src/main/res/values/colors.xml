@@ -18,6 +18,8 @@
     <color name="colorCommonGreyBg">#F8F8F8</color>
     <color name="colorCommonWhiteBg">@color/colorWhite</color>
 
+    <color name="blueColor">#0063D5</color>
+
     <color name="gray_divide">#C1C1C1</color>
     <color name="dialog_hint">#888888</color>
     <color name="dialog_cancel">#454545</color>
@@ -27,7 +29,8 @@
     <!--  text color  -->
     <color name="text_title">#121212</color>
     <color name="text_first_content">#121212</color>
-    <color name="text_secondary_content">#888888</color>
+    <color name="text_content_secondary_color">#888888</color>
+    <color name="text_content_third_color">#454545</color>
     <color name="text_un_select">#666666</color>
 
     <color name="text_yellow">#EAB602</color>

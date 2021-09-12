@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="27dp"
                     android:text="使用外接特高频传感器"
-                    android:textColor="@color/text_secondary_content"
+                    android:textColor="@color/text_content_secondary_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -97,7 +97,7 @@
                     android:layout_marginBottom="8dp"
                     android:gravity="center_horizontal"
                     android:text="使用内置或外接\n超声传感器"
-                    android:textColor="@color/text_secondary_content"
+                    android:textColor="@color/text_content_secondary_color"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="27dp"
                     android:text="使用内置暂态地电压传感器"
-                    android:textColor="@color/text_secondary_content"
+                    android:textColor="@color/text_content_secondary_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -176,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="27dp"
                     android:text="使用外接高频CT传感器"
-                    android:textColor="@color/text_secondary_content"
+                    android:textColor="@color/text_content_secondary_color"
                     android:textSize="12sp" />
 
             </LinearLayout>
