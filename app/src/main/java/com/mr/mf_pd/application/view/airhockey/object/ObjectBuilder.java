@@ -42,7 +42,11 @@ public class ObjectBuilder {
 
 
     private static int sizeOfPoint2DChartLinesInVertices(int row, int column) {
-        return (row + 1) * (column + 1);
+        return (row + 1) * 2 + (column + 1) * 2;
+    }
+
+    private static int sizeOfPoint2DSinLineInVertices(int sinCount) {
+        return sinCount + 1;
     }
 
     /**
@@ -82,10 +86,10 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    public static GeneratedData createPoint2DChartLines(int row, int column) {
-        int size = sizeOfPoint2DChartLinesInVertices(row, column);
+    public static GeneratedData createPoint2DChartLines(int row, int column, int sinCount) {
+        int size = sizeOfPoint2DChartLinesInVertices(row, column) + sizeOfPoint2DSinLineInVertices(sinCount);
         ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appPoint2DLines(row, column);
+        builder.appPoint2DLines(row, column, sinCount);
         return builder.Build();
     }
 
@@ -114,38 +118,68 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    private void appPoint2DLines(int row, int column) {
+    private void appPoint2DLines(int row, int column, int sinCount) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
-        float xStep = (1 - Point2DChartLine.offsetXPointValueStart + 1 - Point2DChartLine.offsetXPointValueEnd) / column;
-        float yStep = (1 - Point2DChartLine.offsetYPointValueBottom + 1 - Point2DChartLine.offsetYPointValueTop) / row;
+        float yStep = (1 - Point2DChartLine.offsetYPointValueBottom
+                + 1 - Point2DChartLine.offsetYPointValueTop -
+                Point2DChartLine.offsetTop) / row;
+
         float startX = -1 + Point2DChartLine.offsetXPointValueStart;
+        float endX = 1 - Point2DChartLine.offsetXPointValueEnd;
         float yPosition = -1 + Point2DChartLine.offsetYPointValueBottom;
         for (int i = 0; i <= row; i++) {
-            float xPosition = startX;
-            for (int j = 0; j <= column; j++) {
-                vertexData[offset++] = xPosition;
-                vertexData[offset++] = yPosition;
-                vertexData[offset++] = 0f;
-                xPosition = xPosition + xStep;
-            }
+            //startPoint
+            vertexData[offset++] = startX;
+            vertexData[offset++] = yPosition;
+            vertexData[offset++] = 0f;
+            //endPoint
+            vertexData[offset++] = endX;
+            vertexData[offset++] = yPosition;
+            vertexData[offset++] = 0f;
+
             yPosition = yPosition + yStep;
         }
-        Log.d("za", Arrays.toString(vertexData));
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, numVertices));
-    }
 
-    private void appPoint2DXLines(float startX,int row, int column) {
-        final int startVertex = offset / FLOATS_PER_VERTEX;
-        final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
-        for (int i = 0; i <= row; i++) {
+        float xStep = (1 - Point2DChartLine.offsetXPointValueStart
+                + 1 - Point2DChartLine.offsetXPointValueEnd
+                - Point2DChartLine.offsetRight) / column;
+        float startY = -1 + Point2DChartLine.offsetYPointValueBottom;
+        float endY = 1 - Point2DChartLine.offsetYPointValueTop;
+        float xPosition = -1 + Point2DChartLine.offsetXPointValueStart;
 
+        for (int i = 0; i <= column; i++) {
+            //startPoint
+            vertexData[offset++] = xPosition;
+            vertexData[offset++] = startY;
+            vertexData[offset++] = 0f;
+            //endPoint
+            vertexData[offset++] = xPosition;
+            vertexData[offset++] = endY;
+            vertexData[offset++] = 0f;
+
+            xPosition = xPosition + xStep;
         }
-        Log.d("za", Arrays.toString(vertexData));
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, numVertices));
-    }
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINES, startVertex, numVertices));
 
-    private void appPoint2DYLines(float startX,int row, int column) {
+        final int sinLineStartVertex = offset / FLOATS_PER_VERTEX;
+
+        float sinXStep = (1 - Point2DChartLine.offsetXPointValueStart
+                + 1 - Point2DChartLine.offsetXPointValueEnd
+                - Point2DChartLine.offsetRight) / sinCount;
+        float sinStartX = -1 + Point2DChartLine.offsetXPointValueStart;
+        float height = (1 - Point2DChartLine.offsetYPointValueBottom
+                + 1 - Point2DChartLine.offsetYPointValueTop) / 2f;
+        float sinStartY;
+        for (int i = 0; i <= sinCount; i++) {
+            double radians = Math.toRadians((double) i / (double) sinCount * 360.0);
+            sinStartY = (float) (Math.sin(radians) * height);
+            vertexData[offset++] = sinStartX;
+            vertexData[offset++] = sinStartY;
+            vertexData[offset++] = 0f;
+            sinStartX = sinStartX + sinXStep;
+        }
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, sinLineStartVertex, sinCount + 1));
 
     }
 

@@ -15,7 +15,6 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.uhf.phase.UHFPhaseModelFragment
