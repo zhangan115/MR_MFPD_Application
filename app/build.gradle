@@ -6,6 +6,22 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 //一定放在dependencies代码块下
 apply plugin: 'io.objectbox' // after applying Android plugin
 android {
+
+    signingConfigs {
+        debug {
+            keyAlias 'sito'
+            keyPassword '123456'
+            storeFile file('../sito_check.jks')
+            storePassword '123456'
+        }
+        relealse {
+            keyAlias 'sito'
+            keyPassword '123456'
+            storeFile file('../sito_check.jks')
+            storePassword '123456'
+        }
+    }
+
     compileSdk 29
     buildToolsVersion "29.0.2"
 
