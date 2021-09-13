@@ -93,6 +93,17 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
+    public static GeneratedData createPoint2DChartPoint(float[] values) {
+        int size = sizeOfPint2DChartPoint(values);
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appPoint2DPoint(values);
+        return builder.Build();
+    }
+
+    public static int sizeOfPint2DChartPoint(float[] values){
+        return values.length;
+    }
+
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
         int size = sizeOfCircleInVertices(numPoints) * 2 + sizeOfOpenCylinderInVertices(numPoints) * 2;
         ObjectBuilder builder = new ObjectBuilder(size);
@@ -169,7 +180,7 @@ public class ObjectBuilder {
                 - Point2DChartLine.offsetRight) / sinCount;
         float sinStartX = -1 + Point2DChartLine.offsetXPointValueStart;
         float height = (1 - Point2DChartLine.offsetYPointValueBottom
-                + 1 - Point2DChartLine.offsetYPointValueTop) / 2f;
+                + 1 - Point2DChartLine.offsetYPointValueTop) / 2.0f;
         float sinStartY;
         for (int i = 0; i <= sinCount; i++) {
             double radians = Math.toRadians((double) i / (double) sinCount * 360.0);
@@ -181,6 +192,17 @@ public class ObjectBuilder {
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, sinLineStartVertex, sinCount + 1));
 
+    }
+
+    private void appPoint2DPoint(float[] values) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfPint2DChartPoint(values);
+        for (int i = 0; i < numVertices; i++) {
+//            vertexData[offset++] = circle.center.x + circle.radius * (float) Math.cos(angleInRadians);
+//            vertexData[offset++] = circle.center.y;
+//            vertexData[offset++] = circle.center.z + circle.radius * (float) Math.sin(angleInRadians);
+        }
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
     }
 
     /**

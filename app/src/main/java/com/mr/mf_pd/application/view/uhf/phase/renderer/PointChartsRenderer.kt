@@ -17,6 +17,8 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val xTextList = listOf("0", "90", "180", "270", "360")
     private val yTextList = listOf("0", "0.5", "1,", "1.5")
 
+    val pointValue = FloatArray(100)
+
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
     private var texture: Int = 0
@@ -28,7 +30,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         texture = TextureUtils.loadTextureWithText(xTextList[0])
 
-        chartsLines = Point2DChartLine(4, 4,360)
+        chartsLines = Point2DChartLine(4, 4, 180)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -42,6 +44,8 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorProgram.setUniforms(0.4f, 0.4f, 0.4f)
         chartsLines.bindData(colorProgram)
         chartsLines.draw()
+
+
     }
 
 }

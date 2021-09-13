@@ -1,3 +1,4 @@
+include ':modbus4android'
 include ':tool_library'
 rootProject.name = "MR_MFPD_Application"
 include ':app'
