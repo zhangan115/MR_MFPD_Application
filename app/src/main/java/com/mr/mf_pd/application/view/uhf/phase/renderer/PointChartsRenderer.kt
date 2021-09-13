@@ -20,7 +20,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val xTextList = listOf("0", "90", "180", "270", "360")
     private val yTextList = listOf("0", "0.5", "1,", "1.5")
 
-    val pointValue = FloatArray(100)
+    val pointValue = FloatArray(5)
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
@@ -35,7 +35,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         texture = TextureUtils.loadTextureWithText(xTextList[0])
 
-        chartsLines = Point2DChartLine(4, 4, 180)
+        chartsLines = Point2DChartLine(4, 4, 90)
 
         for (i in pointValue.indices) {
             pointValue[i] = Math.random().toFloat() * 3.5f - 1.75f

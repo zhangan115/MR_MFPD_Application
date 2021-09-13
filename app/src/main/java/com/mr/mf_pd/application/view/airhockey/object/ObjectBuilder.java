@@ -205,7 +205,7 @@ public class ObjectBuilder {
         for (int i = 0; i < values.length; i++) {
             //设置点点位置
             vertexData[offset++] = startX;
-            vertexData[offset++] = values[i] * height;
+            vertexData[offset++] = values[i];
             vertexData[offset++] = 0;
             //设置颜色
             if (values[i] > 0) {
