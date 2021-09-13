@@ -9,10 +9,6 @@ class Point2DColorPointShaderProgram(context: Context) : ShaderProgram(
     R.raw.point2d_fragment_shader_1
 ) {
     val aPositionLocation: Int = GLES30.glGetAttribLocation(program, A_POSITION)
-    private val uColorLocation: Int = GLES30.glGetUniformLocation(program, U_COLOR)
-
-    fun setUniforms(r: Float, g: Float, b: Float) {
-        GLES30.glUniform4f(uColorLocation, r, g, b, 1f)
-    }
+    val aColorLocation: Int = GLES30.glGetAttribLocation(program, A_COLOR)
 
 }

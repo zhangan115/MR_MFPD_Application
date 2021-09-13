@@ -100,8 +100,8 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    public static int sizeOfPint2DChartPoint(float[] values){
-        return values.length;
+    public static int sizeOfPint2DChartPoint(float[] values) {
+        return values.length * 2;
     }
 
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
@@ -191,18 +191,35 @@ public class ObjectBuilder {
             sinStartX = sinStartX + sinXStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, sinLineStartVertex, sinCount + 1));
-
     }
+
 
     private void appPoint2DPoint(float[] values) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPint2DChartPoint(values);
-        for (int i = 0; i < numVertices; i++) {
-//            vertexData[offset++] = circle.center.x + circle.radius * (float) Math.cos(angleInRadians);
-//            vertexData[offset++] = circle.center.y;
-//            vertexData[offset++] = circle.center.z + circle.radius * (float) Math.sin(angleInRadians);
+        float xStep = (1 - Point2DChartLine.offsetXPointValueStart
+                + 1 - Point2DChartLine.offsetXPointValueEnd) / values.length;
+        float startX = -1 + Point2DChartLine.offsetXPointValueStart;
+        float height = (1 - Point2DChartLine.offsetYPointValueBottom
+                + 1 - Point2DChartLine.offsetYPointValueTop) / 2.0f;
+        for (int i = 0; i < values.length; i++) {
+            //设置点点位置
+            vertexData[offset++] = startX;
+            vertexData[offset++] = values[i] * height;
+            vertexData[offset++] = 0;
+            //设置颜色
+            if (values[i] > 0) {
+                vertexData[offset++] = 1f;
+                vertexData[offset++] = 0f;
+                vertexData[offset++] = 0f;
+            } else {
+                vertexData[offset++] = 0f;
+                vertexData[offset++] = 1f;
+                vertexData[offset++] = 0f;
+            }
+            startX = startX + xStep;
         }
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_POINTS, startVertex, numVertices));
     }
 
     /**
