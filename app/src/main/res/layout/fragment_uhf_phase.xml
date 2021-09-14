@@ -14,6 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorWhite"
         android:orientation="vertical"
         app:toast="@{vm.toastStr}">
 
@@ -171,7 +172,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
             android:gravity="end">
 
@@ -219,11 +219,28 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/shape_content_bg">
 
-            <android.opengl.GLSurfaceView
-                android:id="@+id/surfaceView2"
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1">
+
+                <android.opengl.GLSurfaceView
+                    android:id="@+id/surfaceView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/img_angle2" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:src="@mipmap/img_angle" />
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="80dp"
@@ -269,7 +286,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
             android:text="@{vm.location}"
             android:textColor="@color/blueColor"
             android:textSize="13sp" />
