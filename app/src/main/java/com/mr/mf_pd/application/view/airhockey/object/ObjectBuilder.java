@@ -1,13 +1,10 @@
 package com.mr.mf_pd.application.view.airhockey.object;
 
 import android.opengl.GLES30;
-import android.util.Log;
-
 
 import com.mr.mf_pd.application.view.airhockey.utils.Geometry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,6 +29,10 @@ public class ObjectBuilder {
         vertexData = new float[sizeInVertices * FLOATS_PER_VERTEX];
     }
 
+    private ObjectBuilder(int sizeInVertices, int count) {
+        vertexData = new float[sizeInVertices * count];
+    }
+
     /**
      * @param numPoints 圆柱顶部数量
      * @return 数量
@@ -40,9 +41,20 @@ public class ObjectBuilder {
         return 1 + (numPoints + 1);
     }
 
-
     private static int sizeOfPoint2DChartLinesInVertices(int row, int column) {
         return (row + 1) * 2 + (column + 1) * 2;
+    }
+
+    public static int sizeOfPint2DChartPoint(float[] values) {
+        return values.length;
+    }
+
+    private static int sizeOfPoint2DValueInVertices(float[] values) {
+        return values.length * 2 + 1;
+    }
+
+    private static int sizeOfFillet2DValueInVertices(int count) {
+        return count + 1;
     }
 
     private static int sizeOfPoint2DSinLineInVertices(int sinCount) {
@@ -95,13 +107,23 @@ public class ObjectBuilder {
 
     public static GeneratedData createPoint2DChartPoint(float[] values) {
         int size = sizeOfPint2DChartPoint(values);
-        ObjectBuilder builder = new ObjectBuilder(size);
+        ObjectBuilder builder = new ObjectBuilder(size, 5);
         builder.appPoint2DPoint(values);
         return builder.Build();
     }
 
-    public static int sizeOfPint2DChartPoint(float[] values) {
-        return values.length * 2;
+    public static GeneratedData createPoint2DValue(float[] values) {
+        int size = sizeOfPoint2DValueInVertices(values);
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appPoint2DValues(values);
+        return builder.Build();
+    }
+
+    public static GeneratedData createFillet2DValue(float widthFilletValue, float heightFilletValue, int filletCount) {
+        int size = sizeOfFillet2DValueInVertices(filletCount);
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appFillet2DValues(widthFilletValue, heightFilletValue, filletCount);
+        return builder.Build();
     }
 
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
@@ -198,28 +220,88 @@ public class ObjectBuilder {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPint2DChartPoint(values);
         float xStep = (1 - Point2DChartLine.offsetXPointValueStart
-                + 1 - Point2DChartLine.offsetXPointValueEnd) / values.length;
+                + 1 - Point2DChartLine.offsetXPointValueEnd
+                - Point2DChartLine.offsetRight) / (values.length - 1);
         float startX = -1 + Point2DChartLine.offsetXPointValueStart;
         float height = (1 - Point2DChartLine.offsetYPointValueBottom
                 + 1 - Point2DChartLine.offsetYPointValueTop) / 2.0f;
-        for (int i = 0; i < values.length; i++) {
+        for (float value : values) {
             //设置点点位置
             vertexData[offset++] = startX;
-            vertexData[offset++] = values[i];
-            vertexData[offset++] = 0;
+            vertexData[offset++] = height * value;
             //设置颜色
-            if (values[i] > 0) {
-                vertexData[offset++] = 1f;
+            if (value > 0) {
+                vertexData[offset++] = 1.0f;
                 vertexData[offset++] = 0f;
                 vertexData[offset++] = 0f;
             } else {
                 vertexData[offset++] = 0f;
-                vertexData[offset++] = 1f;
+                vertexData[offset++] = 1.0f;
                 vertexData[offset++] = 0f;
             }
             startX = startX + xStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_POINTS, startVertex, numVertices));
+    }
+
+    private void appPoint2DValues(float[] values) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfPoint2DValueInVertices(values);
+        float xStep = 2.0f / values.length;
+        float startX = -1f;
+        float height = 2f;
+
+        for (float value : values) {
+            vertexData[offset++] = startX;
+            vertexData[offset++] = height * value - 1f;
+            vertexData[offset++] = 0f;
+
+            vertexData[offset++] = startX;
+            vertexData[offset++] = -1f;
+            vertexData[offset++] = 0f;
+            startX = startX + xStep;
+        }
+
+        vertexData[offset++] = 1f;
+        vertexData[offset++] = -1f;
+        vertexData[offset++] = 0f;
+
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, startVertex, numVertices));
+    }
+
+    /**
+     * 画圆角
+     *
+     * @param a  a
+     * @param b b
+     * @param filletCount       多少个点，点越多，圆角越圆
+     */
+    private void appFillet2DValues(float a, float b, int filletCount) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = sizeOfFillet2DValueInVertices(filletCount);
+
+        vertexData[offset++] = -1f;
+        vertexData[offset++] = -1f;
+        vertexData[offset++] = 0f;
+
+        float startX = -1;
+        float xStep = a / filletCount;
+        for (int i = 0; i < filletCount; i++) {
+            vertexData[offset++] = startX;
+            double value = a * a - (a * a * startX * startX) / (b * b);
+            double v;
+            if (value < 0) {
+                v = value * -1;
+            } else {
+                v = value;
+            }
+            float y = (float) Math.sqrt(v);
+            vertexData[offset++] = y;
+            vertexData[offset++] = 0f;
+            startX = startX + xStep;
+        }
+
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
     }
 
     /**

@@ -3,12 +3,13 @@ package com.mr.mf_pd.application.view.airhockey.object;
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.airhockey.data.VertexArray;
 import com.mr.mf_pd.application.view.airhockey.programs.Point2DColorPointShaderProgram;
+import com.mr.mf_pd.application.view.airhockey.programs.Point2DColorShaderProgram;
 
 import java.util.List;
 
 public class Point2DChartPoint {
 
-    private static final int POSITION_COMPONENT_COUNT = 3;
+    private static final int POSITION_COMPONENT_COUNT = 2;
     private static final int COLOR_COORDINATES_COUNT = 3;
     private static final int STRIDE =
             (POSITION_COMPONENT_COUNT + COLOR_COORDINATES_COUNT) * Constants.BYTES_PER_FLOAT;

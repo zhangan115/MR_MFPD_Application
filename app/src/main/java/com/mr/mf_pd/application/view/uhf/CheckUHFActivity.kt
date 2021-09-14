@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.uhf
 
+import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Typeface
 import android.os.Bundle
@@ -19,6 +20,7 @@ import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.uhf.phase.UHFPhaseModelFragment
 import com.mr.mf_pd.application.view.uhf.real.UHFRealModelFragment
+import com.mr.mf_pd.application.view.uhf.setting.UHFSettingActivity
 import com.sito.tool.library.utils.DisplayUtil
 import kotlinx.android.synthetic.main.activity_check_uhf.*
 
@@ -109,10 +111,8 @@ class CheckUHFActivity : AbsBaseActivity<CheckUHFDataBinding>() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_setting) {
-//            val intent = Intent(this, DataFilterActivity::class.java)
-//            intent.putExtra(ConstantStr.KEY_BUNDLE_INT, checkType)
-//            intent.putExtra(ConstantStr.KEY_BUNDLE_STR, equipmentTypeCode)
-//            startActivityForResult(intent, 10001)
+            val intent = Intent(this, UHFSettingActivity::class.java)
+            startActivity(intent)
         }
         return true
     }

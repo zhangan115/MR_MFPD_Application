@@ -15,12 +15,10 @@ import javax.microedition.khronos.opengles.GL10
 class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     private lateinit var chartsLines: Point2DChartLine
-    private lateinit var chartsPoints: Point2DChartPoint
+    private var chartsPoints: Point2DChartPoint? = null
 
     private val xTextList = listOf("0", "90", "180", "270", "360")
     private val yTextList = listOf("0", "0.5", "1,", "1.5")
-
-    val pointValue = FloatArray(5)
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
@@ -36,18 +34,20 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         texture = TextureUtils.loadTextureWithText(xTextList[0])
 
         chartsLines = Point2DChartLine(4, 4, 90)
+    }
 
+    /**
+     * 修改点的Value
+     */
+    fun pointChange(pointValue: FloatArray) {
         for (i in pointValue.indices) {
-            pointValue[i] = Math.random().toFloat() * 3.5f - 1.75f
+            pointValue[i] = Math.random().toFloat() * 2f - 1f
         }
-
         chartsPoints = Point2DChartPoint(pointValue)
-
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES30.glViewport(0, 0, width, height)
-
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -58,8 +58,8 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         chartsLines.draw()
 
         colorPointProgram.useProgram()
-        chartsPoints.bindData(colorPointProgram)
-        chartsPoints.draw()
+        chartsPoints?.bindData(colorPointProgram)
+        chartsPoints?.draw()
     }
 
 }

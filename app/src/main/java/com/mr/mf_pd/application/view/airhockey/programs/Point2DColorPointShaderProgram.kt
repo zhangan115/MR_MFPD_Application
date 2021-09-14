@@ -11,4 +11,5 @@ class Point2DColorPointShaderProgram(context: Context) : ShaderProgram(
     val aPositionLocation: Int = GLES30.glGetAttribLocation(program, A_POSITION)
     val aColorLocation: Int = GLES30.glGetAttribLocation(program, A_COLOR)
 
+
 }
