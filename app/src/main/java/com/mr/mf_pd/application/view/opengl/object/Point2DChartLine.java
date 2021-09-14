@@ -5,6 +5,9 @@ import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram;
 
 import java.util.List;
 
+/**
+ * 2D 图展示数据的XY线
+ */
 public class Point2DChartLine {
     /**
      * 设置边界
@@ -23,11 +26,11 @@ public class Point2DChartLine {
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public Point2DChartLine(int row, int column,int sinCount) {
+    public Point2DChartLine(int row, int column, int sinCount) {
         this.column = column;
         this.row = row;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPoint2DChartLines(row, column,sinCount);
+                .createPoint2DChartLines(row, column, sinCount);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }

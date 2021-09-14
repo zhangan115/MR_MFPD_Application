@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data class="UHFSettingDataBinding">
 
@@ -49,11 +50,13 @@
                         android:id="@+id/switchUpload"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="15dp" />
+                        android:layout_marginEnd="15dp"
+                        android:checked="@={vm.isUploadReal()}" />
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/phaseModelLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
@@ -74,9 +77,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15dp"
-                        android:text="内同步"
+                        android:text="@{vm.phaseModelStr}"
                         android:textColor="#ff333333"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:text="内同步" />
 
                 </LinearLayout>
 
@@ -105,7 +109,8 @@
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp" />
+                            android:layout_marginEnd="15dp"
+                            android:checked="@={vm.isAutoSync}" />
                     </LinearLayout>
 
                     <View
@@ -135,9 +140,10 @@
                             android:background="@null"
                             android:gravity="end"
                             android:padding="15dp"
-                            android:text="50.00"
+                            android:text="@={vm.internalSyncStr}"
                             android:textColor="#ff333333"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            tools:text="50.00" />
 
                     </LinearLayout>
 
@@ -166,9 +172,10 @@
                         android:background="@null"
                         android:gravity="end"
                         android:padding="15dp"
-                        android:text="0°"
+                        android:text="@={vm.phaseOffsetStr}"
                         android:textColor="#ff333333"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:text="0°" />
 
                 </LinearLayout>
 
@@ -198,12 +205,14 @@
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp" />
+                            android:layout_marginEnd="15dp"
+                            android:checked="@={vm.isNoiseFiltering}" />
                     </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/bandDetectionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
@@ -224,9 +233,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="15dp"
-                        android:text="全通"
+                        android:text="@{vm.bandDetectionStr}"
                         android:textColor="#ff333333"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:text="全通" />
 
                 </LinearLayout>
 
@@ -254,9 +264,10 @@
                         android:background="@null"
                         android:gravity="end"
                         android:padding="15dp"
-                        android:text="30"
+                        android:text="@={vm.totalTimeStr}"
                         android:textColor="#ff333333"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        tools:text="30" />
 
                 </LinearLayout>
 
@@ -285,7 +296,8 @@
                         <androidx.appcompat.widget.SwitchCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp" />
+                            android:layout_marginEnd="15dp"
+                            android:checked="@{vm.isFixedScale}" />
                     </LinearLayout>
 
                     <View
@@ -315,9 +327,10 @@
                             android:background="@null"
                             android:gravity="end"
                             android:padding="15dp"
-                            android:text="-30"
+                            android:text="@={vm.maximumAmplitudeStr}"
                             android:textColor="#ff333333"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            tools:text="-30" />
 
                     </LinearLayout>
 
@@ -348,9 +361,10 @@
                             android:background="@null"
                             android:gravity="end"
                             android:padding="15dp"
-                            android:text="-30"
+                            android:text="@={vm.minimumAmplitudeStr}"
                             android:textColor="#ff333333"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            tools:text="-30" />
 
                     </LinearLayout>
 

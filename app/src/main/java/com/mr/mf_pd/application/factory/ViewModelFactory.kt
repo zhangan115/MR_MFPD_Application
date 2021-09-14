@@ -62,7 +62,7 @@ class ViewModelFactory constructor(
             isAssignableFrom(UHFPhaseModelViewModel::class.java) ->
                 UHFPhaseModelViewModel(dataRepository)
             isAssignableFrom(UHFSettingViewModel::class.java) ->
-                UHFSettingViewModel(dataRepository)
+                UHFSettingViewModel(dataRepository,settingRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

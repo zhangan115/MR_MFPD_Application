@@ -53,10 +53,6 @@ public class ObjectBuilder {
         return values.length * 2 + 1;
     }
 
-    private static int sizeOfFillet2DValueInVertices(int count) {
-        return count + 1;
-    }
-
     private static int sizeOfPoint2DSinLineInVertices(int sinCount) {
         return sinCount + 1;
     }
@@ -116,13 +112,6 @@ public class ObjectBuilder {
         int size = sizeOfPoint2DValueInVertices(values);
         ObjectBuilder builder = new ObjectBuilder(size);
         builder.appPoint2DValues(values);
-        return builder.Build();
-    }
-
-    public static GeneratedData createFillet2DValue(float widthFilletValue, float heightFilletValue, int filletCount) {
-        int size = sizeOfFillet2DValueInVertices(filletCount);
-        ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appFillet2DValues(widthFilletValue, heightFilletValue, filletCount);
         return builder.Build();
     }
 
@@ -267,41 +256,6 @@ public class ObjectBuilder {
         vertexData[offset++] = 0f;
 
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, startVertex, numVertices));
-    }
-
-    /**
-     * 画圆角
-     *
-     * @param a  a
-     * @param b b
-     * @param filletCount       多少个点，点越多，圆角越圆
-     */
-    private void appFillet2DValues(float a, float b, int filletCount) {
-        final int startVertex = offset / FLOATS_PER_VERTEX;
-        final int numVertices = sizeOfFillet2DValueInVertices(filletCount);
-
-        vertexData[offset++] = -1f;
-        vertexData[offset++] = -1f;
-        vertexData[offset++] = 0f;
-
-        float startX = -1;
-        float xStep = a / filletCount;
-        for (int i = 0; i < filletCount; i++) {
-            vertexData[offset++] = startX;
-            double value = a * a - (a * a * startX * startX) / (b * b);
-            double v;
-            if (value < 0) {
-                v = value * -1;
-            } else {
-                v = value;
-            }
-            float y = (float) Math.sqrt(v);
-            vertexData[offset++] = y;
-            vertexData[offset++] = 0f;
-            startX = startX + xStep;
-        }
-
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
     }
 
     /**

@@ -16,4 +16,8 @@
     <string name="reload">重新加载</string>
     <string name="no_data_str">暂无数据</string>
     <string name="save">保存</string>
+
+    <string name="band_detection_1">全通</string>
+    <string name="band_detection_2">高通</string>
+    <string name="band_detection_3">低通</string>
 </resources>

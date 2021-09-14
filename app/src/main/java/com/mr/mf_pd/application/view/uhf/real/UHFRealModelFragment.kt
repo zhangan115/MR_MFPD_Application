@@ -6,17 +6,18 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.UHFRealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.opengl.AirHockey3DRenderer
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.uhf.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
-import kotlinx.android.synthetic.main.fragment_uhf_phase.*
+import kotlinx.android.synthetic.main.fragment_uhf_real.*
 
 class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
 
     private val viewModel by viewModels<UHFRealModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
     var valueChangeRenderer: ValueChangeRenderer? = null
+    var prPsChartsRenderer: PrPsChartsRenderer? = null
 
     companion object {
 
@@ -46,8 +47,8 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         surfaceView2.setEGLContextClientVersion(3)
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
-
-        surfaceView1.setRenderer(AirHockey3DRenderer(requireContext()))
+        prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
+        surfaceView1.setRenderer(prPsChartsRenderer)
         surfaceView2.setRenderer(valueChangeRenderer)
 
         image1.setOnClickListener {
@@ -63,6 +64,7 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
     }
 
     val list = ArrayList<Float>()
+
     private fun valueChange() {
         list.add(Math.random().toFloat())
         if (valueChangeRenderer != null) {

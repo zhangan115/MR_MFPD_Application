@@ -6,6 +6,9 @@ import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProg
 
 import java.util.List;
 
+/**
+ * PrPds上点的现实
+ */
 public class Point2DChartPoint {
 
     private static final int POSITION_COMPONENT_COUNT = 2;
