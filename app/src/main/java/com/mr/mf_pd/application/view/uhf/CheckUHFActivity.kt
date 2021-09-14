@@ -31,7 +31,6 @@ class CheckUHFActivity : AbsBaseActivity<CheckUHFDataBinding>() {
     private var mDeviceBean: DeviceBean? = null
 
     override fun initView(savedInstanceState: Bundle?) {
-//        window.setFormat(PixelFormat.TRANSLUCENT)
         val width =
             ((resources.displayMetrics.widthPixels - DisplayUtil.dip2px(this, 24f)) / 2)
         mode1Tv.layoutParams =

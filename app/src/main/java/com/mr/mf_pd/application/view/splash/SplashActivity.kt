@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.SplashDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
-import com.mr.mf_pd.application.view.airhockey.AirHockeyActivity
+import com.mr.mf_pd.application.view.opengl.AirHockeyActivity
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.ext.bindLifeCycle
 

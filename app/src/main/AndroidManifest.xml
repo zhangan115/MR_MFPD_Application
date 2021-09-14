@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.airhockey.AirHockeyActivity"
+            android:name=".view.opengl.AirHockeyActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
@@ -60,7 +60,7 @@
 
         </activity>
         <activity
-            android:name=".view.main.DeviceCheckActivity"
+            android:name=".view.main.check.DeviceCheckActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"

@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.view.uhf.phase
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -9,9 +8,8 @@ import com.mr.mf_pd.application.databinding.UHFPhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.uhf.phase.renderer.PointChartsRenderer
-import com.mr.mf_pd.application.view.uhf.phase.renderer.ValueChangeRenderer
-import com.sito.tool.library.utils.DisplayUtil
+import com.mr.mf_pd.application.view.uhf.renderer.PointChartsRenderer
+import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
 import kotlinx.android.synthetic.main.fragment_uhf_phase.*
 
 class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
@@ -43,7 +41,6 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
 
     }
 
-    var thrend: Thread? = null
     var pointChartsRenderer: PointChartsRenderer? = null
     var valueChangeRenderer: ValueChangeRenderer? = null
 
@@ -51,34 +48,17 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         surfaceView2.setEGLContextClientVersion(3)
         pointChartsRenderer = PointChartsRenderer(this.requireContext())
-        val width = requireContext().resources.displayMetrics.widthPixels - DisplayUtil.dip2px(
-            requireContext(),
-            (80f + 12f)
-        )
-        val height = DisplayUtil.dip2px(requireContext(), 75f)
         valueChangeRenderer =
-            ValueChangeRenderer(this.requireContext(), width, height)
+            ValueChangeRenderer(this.requireContext())
 
         surfaceView1.setRenderer(pointChartsRenderer)
         surfaceView2.setRenderer(valueChangeRenderer)
 
         image1.setOnClickListener {
-            thrend = Thread(kotlinx.coroutines.Runnable {
-                while (true) {
-                    Thread.sleep(20)
-                    pointValueChange()
-                }
-            })
-            thrend?.start()
+            pointValueChange()
         }
 
         image2.setOnClickListener {
-//            Thread(kotlinx.coroutines.Runnable {
-//                while (true) {
-//                    Thread.sleep(2000)
-//                    valueChange()
-//                }
-//            }).start()
             valueChange()
         }
         image3.setOnClickListener { }
