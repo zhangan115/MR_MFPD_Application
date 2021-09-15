@@ -13,7 +13,7 @@ class UHFSettingViewModel(dataRepository: DataRepository,setting:SettingReposito
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
-    var bandDetectionInt: MutableLiveData<String> = MutableLiveData()
+    var bandDetectionInt: MutableLiveData<Int> = MutableLiveData()
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
     //自动同步
@@ -21,7 +21,7 @@ class UHFSettingViewModel(dataRepository: DataRepository,setting:SettingReposito
     //噪音过滤
     var isNoiseFiltering: MutableLiveData<Boolean> = MutableLiveData(true)
     //固定尺度
-    var isFixedScale: MutableLiveData<Boolean> = MutableLiveData(true)
+    var isFixedScale: MutableLiveData<Boolean> = MutableLiveData(false)
     //内同步频率
     var internalSyncStr: MutableLiveData<String> = MutableLiveData("50.00")
     //相位偏移

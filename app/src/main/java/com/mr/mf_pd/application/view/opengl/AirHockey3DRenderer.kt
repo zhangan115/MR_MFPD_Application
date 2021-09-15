@@ -43,7 +43,7 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var blueMalletPosition: Geometry.Point//木棰位置
 
     init {
-        puck = Puck(0.06f, 0.02f, 32)
+        puck = Puck(0.01f, 0.5f, 32)
         mallet = Mallet(0.08f, 0.15f, 32)
     }
 
@@ -118,12 +118,12 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
         Log.d("za", "onSurfaceChanged")
         GLES30.glViewport(0, 0, width, height)
         MatrixUtils.perspectiveM(
-            projectionMatrix, 60f, width.toFloat()
-                    / height.toFloat(), 1f, 10f
+            projectionMatrix, 45f, width.toFloat()
+                    / height.toFloat(), 1f, 6f
         )
         Matrix.setLookAtM(
             viewMatrix, 0,
-            0f, 1.6f, 2.6f,
+            0f, 1.6f, 1.6f,
             0f, 0f, 0f,
             0f, 1f, 0f
         )
@@ -131,7 +131,6 @@ class AirHockey3DRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-//        Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         Matrix.invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0)

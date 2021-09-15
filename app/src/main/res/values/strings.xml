@@ -20,4 +20,8 @@
     <string name="band_detection_1">全通</string>
     <string name="band_detection_2">高通</string>
     <string name="band_detection_3">低通</string>
+
+    <string name="phase_model_1">内同步</string>
+    <string name="phase_model_2">无线同步</string>
+
 </resources>

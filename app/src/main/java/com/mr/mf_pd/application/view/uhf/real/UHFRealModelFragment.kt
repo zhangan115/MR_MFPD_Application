@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.databinding.UHFRealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.opengl.AirHockey3DRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
 import kotlinx.android.synthetic.main.fragment_uhf_real.*
@@ -48,7 +49,7 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
-        surfaceView1.setRenderer(prPsChartsRenderer)
+        surfaceView1.setRenderer(AirHockey3DRenderer(this.requireContext()))
         surfaceView2.setRenderer(valueChangeRenderer)
 
         image1.setOnClickListener {

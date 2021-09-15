@@ -115,6 +115,14 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
+
+    public static GeneratedData createPrPs3DAreaValue(int values) {
+        int size = 8;
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appPrPs3dAreaValues(values);
+        return builder.Build();
+    }
+
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
         int size = sizeOfCircleInVertices(numPoints) * 2 + sizeOfOpenCylinderInVertices(numPoints) * 2;
         ObjectBuilder builder = new ObjectBuilder(size);
@@ -256,6 +264,46 @@ public class ObjectBuilder {
         vertexData[offset++] = 0f;
 
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, startVertex, numVertices));
+    }
+
+
+    private void appPrPs3dAreaValues(int values) {
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+        final int numVertices = 4;
+
+        vertexData[offset++] = -0.8f;
+        vertexData[offset++] = 0.8f;
+        vertexData[offset++] = 0f;
+
+        vertexData[offset++] = -0.8f;
+        vertexData[offset++] = -0.8f;
+        vertexData[offset++] = 0f;
+
+        vertexData[offset++] = 0.8f;
+        vertexData[offset++] = -0.8f;
+        vertexData[offset++] = 0f;
+
+        vertexData[offset++] = 0.8f;
+        vertexData[offset++] = 0.8f;
+        vertexData[offset++] = 0f;
+
+//        vertexData[offset++] = -0.8f;
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0f;
+//
+//        vertexData[offset++] = -0.8f;
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0.8f;
+//
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0.8f;
+//
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0.8f;
+//        vertexData[offset++] = 0f;
+
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
     }
 
     /**

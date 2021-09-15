@@ -141,8 +141,8 @@
                             android:gravity="end"
                             android:padding="15dp"
                             android:text="@={vm.internalSyncStr}"
-                            android:textColor="#ff333333"
                             android:textSize="14sp"
+                            app:edit_enable="@{vm.isAutoSync}"
                             tools:text="50.00" />
 
                     </LinearLayout>
@@ -297,7 +297,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15dp"
-                            android:checked="@{vm.isFixedScale}" />
+                            android:checked="@={vm.isFixedScale}" />
                     </LinearLayout>
 
                     <View
@@ -328,8 +328,8 @@
                             android:gravity="end"
                             android:padding="15dp"
                             android:text="@={vm.maximumAmplitudeStr}"
-                            android:textColor="#ff333333"
                             android:textSize="14sp"
+                            app:edit_enable="@{vm.isFixedScale}"
                             tools:text="-30" />
 
                     </LinearLayout>
@@ -362,8 +362,8 @@
                             android:gravity="end"
                             android:padding="15dp"
                             android:text="@={vm.minimumAmplitudeStr}"
-                            android:textColor="#ff333333"
                             android:textSize="14sp"
+                            app:edit_enable="@{vm.isFixedScale}"
                             tools:text="-30" />
 
                     </LinearLayout>

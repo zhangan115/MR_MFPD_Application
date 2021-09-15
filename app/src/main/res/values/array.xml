@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="choose_phase_model">
-            <item>@string/band_detection_1</item>
-            <item>@string/band_detection_2</item>
-            <item>@string/band_detection_3</item>
+            <item>@string/phase_model_1</item>
+            <item>@string/phase_model_2</item>
     </string-array>
     <string-array name="choose_band_detection">
         <item>@string/band_detection_1</item>

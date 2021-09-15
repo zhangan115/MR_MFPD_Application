@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay"
-    app:elevation="12dp">
+    app:elevation="0dp">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

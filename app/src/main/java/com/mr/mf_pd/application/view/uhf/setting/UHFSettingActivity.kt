@@ -2,9 +2,7 @@ package com.mr.mf_pd.application.view.uhf.setting
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
@@ -26,6 +24,7 @@ class UHFSettingActivity : AbsBaseActivity<UHFSettingDataBinding>() {
                         text.let {
                             viewModel.phaseModelStr.postValue(it.toString())
                         }
+                        viewModel.phaseModelInt.postValue(index)
                     }
                     lifecycleOwner(this@UHFSettingActivity)
                 }
@@ -38,7 +37,7 @@ class UHFSettingActivity : AbsBaseActivity<UHFSettingDataBinding>() {
                         text.let {
                             viewModel.bandDetectionStr.postValue(it.toString())
                         }
-
+                        viewModel.bandDetectionInt.postValue(index)
                     }
                     lifecycleOwner(this@UHFSettingActivity)
                 }
