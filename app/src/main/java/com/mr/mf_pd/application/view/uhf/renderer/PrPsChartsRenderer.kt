@@ -4,6 +4,7 @@ import android.content.Context
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.util.Log
 import com.mr.mf_pd.application.view.opengl.`object`.*
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
@@ -33,8 +34,6 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var prPs3DXYLines: PrPsXYLines
     private lateinit var prPs3DXZLines: PrPsXZLines
 
-    private lateinit var prPsCube: PrPsCube
-
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
 
@@ -44,7 +43,6 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         prPs3DXYLines = PrPsXYLines(4, 7, 180)
         prPs3DXZLines = PrPsXZLines(4, 7, 180)
-        prPsCube = PrPsCube(0.5f)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -66,6 +64,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     override fun onDrawFrame(gl: GL10?) {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+        val timeStart = System.currentTimeMillis()
 
         position()
 
@@ -85,10 +84,12 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         for (prPsValues in prPsValuesList) {
             for (prPsValue in prPsValues){
                 colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f)
-                prPsCube.bindData(colorProgram)
-                prPsCube.draw()
+                prPsValue.bindData(colorProgram)
+                prPsValue.draw()
             }
         }
+        val timeEnd = System.currentTimeMillis()
+        Log.d("za","cost time ${timeEnd - timeStart}")
     }
 
     private fun position() {

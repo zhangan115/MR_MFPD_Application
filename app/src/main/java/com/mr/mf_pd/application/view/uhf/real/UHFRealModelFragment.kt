@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.uhf.real
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -67,22 +68,25 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
 
         image1.setOnClickListener {
             Thread(kotlinx.coroutines.Runnable {
-                val list = ArrayList<PrPsCube>()
-                val pointValue = FloatArray(100)
+                val pointValue = FloatArray(PrPsCube.COLUMN_COUNT)
                 for (i in pointValue.indices) {
                     pointValue[i] = Math.random().toFloat() * 2f - 1f
-                    list.add(PrPsCube(pointValue[i]))
                 }
                 val data = PrPsXZPoints(pointValue)
-                if (prPsCubeList.size==50){
-                    prPsCubeList.removeLast()
+                val startTime = System.currentTimeMillis()
+                prPsCubeList.clear()
+                for (i in 0 until PrPsCube.ROW_COUNT){
+                    val list = ArrayList<PrPsCube>()
+                    for (j in pointValue.indices){
+                        list.add(PrPsCube(i,j,pointValue[j]))
+                    }
+                    prPsCubeList.add(list)
                 }
-                prPsCubeList.add(0,list)
-
+                val endTime = System.currentTimeMillis()
+                Log.d("za","time is ${endTime - startTime}")
                 surfaceView1.queueEvent {
                     prPsChartsRenderer?.pointChange(data,prPsCubeList)
                 }
-
             }).start()
         }
 

@@ -14,6 +14,9 @@ import java.util.List;
  * 3D 展示PrPs立方体
  */
 public class PrPsCube {
+    public static final int ROW_COUNT = 2;
+    public static final int COLUMN_COUNT = 2;
+
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int COLOR_COORDINATES_COUNT = 3;
     private static final int STRIDE =
@@ -39,7 +42,7 @@ public class PrPsCube {
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public PrPsCube(float height) {
+    public PrPsCube(int row,int column,float height) {
         indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asShortBuffer();
@@ -47,9 +50,13 @@ public class PrPsCube {
         indicesBuffer.put(indices);
         indicesBuffer.position(0);
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsCube(height, indices);
+                .createPrPsCube(row,column,height, indices);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
+    }
+
+    public void update(int i,int j){
+
     }
 
     public void bindData(ColorShaderProgram colorProgram) {
