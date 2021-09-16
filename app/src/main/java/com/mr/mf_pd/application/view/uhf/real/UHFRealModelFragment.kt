@@ -49,7 +49,7 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
-        surfaceView1.setRenderer(AirHockey3DRenderer(this.requireContext()))
+        surfaceView1.setRenderer(prPsChartsRenderer)
         surfaceView2.setRenderer(valueChangeRenderer)
 
         image1.setOnClickListener {
@@ -59,7 +59,13 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         image2.setOnClickListener {
             valueChange()
         }
-        image3.setOnClickListener { }
+        image3.setOnClickListener {
+            val pointValue = FloatArray(100)
+            for (i in pointValue.indices) {
+                pointValue[i] = Math.random().toFloat() * 2f - 1f
+            }
+            prPsChartsRenderer?.pointChange(pointValue)
+        }
         image4.setOnClickListener { }
         image5.setOnClickListener { }
     }
