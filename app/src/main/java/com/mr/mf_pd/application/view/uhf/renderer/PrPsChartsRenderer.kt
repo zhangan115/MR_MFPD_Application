@@ -6,7 +6,6 @@ import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import com.mr.mf_pd.application.view.opengl.`object`.*
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
@@ -22,6 +21,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val viewProjectionMatrix = FloatArray(16)
     private val modelViewProjectionMatrix = FloatArray(16)
 
+    private var prPsValuesList: ArrayList<ArrayList<PrPsCube>> = ArrayList()
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: ColorShaderProgram
@@ -30,7 +30,6 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     private var prPsPoints: PrPsXZPoints? = null
 
-    private lateinit var prPs3DArea: PrPs3DArea
     private lateinit var prPs3DXYLines: PrPsXYLines
     private lateinit var prPs3DXZLines: PrPsXZLines
 
@@ -43,7 +42,6 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorProgram = ColorShaderProgram(context)
         colorPointProgram = PrPsColorPointShaderProgram(context)
 
-        prPs3DArea = PrPs3DArea(8)
         prPs3DXYLines = PrPsXYLines(4, 7, 180)
         prPs3DXZLines = PrPsXZLines(4, 7, 180)
         prPsCube = PrPsCube(0.5f)
@@ -60,12 +58,11 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     /**
      * 修改点的Value
      */
-    fun pointChange(pointValue: FloatArray) {
-        for (i in pointValue.indices) {
-            pointValue[i] = Math.random().toFloat() * 2f - 1f
-        }
-        prPsPoints = PrPsXZPoints(pointValue)
+    fun pointChange(pointValue: PrPsXZPoints,prPsList:ArrayList<ArrayList<PrPsCube>>) {
+        prPsPoints = pointValue
+        prPsValuesList = prPsList
     }
+
 
     override fun onDrawFrame(gl: GL10?) {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
@@ -85,10 +82,13 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         prPs3DXZLines.bindData(colorProgram)
         prPs3DXZLines.draw()
-
-        colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f)
-        prPsCube.bindData(colorProgram)
-        prPsCube.draw()
+        for (prPsValues in prPsValuesList) {
+            for (prPsValue in prPsValues){
+                colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f)
+                prPsCube.bindData(colorProgram)
+                prPsCube.draw()
+            }
+        }
     }
 
     private fun position() {

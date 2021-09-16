@@ -1,6 +1,8 @@
 package com.mr.mf_pd.application.view.uhf.phase
 
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -8,6 +10,7 @@ import com.mr.mf_pd.application.databinding.UHFPhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartPoint
 import com.mr.mf_pd.application.view.uhf.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
 import kotlinx.android.synthetic.main.fragment_uhf_phase.*
@@ -72,8 +75,9 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
             pointValue[i] = Math.random().toFloat() * 2f - 1f
         }
         if (pointChartsRenderer != null) {
+            val data = Point2DChartPoint(pointValue)
             surfaceView1.queueEvent {
-                pointChartsRenderer?.pointChange(pointValue)
+                pointChartsRenderer?.pointChange(data)
             }
         }
     }

@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.uhf.renderer
 import android.content.Context
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartPoint
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
@@ -39,11 +40,8 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     /**
      * 修改点的Value
      */
-    fun pointChange(pointValue: FloatArray) {
-        for (i in pointValue.indices) {
-            pointValue[i] = Math.random().toFloat() * 2f - 1f
-        }
-        chartsPoints = Point2DChartPoint(pointValue)
+    fun pointChange(pointValue: Point2DChartPoint) {
+        chartsPoints = pointValue
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {

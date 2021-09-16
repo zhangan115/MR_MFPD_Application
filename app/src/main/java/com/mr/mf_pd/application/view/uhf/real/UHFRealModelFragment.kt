@@ -9,9 +9,20 @@ import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.opengl.AirHockey3DRenderer
+import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartPoint
+import com.mr.mf_pd.application.view.opengl.`object`.PrPsCube
+import com.mr.mf_pd.application.view.opengl.`object`.PrPsXZPoints
 import com.mr.mf_pd.application.view.uhf.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
+import kotlinx.android.synthetic.main.fragment_uhf_phase.*
 import kotlinx.android.synthetic.main.fragment_uhf_real.*
+import kotlinx.android.synthetic.main.fragment_uhf_real.image1
+import kotlinx.android.synthetic.main.fragment_uhf_real.image2
+import kotlinx.android.synthetic.main.fragment_uhf_real.image3
+import kotlinx.android.synthetic.main.fragment_uhf_real.image4
+import kotlinx.android.synthetic.main.fragment_uhf_real.image5
+import kotlinx.android.synthetic.main.fragment_uhf_real.surfaceView1
+import kotlinx.android.synthetic.main.fragment_uhf_real.surfaceView2
 
 class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
 
@@ -19,6 +30,8 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
     private var rendererSet = false
     var valueChangeRenderer: ValueChangeRenderer? = null
     var prPsChartsRenderer: PrPsChartsRenderer? = null
+
+    private var prPsCubeList: ArrayList<ArrayList<PrPsCube>> = ArrayList()
 
     companion object {
 
@@ -53,18 +66,31 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         surfaceView2.setRenderer(valueChangeRenderer)
 
         image1.setOnClickListener {
+            Thread(kotlinx.coroutines.Runnable {
+                val list = ArrayList<PrPsCube>()
+                val pointValue = FloatArray(100)
+                for (i in pointValue.indices) {
+                    pointValue[i] = Math.random().toFloat() * 2f - 1f
+                    list.add(PrPsCube(pointValue[i]))
+                }
+                val data = PrPsXZPoints(pointValue)
+                if (prPsCubeList.size==50){
+                    prPsCubeList.removeLast()
+                }
+                prPsCubeList.add(0,list)
 
+                surfaceView1.queueEvent {
+                    prPsChartsRenderer?.pointChange(data,prPsCubeList)
+                }
+
+            }).start()
         }
 
         image2.setOnClickListener {
             valueChange()
         }
         image3.setOnClickListener {
-            val pointValue = FloatArray(100)
-            for (i in pointValue.indices) {
-                pointValue[i] = Math.random().toFloat() * 2f - 1f
-            }
-            prPsChartsRenderer?.pointChange(pointValue)
+
         }
         image4.setOnClickListener { }
         image5.setOnClickListener { }
