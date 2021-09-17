@@ -84,10 +84,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         for (prPsValues in prPsValuesList) {
             for (prPsValue in prPsValues){
-                val r = Math.random().toFloat()
-                val g = Math.random().toFloat()
-                val b = Math.random().toFloat()
-                colorProgram.setColor(r,g,b)
+//                colorProgram.setColor(prPsValue.getrColor(),prPsValue.getgColor(),prPsValue.getbColor())
                 prPsValue.bindData(colorProgram)
                 prPsValue.draw()
             }

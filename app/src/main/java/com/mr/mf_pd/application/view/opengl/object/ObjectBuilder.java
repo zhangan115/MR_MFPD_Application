@@ -324,11 +324,9 @@ public class ObjectBuilder {
                 startX + stepX/2, startY + stepY/2, zTopPosition,//V6
                 startX + stepX/2, startY, zTopPosition, //V7
         };
-        Log.d("za", "position size"+vertexData.length);
         for (float vertexPoint : vertexPoints) {
             vertexData[offset++] = vertexPoint;
         }
-        Log.d("za", Arrays.toString(vertexData));
         ShortBuffer indicesBuffer;
         indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
                 .order(ByteOrder.nativeOrder())

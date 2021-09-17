@@ -5,17 +5,17 @@ import com.mr.mf_pd.application.view.opengl.data.VertexArray;
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.util.List;
 
 /**
  * 3D 展示PrPs立方体
  */
 public class PrPsCube {
-    public static final int ROW_COUNT = 50;
-    public static final int COLUMN_COUNT = 100;
+    private final float rColor;
+    private final float gColor;
+    private final float bColor;
+    public static final int ROW_COUNT = 1;
+    public static final int COLUMN_COUNT = 1;
 
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int COLOR_COORDINATES_COUNT = 0;
@@ -40,7 +40,10 @@ public class PrPsCube {
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public PrPsCube(int row,int column,float height) {
+    public PrPsCube(int row,int column,float height,float rColor,float gColor,float bColor) {
+        this.rColor = rColor;
+        this.gColor = gColor;
+        this.bColor = bColor;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
                 .createPrPsCube(row,column,height, indices);
         vertexArray = new VertexArray(generatedData.vertexData);
@@ -82,4 +85,15 @@ public class PrPsCube {
         }
     }
 
+    public float getrColor() {
+        return rColor;
+    }
+
+    public float getgColor() {
+        return gColor;
+    }
+
+    public float getbColor() {
+        return bColor;
+    }
 }

@@ -69,7 +69,13 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
                         if (i == PrPsCube.ROW_COUNT- 1){
                             pointValue[j] = a
                         }
-                        list.add(PrPsCube(i,j,a))
+                        if (a>0.5){
+                            list.add(PrPsCube(i,j,a,0.5f,1f,1f))
+                        }else if (a<0.5 && a>0.2){
+                            list.add(PrPsCube(i,j,a,0.5f,0.5f,0.5f))
+                        }else{
+                            list.add(PrPsCube(i,j,a,1f,0.5f,0.5f))
+                        }
                     }
                     prPsCubeList.add(list)
                 }
