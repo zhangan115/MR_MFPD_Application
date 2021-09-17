@@ -17,4 +17,11 @@ class ColorShaderProgram(context: Context) : ShaderProgram(
         GLES30.glUniform4f(uColorLocation, r, g, b, 1f)
     }
 
+    fun setMatrixL(matrix: FloatArray?,){
+        GLES30.glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
+    }
+
+    fun setColor(r: Float, g: Float, b: Float){
+        GLES30.glUniform4f(uColorLocation, r, g, b, 1f)
+    }
 }

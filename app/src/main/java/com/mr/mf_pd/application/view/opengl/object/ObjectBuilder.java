@@ -144,7 +144,7 @@ public class ObjectBuilder {
 
     public static GeneratedData createPrPsCube(int row, int column, float values, short[] indices) {
         int size = sizeOfCube(values);
-        ObjectBuilder builder = new ObjectBuilder(size, 6);
+        ObjectBuilder builder = new ObjectBuilder(size, 3);
         builder.appPrPsCube(row, column, values, indices);
         return builder.Build();
     }
@@ -156,13 +156,6 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-
-    public static GeneratedData createPrPs3DAreaValue(int values) {
-        int size = 8;
-        ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appPrPs3dAreaValues(values);
-        return builder.Build();
-    }
 
     public static GeneratedData createMallet(Geometry.Point center, float radius, float height, int numPoints) {
         int size = sizeOfCircleInVertices(numPoints) * 2 + sizeOfOpenCylinderInVertices(numPoints) * 2;
@@ -314,8 +307,6 @@ public class ObjectBuilder {
                 + 1 - PrPsXZLines.offsetXPointValueEnd) / PrPsCube.COLUMN_COUNT;
         float stepY = (1 - PrPsXZLines.offsetYPointValueBottom
                 + 1 - PrPsXZLines.offsetYPointValueTop) / PrPsCube.ROW_COUNT;
-        final int startVertex = offset / FLOATS_PER_VERTEX;
-        final int numVertices = sizeOfCube(height);
         float h = (1 - PrPsXZLines.offsetYPointValueBottom
                 + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
         float zTopPosition = height * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
@@ -323,20 +314,21 @@ public class ObjectBuilder {
         float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
         float[] vertexPoints = new float[]{
                 //正面矩形
-                startX, startY, 0f,  //V0
-                startX, startY + stepY, 0.0f, //V1
-                startX + stepX, startY + stepY, 0.0f, //V2
-                startX + stepX, startY, 0.0f, //V3
+                startX, startY, 0f, //V0
+                startX, startY + stepY/2, 0f,  //V1
+                startX + stepX/2, startY + stepY/2, 0f, //V2
+                startX + stepX/2, startY, 0f, //V3
                 //背面矩形
                 startX, startY, zTopPosition,  //V4
-                startX, startY + stepY, zTopPosition, //V5
-                startX + stepX, startY + stepY, zTopPosition, //V6
-                startX + stepX, startY, zTopPosition, //V7
+                startX, startY + stepY/2, zTopPosition,//V5
+                startX + stepX/2, startY + stepY/2, zTopPosition,//V6
+                startX + stepX/2, startY, zTopPosition, //V7
         };
-        Log.d("za", Arrays.toString(vertexPoints));
+        Log.d("za", "position size"+vertexData.length);
         for (float vertexPoint : vertexPoints) {
             vertexData[offset++] = vertexPoint;
         }
+        Log.d("za", Arrays.toString(vertexData));
         ShortBuffer indicesBuffer;
         indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -412,8 +404,6 @@ public class ObjectBuilder {
 
             xPosition = xPosition + xStep;
         }
-
-
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINES, startVertex, numVertices));
     }
 
@@ -478,45 +468,6 @@ public class ObjectBuilder {
             sinStartX = sinStartX + sinXStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, sinLineStartVertex, sinCount + 1));
-    }
-
-    private void appPrPs3dAreaValues(int values) {
-        final int startVertex = offset / FLOATS_PER_VERTEX;
-        final int numVertices = 8;
-
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0f;
-
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = 0f;
-
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = 0f;
-
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0f;
-
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0f;
-
-        vertexData[offset++] = -0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0.5f;
-
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0.5f;
-
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0.5f;
-        vertexData[offset++] = 0f;
-
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, startVertex, numVertices));
     }
 
     /**

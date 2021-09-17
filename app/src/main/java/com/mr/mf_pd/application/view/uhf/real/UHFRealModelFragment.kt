@@ -9,21 +9,11 @@ import com.mr.mf_pd.application.databinding.UHFRealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.opengl.AirHockey3DRenderer
-import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartPoint
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCube
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsXZPoints
 import com.mr.mf_pd.application.view.uhf.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.uhf.renderer.ValueChangeRenderer
-import kotlinx.android.synthetic.main.fragment_uhf_phase.*
 import kotlinx.android.synthetic.main.fragment_uhf_real.*
-import kotlinx.android.synthetic.main.fragment_uhf_real.image1
-import kotlinx.android.synthetic.main.fragment_uhf_real.image2
-import kotlinx.android.synthetic.main.fragment_uhf_real.image3
-import kotlinx.android.synthetic.main.fragment_uhf_real.image4
-import kotlinx.android.synthetic.main.fragment_uhf_real.image5
-import kotlinx.android.synthetic.main.fragment_uhf_real.surfaceView1
-import kotlinx.android.synthetic.main.fragment_uhf_real.surfaceView2
 
 class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
 
@@ -69,16 +59,17 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         image1.setOnClickListener {
             Thread(kotlinx.coroutines.Runnable {
                 val pointValue = FloatArray(PrPsCube.COLUMN_COUNT)
-                for (i in pointValue.indices) {
-                    pointValue[i] = Math.random().toFloat() * 2f - 1f
-                }
                 val data = PrPsXZPoints(pointValue)
                 val startTime = System.currentTimeMillis()
                 prPsCubeList.clear()
                 for (i in 0 until PrPsCube.ROW_COUNT){
                     val list = ArrayList<PrPsCube>()
                     for (j in pointValue.indices){
-                        list.add(PrPsCube(i,j,pointValue[j]))
+                        val a = Math.random().toFloat() * 2f - 1f
+                        if (i == PrPsCube.ROW_COUNT- 1){
+                            pointValue[j] = a
+                        }
+                        list.add(PrPsCube(i,j,a))
                     }
                     prPsCubeList.add(list)
                 }

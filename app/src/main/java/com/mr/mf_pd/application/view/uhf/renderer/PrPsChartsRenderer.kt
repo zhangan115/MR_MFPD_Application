@@ -81,9 +81,13 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         prPs3DXZLines.bindData(colorProgram)
         prPs3DXZLines.draw()
+
         for (prPsValues in prPsValuesList) {
             for (prPsValue in prPsValues){
-                colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f)
+                val r = Math.random().toFloat()
+                val g = Math.random().toFloat()
+                val b = Math.random().toFloat()
+                colorProgram.setColor(r,g,b)
                 prPsValue.bindData(colorProgram)
                 prPsValue.draw()
             }
