@@ -84,7 +84,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         for (prPsValues in prPsValuesList) {
             for (prPsValue in prPsValues){
-//                colorProgram.setColor(prPsValue.getrColor(),prPsValue.getgColor(),prPsValue.getbColor())
+                colorProgram.setColor(prPsValue.getrColor(),prPsValue.getgColor(),prPsValue.getbColor())
                 prPsValue.bindData(colorProgram)
                 prPsValue.draw()
             }

@@ -96,7 +96,6 @@ dependencies {
 
     //tool
     implementation project(path: ':tool_library')
-    implementation project(path: ':modbus4android')
 
     //Gson
     implementation 'com.google.code.gson:gson:2.8.7'
