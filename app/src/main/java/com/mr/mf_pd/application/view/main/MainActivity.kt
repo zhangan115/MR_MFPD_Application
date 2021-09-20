@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.BR
@@ -9,11 +10,14 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.MainDataBinding
+import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.main.check.DeviceCheckActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AbsBaseActivity<MainDataBinding>() {
 
@@ -29,7 +33,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>() {
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
             val intent = Intent(this, DeviceCheckActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,dataList[position])
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {

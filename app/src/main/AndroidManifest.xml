@@ -18,6 +18,7 @@
         android:required="true" />
 
 
+
     <application
         android:name=".app.MRApplication"
         android:allowBackup="true"
