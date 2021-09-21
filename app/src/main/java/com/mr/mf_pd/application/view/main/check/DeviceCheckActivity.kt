@@ -6,6 +6,7 @@ import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
+import com.mr.mf_pd.application.manager.ReadListener
 import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
@@ -38,9 +39,8 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         selfCheckingLayout.setOnClickListener {
 
         }
-        SocketManager.getInstance().addReadListener {
-            Log.d("za", Arrays.toString(it))
-        }
+        SocketManager.initLink()
+        SocketManager.addReadListener(readListener)
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -53,5 +53,17 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
     override fun getContentView(): Int {
         return R.layout.activity_device_check
+    }
+
+    private val readListener = object : ReadListener(1) {
+
+        override fun onRead(bytes: ByteArray?) {
+
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SocketManager.removeListener(readListener)
     }
 }
