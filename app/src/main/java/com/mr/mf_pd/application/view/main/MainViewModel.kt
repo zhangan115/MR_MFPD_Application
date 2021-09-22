@@ -19,6 +19,7 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
                     list.add(short.toShort())
                 }
             }
+
             Constants.indicesList = list.toShortArray()
         }
     }

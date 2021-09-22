@@ -2,6 +2,13 @@ package com.mr.mf_pd.application.common
 
 object Constants {
 
+
+    //    const val host = "172.16.40.45" //请求地址
+    const val host = "192.168.0.55" //请求地址
+
+    const val port = 502 //端口
+
+
     const val BYTES_PER_FLOAT = 4
 
     const val LINK_FAIL = -1
@@ -16,8 +23,41 @@ object Constants {
         6, 5, 1, 6, 1, 2
     )
 
+    var blueColors = floatArrayOf(
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 1f,
+    )
+
+    var redColors = floatArrayOf(
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+        1f, 0f, 0f, 1f,
+    )
+
+    var greenColors = floatArrayOf(
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 1f,
+    )
+
     var indicesList = shortArrayOf()
 
-    var PRPS_ROW = 50
-    var PRPS_COLUMN = 100
+    const val PRPS_ROW = 50
+    const val PRPS_COLUMN = 100
 }

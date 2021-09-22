@@ -18,9 +18,6 @@ import java.util.concurrent.Future;
 
 public class SocketManager {
 
-    private final static String host = "172.16.40.45";//请求地址
-    private final static int port = 502;//端口
-
     private InputStream inputStream;//输入流
     private OutputStream outputStream;//输出流
 
@@ -64,7 +61,7 @@ public class SocketManager {
         @Override
         public void run() {
             try {
-                InetSocketAddress address = new InetSocketAddress(host,port);
+                InetSocketAddress address = new InetSocketAddress(Constants.host,Constants.port);
                 socket = new Socket();
                 socket.connect(address,2000);
                 socket.setKeepAlive(true);
@@ -81,14 +78,12 @@ public class SocketManager {
                         for (ReadListener listener : readListeners) {
                             byte[] newBuf = new byte[size];
                             System.arraycopy(buf, 0, newBuf, 0, size);
-                            Log.d("za", Arrays.toString(newBuf));
                             listener.onRead(newBuf);
                         }
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                isConnected = false;
                 socket = null;
                 for (int i = 0; i < linkStateListeners.size(); i++) {
                     linkStateListeners.get(i).onLinkState(Constants.LINK_FAIL);

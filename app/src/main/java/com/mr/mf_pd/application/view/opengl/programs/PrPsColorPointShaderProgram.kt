@@ -16,4 +16,6 @@ class PrPsColorPointShaderProgram(context: Context) : ShaderProgram(
     fun setUniforms(matrix: FloatArray?) {
         GLES30.glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0)
     }
+
+
 }
