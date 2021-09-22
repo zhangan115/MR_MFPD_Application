@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.main.check
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
@@ -39,8 +38,6 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         selfCheckingLayout.setOnClickListener {
 
         }
-        SocketManager.initLink()
-        SocketManager.addReadListener(readListener)
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -64,6 +61,5 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        SocketManager.removeListener(readListener)
     }
 }

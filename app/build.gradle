@@ -57,7 +57,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "点检${variant.flavorName}_V${defaultConfig.versionName}_${variant.buildType.name}.apk"
+            outputFileName = "MR_Smart_PD${variant.flavorName}_V${defaultConfig.versionName}_${variant.buildType.name}.apk"
         }
     }
     compileOptions {
@@ -97,7 +97,7 @@ dependencies {
     //tool
     implementation project(path: ':tool_library')
 
-    //Gson
+    //GSon
     implementation 'com.google.code.gson:gson:2.8.7'
 
     //glide
@@ -132,16 +132,10 @@ dependencies {
 
     //SmartRefreshLayout
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.1'
-
-    //smartTabLayout
-    implementation 'com.ogaclejapan.smarttablayout:library:2.0.0@aar'
-    implementation 'com.ogaclejapan.smarttablayout:utils-v4:2.0.0@aar'
-
-    //1.0.5及以前版本的老用户升级需谨慎，API改动过大
     implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.1'
 
     //adapter
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.1'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
 
     //navigation
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
