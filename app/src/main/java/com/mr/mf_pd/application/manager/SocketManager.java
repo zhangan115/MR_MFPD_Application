@@ -2,9 +2,12 @@ package com.mr.mf_pd.application.manager;
 
 import android.util.Log;
 
+import com.mr.mf_pd.application.common.Constants;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +18,7 @@ import java.util.concurrent.Future;
 
 public class SocketManager {
 
-    private final static String host = "172.16.40.1";//请求地址
+    private final static String host = "172.16.40.45";//请求地址
     private final static int port = 502;//端口
 
     private InputStream inputStream;//输入流
@@ -34,7 +37,7 @@ public class SocketManager {
     private List<LinkStateListener> linkStateListeners;
 
     //执行请求任务的线程池
-    private ExecutorService mRequestExecutor = null;
+    private ExecutorService mRequestExecutor;
     private Future future;
 
     /**
@@ -50,7 +53,7 @@ public class SocketManager {
     }
 
     private SocketManager() {
-        mRequestExecutor = Executors.newSingleThreadExecutor();
+
     }
 
     public boolean isConnected() {
@@ -61,11 +64,16 @@ public class SocketManager {
         @Override
         public void run() {
             try {
-                socket = new Socket(host, port);
+                InetSocketAddress address = new InetSocketAddress(host,port);
+                socket = new Socket();
+                socket.connect(address,2000);
                 socket.setKeepAlive(true);
                 isConnected = socket.isConnected();
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
+                for (int i = 0; i < linkStateListeners.size(); i++) {
+                    linkStateListeners.get(i).onLinkState(Constants.LINK_SUCCESS);
+                }
                 byte[] buf = new byte[1024 * 2];
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
@@ -82,6 +90,9 @@ public class SocketManager {
                 e.printStackTrace();
                 isConnected = false;
                 socket = null;
+                for (int i = 0; i < linkStateListeners.size(); i++) {
+                    linkStateListeners.get(i).onLinkState(Constants.LINK_FAIL);
+                }
             } finally {
                 try {
                     isConnected = false;
@@ -119,6 +130,7 @@ public class SocketManager {
      * socket 连接
      */
     public void initLink() {
+        mRequestExecutor = Executors.newSingleThreadExecutor();
         future = mRequestExecutor.submit(requestRunnable);
     }
 

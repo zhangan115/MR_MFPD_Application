@@ -8,12 +8,10 @@ import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import java.util.List;
 
 /**
- * 3D 展示PrPs立方体
+ * 3D 展示PrPs一组立方体
  */
-public class PrPsCube {
-    private final float rColor;
-    private final float gColor;
-    private final float bColor;
+public class PrPsCubeList {
+
     public static final int ROW_COUNT = 2;
     public static final int COLUMN_COUNT = 2;
 
@@ -22,24 +20,14 @@ public class PrPsCube {
     private static final int STRIDE =
             (POSITION_COMPONENT_COUNT + COLOR_COORDINATES_COUNT) * Constants.BYTES_PER_FLOAT;
 
-    short[] indices = {
-            0, 3, 2, 0, 2, 1,
-            0, 1, 5, 0, 5, 4,
-            0, 7, 3, 0, 4, 7,
-            6, 7, 4, 6, 7, 5,
-            6, 3, 7, 6, 2, 3,
-            6, 5, 1, 6, 1, 2
-    };
+
 
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public PrPsCube(int row,int column,float height,float rColor,float gColor,float bColor) {
-        this.rColor = rColor;
-        this.gColor = gColor;
-        this.bColor = bColor;
+    public PrPsCubeList(int row, float[] height) {
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsCube(row,column,height, indices);
+                .createPrPsCubeList(row, height);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }
@@ -65,29 +53,11 @@ public class PrPsCube {
                 colorProgram.getAPositionLocation(),
                 POSITION_COMPONENT_COUNT, STRIDE
         );
-//        vertexArray.setVertexAttributePointer(
-//                POSITION_COMPONENT_COUNT,
-//                colorProgram.getAColorLocation(),
-//                COLOR_COORDINATES_COUNT,
-//                STRIDE
-//        );
     }
 
     public void draw() {
         for (int i = 0; i < drawList.size(); i++) {
             drawList.get(i).draw();
         }
-    }
-
-    public float getRColor() {
-        return rColor;
-    }
-
-    public float getGColor() {
-        return gColor;
-    }
-
-    public float getBColor() {
-        return bColor;
     }
 }

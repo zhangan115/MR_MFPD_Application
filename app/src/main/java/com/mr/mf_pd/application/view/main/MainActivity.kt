@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.MainDataBinding
 import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
@@ -15,7 +16,6 @@ import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.main.check.DeviceCheckActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AbsBaseActivity<MainDataBinding>() {
 
@@ -30,10 +30,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>() {
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            SocketManager.getInstance().initLink()
-            val intent = Intent(this, DeviceCheckActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
-            startActivity(intent)
+            socketLink(position)
         }
         checkDataLayout.setOnClickListener {
 
@@ -50,12 +47,24 @@ class MainActivity : AbsBaseActivity<MainDataBinding>() {
         refreshLayout.setEnableLoadMore(false)
     }
 
+    private fun socketLink(position: Int) {
+        SocketManager.getInstance().releaseRequest()
+        SocketManager.getInstance().initLink()
+        SocketManager.getInstance().addLinkStateListeners {
+            if (it == Constants.LINK_SUCCESS) {
+                val intent = Intent(this, DeviceCheckActivity::class.java)
+                intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
+                startActivity(intent)
+            } else {
+                viewModel.toastStr.postValue("连接失败")
+            }
+        }
+    }
+
     override fun initData(savedInstanceState: Bundle?) {
         dataBinding.vm = viewModel
         viewModel.start()
         dataList.add(DeviceBean("设备1", "xxx-xxx-xxxx", -84, 80, 1, "yyyy-yyyy", 1))
-        dataList.add(DeviceBean("设备2", "xxx-xxx-xxxx", -84, 40, 0, "yyyy-yyyy", 1))
-        dataList.add(DeviceBean("设备3", "xxx-xxx-xxxx", -84, 50, 0, "yyyy-yyyy", 1))
         recycleView.adapter?.notifyDataSetChanged()
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
@@ -14,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.getViewModelFactory

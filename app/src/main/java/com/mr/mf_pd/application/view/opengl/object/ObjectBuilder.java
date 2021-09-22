@@ -149,6 +149,17 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
+    /**
+     * @param row    当前的ROW
+     * @param values 数值
+     * @return 生成的定点数据
+     */
+    public static GeneratedData createPrPsCubeList(int row, float[] values) {
+        int size = values.length * 8;
+        ObjectBuilder builder = new ObjectBuilder(size, 3);
+        return builder.Build();
+    }
+
     public static GeneratedData createPoint2DValue(float[] values) {
         int size = sizeOfPoint2DValueInVertices(values);
         ObjectBuilder builder = new ObjectBuilder(size);
@@ -315,18 +326,33 @@ public class ObjectBuilder {
         float[] vertexPoints = new float[]{
                 //正面矩形
                 startX, startY, 0f, //V0
-                startX, startY + stepY/2, 0f,  //V1
-                startX + stepX/2, startY + stepY/2, 0f, //V2
-                startX + stepX/2, startY, 0f, //V3
+                startX, startY + stepY / 2, 0f,  //V1
+                startX + stepX / 2, startY + stepY / 2, 0f, //V2
+                startX + stepX / 2, startY, 0f, //V3
                 //背面矩形
                 startX, startY, zTopPosition,  //V4
-                startX, startY + stepY/2, zTopPosition,//V5
-                startX + stepX/2, startY + stepY/2, zTopPosition,//V6
-                startX + stepX/2, startY, zTopPosition, //V7
+                startX, startY + stepY / 2, zTopPosition,//V5
+                startX + stepX / 2, startY + stepY / 2, zTopPosition,//V6
+                startX + stepX / 2, startY, zTopPosition, //V7
         };
         for (float vertexPoint : vertexPoints) {
             vertexData[offset++] = vertexPoint;
         }
+        float[] colors = new float[]{
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+                0f, 0f, 1f,
+        };
+
+//        for (int i = 0; i < colors.length; i++) {
+//            float color = colors[i];
+//            vertexData[offset++] = color;
+//        }
         ShortBuffer indicesBuffer;
         indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
                 .order(ByteOrder.nativeOrder())

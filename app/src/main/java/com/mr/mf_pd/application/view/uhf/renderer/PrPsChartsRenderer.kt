@@ -63,7 +63,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
 
     override fun onDrawFrame(gl: GL10?) {
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+        GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
         val timeStart = System.currentTimeMillis()
 
         position()
@@ -84,7 +86,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         for (prPsValues in prPsValuesList) {
             for (prPsValue in prPsValues){
-                colorProgram.setColor(prPsValue.getrColor(),prPsValue.getgColor(),prPsValue.getbColor())
+                colorProgram.setColor(prPsValue.rColor,prPsValue.gColor,prPsValue.bColor)
                 prPsValue.bindData(colorProgram)
                 prPsValue.draw()
             }
