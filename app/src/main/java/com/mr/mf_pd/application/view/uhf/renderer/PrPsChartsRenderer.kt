@@ -5,6 +5,7 @@ import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.util.Log
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.*
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
@@ -22,7 +23,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val viewProjectionMatrix = FloatArray(16)
     private val modelViewProjectionMatrix = FloatArray(16)
 
-    private var prPsValuesList: ArrayList<ArrayList<PrPsCube>> = ArrayList()
+    private var prpsCubeList: ArrayList<PrPsCubeList>? = ArrayList()
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: ColorShaderProgram
@@ -53,19 +54,25 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         )
     }
 
-    /**
-     * 修改点的Value
-     */
-    fun pointChange(pointValue: PrPsXZPoints,prPsList:ArrayList<ArrayList<PrPsCube>>) {
+    fun addPrpsData(pointValue: PrPsXZPoints, prPsList: PrPsCubeList) {
         prPsPoints = pointValue
-        prPsValuesList = prPsList
+        if (prpsCubeList != null) {
+            for (i in 0 until prpsCubeList!!.size) {
+                prpsCubeList!![i].updateRow(i + 1)
+            }
+            prpsCubeList!!.add(0, prPsList)
+            if (prpsCubeList!!.size > Constants.PRPS_ROW) {
+                prpsCubeList?.removeLast()
+            }
+        }
     }
 
-
     override fun onDrawFrame(gl: GL10?) {
+
         GLES30.glEnable(GLES30.GL_DEPTH_TEST)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
+
         val timeStart = System.currentTimeMillis()
 
         position()
@@ -84,15 +91,13 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPs3DXZLines.bindData(colorProgram)
         prPs3DXZLines.draw()
 
-        for (prPsValues in prPsValuesList) {
-            for (prPsValue in prPsValues){
-                colorProgram.setColor(prPsValue.rColor,prPsValue.gColor,prPsValue.bColor)
-                prPsValue.bindData(colorProgram)
-                prPsValue.draw()
-            }
+        prpsCubeList?.forEach {
+            it.bindData(colorPointProgram)
+            it.draw()
         }
         val timeEnd = System.currentTimeMillis()
-        Log.d("za","cost time ${timeEnd - timeStart}")
+        Log.d("za", "cost time ${timeEnd - timeStart}")
+        getPrpsValueCallback?.getData()
     }
 
     private fun position() {
@@ -104,4 +109,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
     }
 
+    var getPrpsValueCallback: GetPrpsValueCallback? = null
+
+    interface GetPrpsValueCallback {
+        fun getData()
+    }
 }

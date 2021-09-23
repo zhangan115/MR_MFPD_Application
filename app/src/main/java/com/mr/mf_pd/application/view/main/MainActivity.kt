@@ -30,7 +30,10 @@ class MainActivity : AbsBaseActivity<MainDataBinding>() {
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            socketLink(position)
+//            socketLink(position)
+            val intent = Intent(this, DeviceCheckActivity::class.java)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
+            startActivity(intent)
         }
         checkDataLayout.setOnClickListener {
 

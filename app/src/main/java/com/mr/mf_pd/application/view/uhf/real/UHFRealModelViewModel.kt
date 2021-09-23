@@ -6,6 +6,7 @@ import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
 class UHFRealModelViewModel(val repository: DataRepository) : ViewModel() {
+
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData("/榆林有色220kV")
     var num1Str: MutableLiveData<String> = MutableLiveData("-76")
@@ -15,5 +16,15 @@ class UHFRealModelViewModel(val repository: DataRepository) : ViewModel() {
 
     fun start() {
         uhfData = repository.getHufData()
+        repository.hufDataListener()
+    }
+
+    fun addHUfData( callback:DataRepository.DataCallback) {
+        repository.addHufData(callback)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.removeHufDataListener()
     }
 }
