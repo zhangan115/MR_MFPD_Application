@@ -16,6 +16,12 @@ import javax.microedition.khronos.opengles.GL10
 
 class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
+    var getPrpsValueCallback: GetPrpsValueCallback? = null
+
+    interface GetPrpsValueCallback {
+        fun getData()
+    }
+
     private val projectionMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
 
@@ -82,7 +88,6 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
 
-
         colorProgram.useProgram()
         colorProgram.setUniforms(modelViewProjectionMatrix, 0.4f, 0.4f, 0.4f)
         prPs3DXYLines.bindData(colorProgram)
@@ -103,15 +108,13 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private fun position() {
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.translateM(modelMatrix, 0, 0.2f, -0.4f, -5f)
+
         Matrix.rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f)
-        Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
+
         Matrix.rotateM(modelMatrix, 0, -10f, 0f, 1f, 0f)
+
+        Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
+
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
-    }
-
-    var getPrpsValueCallback: GetPrpsValueCallback? = null
-
-    interface GetPrpsValueCallback {
-        fun getData()
     }
 }

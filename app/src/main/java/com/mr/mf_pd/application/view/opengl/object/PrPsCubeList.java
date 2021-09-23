@@ -18,18 +18,22 @@ public class PrPsCubeList {
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
 
-    private int row;
     private float[] values;
     private PrPsColorPointShaderProgram colorProgram;
 
+    public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
+            + 1 - PrPsXZLines.offsetXPointValueEnd) / Constants.PRPS_COLUMN;
+    public static final float stepY = (1 - PrPsXZLines.offsetYPointValueBottom
+            + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
+    public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
+            + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+
     public PrPsCubeList(int row, float[] height) {
-        this.row = row;
         appPrPsCubeList(row, height);
     }
 
     public void updateRow(int row) {
-        this.row = row;
-        float[] vertexPoints = new float[values.length * 8 * 3];
+        float[] vertexPoints = new float[values.length * 8 * VERTEX_POSITION_SIZE];
         for (int i = 0; i < values.length; i++) {
             float zTopPosition = values[i] * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
@@ -46,7 +50,7 @@ public class PrPsCubeList {
                     startX + stepX / 2, startY + stepY / 2, zTopPosition,
                     startX + stepX / 2, startY, zTopPosition,
             };
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * 3, vertexPoint.length);
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
         }
         vertexBuffer.put(vertexPoints);
         vertexBuffer.position(0);
@@ -76,17 +80,10 @@ public class PrPsCubeList {
 
     private FloatBuffer vertexBuffer, colorBuffer;
 
-    public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
-            + 1 - PrPsXZLines.offsetXPointValueEnd) / Constants.PRPS_COLUMN;
-    public static final float stepY = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
-    public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
-
     private void appPrPsCubeList(int row, float[] values) {
         this.values = values;
-        float[] vertexPoints = new float[values.length * 8 * 3];
-        float[] colors = new float[values.length * 8 * 4];
+        float[] vertexPoints = new float[values.length * 8 * VERTEX_POSITION_SIZE];
+        float[] colors = new float[values.length * 8 * VERTEX_COLOR_SIZE];
         for (int i = 0; i < values.length; i++) {
             float zTopPosition = values[i] * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
@@ -104,15 +101,17 @@ public class PrPsCubeList {
                     startX + stepX / 2, startY, zTopPosition,
             };
             float[] color;
-            if (values[i] > 0 && values[i] < 0.5f) {
-                color = Constants.INSTANCE.getBlueColors();
-            } else if (values[i] >= 0.5f && values[i] < 0.7f) {
-                color = Constants.INSTANCE.getGreenColors();
-            } else {
+            if (values[i] == -1f) {
+                color = Constants.INSTANCE.getTransparentColors();
+            } else if (values[i] < -0.4f) {
                 color = Constants.INSTANCE.getRedColors();
+            } else if (values[i] >= -0.4f && values[i] < 0.4f) {
+                color = Constants.INSTANCE.getBlueColors();
+            } else {
+                color = Constants.INSTANCE.getGreenColors();
             }
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * 3, vertexPoint.length);
-            System.arraycopy(color, 0, colors, 8 * i * 4, color.length);
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
+            System.arraycopy(color, 0, colors, 8 * i * VERTEX_COLOR_SIZE, color.length);
         }
 
         //分配内存空间,每个浮点型占4字节空间

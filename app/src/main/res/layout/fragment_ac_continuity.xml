@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="ACContinuityDataBinding">
+
+        <variable
+            name="vm"
+            type="com.mr.mf_pd.application.view.ac.continuity.ACContinuityModelViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        app:toast="@{vm.toastStr}">
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="20dp"
+            android:text="@{vm.location}"
+            android:textColor="@color/blueColor"
+            android:textSize="13sp" />
+    </LinearLayout>
+</layout>

@@ -17,8 +17,6 @@
         android:glEsVersion="0x00030000"
         android:required="true" />
 
-
-
     <application
         android:name=".app.MRApplication"
         android:allowBackup="true"
@@ -76,6 +74,21 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".view.uhf.setting.UHFSettingActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <activity
+            android:name=".view.ac.CheckACActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".view.ac.setting.ACSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"

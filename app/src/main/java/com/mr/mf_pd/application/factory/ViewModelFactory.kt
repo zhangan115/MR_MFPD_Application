@@ -24,6 +24,14 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
+import com.mr.mf_pd.application.view.ac.CheckACViewModel
+import com.mr.mf_pd.application.view.ac.continuity.ACContinuityModelViewModel
+import com.mr.mf_pd.application.view.ac.flight.ACFlightModelViewModel
+import com.mr.mf_pd.application.view.ac.phase.ACPhaseModelViewModel
+import com.mr.mf_pd.application.view.ac.pulse.ACPulseModelViewModel
+import com.mr.mf_pd.application.view.ac.real.ACRealFragment
+import com.mr.mf_pd.application.view.ac.real.ACRealModelViewModel
+import com.mr.mf_pd.application.view.ac.setting.ACSettingViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
 import com.mr.mf_pd.application.view.uhf.CheckUHFViewModel
@@ -62,7 +70,22 @@ class ViewModelFactory constructor(
             isAssignableFrom(UHFPhaseModelViewModel::class.java) ->
                 UHFPhaseModelViewModel(dataRepository)
             isAssignableFrom(UHFSettingViewModel::class.java) ->
-                UHFSettingViewModel(dataRepository,settingRepository)
+                UHFSettingViewModel(dataRepository, settingRepository)
+            isAssignableFrom(CheckACViewModel::class.java) ->
+                CheckACViewModel(dataRepository)
+
+            isAssignableFrom(ACSettingViewModel::class.java) ->
+                ACSettingViewModel(dataRepository, settingRepository)
+            isAssignableFrom(ACPhaseModelViewModel::class.java) ->
+                ACPhaseModelViewModel(dataRepository)
+            isAssignableFrom(ACContinuityModelViewModel::class.java) ->
+                ACContinuityModelViewModel(dataRepository)
+            isAssignableFrom(ACFlightModelViewModel::class.java) ->
+                ACFlightModelViewModel(dataRepository)
+            isAssignableFrom(ACPulseModelViewModel::class.java) ->
+                ACPulseModelViewModel(dataRepository)
+            isAssignableFrom(ACRealModelViewModel::class.java) ->
+                ACRealModelViewModel(dataRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
