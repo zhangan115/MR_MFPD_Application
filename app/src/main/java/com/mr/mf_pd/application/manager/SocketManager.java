@@ -29,7 +29,7 @@ public class SocketManager {
 
     private static SocketManager instance;
 
-    private List<ReadListener> readListeners;
+    private List<ReadListener> readListeners = new ArrayList<>();
 
     private List<LinkStateListener> linkStateListeners;
 
@@ -61,9 +61,9 @@ public class SocketManager {
         @Override
         public void run() {
             try {
-                InetSocketAddress address = new InetSocketAddress(Constants.host,Constants.port);
+                InetSocketAddress address = new InetSocketAddress(Constants.host, Constants.port);
                 socket = new Socket();
-                socket.connect(address,2000);
+                socket.connect(address, 2000);
                 socket.setKeepAlive(true);
                 isConnected = socket.isConnected();
                 inputStream = socket.getInputStream();
@@ -75,10 +75,14 @@ public class SocketManager {
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
                     if (!readListeners.isEmpty()) {
-                        for (ReadListener listener : readListeners) {
-                            byte[] newBuf = new byte[size];
-                            System.arraycopy(buf, 0, newBuf, 0, size);
-                            listener.onRead(newBuf);
+                        if (buf[0] == DEVICE_NO && buf[1] == 8) {
+                            for (ReadListener listener : readListeners) {
+                                byte[] newBuf = new byte[size - 9];
+                                System.arraycopy(buf, 5, newBuf, 0, size - 9);
+                                if (buf[2] == listener.filter) {
+                                    listener.onRead(newBuf);
+                                }
+                            }
                         }
                     }
                 }
@@ -91,14 +95,14 @@ public class SocketManager {
             } finally {
                 try {
                     isConnected = false;
-                    if (socket != null) {
-                        socket.close();
-                    }
                     if (inputStream != null) {
                         inputStream.close();
                     }
                     if (outputStream != null) {
                         outputStream.close();
+                    }
+                    if (socket != null) {
+                        socket.close();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

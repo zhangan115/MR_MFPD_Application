@@ -2,8 +2,8 @@ package com.mr.mf_pd.application.common
 
 object Constants {
 
-    //    const val host = "172.16.40.45" //请求地址
-    const val host = "192.168.0.55" //请求地址
+    const val host = "172.16.40.45" //请求地址
+//    const val host = "192.168.0.55" //请求地址
 
     const val port = 502 //端口
 
@@ -67,6 +67,7 @@ object Constants {
     )
 
     var indicesList = shortArrayOf()
+
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100

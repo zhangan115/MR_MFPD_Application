@@ -16,7 +16,8 @@ interface DataRepository {
 
     fun toSaveData()
 
-    interface DataCallback{
-        fun addData(data: PrPsXZPoints, prPsCube: PrPsCubeList)
+    interface DataCallback {
+        fun addData(data: PrPsXZPoints)
+        fun addData(prPsCube: PrPsCubeList)
     }
 }

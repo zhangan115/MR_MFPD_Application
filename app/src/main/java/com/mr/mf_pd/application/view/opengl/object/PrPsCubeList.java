@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 /**
  * 3D 展示PrPs一组立方体
@@ -18,7 +19,7 @@ public class PrPsCubeList {
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
 
-    private float[] values;
+    private ArrayList<Float> values;
     private PrPsColorPointShaderProgram colorProgram;
 
     public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
@@ -27,15 +28,20 @@ public class PrPsCubeList {
             + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
     public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
             + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+    //默认数据
+    public static ArrayList<ArrayList<Float>> defaultValues = new ArrayList<>();
 
-    public PrPsCubeList(int row, float[] height) {
+    public PrPsCubeList(int row, ArrayList<Float> height) {
         appPrPsCubeList(row, height);
     }
 
     public void updateRow(int row) {
-        float[] vertexPoints = new float[values.length * 8 * VERTEX_POSITION_SIZE];
-        for (int i = 0; i < values.length; i++) {
-            float zTopPosition = values[i] * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
+        for (int i = 0; i < values.size(); i++) {
+            float zTopPosition = 0;
+            if (values.get(i) != null) {
+                zTopPosition = values.get(i) * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+            }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
             float[] vertexPoint = new float[]{
@@ -80,12 +86,15 @@ public class PrPsCubeList {
 
     private FloatBuffer vertexBuffer, colorBuffer;
 
-    private void appPrPsCubeList(int row, float[] values) {
+    private void appPrPsCubeList(int row, ArrayList<Float> values) {
         this.values = values;
-        float[] vertexPoints = new float[values.length * 8 * VERTEX_POSITION_SIZE];
-        float[] colors = new float[values.length * 8 * VERTEX_COLOR_SIZE];
-        for (int i = 0; i < values.length; i++) {
-            float zTopPosition = values[i] * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
+        float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
+        for (int i = 0; i < values.size(); i++) {
+            float zTopPosition = 0;
+            if (values.get(i) != null) {
+                zTopPosition = values.get(i) * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+            }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
             float[] vertexPoint = new float[]{
@@ -101,11 +110,11 @@ public class PrPsCubeList {
                     startX + stepX / 2, startY, zTopPosition,
             };
             float[] color;
-            if (values[i] == -1f) {
+            if (values.get(i) == null) {
                 color = Constants.INSTANCE.getTransparentColors();
-            } else if (values[i] < -0.4f) {
+            } else if (values.get(i) < -0.4f) {
                 color = Constants.INSTANCE.getRedColors();
-            } else if (values[i] >= -0.4f && values[i] < 0.4f) {
+            } else if (values.get(i) >= -0.4f && values.get(i) < 0.4f) {
                 color = Constants.INSTANCE.getBlueColors();
             } else {
                 color = Constants.INSTANCE.getGreenColors();

@@ -60,15 +60,4 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     override fun getContentView(): Int {
         return R.layout.activity_device_check
     }
-
-    private val readListener = object : ReadListener(1) {
-
-        override fun onRead(bytes: ByteArray?) {
-
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }

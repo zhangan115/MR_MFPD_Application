@@ -60,9 +60,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         )
     }
 
-    fun addPrpsData(pointValue: PrPsXZPoints, prPsList: PrPsCubeList) {
+    fun addPrpsData(pointValue: PrPsXZPoints?, prPsList: PrPsCubeList?) {
         prPsPoints = pointValue
-        if (prpsCubeList != null) {
+        if (prpsCubeList != null && prPsList!=null) {
             for (i in 0 until prpsCubeList!!.size) {
                 prpsCubeList!![i].updateRow(i + 1)
             }

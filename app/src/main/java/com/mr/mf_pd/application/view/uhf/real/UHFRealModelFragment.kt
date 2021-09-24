@@ -59,9 +59,16 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
                     viewModel.addHUfData(object : DataRepository.DataCallback {
-                        override fun addData(data: PrPsXZPoints, prPsCube: PrPsCubeList) {
+
+                        override fun addData(data: PrPsXZPoints) {
                             surfaceView1.queueEvent {
-                                prPsChartsRenderer?.addPrpsData(data, prPsCube)
+                                prPsChartsRenderer?.addPrpsData(data, null)
+                            }
+                        }
+
+                        override fun addData(prPsCube: PrPsCubeList) {
+                            surfaceView1.queueEvent {
+                                prPsChartsRenderer?.addPrpsData(null, prPsCube)
                             }
                         }
                     })
