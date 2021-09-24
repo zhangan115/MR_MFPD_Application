@@ -1,29 +1,29 @@
-package com.mr.mf_pd.application.view.ac.real
+package com.mr.mf_pd.application.view.tev.continuity
 
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.databinding.ACRealDataBinding
+import com.mr.mf_pd.application.databinding.ACContinuityDataBinding
+import com.mr.mf_pd.application.databinding.TEVContinuityDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.view.ac.continuity.ACContinuityFragment
 
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.tev.real.TEVRealFragment
-import com.mr.mf_pd.application.view.tev.real.TEVRealModelViewModel
 
 /**
- * AC 实时模式
+ * AC 连续模式
  */
-class ACRealFragment : BaseFragment<ACRealDataBinding>() {
+class TEVContinuityFragment : BaseFragment<TEVContinuityDataBinding>() {
 
-    private val viewModel by viewModels<TEVRealModelViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<TEVContinuityModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): TEVRealFragment {
-            val fragment = TEVRealFragment()
+        fun create(deviceBean: DeviceBean?): ACContinuityFragment {
+            val fragment = ACContinuityFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
@@ -36,7 +36,7 @@ class ACRealFragment : BaseFragment<ACRealDataBinding>() {
     }
 
     override fun getContentView(): Int {
-        return R.layout.fragment_ac_real
+        return R.layout.fragment_tev_continuity
     }
 
     override fun initData() {
@@ -47,7 +47,7 @@ class ACRealFragment : BaseFragment<ACRealDataBinding>() {
 
     }
 
-    override fun setViewModel(dataBinding: ACRealDataBinding?) {
+    override fun setViewModel(dataBinding: TEVContinuityDataBinding?) {
         dataBinding?.vm = viewModel
     }
 }

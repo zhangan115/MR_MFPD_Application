@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.ac.continuity.ACContinuityModelViewModel" />
+            type="com.mr.mf_pd.application.view.tev.continuity.TEVContinuityModelViewModel" />
 
         <import type="android.view.View" />
     </data>

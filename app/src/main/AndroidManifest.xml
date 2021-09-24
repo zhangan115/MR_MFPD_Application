@@ -94,6 +94,36 @@
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <activity
+            android:name=".view.hf.CheckHFActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".view.hf.setting.HFSettingActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <activity
+            android:name=".view.tev.CheckTEVActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".view.tev.setting.TEVSettingActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
     </application>
 
 </manifest>

@@ -25,15 +25,22 @@ import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
 import com.mr.mf_pd.application.view.ac.CheckACViewModel
-import com.mr.mf_pd.application.view.ac.continuity.ACContinuityModelViewModel
+import com.mr.mf_pd.application.view.tev.continuity.TEVContinuityModelViewModel
 import com.mr.mf_pd.application.view.ac.flight.ACFlightModelViewModel
 import com.mr.mf_pd.application.view.ac.phase.ACPhaseModelViewModel
+import com.mr.mf_pd.application.view.tev.phase.TEVPhaseModelViewModel
 import com.mr.mf_pd.application.view.ac.pulse.ACPulseModelViewModel
-import com.mr.mf_pd.application.view.ac.real.ACRealFragment
 import com.mr.mf_pd.application.view.ac.real.ACRealModelViewModel
+import com.mr.mf_pd.application.view.tev.real.TEVRealModelViewModel
 import com.mr.mf_pd.application.view.ac.setting.ACSettingViewModel
+import com.mr.mf_pd.application.view.hf.CheckHFViewModel
+import com.mr.mf_pd.application.view.hf.phase.HFPhaseModelViewModel
+import com.mr.mf_pd.application.view.hf.real.HFRealModelViewModel
+import com.mr.mf_pd.application.view.hf.setting.HFSettingViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
+import com.mr.mf_pd.application.view.tev.CheckTEVViewModel
+import com.mr.mf_pd.application.view.tev.setting.TEVSettingViewModel
 import com.mr.mf_pd.application.view.uhf.CheckUHFViewModel
 import com.mr.mf_pd.application.view.uhf.phase.UHFPhaseModelViewModel
 import com.mr.mf_pd.application.view.uhf.real.UHFRealModelViewModel
@@ -78,14 +85,34 @@ class ViewModelFactory constructor(
                 ACSettingViewModel(dataRepository, settingRepository)
             isAssignableFrom(ACPhaseModelViewModel::class.java) ->
                 ACPhaseModelViewModel(dataRepository)
-            isAssignableFrom(ACContinuityModelViewModel::class.java) ->
-                ACContinuityModelViewModel(dataRepository)
+            isAssignableFrom(TEVContinuityModelViewModel::class.java) ->
+                TEVContinuityModelViewModel(dataRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
                 ACFlightModelViewModel(dataRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->
                 ACPulseModelViewModel(dataRepository)
             isAssignableFrom(ACRealModelViewModel::class.java) ->
                 ACRealModelViewModel(dataRepository)
+
+            isAssignableFrom(HFPhaseModelViewModel::class.java) ->
+                TEVPhaseModelViewModel(dataRepository)
+            isAssignableFrom(HFRealModelViewModel::class.java) ->
+                TEVRealModelViewModel(dataRepository)
+            isAssignableFrom(HFSettingViewModel::class.java) ->
+                HFSettingViewModel(dataRepository, settingRepository)
+            isAssignableFrom(CheckHFViewModel::class.java) ->
+                CheckHFViewModel(dataRepository)
+
+            isAssignableFrom(CheckTEVViewModel::class.java) ->
+                CheckTEVViewModel(dataRepository)
+            isAssignableFrom(TEVSettingViewModel::class.java) ->
+                TEVSettingViewModel(dataRepository, settingRepository)
+            isAssignableFrom(TEVContinuityModelViewModel::class.java) ->
+                TEVContinuityModelViewModel(dataRepository)
+            isAssignableFrom(TEVPhaseModelViewModel::class.java) ->
+                TEVPhaseModelViewModel(dataRepository)
+            isAssignableFrom(TEVRealModelViewModel::class.java) ->
+                TEVRealModelViewModel(dataRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

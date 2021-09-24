@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.ac.setting
+package com.mr.mf_pd.application.view.tev.setting
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -6,15 +6,14 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.databinding.ACSettingDataBinding
-import com.mr.mf_pd.application.databinding.UHFSettingDataBinding
+import com.mr.mf_pd.application.databinding.TEVSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
-import kotlinx.android.synthetic.main.activity_uhf_setting.*
+import kotlinx.android.synthetic.main.activity_tev_setting.*
 
-class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
+class TEVSettingActivity : AbsBaseActivity<TEVSettingDataBinding>() {
 
-    private val viewModel by viewModels<ACSettingViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<TEVSettingViewModel> { getViewModelFactory() }
 
     override fun initView(savedInstanceState: Bundle?) {
         phaseModelLayout.setOnClickListener {
@@ -27,7 +26,7 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
                         }
                         viewModel.phaseModelInt.postValue(index)
                     }
-                    lifecycleOwner(this@ACSettingActivity)
+                    lifecycleOwner(this@TEVSettingActivity)
                 }
         }
         bandDetectionLayout.setOnClickListener {
@@ -40,7 +39,7 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
                         }
                         viewModel.bandDetectionInt.postValue(index)
                     }
-                    lifecycleOwner(this@ACSettingActivity)
+                    lifecycleOwner(this@TEVSettingActivity)
                 }
         }
     }
@@ -51,10 +50,10 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
     }
 
     override fun getToolBarTitle(): String {
-        return "超声波设置"
+        return "暂态地电压设置"
     }
 
     override fun getContentView(): Int {
-        return R.layout.activity_ac_setting
+        return R.layout.activity_tev_setting
     }
 }

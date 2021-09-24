@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="ACPhaseDataBinding">
+    <data class="TEVRealDataBinding">
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.tev.phase.TEVPhaseModelViewModel" />
+            type="com.mr.mf_pd.application.view.tev.real.TEVRealModelViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -17,6 +17,7 @@
         android:background="@color/colorWhite"
         android:orientation="vertical"
         app:toast="@{vm.toastStr}">
+
 
         <TextView
             android:id="@+id/location"

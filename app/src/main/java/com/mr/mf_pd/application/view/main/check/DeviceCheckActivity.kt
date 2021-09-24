@@ -10,6 +10,8 @@ import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.ac.CheckACActivity
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
+import com.mr.mf_pd.application.view.hf.CheckHFActivity
+import com.mr.mf_pd.application.view.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.uhf.CheckUHFActivity
 import kotlinx.android.synthetic.main.activity_device_check.*
 import java.util.*
@@ -30,10 +32,14 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             startActivity(intent)
         }
         tevDataLayout.setOnClickListener {
-
+            val intent = Intent(this, CheckTEVActivity::class.java)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            startActivity(intent)
         }
         hfTaskLayout.setOnClickListener {
-
+            val intent = Intent(this, CheckHFActivity::class.java)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            startActivity(intent)
         }
         checkDataLayout.setOnClickListener {
 

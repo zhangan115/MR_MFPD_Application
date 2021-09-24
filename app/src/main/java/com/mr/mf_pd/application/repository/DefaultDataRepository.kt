@@ -28,11 +28,11 @@ class DefaultDataRepository : DataRepository {
 
     override fun hufDataListener() {
         SocketManager.getInstance().addReadListener(hufListener)
+        isRequest = true
         if (hufListenerJob == null || hufListenerJob!!.isCancelled) {
             hufListenerJob = GlobalScope.launch {
                 while (isRequest) {
                     Thread.sleep(20)
-                    val startTime = System.currentTimeMillis()
                     val pointValue = FloatArray(Constants.PRPS_COLUMN)
                     val floatArray = FloatArray(Constants.PRPS_COLUMN)
                     for (j in 0 until Constants.PRPS_COLUMN) {
@@ -50,7 +50,6 @@ class DefaultDataRepository : DataRepository {
                     }
                     pointValueList.add(data)
                     prPsCubeList.add(prPsCube)
-                    val endTime = System.currentTimeMillis()
                 }
             }
             hufListenerJob?.start()
@@ -74,8 +73,9 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun removeHufDataListener() {
-        SocketManager.getInstance().removeLinkStateListener { hufListener }
+        SocketManager.getInstance().removeReadListener(hufListener)
         hufListenerJob?.cancel()
+        isRequest = false
     }
 
     override fun toSaveData() {

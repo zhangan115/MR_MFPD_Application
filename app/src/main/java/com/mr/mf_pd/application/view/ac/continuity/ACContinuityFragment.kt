@@ -9,19 +9,21 @@ import com.mr.mf_pd.application.model.DeviceBean
 
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.tev.continuity.TEVContinuityFragment
+import com.mr.mf_pd.application.view.tev.continuity.TEVContinuityModelViewModel
 
 /**
  * AC 连续模式
  */
 class ACContinuityFragment : BaseFragment<ACContinuityDataBinding>() {
 
-    private val viewModel by viewModels<ACContinuityModelViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<TEVContinuityModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACContinuityFragment {
-            val fragment = ACContinuityFragment()
+        fun create(deviceBean: DeviceBean?): TEVContinuityFragment {
+            val fragment = TEVContinuityFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle

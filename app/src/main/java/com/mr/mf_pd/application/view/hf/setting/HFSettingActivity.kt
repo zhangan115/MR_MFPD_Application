@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.ac.setting
+package com.mr.mf_pd.application.view.hf.setting
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -7,14 +7,14 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACSettingDataBinding
-import com.mr.mf_pd.application.databinding.UHFSettingDataBinding
+import com.mr.mf_pd.application.databinding.HFSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import kotlinx.android.synthetic.main.activity_uhf_setting.*
 
-class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
+class HFSettingActivity : AbsBaseActivity<HFSettingDataBinding>() {
 
-    private val viewModel by viewModels<ACSettingViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<HFSettingViewModel> { getViewModelFactory() }
 
     override fun initView(savedInstanceState: Bundle?) {
         phaseModelLayout.setOnClickListener {
@@ -27,7 +27,7 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
                         }
                         viewModel.phaseModelInt.postValue(index)
                     }
-                    lifecycleOwner(this@ACSettingActivity)
+                    lifecycleOwner(this@HFSettingActivity)
                 }
         }
         bandDetectionLayout.setOnClickListener {
@@ -40,7 +40,7 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
                         }
                         viewModel.bandDetectionInt.postValue(index)
                     }
-                    lifecycleOwner(this@ACSettingActivity)
+                    lifecycleOwner(this@HFSettingActivity)
                 }
         }
     }
@@ -55,6 +55,6 @@ class ACSettingActivity : AbsBaseActivity<ACSettingDataBinding>() {
     }
 
     override fun getContentView(): Int {
-        return R.layout.activity_ac_setting
+        return R.layout.activity_hf_setting
     }
 }
