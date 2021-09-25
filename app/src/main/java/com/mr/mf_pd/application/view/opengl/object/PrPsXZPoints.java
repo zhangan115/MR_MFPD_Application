@@ -2,8 +2,6 @@ package com.mr.mf_pd.application.view.opengl.object;
 
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.opengl.data.VertexArray;
-import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram;
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
 
 import java.util.List;

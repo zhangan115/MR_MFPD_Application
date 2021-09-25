@@ -69,15 +69,15 @@ class DefaultDataRepository : DataRepository {
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
-                    val position = values[0].toInt()
-                    val index = values[1].toInt()
+                    val row = values[0].toInt()
+                    val column = values[1].toInt()
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    newValueList[position][index] = ByteUtil.getFloat(height)
+                    newValueList[row][column] = ByteUtil.getFloat(height)
                 }
-                for (i in 0..4) {
+                for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]
-                    val prPsCube = PrPsCubeList(0, floatArray)
+                    val prPsCube = PrPsCubeList( floatArray)
                     if (prPsCubeList.size == Constants.PRPS_ROW) {
                         prPsCubeList.removeFirst()
                     }

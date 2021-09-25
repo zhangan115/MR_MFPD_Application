@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.opengl.object;
 
 import android.opengl.GLES30;
+import android.util.Log;
 
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
@@ -31,8 +32,8 @@ public class PrPsCubeList {
     //默认数据
     public static ArrayList<ArrayList<Float>> defaultValues = new ArrayList<>();
 
-    public PrPsCubeList(int row, ArrayList<Float> height) {
-        appPrPsCubeList(row, height);
+    public PrPsCubeList(ArrayList<Float> height) {
+        appPrPsCubeList( height);
     }
 
     public void updateRow(int row) {
@@ -66,27 +67,9 @@ public class PrPsCubeList {
         this.colorProgram = colorProgram;
     }
 
-    public void draw() {
-        colorProgram.useProgram();
-        GLES30.glVertexAttribPointer(0, VERTEX_POSITION_SIZE, GLES30.GL_FLOAT, false, 0, vertexBuffer);
-        //启用位置顶点属性
-        GLES30.glEnableVertexAttribArray(0);
-        GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
-        //启用颜色顶点属性
-        GLES30.glEnableVertexAttribArray(1);
-        short[] indices = Constants.INSTANCE.getIndicesList();
-        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer();
-        //传入指定的数据
-        indicesBuffer.put(indices);
-        indicesBuffer.position(0);
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
-    }
-
     private FloatBuffer vertexBuffer, colorBuffer;
 
-    private void appPrPsCubeList(int row, ArrayList<Float> values) {
+    private void appPrPsCubeList(ArrayList<Float> values) {
         this.values = values;
         float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
         float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
@@ -96,7 +79,7 @@ public class PrPsCubeList {
                 zTopPosition = values.get(i) * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
-            float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
+            float startY = -1f;
             float[] vertexPoint = new float[]{
                     //正面矩形
                     startX, startY, 0f,
@@ -138,5 +121,23 @@ public class PrPsCubeList {
         //传入指定的数据
         colorBuffer.put(colors);
         colorBuffer.position(0);
+    }
+
+    public void draw() {
+        colorProgram.useProgram();
+        GLES30.glVertexAttribPointer(0, VERTEX_POSITION_SIZE, GLES30.GL_FLOAT, false, 0, vertexBuffer);
+        //启用位置顶点属性
+        GLES30.glEnableVertexAttribArray(0);
+        GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
+        //启用颜色顶点属性
+        GLES30.glEnableVertexAttribArray(1);
+        short[] indices = Constants.INSTANCE.getIndicesList();
+        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asShortBuffer();
+        //传入指定的数据
+        indicesBuffer.put(indices);
+        indicesBuffer.position(0);
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
     }
 }
