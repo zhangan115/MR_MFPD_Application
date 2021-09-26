@@ -36,13 +36,15 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var colorPointProgram: PrPsColorPointShaderProgram
     private var texture: Int = 0
 
-    private var prPsPoints: PrPsXZPoints? = null
+    private var prPsPoints: PrpsPointList? = null
 
     private lateinit var prPs3DXYLines: PrPsXYLines
     private lateinit var prPs3DXZLines: PrPsXZLines
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
+
+        prPsPoints = PrpsPointList()
 
         textureProgram = TextureShaderProgram(context)
         colorProgram = ColorShaderProgram(context)
@@ -60,8 +62,8 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         )
     }
 
-    fun addPrpsData(pointValue: PrPsXZPoints?, prPsList: PrPsCubeList?) {
-        prPsPoints = pointValue
+    fun addPrpsData(pointValue: HashMap<Int, Float>, prPsList: PrPsCubeList?) {
+        prPsPoints?.addValue(pointValue)
         if (prpsCubeList != null && prPsList!=null) {
             for (i in 0 until prpsCubeList!!.size) {
                 prpsCubeList!![i].updateRow(i + 1)
@@ -85,6 +87,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         colorPointProgram.useProgram()
         colorPointProgram.setUniforms(modelViewProjectionMatrix)
+
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
 

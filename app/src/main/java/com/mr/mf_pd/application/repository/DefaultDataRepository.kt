@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.repository
 
+import android.util.Log
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.ReadListener
 import com.mr.mf_pd.application.manager.SocketManager
@@ -12,8 +13,7 @@ import com.mr.mf_pd.application.view.opengl.`object`.PrPsXZPoints
 class DefaultDataRepository : DataRepository {
 
     var uhfModelBean: UHFModelBean? = null
-
-    private var pointValueList: ArrayList<PrPsXZPoints> = ArrayList()
+    var pointList: ArrayList<HashMap<Int, Float>> = ArrayList()
     private var prPsCubeList: ArrayList<PrPsCubeList> = ArrayList()
 
     init {
@@ -28,7 +28,7 @@ class DefaultDataRepository : DataRepository {
 
 
     override fun getHufData(): UHFModelBean? {
-        return uhfModelBean;
+        return uhfModelBean
     }
 
     override fun hufDataListener() {
@@ -36,21 +36,18 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun addHufData(callback: DataRepository.DataCallback) {
-        var data: PrPsXZPoints? = null
-        if (pointValueList.isNotEmpty()) {
-            data = pointValueList.lastOrNull()
-        }
         var prPsCube: PrPsCubeList? = null
         if (prPsCubeList.isNotEmpty()) {
             prPsCube = prPsCubeList.lastOrNull()
         }
-        if (data != null) {
-            callback.addData(data)
-            pointValueList.removeLast()
+        var map: HashMap<Int, Float>? = null
+        if (pointList.isNotEmpty()) {
+            map = pointList.lastOrNull()
         }
-        if (prPsCube != null) {
-            callback.addData(prPsCube)
+        if (prPsCube != null && map != null) {
+            callback.addData(map, prPsCube)
             prPsCubeList.removeLast()
+            pointList.removeLast()
         }
     }
 
@@ -66,6 +63,12 @@ class DefaultDataRepository : DataRepository {
         override fun onRead(bytes: ByteArray?) {
             if (bytes != null) {
                 val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
+                val newPointList = ArrayList<HashMap<Int, Float>>()
+                newPointList.add(HashMap())
+                newPointList.add(HashMap())
+                newPointList.add(HashMap())
+                newPointList.add(HashMap())
+                newPointList.add(HashMap())
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -73,16 +76,19 @@ class DefaultDataRepository : DataRepository {
                     val column = values[1].toInt()
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    newValueList[row][column] = ByteUtil.getFloat(height)
+                    val f = ByteUtil.getFloat(height)
+                    newValueList[row][column] = f/4
+                    newPointList[row][column] = f/4
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]
-                    val prPsCube = PrPsCubeList( floatArray)
+                    val prPsCube = PrPsCubeList(floatArray)
                     if (prPsCubeList.size == Constants.PRPS_ROW) {
                         prPsCubeList.removeFirst()
                     }
                     prPsCubeList.add(prPsCube)
                 }
+                pointList.addAll(newPointList)
             }
         }
     }

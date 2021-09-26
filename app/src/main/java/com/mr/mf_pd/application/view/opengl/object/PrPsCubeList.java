@@ -94,7 +94,7 @@ public class PrPsCubeList {
             };
             float[] color;
             if (values.get(i) == null) {
-                color = Constants.INSTANCE.getTransparentColors();
+                color = Constants.INSTANCE.getYellowColors();
             } else if (values.get(i) < -0.4f) {
                 color = Constants.INSTANCE.getRedColors();
             } else if (values.get(i) >= -0.4f && values.get(i) < 0.4f) {

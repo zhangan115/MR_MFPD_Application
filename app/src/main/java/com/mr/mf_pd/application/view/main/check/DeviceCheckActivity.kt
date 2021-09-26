@@ -60,4 +60,9 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     override fun getContentView(): Int {
         return R.layout.activity_device_check
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SocketManager.getInstance().releaseRequest()
+    }
 }

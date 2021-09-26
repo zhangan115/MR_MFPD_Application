@@ -24,7 +24,7 @@ public class PrpsPointList {
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
 
-    private Map<Integer, Map<Float, Integer>> values;//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
+    private Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
 
     public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
@@ -84,7 +84,7 @@ public class PrpsPointList {
                 float zTopPosition = entry2.getKey() * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
                 float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * entry1.getKey();
                 vertexPointList.add(startX);
-                vertexPointList.add(-1f);
+                vertexPointList.add(1f);
                 vertexPointList.add(zTopPosition);
                 if (entry2.getValue() < 10) {
                     colorList.addAll(color1);
@@ -106,9 +106,6 @@ public class PrpsPointList {
         for (int i = 0; i < indicesList.size(); i++) {
             indices[i] = indicesList.get(i);
         }
-        vertexBuffer.put(vertexPoints);
-        vertexBuffer.position(0);
-
         //分配内存空间,每个浮点型占4字节空间
         vertexBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -138,18 +135,20 @@ public class PrpsPointList {
 
     public void draw() {
         colorProgram.useProgram();
-        GLES30.glVertexAttribPointer(0, VERTEX_POSITION_SIZE, GLES30.GL_FLOAT, false, 0, vertexBuffer);
-        //启用位置顶点属性
-        GLES30.glEnableVertexAttribArray(0);
-        GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
-        //启用颜色顶点属性
-        GLES30.glEnableVertexAttribArray(1);
-        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asShortBuffer();
-        //传入指定的数据
-        indicesBuffer.put(indices);
-        indicesBuffer.position(0);
-        GLES30.glDrawElements(GLES30.GL_POINTS, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
+        if (vertexBuffer != null && colorBuffer != null) {
+            GLES30.glVertexAttribPointer(0, VERTEX_POSITION_SIZE, GLES30.GL_FLOAT, false, 0, vertexBuffer);
+            //启用位置顶点属性
+            GLES30.glEnableVertexAttribArray(0);
+            GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
+            //启用颜色顶点属性
+            GLES30.glEnableVertexAttribArray(1);
+            ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asShortBuffer();
+            //传入指定的数据
+            indicesBuffer.put(indices);
+            indicesBuffer.position(0);
+            GLES30.glDrawElements(GLES30.GL_POINTS, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
+        }
     }
 }

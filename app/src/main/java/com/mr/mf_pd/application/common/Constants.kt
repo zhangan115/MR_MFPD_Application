@@ -2,8 +2,8 @@ package com.mr.mf_pd.application.common
 
 object Constants {
 
-//    const val host = "172.16.40.45" //请求地址
-    const val host = "192.168.0.55" //请求地址
+    const val host = "172.16.40.45" //请求地址
+//    const val host = "192.168.0.55" //请求地址
 
     const val port = 502 //端口
 
@@ -31,6 +31,17 @@ object Constants {
         0f, 0f, 0f, 0f,
         0f, 0f, 0f, 0f,
         0f, 0f, 0f, 0f,
+    )
+
+    var yellowColors = floatArrayOf(
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
+        1f, 1f, 0f, 1f,
     )
 
     var blueColors = floatArrayOf(
