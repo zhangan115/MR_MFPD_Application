@@ -1,17 +1,25 @@
 package com.mr.mf_pd.application.view.main
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.*
 import android.net.wifi.ScanResult
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSpecifier
+import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
+import android.os.PatternMatcher
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kongqw.wifilibrary.BaseWiFiManager
 import com.kongqw.wifilibrary.WiFiManager
 import com.kongqw.wifilibrary.listener.OnWifiConnectListener
-import com.kongqw.wifilibrary.listener.OnWifiEnabledListener
 import com.kongqw.wifilibrary.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
@@ -36,7 +44,8 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
 
     private val viewModel by viewModels<MainViewModel> { getViewModelFactory() }
     var dataList = ArrayList<DeviceBean>()
-    private var linkPosition = -1;
+    var scanDataList = ArrayList<ScanResult>()
+    private var linkPosition = -1
 
     override fun initView(savedInstanceState: Bundle?) {
         val adapter = GenericQuickAdapter(
@@ -48,7 +57,11 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         adapter.setOnItemChildClickListener { _, _, position ->
             dataList[position].deviceName?.let {
                 linkPosition = position
-                mWiFiManager?.connectOpenNetwork(it)
+                if (Build.VERSION.SDK_INT > 28) {
+                    connectWifi()
+                } else {
+                    mWiFiManager?.connectOpenNetwork(it)
+                }
             }
         }
         checkDataLayout.setOnClickListener {
@@ -65,21 +78,9 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
-    }
+        val intentFilter = IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
 
-    private fun socketLink(position: Int) {
-        SocketManager.getInstance().releaseRequest()
-        SocketManager.getInstance().initLink()
-        SocketManager.getInstance().addLinkStateListeners {
-            if (it == Constants.LINK_SUCCESS) {
-                viewModel.toastStr.postValue("连接成功")
-                val intent = Intent(this, DeviceCheckActivity::class.java)
-                intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
-                startActivity(intent)
-            } else {
-                viewModel.toastStr.postValue("连接失败")
-            }
-        }
+        registerReceiver(broadcastReceiver, intentFilter)
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -131,10 +132,12 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         val allWifiList = mWiFiManager!!.scanResults
         val wifiList = BaseWiFiManager.excludeRepetition(allWifiList)
         dataList.clear()
+        scanDataList.clear()
         wifiList.forEach {
             if (it.SSID != null && it.capabilities.equals("[ESS]")) {
                 val deviceBean = DeviceBean(it.SSID!!, "", it.level, 0, 0, "", 0)
                 dataList.add(deviceBean)
+                scanDataList.add(it)
             }
         }
         recycleView.adapter?.notifyDataSetChanged()
@@ -143,6 +146,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
 
     override fun onDestroy() {
         super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
         mWiFiManager?.removeOnWifiScanResultsListener()
         mWiFiManager?.removeOnWifiConnectListener()
         SocketManager.getInstance().releaseRequest()
@@ -167,4 +171,77 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         Log.e("za", "onWiFiConnectFailure $SSID")
     }
 
+    private fun socketLink(position: Int) {
+        SocketManager.getInstance().releaseRequest()
+        SocketManager.getInstance().initLink()
+        SocketManager.getInstance().addLinkStateListeners {
+            if (it == Constants.LINK_SUCCESS) {
+                viewModel.toastStr.postValue("连接成功")
+                val intent = Intent(this, DeviceCheckActivity::class.java)
+                intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
+                startActivity(intent)
+            } else {
+                viewModel.toastStr.postValue("连接失败")
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun connectWifi() {
+//        val builder = WifiNetworkSuggestion.Builder()
+//            .setSsid(SSID)
+//            .setIsAppInteractionRequired(false) // Optional (Needs location permission)
+//        val suggestion: WifiNetworkSuggestion = builder.build()
+//        val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+//        val suggestionsList = listOf(suggestion)
+//        val status = wifiManager.addNetworkSuggestions(suggestionsList)
+//        if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+//            // do error handling here
+//            Log.d("za", "error handling")
+//        } else {
+//
+//        }
+        val SSID = scanDataList[linkPosition].SSID
+        val BSSID = scanDataList[linkPosition].BSSID
+        val builder = WifiNetworkSpecifier.Builder()
+        builder.setSsidPattern(PatternMatcher(SSID, PatternMatcher.PATTERN_PREFIX))
+            .setBssidPattern(
+                MacAddress.fromString(BSSID),
+                MacAddress.fromString("ff:ff:ff:00:00:00")
+            )
+        val wifiNetworkSpecifier = builder.build()
+
+        val networkRequestBuilder = NetworkRequest.Builder()
+        networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED)
+        networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier)
+        val networkRequest = networkRequestBuilder.build()
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        cm.requestNetwork(networkRequest, object : ConnectivityManager.NetworkCallback() {
+            @Override
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                Log.d("za", "onAvailable")
+            }
+
+            @Override
+            override fun onUnavailable() {
+                super.onUnavailable()
+                Log.d("za", "onUnavailable")
+            }
+        })
+
+    }
+
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (!intent.action.equals(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
+                return
+            }
+            // do post connect processing here
+            Log.d("za", "broadcastReceiver success")
+
+        }
+    }
 }

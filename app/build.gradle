@@ -22,13 +22,13 @@ android {
         }
     }
 
-    compileSdk 28
-    buildToolsVersion "28.0.0"
+    compileSdk 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "com.mr.mf_pd.application"
         minSdk 23
-        targetSdk 28
+        targetSdk 29
         versionCode 1
         versionName "1.0"
 

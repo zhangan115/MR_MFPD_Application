@@ -3,7 +3,6 @@ package com.mr.mf_pd.application.model
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.databinding.ObservableField
-import kotlinx.android.parcel.Parcelize
 
 /**
  * 设备类
@@ -15,7 +14,7 @@ data class DeviceBean(
     var power: Int,//电量
     var powerState: Int,//电量类型 0低电量 1高电量
     var versionCode: String?,//版本号
-    var deviceType: Int//设备类型
+    var deviceType: Int,//设备类型
 ) : Parcelable {
 
     val deviceNameAttr: ObservableField<String> = ObservableField(deviceName)
@@ -33,7 +32,7 @@ data class DeviceBean(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString(),
-        parcel.readInt()
+        parcel.readInt(),
     ) {
     }
 
