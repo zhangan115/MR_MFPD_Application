@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.repository
 
-import android.util.Log
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.ReadListener
 import com.mr.mf_pd.application.manager.SocketManager
@@ -8,7 +7,6 @@ import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsXZPoints
 
 class DefaultDataRepository : DataRepository {
 

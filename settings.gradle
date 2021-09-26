@@ -1,3 +1,4 @@
+include ':WiFiLibrary'
 include ':tool_library'
 rootProject.name = "MR_MFPD_Application"
 include ':app'

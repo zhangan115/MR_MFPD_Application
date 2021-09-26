@@ -22,13 +22,13 @@ android {
         }
     }
 
-    compileSdk 29
-    buildToolsVersion "29.0.2"
+    compileSdk 28
+    buildToolsVersion "28.0.0"
 
     defaultConfig {
         applicationId "com.mr.mf_pd.application"
         minSdk 23
-        targetSdk 29
+        targetSdk 28
         versionCode 1
         versionName "1.0"
 
@@ -96,6 +96,8 @@ dependencies {
 
     //tool
     implementation project(path: ':tool_library')
+    //wifi manager
+    implementation project(path: ':WiFiLibrary')
 
     //GSon
     implementation 'com.google.code.gson:gson:2.8.7'

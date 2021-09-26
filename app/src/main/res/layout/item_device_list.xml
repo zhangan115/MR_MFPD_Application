@@ -10,6 +10,8 @@
             type="com.mr.mf_pd.application.model.DeviceBean" />
 
         <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <LinearLayout
@@ -41,6 +43,8 @@
                     android:id="@+id/text1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:lines="1"
+                    android:singleLine="true"
                     android:text="@{deviceBean.deviceNameAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="15sp"
@@ -55,6 +59,7 @@
                     android:text="@{deviceBean.serialNoAttr}"
                     android:textColor="@color/text_title"
                     android:textSize="15sp"
+                    android:visibility="@{TextUtils.isEmpty(deviceBean.serialNo)?View.GONE:View.VISIBLE}"
                     tools:text="TextView" />
             </LinearLayout>
 
@@ -110,6 +115,7 @@
                 android:text="@{deviceBean.versionCodeAttr}"
                 android:textColor="@color/text_title"
                 android:textSize="12sp"
+                android:visibility="@{TextUtils.isEmpty(deviceBean.versionCode)?View.GONE:View.VISIBLE}"
                 tools:text="TextView" />
         </LinearLayout>
 
