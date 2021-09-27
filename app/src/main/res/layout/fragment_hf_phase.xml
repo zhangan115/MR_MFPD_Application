@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.tev.phase.TEVPhaseModelViewModel" />
+            type="com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelViewModel" />
 
         <import type="android.view.View" />
     </data>

@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.tev.CheckTEVViewModel" />
+            type="com.mr.mf_pd.application.view.check.tev.CheckTEVViewModel" />
     </data>
 
     <LinearLayout

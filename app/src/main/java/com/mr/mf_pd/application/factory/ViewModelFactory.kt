@@ -24,27 +24,27 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
-import com.mr.mf_pd.application.view.ac.CheckACViewModel
-import com.mr.mf_pd.application.view.tev.continuity.TEVContinuityModelViewModel
-import com.mr.mf_pd.application.view.ac.flight.ACFlightModelViewModel
-import com.mr.mf_pd.application.view.ac.phase.ACPhaseModelViewModel
-import com.mr.mf_pd.application.view.tev.phase.TEVPhaseModelViewModel
-import com.mr.mf_pd.application.view.ac.pulse.ACPulseModelViewModel
-import com.mr.mf_pd.application.view.ac.real.ACRealModelViewModel
-import com.mr.mf_pd.application.view.tev.real.TEVRealModelViewModel
-import com.mr.mf_pd.application.view.ac.setting.ACSettingViewModel
-import com.mr.mf_pd.application.view.hf.CheckHFViewModel
-import com.mr.mf_pd.application.view.hf.phase.HFPhaseModelViewModel
-import com.mr.mf_pd.application.view.hf.real.HFRealModelViewModel
-import com.mr.mf_pd.application.view.hf.setting.HFSettingViewModel
+import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
+import com.mr.mf_pd.application.view.check.tev.continuity.TEVContinuityModelViewModel
+import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelViewModel
+import com.mr.mf_pd.application.view.check.ac.phase.ACPhaseModelViewModel
+import com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelViewModel
+import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelViewModel
+import com.mr.mf_pd.application.view.check.ac.real.ACRealModelViewModel
+import com.mr.mf_pd.application.view.check.tev.real.TEVRealModelViewModel
+import com.mr.mf_pd.application.view.check.ac.setting.ACSettingViewModel
+import com.mr.mf_pd.application.view.check.hf.CheckHFViewModel
+import com.mr.mf_pd.application.view.check.hf.phase.HFPhaseModelViewModel
+import com.mr.mf_pd.application.view.check.hf.real.HFRealModelViewModel
+import com.mr.mf_pd.application.view.check.hf.setting.HFSettingViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
-import com.mr.mf_pd.application.view.tev.CheckTEVViewModel
-import com.mr.mf_pd.application.view.tev.setting.TEVSettingViewModel
-import com.mr.mf_pd.application.view.uhf.CheckUHFViewModel
-import com.mr.mf_pd.application.view.uhf.phase.UHFPhaseModelViewModel
-import com.mr.mf_pd.application.view.uhf.real.UHFRealModelViewModel
-import com.mr.mf_pd.application.view.uhf.setting.UHFSettingViewModel
+import com.mr.mf_pd.application.view.check.tev.CheckTEVViewModel
+import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingViewModel
+import com.mr.mf_pd.application.view.check.uhf.CheckUHFViewModel
+import com.mr.mf_pd.application.view.check.uhf.phase.UHFPhaseModelViewModel
+import com.mr.mf_pd.application.view.check.uhf.real.UHFRealModelViewModel
+import com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingViewModel
 
 
 /**

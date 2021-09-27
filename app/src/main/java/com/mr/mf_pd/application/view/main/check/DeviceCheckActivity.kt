@@ -8,11 +8,11 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
 import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.ac.CheckACActivity
+import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
-import com.mr.mf_pd.application.view.hf.CheckHFActivity
-import com.mr.mf_pd.application.view.tev.CheckTEVActivity
-import com.mr.mf_pd.application.view.uhf.CheckUHFActivity
+import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
+import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
+import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
 import kotlinx.android.synthetic.main.activity_device_check.*
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {

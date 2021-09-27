@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -65,27 +66,6 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         }
     }
 
-    private fun initToolbar() {
-        setSupportActionBar(mToolbar)
-        if (supportActionBar != null) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        }
-        try {
-            val f: Field = if (TextUtils.isEmpty(mTitle)) {
-                mToolbar!!.javaClass.getDeclaredField("mTitleTextView")
-            } else {
-                mToolbar!!.javaClass.getDeclaredField("mSubtitleTextView")
-            }
-            f.isAccessible = true
-            val textView = f[mToolbar] as TextView
-            textView.ellipsize = TextUtils.TruncateAt.START
-        } catch (ignored: Exception) {
-        }
-        if (!TextUtils.isEmpty(mTitle)) {
-            title = mTitle
-        }
-        updateTitle()
-    }
 
     private fun initBackStackState() {
         val path: MutableList<File?> = ArrayList()
@@ -171,16 +151,8 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         if (isFinishing) {
             return
         }
-        if (clickedFile!!.isDirectory) {
-            mCurrent = clickedFile
-            if (mCurrent!!.absolutePath == "/storage/emulated") {
-                mCurrent = Environment.getExternalStorageDirectory()
-            }
-            addFragmentToBackStack(mCurrent)
-            updateTitle()
-        } else {
-            setResultAndFinish(clickedFile)
-        }
+        //todo 文件点击了
+        Log.d("za", "clickedFile is ${clickedFile?.absolutePath}")
     }
 
     private fun setResultAndFinish(file: File?) {

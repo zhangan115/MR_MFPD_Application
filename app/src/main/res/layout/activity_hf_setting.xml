@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.hf.setting.HFSettingViewModel" />
+            type="com.mr.mf_pd.application.view.check.hf.setting.HFSettingViewModel" />
     </data>
 
     <LinearLayout

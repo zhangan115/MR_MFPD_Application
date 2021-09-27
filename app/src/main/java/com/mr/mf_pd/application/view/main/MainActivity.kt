@@ -130,7 +130,8 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         scanDataList.clear()
         wifiList.forEach {
             if (it.SSID != null && it.capabilities.equals("[ESS]")) {
-                val deviceBean = DeviceBean(it.SSID!!, "", it.level, 0, 0, "", 0)
+                val deviceBean = DeviceBean(it.SSID!!, "", it.level,
+                    0, 0, "", 0)
                 dataList.add(deviceBean)
                 scanDataList.add(it)
             }

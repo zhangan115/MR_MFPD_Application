@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.ac.flight.ACFlightModelViewModel" />
+            type="com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelViewModel" />
 
         <import type="android.view.View" />
     </data>

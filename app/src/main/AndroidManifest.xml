@@ -90,29 +90,14 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".view.uhf.CheckUHFActivity"
+            android:name=".view.check.uhf.CheckUHFActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".view.uhf.setting.UHFSettingActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-
-        <activity
-            android:name=".view.ac.CheckACActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity
-            android:name=".view.ac.setting.ACSettingActivity"
+            android:name=".view.check.uhf.setting.UHFSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
@@ -120,14 +105,14 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <activity
-            android:name=".view.hf.CheckHFActivity"
+            android:name=".view.check.ac.CheckACActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".view.hf.setting.HFSettingActivity"
+            android:name=".view.check.ac.setting.ACSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
@@ -135,14 +120,29 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <activity
-            android:name=".view.tev.CheckTEVActivity"
+            android:name=".view.check.hf.CheckHFActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".view.tev.setting.TEVSettingActivity"
+            android:name=".view.check.hf.setting.HFSettingActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <activity
+            android:name=".view.check.tev.CheckTEVActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".view.check.tev.setting.TEVSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"

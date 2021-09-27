@@ -52,7 +52,7 @@ class DirectoryFragment : Fragment() {
 
     private fun initFilesList() {
         mDirectoryAdapter = DirectoryAdapter(FileUtils.getFileList(mFile, mFilter))
-        mDirectoryAdapter!!.setOnItemClickListener(object : ThrottleClickListener() {
+        mDirectoryAdapter?.setOnItemClickListener(object : ThrottleClickListener() {
 
             override fun onItemClickThrottled(view: View?, position: Int) {
                 if (mFileClickListener != null) {
@@ -60,9 +60,9 @@ class DirectoryFragment : Fragment() {
                 }
             }
         })
-        mDirectoryRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        mDirectoryRecyclerView!!.adapter = mDirectoryAdapter
-        mDirectoryRecyclerView!!.setEmptyView(mEmptyView)
+        mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        mDirectoryRecyclerView?.adapter = mDirectoryAdapter
+        mDirectoryRecyclerView?.setEmptyView(mEmptyView)
     }
 
     private fun initArgs() {
@@ -75,10 +75,13 @@ class DirectoryFragment : Fragment() {
     }
 
     internal interface FileClickListener {
+
         fun onFileClicked(clickedFile: File?)
+
     }
 
     companion object {
+
         private const val ARG_FILE = "arg_file_path"
         private const val ARG_FILTER = "arg_filter"
 

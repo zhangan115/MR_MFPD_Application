@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.tev.real.TEVRealModelViewModel" />
+            type="com.mr.mf_pd.application.view.check.tev.real.TEVRealModelViewModel" />
 
         <import type="android.view.View" />
     </data>
