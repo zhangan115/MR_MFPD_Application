@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.databinding.FileListDataBinding
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
@@ -25,7 +26,7 @@ import java.util.regex.Pattern
 class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickListener {
 
     private var mToolbar: Toolbar? = null
-    private var mStart = Environment.getExternalStorageDirectory()
+    private var mStart = MRApplication.instance.fileCacheFile()
     private var mCurrent = mStart
     private var mTitle: CharSequence? = null
     private var mCloseable = true

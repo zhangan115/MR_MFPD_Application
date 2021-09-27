@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.file
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,6 +71,7 @@ class DirectoryFragment : Fragment() {
             mFile = arguments.getSerializable(ARG_FILE) as File?
         }
         mFilter = arguments?.getSerializable(ARG_FILTER) as FileFilter?
+        Log.d("za", "currentFile ${mFile?.absolutePath}")
     }
 
     internal interface FileClickListener {
@@ -79,6 +81,7 @@ class DirectoryFragment : Fragment() {
     companion object {
         private const val ARG_FILE = "arg_file_path"
         private const val ARG_FILTER = "arg_filter"
+
         @JvmStatic
         fun getInstance(
             file: File?,

@@ -14,6 +14,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import com.sito.tool.library.utils.SPHelper
+import java.io.File
 
 class MRApplication : Application() {
 
@@ -106,5 +107,16 @@ class MRApplication : Application() {
 
     fun imageCacheFile(): String {
         return externalCacheDir!!.absolutePath
+    }
+
+    fun fileCacheFile(): File? {
+        if (externalCacheDir == null) {
+            return null
+        }
+        val file = File(externalCacheDir, ConstantStr.MR_FILE)
+        if (file.exists()) {
+            file.mkdir()
+        }
+        return file
     }
 }

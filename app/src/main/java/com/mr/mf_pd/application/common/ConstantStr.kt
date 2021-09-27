@@ -6,6 +6,8 @@ package com.mr.mf_pd.application.common
 interface ConstantStr {
 
     companion object {
+
+        const val MR_FILE = "MR"
         const val cancelVersion = "cancelVersion" //取消的版本升级
         const val USER_CONFIG_FILE = "user_config"
         const val APP_HOST = "app_host"
