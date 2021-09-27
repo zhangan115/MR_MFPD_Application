@@ -24,4 +24,10 @@
     <string name="phase_model_1">内同步</string>
     <string name="phase_model_2">无线同步</string>
 
+    <string name="empty_directory_hint">当前文件夹为空</string>
+
+    <string name="type_directory">文件夹</string>
+    <string name="type_document">文件</string>
+    <string name="action_close">关闭</string>
+
 </resources>

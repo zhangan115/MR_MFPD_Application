@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
-import com.mr.mf_pd.application.manager.ReadListener
 import com.mr.mf_pd.application.manager.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.ac.CheckACActivity
@@ -14,7 +14,6 @@ import com.mr.mf_pd.application.view.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.uhf.CheckUHFActivity
 import kotlinx.android.synthetic.main.activity_device_check.*
-import java.util.*
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
@@ -46,6 +45,19 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         }
         selfCheckingLayout.setOnClickListener {
 
+        }
+        linkToDevice()
+    }
+
+    private fun linkToDevice() {
+        SocketManager.getInstance().releaseRequest()
+        SocketManager.getInstance().initLink()
+        SocketManager.getInstance().addLinkStateListeners {
+            if (it == Constants.LINK_SUCCESS) {
+
+            } else {
+
+            }
         }
     }
 
