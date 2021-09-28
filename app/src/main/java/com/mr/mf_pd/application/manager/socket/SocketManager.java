@@ -1,6 +1,4 @@
-package com.mr.mf_pd.application.manager;
-
-import android.util.Log;
+package com.mr.mf_pd.application.manager.socket;
 
 import com.mr.mf_pd.application.common.Constants;
 
@@ -10,7 +8,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

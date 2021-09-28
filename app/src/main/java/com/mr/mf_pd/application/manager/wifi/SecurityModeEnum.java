@@ -1,4 +1,4 @@
-package com.kongqw.wifilibrary;
+package com.mr.mf_pd.application.manager.wifi;
 
 /**
  * @Author: zhangyan

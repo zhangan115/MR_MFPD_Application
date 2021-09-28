@@ -3,26 +3,28 @@ package com.mr.mf_pd.application.view.main
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.*
 import android.net.wifi.ScanResult
+import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.kongqw.wifilibrary.BaseWiFiManager
-import com.kongqw.wifilibrary.WiFiManager
-import com.kongqw.wifilibrary.listener.OnWifiConnectListener
-import com.kongqw.wifilibrary.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.MainDataBinding
-import com.mr.mf_pd.application.manager.SocketManager
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.wifi.BaseWiFiManager
+import com.mr.mf_pd.application.manager.wifi.WiFiManager
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
@@ -34,14 +36,26 @@ import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
 
-
-class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListener,
-    OnWifiConnectListener {
+class MainActivity : AbsBaseActivity<MainDataBinding>(),
+    OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {
 
     private val viewModel by viewModels<MainViewModel> { getViewModelFactory() }
-    var dataList = ArrayList<DeviceBean>()
-    var scanDataList = ArrayList<ScanResult>()
+    private var mWiFiManager: WiFiManager? = null
+    private var dataList = ArrayList<DeviceBean>()
+    private var scanDataList = ArrayList<ScanResult>()
     private var linkPosition = -1
+
+    private val wifiReceiver = WiFiManager.NetworkBroadcastReceiver()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
+        registerReceiver(wifiReceiver, intentFilter)
+    }
 
     override fun initView(savedInstanceState: Bundle?) {
         val adapter = GenericQuickAdapter(
@@ -51,13 +65,18 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            dataList[position].deviceName?.let {
-                linkPosition = position
-                //API 29 以上无法直接连接WIFI需要单独处理
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    connectWifi()
-                } else {
-                    mWiFiManager?.connectOpenNetwork(it)
+            if (mWiFiManager != null && mWiFiManager!!.connectionInfo?.bssid.equals(scanDataList[position].BSSID)) {
+                socketLink(position)
+                return@setOnItemChildClickListener
+            } else {
+                dataList[position].deviceName?.let {
+                    linkPosition = position
+                    //API 29 以上无法直接连接WIFI需要单独处理
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        connectWifi()
+                    } else {
+                        mWiFiManager?.connectOpenNetwork(it)
+                    }
                 }
             }
         }
@@ -72,7 +91,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
 
         }
         refreshLayout.setOnRefreshListener {
-            scanWifiList()
+            mWiFiManager?.startScan()
         }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
@@ -87,7 +106,6 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         return R.layout.activity_main
     }
 
-    private var mWiFiManager: WiFiManager? = null
 
     override fun requestData() {
         SoulPermission.getInstance().checkAndRequestPermissions(
@@ -105,33 +123,92 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
                     mWiFiManager = WiFiManager.getInstance(applicationContext)
                     if (mWiFiManager != null) {
                         if (!mWiFiManager!!.isWifiEnabled) {//wifi是否打开状态
-                            mWiFiManager!!.openWiFi()//打开wifi
+                            mWiFiManager?.openWiFi()//打开wifi
                         }
+                        refreshLayout.setEnableRefresh(true)
                         // 添加监听
                         mWiFiManager?.setOnWifiConnectListener(this@MainActivity)
-                        refreshLayout.setEnableRefresh(true)
-                        scanWifiList()
+                        mWiFiManager?.setOnWifiScanResultsListener(this@MainActivity)
+                        mWiFiManager?.setOnWifiEnabledListener(this@MainActivity)
+                        mWiFiManager?.startScan()
                     }
                 }
 
                 override fun onPermissionDenied(refusedPermissions: Array<Permission>) {
-
+                    viewModel.toastStr.postValue("权限申请失败，请去设置页面手动开启权限")
                 }
             })
     }
 
+    /**
+     * 打开检测页面
+     * @param position 选择的WIFI 位置
+     */
+    private fun socketLink(position: Int) {
+        linkPosition = position
+        val intent = Intent(this, DeviceCheckActivity::class.java)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
+        startActivity(intent)
+    }
 
-    private fun scanWifiList() {
-        mWiFiManager!!.startScan()
-        mWiFiManager!!.setOnWifiScanResultsListener(this@MainActivity)
-        val allWifiList = mWiFiManager!!.scanResults
-        val wifiList = BaseWiFiManager.excludeRepetition(allWifiList)
+    private var connectivityManager: ConnectivityManager? = null
+
+    /**
+     * Android Q 以上版本连接WIFI
+     */
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun connectWifi() {
+        val builder = WifiNetworkSpecifier.Builder()
+        builder.setSsidPattern(
+            PatternMatcher(
+                scanDataList[linkPosition].SSID,
+                PatternMatcher.PATTERN_PREFIX
+            )
+        ).setBssidPattern(
+            MacAddress.fromString(scanDataList[linkPosition].BSSID),
+            MacAddress.fromString("ff:ff:ff:ff:ff:ff")
+        )
+        val wifiNetworkSpecifier = builder.build()
+        val networkRequestBuilder = NetworkRequest.Builder()
+        networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED)
+        networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier)
+        val networkRequest = networkRequestBuilder.build()
+        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager?.requestNetwork(networkRequest, callback)
+    }
+
+    val callback = object : ConnectivityManager.NetworkCallback() {
+        @Override
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+        }
+
+        @Override
+        override fun onUnavailable() {
+            super.onUnavailable()
+            viewModel.toastStr.postValue("WIFI连接失败")
+        }
+    }
+
+    override fun onWifiEnabled(enabled: Boolean) {
+        //wifi 打开后开启WIFI扫描
+        if (enabled) {
+            mWiFiManager?.startScan()
+        }
+    }
+
+    override fun onScanResults(scanResults: MutableList<ScanResult>?) {
+        val wifiList = BaseWiFiManager.excludeRepetition(scanResults)
         dataList.clear()
         scanDataList.clear()
         wifiList.forEach {
             if (it.SSID != null && it.capabilities.equals("[ESS]")) {
-                val deviceBean = DeviceBean(it.SSID!!, "", it.level,
-                    0, 0, "", 0)
+                val deviceBean = DeviceBean(
+                    it.SSID!!, "", it.level,
+                    0, 0, "", 0, it.BSSID
+                )
                 dataList.add(deviceBean)
                 scanDataList.add(it)
             }
@@ -140,73 +217,25 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(), OnWifiScanResultsListen
         refreshLayout.finishRefresh(1000)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mWiFiManager?.removeOnWifiScanResultsListener()
-        mWiFiManager?.removeOnWifiConnectListener()
-        SocketManager.getInstance().releaseRequest()
-    }
-
-    override fun onScanResults(scanResults: MutableList<ScanResult>?) {
-        Log.d("za", "scanResults $scanResults")
-    }
-
-    override fun onWiFiConnectLog(log: String?) {
-        Log.e("za", "onWiFiConnectLog $log")
-    }
-
     override fun onWiFiConnectSuccess(SSID: String?) {
-        Log.e("za", "onWiFiConnectSuccess $SSID")
         if (linkPosition != -1) {
             socketLink(linkPosition)
         }
     }
 
+    override fun onWiFiConnectLog(log: String?) {}
+
+
     override fun onWiFiConnectFailure(SSID: String?) {
-        Log.e("za", "onWiFiConnectFailure $SSID")
+        viewModel.toastStr.postValue("连接失败")
     }
 
-    private fun socketLink(position: Int) {
-        val intent = Intent(this, DeviceCheckActivity::class.java)
-        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
-        startActivity(intent)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun connectWifi() {
-        val SSID = scanDataList[linkPosition].SSID
-        val BSSID = scanDataList[linkPosition].BSSID
-        val builder = WifiNetworkSpecifier.Builder()
-        builder.setSsidPattern(PatternMatcher(SSID, PatternMatcher.PATTERN_PREFIX))
-            .setBssidPattern(
-                MacAddress.fromString(BSSID),
-                MacAddress.fromString("ff:ff:ff:00:00:00")
-            )
-        val wifiNetworkSpecifier = builder.build()
-
-        val networkRequestBuilder = NetworkRequest.Builder()
-        networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
-        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED)
-        networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier)
-        val networkRequest = networkRequestBuilder.build()
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.requestNetwork(networkRequest, object : ConnectivityManager.NetworkCallback() {
-            @Override
-            override fun onAvailable(network: Network) {
-                super.onAvailable(network)
-                if (linkPosition != -1) {
-                    socketLink(linkPosition)
-                }
-            }
-
-            @Override
-            override fun onUnavailable() {
-                super.onUnavailable()
-                viewModel.toastStr.postValue("连接失败")
-
-            }
-        })
-
+    override fun onDestroy() {
+        super.onDestroy()
+        mWiFiManager?.removeOnWifiScanResultsListener()
+        mWiFiManager?.removeOnWifiConnectListener()
+        SocketManager.getInstance().releaseRequest()
+        unregisterReceiver(wifiReceiver)
+        connectivityManager?.unregisterNetworkCallback(callback)
     }
 }

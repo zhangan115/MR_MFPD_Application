@@ -1,8 +1,8 @@
 package com.mr.mf_pd.application.repository
 
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.ReadListener
-import com.mr.mf_pd.application.manager.SocketManager
+import com.mr.mf_pd.application.manager.socket.ReadListener
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil

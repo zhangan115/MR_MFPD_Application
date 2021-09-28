@@ -15,6 +15,7 @@ data class DeviceBean(
     var powerState: Int,//电量类型 0低电量 1高电量
     var versionCode: String?,//版本号
     var deviceType: Int,//设备类型
+    var bssid:String?
 ) : Parcelable {
 
     val deviceNameAttr: ObservableField<String> = ObservableField(deviceName)
@@ -33,7 +34,8 @@ data class DeviceBean(
         parcel.readInt(),
         parcel.readString(),
         parcel.readInt(),
-    ) {
+        parcel.readString()
+        ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

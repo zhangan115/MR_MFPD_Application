@@ -6,7 +6,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
-import com.mr.mf_pd.application.manager.SocketManager
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.base.AbsBaseActivity

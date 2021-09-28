@@ -1,4 +1,4 @@
-package com.kongqw.wifilibrary;
+package com.mr.mf_pd.application.manager.wifi;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,9 +14,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.kongqw.wifilibrary.listener.OnWifiConnectListener;
-import com.kongqw.wifilibrary.listener.OnWifiEnabledListener;
-import com.kongqw.wifilibrary.listener.OnWifiScanResultsListener;
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener;
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener;
+import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener;
 
 import java.lang.reflect.Method;
 import java.util.List;
