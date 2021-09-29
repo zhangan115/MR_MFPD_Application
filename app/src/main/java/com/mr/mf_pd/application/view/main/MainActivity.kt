@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
@@ -99,6 +100,9 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         refreshLayout.setOnRefreshListener {
             mWiFiManager?.startScan()
         }
+        scanBtn.setOnClickListener {
+            refreshLayout.autoRefresh()
+        }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
     }
@@ -111,7 +115,6 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
     override fun getContentView(): Int {
         return R.layout.activity_main
     }
-
 
     override fun requestData() {
         SoulPermission.getInstance().checkAndRequestPermissions(
@@ -219,6 +222,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                 scanDataList.add(it)
             }
         }
+        viewModel.deviceExist.postValue(dataList.isNotEmpty())
         recycleView.adapter?.notifyDataSetChanged()
         refreshLayout.finishRefresh(1000)
     }

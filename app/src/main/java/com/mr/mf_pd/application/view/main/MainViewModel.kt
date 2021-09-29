@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    var deviceExist: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun start() {
         GlobalScope.launch {

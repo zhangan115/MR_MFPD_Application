@@ -8,6 +8,8 @@
         <variable
             name="vm"
             type="com.mr.mf_pd.application.view.main.MainViewModel" />
+
+        <import type="android.view.View" />
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -46,6 +48,11 @@
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_alignParentBottom="true"
+                    android:background="#33333333" />
 
             </RelativeLayout>
 
@@ -76,13 +83,31 @@
                     app:srlAccentColor="@color/colorPrimary"
                     app:srlEnablePreviewInEditMode="true">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycleView"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:scrollbars="none" />
+                        android:layout_height="match_parent">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycleView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:scrollbars="none" />
+
+                        <TextView
+                            android:id="@+id/scanBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:text="下拉刷新，搜索设备"
+                            android:textColor="@color/text_title"
+                            android:textSize="14sp"
+                            android:visibility="@{vm.deviceExist?View.GONE:View.VISIBLE}" />
+                    </RelativeLayout>
 
                 </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 

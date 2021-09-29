@@ -3,6 +3,7 @@
 
     <color name="colorPrimary">@color/colorWhite</color>
     <color name="colorPrimaryDark">#006569</color>
+    <color name="colorPrimaryDarkPress">#55006569</color>
     <color name="colorAccent">#006569</color>
 
     <color name="purple_200">#FFBB86FC</color>
