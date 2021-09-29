@@ -30,4 +30,6 @@
     <string name="type_document">文件</string>
     <string name="action_close">关闭</string>
 
+    <drawable name="bk_color">@color/colorWhite</drawable>
+
 </resources>

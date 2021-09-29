@@ -14,7 +14,6 @@
         android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorWhite"
         android:orientation="vertical"
         app:toast="@{vm.toastStr}"
         tools:openDrawer="end">
@@ -23,14 +22,12 @@
             android:id="@+id/contentLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorWhite"
             android:orientation="vertical">
 
             <RelativeLayout
                 android:id="@+id/toolbarLayout"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/colorWhite">
+                android:layout_height="?attr/actionBarSize">
 
                 <ImageView
                     android:id="@+id/drawerBtn"
@@ -228,7 +225,8 @@
             android:layout_gravity="start"
             android:background="@android:color/white"
             android:fitsSystemWindows="false"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
 
         </LinearLayout>

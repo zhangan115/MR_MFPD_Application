@@ -12,7 +12,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="color_background">#FFFFFF</color>
     <!--背景色-->
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorCommonGreyBg">#F8F8F8</color>

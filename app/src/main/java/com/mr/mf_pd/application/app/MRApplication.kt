@@ -97,7 +97,7 @@ class MRApplication : Application() {
     /**
      * 退出App
      */
-    private fun exitApp() {
+    fun exitApp() {
         if (activityList!!.size > 0) {
             for (activity in activityList!!) {
                 activity.finish()
@@ -110,11 +110,11 @@ class MRApplication : Application() {
     }
 
     fun fileCacheFile(): File? {
-        if (externalCacheDir == null) {
+        if (filesDir == null) {
             return null
         }
-        val file = File(externalCacheDir, ConstantStr.MR_FILE)
-        if (file.exists()) {
+        val file = File(filesDir, ConstantStr.MR_FILE)
+        if (!file.exists()) {
             file.mkdir()
         }
         return file

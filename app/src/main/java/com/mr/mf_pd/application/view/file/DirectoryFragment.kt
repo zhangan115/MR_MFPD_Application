@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.file
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.FileUtils
+import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter
 import com.mr.mf_pd.application.view.file.filter.FileFilter
+import com.mr.mf_pd.application.view.file.listener.ThrottleClickListener
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
@@ -71,7 +72,6 @@ class DirectoryFragment : Fragment() {
             mFile = arguments.getSerializable(ARG_FILE) as File?
         }
         mFilter = arguments?.getSerializable(ARG_FILTER) as FileFilter?
-        Log.d("za", "currentFile ${mFile?.absolutePath}")
     }
 
     internal interface FileClickListener {

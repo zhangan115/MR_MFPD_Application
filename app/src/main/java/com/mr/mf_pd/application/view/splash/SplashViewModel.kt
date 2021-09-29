@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 class SplashViewModel(private val userRepository: UserRepository) : ViewModel() {
 
-    private val delayTime = 2L
+    private val delayTime = 1L
 
     fun start(): Single<Int> {
         return SingleCreate<Int> {

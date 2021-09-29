@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.base
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -26,6 +27,7 @@ import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException
 
+
 abstract class AbsBaseActivity<T : ViewDataBinding> : BaseActivity() {
     val TAG = this.javaClass.simpleName
     lateinit var dataBinding: T
@@ -37,6 +39,7 @@ abstract class AbsBaseActivity<T : ViewDataBinding> : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.window.setBackgroundDrawable(findDrawable(R.drawable.bk_color))
         getSaveState(savedInstanceState)
         initThem()
         dataBinding = DataBindingUtil.setContentView(this, getContentView())

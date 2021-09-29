@@ -14,11 +14,13 @@ import java.util.List;
 public class FileUtils {
 
     public static List<File> getFileList(File directory, @Nullable FileFilter filter) {
-        File[] files = new File[0];
+        File[] files;
         if (filter != null) {
             files = directory.listFiles(filter::accept);
+        } else {
+            files = directory.listFiles();
         }
-        if (files == null) {
+        if (files == null || files.length == 0) {
             return new ArrayList<>();
         }
         List<File> result = Arrays.asList(files);

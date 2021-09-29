@@ -13,10 +13,12 @@ import android.os.Bundle
 import android.os.PatternMatcher
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.MainDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
@@ -29,7 +31,9 @@ import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
-import com.mr.mf_pd.application.view.main.check.DeviceCheckActivity
+import com.mr.mf_pd.application.view.check.DeviceCheckActivity
+import com.mr.mf_pd.application.view.setting.SettingActivity
+import com.mr.mf_pd.application.view.task.TaskActivity
 import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
@@ -85,10 +89,12 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             startActivity(intent)
         }
         checkTaskLayout.setOnClickListener {
-
+            val intent = Intent(this, TaskActivity::class.java)
+            startActivity(intent)
         }
         settingLayout.setOnClickListener {
-
+            val intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)
         }
         refreshLayout.setOnRefreshListener {
             mWiFiManager?.startScan()
@@ -228,6 +234,27 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 
     override fun onWiFiConnectFailure(SSID: String?) {
         viewModel.toastStr.postValue("连接失败")
+    }
+
+    private var currentTime: Long = 0
+
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+            return
+        }
+        if (currentTime == 0L) {
+            viewModel.toastStr.postValue("再次点击退出App")
+            currentTime = System.currentTimeMillis()
+        } else {
+            if (System.currentTimeMillis() - currentTime >= 2000) {
+                currentTime = 0L
+                viewModel.toastStr.postValue("再次点击退出App")
+            } else {
+                MRApplication.instance.exitApp()
+                super.onBackPressed()
+            }
+        }
     }
 
     override fun onDestroy() {

@@ -12,9 +12,11 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.app.MRApplication
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileListDataBinding
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
+import com.mr.mf_pd.application.view.data.FileDataActivity
 import com.mr.mf_pd.application.view.file.DirectoryFragment.Companion.getInstance
 import com.mr.mf_pd.application.view.file.DirectoryFragment.FileClickListener
 import com.mr.mf_pd.application.view.file.filter.FileFilter
@@ -151,8 +153,9 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         if (isFinishing) {
             return
         }
-        //todo 文件点击了
-        Log.d("za", "clickedFile is ${clickedFile?.absolutePath}")
+        val intent = Intent(this, FileDataActivity::class.java)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile?.absolutePath)
+        startActivity(intent)
     }
 
     private fun setResultAndFinish(file: File?) {

@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.main.check
+package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle

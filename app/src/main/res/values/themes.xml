@@ -18,6 +18,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="background">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

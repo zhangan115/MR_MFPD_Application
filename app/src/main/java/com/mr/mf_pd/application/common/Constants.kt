@@ -82,4 +82,11 @@ object Constants {
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100
+
+    /**
+     * 检测类型
+     */
+    enum class CheckType {
+        AC, HF, TEV, UHF
+    }
 }

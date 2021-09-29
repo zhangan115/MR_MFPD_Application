@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.file
+package com.mr.mf_pd.application.view.file.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.FileTypeUtils
-import com.mr.mf_pd.application.view.file.DirectoryAdapter.DirectoryViewHolder
+import com.mr.mf_pd.application.view.file.listener.OnItemClickListener
+import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter.DirectoryViewHolder
 import java.io.File
 
 internal class DirectoryAdapter(private val mFiles: List<File>) :
