@@ -2,13 +2,9 @@ package com.mr.mf_pd.application.view.file
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
-import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.app.MRApplication
@@ -22,7 +18,6 @@ import com.mr.mf_pd.application.view.file.DirectoryFragment.FileClickListener
 import com.mr.mf_pd.application.view.file.filter.FileFilter
 import com.mr.mf_pd.application.view.file.filter.PatternFilter
 import java.io.File
-import java.lang.reflect.Field
 import java.util.*
 import java.util.regex.Pattern
 

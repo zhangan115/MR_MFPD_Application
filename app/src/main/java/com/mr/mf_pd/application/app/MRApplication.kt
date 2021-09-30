@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.app
 
 import android.app.Activity
 import android.app.Application
+import android.util.Log
 import androidx.annotation.NonNull
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -110,10 +111,10 @@ class MRApplication : Application() {
     }
 
     fun fileCacheFile(): File? {
-        if (filesDir == null) {
+        if (externalCacheDir == null) {
             return null
         }
-        val file = File(filesDir, ConstantStr.MR_FILE)
+        val file = File(externalCacheDir, ConstantStr.MR_FILE)
         if (!file.exists()) {
             file.mkdir()
         }

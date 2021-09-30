@@ -11,6 +11,7 @@ import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.view.GravityCompat
@@ -40,6 +41,7 @@ import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : AbsBaseActivity<MainDataBinding>(),
     OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {
