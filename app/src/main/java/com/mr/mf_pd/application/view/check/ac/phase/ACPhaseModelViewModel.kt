@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.check.ac.phase
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mr.mf_pd.application.model.ACModelBean
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
@@ -12,10 +13,10 @@ class ACPhaseModelViewModel(val repository: DataRepository) : ViewModel() {
     var num1Str: MutableLiveData<String> = MutableLiveData("-76")
     var num2Str: MutableLiveData<String> = MutableLiveData("-78")
     var num3Str: MutableLiveData<String> = MutableLiveData("-80")
-    var uhfData: UHFModelBean? = null
+    var acData: ACModelBean? = null
 
     fun start() {
-        uhfData = repository.getHufData()
+        acData = repository.getAcData()
     }
 
 }

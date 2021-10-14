@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.repository
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.model.ACModelBean
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -11,6 +12,7 @@ import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 class DefaultDataRepository : DataRepository {
 
     var uhfModelBean: UHFModelBean? = null
+    var acModelBean: ACModelBean? = null
     var pointList: ArrayList<HashMap<Int, Float>> = ArrayList()
     private var prPsCubeList: ArrayList<PrPsCubeList> = ArrayList()
 
@@ -27,6 +29,10 @@ class DefaultDataRepository : DataRepository {
 
     override fun getHufData(): UHFModelBean? {
         return uhfModelBean
+    }
+
+    override fun getAcData(): ACModelBean? {
+        return acModelBean
     }
 
     override fun hufDataListener() {

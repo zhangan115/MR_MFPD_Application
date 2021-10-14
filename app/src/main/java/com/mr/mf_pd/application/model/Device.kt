@@ -108,3 +108,49 @@ data class UHFModelBean(
     }
 
 }
+
+data class ACModelBean(
+    var tiem: Long, var fz: Float,
+    val phase: Int, var effectiveValue: Float,
+    var bandThreshold: String?, var hz: Float
+) : Parcelable {
+
+    val fzAttr: ObservableField<String> = ObservableField("${fz}dbm")
+    val phaseAttr: ObservableField<String> = ObservableField("内同步")
+    val effectiveValueAttr: ObservableField<String> = ObservableField("${effectiveValue}/mV")
+    val bandThresholdAttr: ObservableField<String> = ObservableField(bandThreshold)
+    val hzAttr: ObservableField<String> = ObservableField(String.format("%.2f", hz) + "Hz")
+
+    constructor(parcel: Parcel) : this(
+        parcel.readLong(),
+        parcel.readFloat(),
+        parcel.readInt(),
+        parcel.readFloat(),
+        parcel.readString(),
+        parcel.readFloat()
+    )
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(parcel: Parcel?, flags: Int) {
+        parcel?.writeLong(tiem)
+        parcel?.writeFloat(fz)
+        parcel?.writeInt(phase)
+        parcel?.writeFloat(effectiveValue)
+        parcel?.writeString(bandThreshold)
+        parcel?.writeFloat(hz)
+    }
+
+    companion object CREATOR : Parcelable.Creator<UHFModelBean> {
+        override fun createFromParcel(parcel: Parcel): UHFModelBean {
+            return UHFModelBean(parcel)
+        }
+
+        override fun newArray(size: Int): Array<UHFModelBean?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+}

@@ -67,7 +67,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{vm.uhfData.fzAttr}"
+                            android:text="@{vm.acData.fzAttr}"
                             android:textColor="@color/text_title"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -80,15 +80,15 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="脉冲数："
+                            android:layout_height="match_parent"
+                            android:text="有效值："
                             android:textColor="@color/text_content_third_color"
                             android:textSize="13sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{vm.uhfData.mcCountAttr}"
+                            android:text="@{vm.acData.effectiveValueAttr}"
                             android:textColor="@color/text_title"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -107,7 +107,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{vm.uhfData.hzAttr}"
+                            android:text="@{vm.acData.hzAttr}"
                             android:textColor="@color/text_title"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -133,7 +133,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{vm.uhfData.phaseAttr}"
+                            android:text="@{vm.acData.phaseAttr}"
                             android:textColor="@color/text_title"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -147,14 +147,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="检测频带："
+                            android:text="频带门限："
                             android:textColor="@color/text_content_third_color"
                             android:textSize="13sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{vm.uhfData.frequencyBandAttr}"
+                            android:text="@{vm.acData.bandThresholdAttr}"
                             android:textColor="@color/text_title"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -189,13 +189,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:background="@mipmap/uhf_icon_small" />
+                android:background="@mipmap/ac_icon_small" />
 
             <ImageView
                 android:id="@+id/image3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@mipmap/uhf_icon_big" />
+                android:background="@mipmap/ac_icon_big" />
 
             <ImageView
                 android:id="@+id/image4"
