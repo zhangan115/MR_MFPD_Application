@@ -25,6 +25,7 @@ import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
 import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
+import com.mr.mf_pd.application.view.check.ac.continuity.ACContinuityModelViewModel
 import com.mr.mf_pd.application.view.check.tev.continuity.TEVContinuityModelViewModel
 import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelViewModel
 import com.mr.mf_pd.application.view.check.ac.phase.ACPhaseModelViewModel
@@ -85,8 +86,8 @@ class ViewModelFactory constructor(
                 ACSettingViewModel(dataRepository, settingRepository)
             isAssignableFrom(ACPhaseModelViewModel::class.java) ->
                 ACPhaseModelViewModel(dataRepository)
-            isAssignableFrom(TEVContinuityModelViewModel::class.java) ->
-                TEVContinuityModelViewModel(dataRepository)
+            isAssignableFrom(ACContinuityModelViewModel::class.java) ->
+                ACContinuityModelViewModel(dataRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
                 ACFlightModelViewModel(dataRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->

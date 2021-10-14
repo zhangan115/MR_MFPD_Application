@@ -19,9 +19,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     var getPrpsValueCallback: GetPrpsValueCallback? = null
 
     @Volatile
-    var angleX: Float = 0f
+    var angleX: Float = -60f
     @Volatile
-    var angleY: Float = 0f
+    var angleY: Float = -10f
 
     interface GetPrpsValueCallback {
         fun getData()
@@ -111,17 +111,15 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         val timeEnd = System.currentTimeMillis()
 //        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()
-        Log.d("za", "x$angleX")
-        Log.d("za", "y$angleY")
     }
 
     private fun position() {
         Matrix.setIdentityM(modelMatrix, 0)
-        Matrix.translateM(modelMatrix, 0, 0.8f, -0.4f, -5f)
+        Matrix.translateM(modelMatrix, 0, 0f, -0.6f, -5f)
 
-        Matrix.rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f)
+        Matrix.rotateM(modelMatrix, 0, angleX, 1f, 0f, 0f)
 
-        Matrix.rotateM(modelMatrix, 0, -10f, 0f, 1f, 0f)
+        Matrix.rotateM(modelMatrix, 0, angleY, 0f, 1f, 0f)
 
         Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
 

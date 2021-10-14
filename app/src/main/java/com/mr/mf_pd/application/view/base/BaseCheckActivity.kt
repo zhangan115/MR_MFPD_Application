@@ -36,6 +36,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
             getScrollBlueBgView()?.layoutParams =
                 RelativeLayout.LayoutParams(width!!, RelativeLayout.LayoutParams.MATCH_PARENT)
         }
+        getViewPager().isUserInputEnabled = false
         getViewPager().registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(
                 position: Int,
@@ -102,7 +103,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
 
     override fun onClick(v: View?) {
         val tag: Int = Integer.valueOf(v?.tag as String)
-        getViewPager().setCurrentItem(tag, false)
+        getViewPager().setCurrentItem(tag, true)
     }
 
 

@@ -72,6 +72,10 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
+            if (dataList[position].deviceName.equals("Test")){
+                socketLink(position)
+                return@setOnItemChildClickListener
+            }
             if (mWiFiManager != null && mWiFiManager!!.connectionInfo?.bssid.equals(scanDataList[position].BSSID)) {
                 socketLink(position)
                 return@setOnItemChildClickListener
@@ -224,6 +228,12 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                 scanDataList.add(it)
             }
         }
+        val deviceBean = DeviceBean(
+            "Test", "", -80,
+            0, 0, "", 0, "BSSID"
+        )
+        dataList.add(deviceBean)
+
         viewModel.deviceExist.postValue(dataList.isNotEmpty())
         recycleView.adapter?.notifyDataSetChanged()
         refreshLayout.finishRefresh(1000)

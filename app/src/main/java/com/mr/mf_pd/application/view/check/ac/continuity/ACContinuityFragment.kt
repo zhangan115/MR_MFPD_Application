@@ -17,7 +17,7 @@ import com.mr.mf_pd.application.view.check.tev.continuity.TEVContinuityModelView
  */
 class ACContinuityFragment : BaseFragment<ACContinuityDataBinding>() {
 
-    private val viewModel by viewModels<TEVContinuityModelViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<ACContinuityModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
 
     companion object {

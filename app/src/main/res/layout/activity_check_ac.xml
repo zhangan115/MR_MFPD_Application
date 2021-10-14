@@ -62,7 +62,7 @@
                     android:gravity="center"
                     android:text="连续模式"
                     android:tag="0"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/mode2Tv"
@@ -71,7 +71,7 @@
                     android:gravity="center"
                     android:text="相位模式"
                     android:tag="1"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/mode3Tv"
@@ -80,7 +80,7 @@
                     android:gravity="center"
                     android:text="飞行模式"
                     android:tag="2"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
 
                 <TextView
@@ -90,7 +90,7 @@
                     android:gravity="center"
                     android:text="实时模式"
                     android:tag="3"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/mode5Tv"
@@ -99,7 +99,7 @@
                     android:gravity="center"
                     android:tag="4"
                     android:text="脉冲波形"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
             </LinearLayout>
         </FrameLayout>

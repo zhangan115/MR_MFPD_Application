@@ -6,13 +6,18 @@ import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.MotionEvent
 
-class RealView(context: Context) : GLSurfaceView(context) {
+class RealView : GLSurfaceView {
+
+    constructor(context: Context?) : super(context!!)
+
+    constructor(context: Context?, attrs: AttributeSet?) : super(
+        context!!, attrs
+    )
 
     private val TOUCH_SCALE_FACTOR: Float = 180.0f / 320f
     private var previousX: Float = 0f
     private var previousY: Float = 0f
     private var renderer: PrPsChartsRenderer? = null
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(e: MotionEvent?): Boolean {
