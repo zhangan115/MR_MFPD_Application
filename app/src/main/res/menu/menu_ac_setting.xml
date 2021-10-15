@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group>
+        <item
+            android:id="@+id/menu_save_path"
+            android:orderInCategory="100"
+            android:title="@string/save_path"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/menu_mc"
+            android:orderInCategory="100"
+            android:title="@string/mc"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/menu_setting"
+            android:orderInCategory="100"
+            android:title="@string/setting"
+            app:showAsAction="never" />
+    </group>
+
+</menu>

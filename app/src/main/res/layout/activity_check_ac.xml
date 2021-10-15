@@ -18,7 +18,23 @@
         android:background="@color/colorWhite"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/toolbar" />
+
+            <ImageView
+                android:id="@+id/menuMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="10dp"
+                android:background="@mipmap/menu_icon_more"
+                android:visibility="visible" />
+        </RelativeLayout>
+
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -60,8 +76,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="连续模式"
                     android:tag="0"
+                    android:text="连续模式"
                     android:textSize="13sp" />
 
                 <TextView
@@ -69,8 +85,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="相位模式"
                     android:tag="1"
+                    android:text="相位模式"
                     android:textSize="13sp" />
 
                 <TextView
@@ -78,8 +94,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="飞行模式"
                     android:tag="2"
+                    android:text="飞行模式"
                     android:textSize="13sp" />
 
 
@@ -88,8 +104,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="实时模式"
                     android:tag="3"
+                    android:text="实时模式"
                     android:textSize="13sp" />
 
                 <TextView

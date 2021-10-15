@@ -106,5 +106,4 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
         getViewPager().setCurrentItem(tag, true)
     }
 
-
 }
