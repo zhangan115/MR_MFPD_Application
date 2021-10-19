@@ -30,6 +30,7 @@ import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -62,6 +63,15 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
         registerReceiver(wifiReceiver, intentFilter)
+        val array = ByteArray(6)
+        array[0] = 0x01
+        array[1] = 0x03
+        array[2] = 0x00
+        array[3] = 0x00
+        array[4] = 0x00
+        array[5] = 0x04
+        val str = ByteUtil.getCRC(array)
+        Log.d("za", "str$str")
     }
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -72,7 +82,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            if (dataList[position].deviceName.equals("Test")){
+            if (dataList[position].deviceName.equals("Test")) {
                 socketLink(position)
                 return@setOnItemChildClickListener
             }
