@@ -82,7 +82,7 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() {
     override fun initData(savedInstanceState: Bundle?) {
         fragmentCount = 5
         super.initData(savedInstanceState)
-
+        viewModel.start()
     }
 
     override fun getContentView(): Int {

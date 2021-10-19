@@ -1,6 +1,9 @@
 package com.mr.mf_pd.application.manager.socket;
 
+import android.util.Log;
+
 import com.mr.mf_pd.application.common.Constants;
+import com.mr.mf_pd.application.utils.ByteUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +11,21 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class SocketManager {
 
@@ -19,6 +33,8 @@ public class SocketManager {
     private OutputStream outputStream;//输出流
 
     private static Socket socket;
+
+    private byte[] lastSendData;//最新发出的数据
 
     private static final int DEVICE_NO = 1;
 
@@ -71,14 +87,18 @@ public class SocketManager {
                 byte[] buf = new byte[1024 * 2];
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
-                    if (!readListeners.isEmpty()) {
-                        if (buf[0] == DEVICE_NO && buf[1] == 8) {
-                            for (ReadListener listener : readListeners) {
-                                byte[] newBuf = new byte[size - 9];
-                                System.arraycopy(buf, 5, newBuf, 0, size - 9);
-                                if (buf[2] == listener.filter) {
-                                    listener.onRead(newBuf);
-                                }
+                    if (buf[0] == DEVICE_NO && buf[1] == 6) {
+                        byte[] newBuf = new byte[size];
+                        System.arraycopy(buf, 0, newBuf, 0, size);
+                        if (Arrays.equals(newBuf, lastSendData)) {
+                            Log.d("za", "对时成功");
+                        }
+                    } else if (buf[0] == DEVICE_NO && buf[1] == 8) {
+                        for (ReadListener listener : readListeners) {
+                            byte[] newBuf = new byte[size - 9];
+                            System.arraycopy(buf, 5, newBuf, 0, size - 9);
+                            if (buf[2] == listener.filter) {
+                                listener.onRead(newBuf);
                             }
                         }
                     }
@@ -143,6 +163,26 @@ public class SocketManager {
     }
 
     /**
+     * 发送数据
+     *
+     * @param data 数据
+     */
+    public void sendData(byte[] data) {
+        Disposable disposable = Observable.create((ObservableOnSubscribe<byte[]>)
+                emitter -> {
+                    SocketManager.this.lastSendData = data;
+                    emitter.onNext(data);
+                    outputStream.write(data);
+                    outputStream.flush();
+                    emitter.onComplete();
+                }).observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(bytes -> {
+
+                });
+    }
+
+    /**
      * 移除状态监控
      *
      * @param listener 状态监控
@@ -189,6 +229,9 @@ public class SocketManager {
             }
             if (outputStream != null) {
                 outputStream.close();
+            }
+            if (linkStateListeners != null) {
+                linkStateListeners.clear();
             }
         } catch (IOException e) {
             e.printStackTrace();

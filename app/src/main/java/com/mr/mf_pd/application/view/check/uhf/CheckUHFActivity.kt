@@ -28,6 +28,7 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
     override fun initData(savedInstanceState: Bundle?) {
         fragmentCount = 2
         super.initData(savedInstanceState)
+        viewModel.start()
     }
 
     override fun getContentView(): Int {

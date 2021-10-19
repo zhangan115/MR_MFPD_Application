@@ -6,10 +6,11 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
+import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
+import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
@@ -54,7 +55,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         SocketManager.getInstance().initLink()
         SocketManager.getInstance().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
-
+                SocketManager.getInstance().sendData(CommandHelp.getTimeCommand())
             } else {
 
             }

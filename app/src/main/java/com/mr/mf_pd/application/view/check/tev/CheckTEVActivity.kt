@@ -31,6 +31,7 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
     override fun initData(savedInstanceState: Bundle?) {
         fragmentCount = 3
         super.initData(savedInstanceState)
+        viewModel.start()
     }
 
     override fun getContentView(): Int {

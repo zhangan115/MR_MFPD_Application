@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.repository
 
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.ACModelBean
@@ -63,6 +64,10 @@ class DefaultDataRepository : DataRepository {
 
     }
 
+    override fun switchPassageway(passageway: Int) {
+        SocketManager.getInstance().sendData(CommandHelp.switchPassageway(passageway))
+    }
+
     private val hufListener = object : ReadListener(0) {
         override fun onRead(bytes: ByteArray?) {
             if (bytes != null) {
@@ -81,8 +86,8 @@ class DefaultDataRepository : DataRepository {
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
                     val f = ByteUtil.getFloat(height)
-                    newValueList[row][column] = f/4
-                    newPointList[row][column] = f/4
+                    newValueList[row][column] = f / 4
+                    newPointList[row][column] = f / 4
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]
