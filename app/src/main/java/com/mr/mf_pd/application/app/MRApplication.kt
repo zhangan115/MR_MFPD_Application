@@ -63,11 +63,12 @@ class MRApplication : Application() {
         get() = RepositoryService.provideFilesRepository()
 
 
-    private var activityList: ArrayList<Activity>? = null
+    private lateinit var activityList: ArrayList<Activity>
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+        activityList = ArrayList()
     }
 
     /**
@@ -76,7 +77,7 @@ class MRApplication : Application() {
      * @param activity activity
      */
     fun openActivity(@NonNull activity: Activity?) {
-        activity?.let { activityList?.add(0, it) } //最新activity的加入第一个位置
+        activity?.let { activityList.add(0, it) } //最新activity的加入第一个位置
     }
 
     /**
@@ -92,15 +93,15 @@ class MRApplication : Application() {
      * @param activity activity
      */
     fun closeActivity(@NonNull activity: Activity?) {
-        activity?.let { activityList?.remove(it) }
+        activity?.let { activityList.remove(it) }
     }
 
     /**
      * 退出App
      */
     fun exitApp() {
-        if (activityList!!.size > 0) {
-            for (activity in activityList!!) {
+        if (activityList.size > 0) {
+            for (activity in activityList) {
                 activity.finish()
             }
         }

@@ -8,7 +8,7 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 class UHFRealModelViewModel(val repository: DataRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
-    var location: MutableLiveData<String> = MutableLiveData("/榆林有色220kV")
+    var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
     var num1Str: MutableLiveData<String> = MutableLiveData("-76")
     var num2Str: MutableLiveData<String> = MutableLiveData("-78")
     var num3Str: MutableLiveData<String> = MutableLiveData("-80")
@@ -19,7 +19,7 @@ class UHFRealModelViewModel(val repository: DataRepository) : ViewModel() {
         repository.hufDataListener()
     }
 
-    fun addHUfData( callback:DataRepository.DataCallback) {
+    fun addHUfData(callback: DataRepository.DataCallback) {
         repository.addHufData(callback)
     }
 

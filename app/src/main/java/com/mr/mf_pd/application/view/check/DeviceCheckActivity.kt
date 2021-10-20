@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
@@ -15,6 +16,7 @@ import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
 import kotlinx.android.synthetic.main.activity_device_check.*
+import java.util.*
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
@@ -55,7 +57,12 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         SocketManager.getInstance().initLink()
         SocketManager.getInstance().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
-                SocketManager.getInstance().sendData(CommandHelp.getTimeCommand())
+                val timeBytes = CommandHelp.getTimeCommand()
+                SocketManager.getInstance().sendData(timeBytes) { bytes ->
+                    if (Arrays.equals(timeBytes, bytes)) {
+                        Log.d("zhangan", "对时成功")
+                    }
+                }
             } else {
 
             }

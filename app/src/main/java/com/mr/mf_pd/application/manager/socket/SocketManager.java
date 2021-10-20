@@ -46,6 +46,8 @@ public class SocketManager {
 
     private List<LinkStateListener> linkStateListeners;
 
+    private ReceiverCallback callback;
+
     //执行请求任务的线程池
     private ExecutorService mRequestExecutor;
     private Future future;
@@ -70,6 +72,10 @@ public class SocketManager {
         return isConnected;
     }
 
+    public void setCallback(ReceiverCallback callback) {
+        this.callback = callback;
+    }
+
     private final Runnable requestRunnable = new Runnable() {
         @Override
         public void run() {
@@ -87,18 +93,20 @@ public class SocketManager {
                 byte[] buf = new byte[1024 * 2];
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
-                    if (buf[0] == DEVICE_NO && buf[1] == 6) {
-                        byte[] newBuf = new byte[size];
-                        System.arraycopy(buf, 0, newBuf, 0, size);
-                        if (Arrays.equals(newBuf, lastSendData)) {
-                            Log.d("za", "对时成功");
-                        }
-                    } else if (buf[0] == DEVICE_NO && buf[1] == 8) {
-                        for (ReadListener listener : readListeners) {
-                            byte[] newBuf = new byte[size - 9];
-                            System.arraycopy(buf, 5, newBuf, 0, size - 9);
-                            if (buf[2] == listener.filter) {
-                                listener.onRead(newBuf);
+                    if (buf[0] == DEVICE_NO) {
+                        if (buf[1] == 8) {
+                            for (ReadListener listener : readListeners) {
+                                byte[] newBuf = new byte[size - 9];
+                                System.arraycopy(buf, 5, newBuf, 0, size - 9);
+                                if (buf[2] == listener.filter) {
+                                    listener.onRead(newBuf);
+                                }
+                            }
+                        } else {
+                            byte[] newBuf = new byte[size];
+                            System.arraycopy(buf, 0, newBuf, 0, size);
+                            if (callback != null) {
+                                callback.onReceiver(newBuf);
                             }
                         }
                     }
@@ -162,13 +170,29 @@ public class SocketManager {
         linkStateListeners.add(listener);
     }
 
+    public Disposable sendData(byte[] data) {
+        return Observable.create((ObservableOnSubscribe<byte[]>)
+                emitter -> {
+                    SocketManager.this.lastSendData = data;
+                    emitter.onNext(data);
+                    outputStream.write(data);
+                    outputStream.flush();
+                    emitter.onComplete();
+                }).observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(bytes -> {
+
+                });
+    }
+
     /**
      * 发送数据
      *
      * @param data 数据
      */
-    public void sendData(byte[] data) {
-        Disposable disposable = Observable.create((ObservableOnSubscribe<byte[]>)
+    public Disposable sendData(byte[] data, ReceiverCallback callback) {
+        this.callback = callback;
+        return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
                     SocketManager.this.lastSendData = data;
                     emitter.onNext(data);

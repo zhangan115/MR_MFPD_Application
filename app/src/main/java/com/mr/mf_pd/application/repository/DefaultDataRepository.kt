@@ -1,18 +1,25 @@
 package com.mr.mf_pd.application.repository
 
+import android.util.Log
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.ReadListener
+import com.mr.mf_pd.application.manager.socket.ReceiverCallback
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.ACModelBean
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class DefaultDataRepository : DataRepository {
 
     var uhfModelBean: UHFModelBean? = null
+    private var checkDir: File? = null
     var acModelBean: ACModelBean? = null
     var pointList: ArrayList<HashMap<Int, Float>> = ArrayList()
     private var prPsCubeList: ArrayList<PrPsCubeList> = ArrayList()
@@ -25,6 +32,14 @@ class DefaultDataRepository : DataRepository {
             }
             PrPsCubeList.defaultValues.add(list)
         }
+    }
+
+    override fun setCheckFileDir(dir: File) {
+        this.checkDir = dir
+    }
+
+    override fun getCheckFileDir(): File? {
+        return checkDir
     }
 
 
@@ -65,7 +80,12 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun switchPassageway(passageway: Int) {
-        SocketManager.getInstance().sendData(CommandHelp.switchPassageway(passageway))
+        val bytes = CommandHelp.switchPassageway(passageway)
+        SocketManager.getInstance().sendData(bytes) { newBytes ->
+            if (Arrays.equals(newBytes, bytes)) {
+                Log.d("zhangan", "通道打开成功")
+            }
+        }
     }
 
     private val hufListener = object : ReadListener(0) {
@@ -85,7 +105,7 @@ class DefaultDataRepository : DataRepository {
                     val column = values[1].toInt()
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    val f = ByteUtil.getFloat(height)
+                    val f = ByteUtil.getFloat(height) * -1
                     newValueList[row][column] = f / 4
                     newPointList[row][column] = f / 4
                 }
