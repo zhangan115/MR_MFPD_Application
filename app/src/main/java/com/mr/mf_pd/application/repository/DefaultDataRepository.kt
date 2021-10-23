@@ -105,9 +105,9 @@ class DefaultDataRepository : DataRepository {
                     val column = values[1].toInt()
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    val f = ByteUtil.getFloat(height) * -1
-                    newValueList[row][column] = f / 4
-                    newPointList[row][column] = f / 4
+                    val f = ByteUtil.getFloat(height)
+                    newValueList[row][column] = f
+                    newPointList[row][column] = f
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]

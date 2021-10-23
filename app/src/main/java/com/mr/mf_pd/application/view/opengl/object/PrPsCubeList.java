@@ -29,19 +29,32 @@ public class PrPsCubeList {
             + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
     public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
             + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+
+    public static final float bottomValue = -80.0f;
+
     //默认数据
     public static ArrayList<ArrayList<Float>> defaultValues = new ArrayList<>();
+    private int valueCount;
 
     public PrPsCubeList(ArrayList<Float> height) {
-        appPrPsCubeList( height);
+        appPrPsCubeList(height);
     }
 
     public void updateRow(int row) {
-        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
+        valueCount = 0;
+        for (int i = 0; i < values.size(); i++) {
+            if (values.get(i) != null) {
+                valueCount = valueCount + 1;
+            }
+        }
+        float[] vertexPoints = new float[valueCount * 8 * VERTEX_POSITION_SIZE];
+        int hasValuePosition = 0;
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = values.get(i) * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+                zTopPosition = (1 + values.get(i) / (bottomValue / 2));
+            }else {
+                continue;
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
@@ -57,7 +70,8 @@ public class PrPsCubeList {
                     startX + stepX / 2, startY + stepY / 2, zTopPosition,
                     startX + stepX / 2, startY, zTopPosition,
             };
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * hasValuePosition * VERTEX_POSITION_SIZE, vertexPoint.length);
+            hasValuePosition = +1;
         }
         vertexBuffer.put(vertexPoints);
         vertexBuffer.position(0);
@@ -71,12 +85,21 @@ public class PrPsCubeList {
 
     private void appPrPsCubeList(ArrayList<Float> values) {
         this.values = values;
-        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
-        float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
+        valueCount = 0;
+        for (int i = 0; i < values.size(); i++) {
+            if (values.get(i) != null) {
+                valueCount = valueCount + 1;
+            }
+        }
+        int hasValuePosition = 0;
+        float[] vertexPoints = new float[valueCount * 8 * VERTEX_POSITION_SIZE];
+        float[] colors = new float[valueCount * 8 * VERTEX_COLOR_SIZE];
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = values.get(i) * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+                zTopPosition = (1 + values.get(i) / (bottomValue / 2));
+            } else {
+                continue;
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1f;
@@ -94,16 +117,17 @@ public class PrPsCubeList {
             };
             float[] color;
             if (values.get(i) == null) {
-                color = Constants.INSTANCE.getYellowColors();
-            } else if (values.get(i) < -0.4f) {
+                color = Constants.INSTANCE.getTransparentColors();
+            } else if (values.get(i) < -60f) {
                 color = Constants.INSTANCE.getRedColors();
-            } else if (values.get(i) >= -0.4f && values.get(i) < 0.4f) {
+            } else if (values.get(i) >= -60f && values.get(i) < -30f) {
                 color = Constants.INSTANCE.getBlueColors();
             } else {
                 color = Constants.INSTANCE.getGreenColors();
             }
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
-            System.arraycopy(color, 0, colors, 8 * i * VERTEX_COLOR_SIZE, color.length);
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * hasValuePosition * VERTEX_POSITION_SIZE, vertexPoint.length);
+            System.arraycopy(color, 0, colors, 8 * hasValuePosition * VERTEX_COLOR_SIZE, color.length);
+            hasValuePosition = +1;
         }
 
         //分配内存空间,每个浮点型占4字节空间
@@ -131,13 +155,15 @@ public class PrPsCubeList {
         GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
         //启用颜色顶点属性
         GLES30.glEnableVertexAttribArray(1);
+        short[] indices1 =  new short[Constants.INSTANCE.getIndices().length * valueCount];
         short[] indices = Constants.INSTANCE.getIndicesList();
-        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
+        if (indices1.length >= 0) System.arraycopy(indices, 0, indices1, 0, indices1.length);
+        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices1.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asShortBuffer();
         //传入指定的数据
-        indicesBuffer.put(indices);
+        indicesBuffer.put(indices1);
         indicesBuffer.position(0);
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices1.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
     }
 }

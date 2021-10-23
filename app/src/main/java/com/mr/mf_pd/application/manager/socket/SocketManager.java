@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.utils.ByteUtil;
+import com.mr.mf_pd.application.utils.DataUtil;
 
 import java.io.IOException;
 import java.io.InputStream;

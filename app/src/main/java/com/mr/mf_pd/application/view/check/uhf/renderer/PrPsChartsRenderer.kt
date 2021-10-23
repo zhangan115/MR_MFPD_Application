@@ -93,11 +93,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorPointProgram.useProgram()
         colorPointProgram.setUniforms(modelViewProjectionMatrix)
 
-        prPsPoints?.bindData(colorPointProgram)
-        prPsPoints?.draw()
-
         colorProgram.useProgram()
         colorProgram.setUniforms(modelViewProjectionMatrix, 0.4f, 0.4f, 0.4f)
+
         prPs3DXYLines.bindData(colorProgram)
         prPs3DXYLines.draw()
 
@@ -108,6 +106,10 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
             it.bindData(colorPointProgram)
             it.draw()
         }
+
+        prPsPoints?.bindData(colorPointProgram)
+        prPsPoints?.draw()
+
         val timeEnd = System.currentTimeMillis()
 //        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()

@@ -23,6 +23,7 @@ public class PrpsPointList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
+    public static final float bottomValue = -80.0f;
 
     private Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
@@ -81,7 +82,7 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zTopPosition = entry2.getKey() * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+                float zTopPosition = (1 + entry2.getKey() / (bottomValue / 2));
                 float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(1f);
