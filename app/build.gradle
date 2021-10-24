@@ -114,7 +114,8 @@ dependencies {
     implementation "com.afollestad.material-dialogs:core:$dialog_version"
     implementation "com.afollestad.material-dialogs:bottomsheets:$dialog_version"
     implementation "com.afollestad.material-dialogs:lifecycle:$dialog_version"
-
+    implementation "com.afollestad.material-dialogs:input:$dialog_version"
+    implementation "com.afollestad.material-dialogs:color:$dialog_version"
     //autoDispose
     implementation 'com.uber.autodispose:autodispose:1.1.0'
     implementation 'com.uber.autodispose:autodispose-android-archcomponents:1.1.0'

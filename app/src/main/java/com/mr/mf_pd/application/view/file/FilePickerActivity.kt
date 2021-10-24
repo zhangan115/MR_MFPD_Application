@@ -3,9 +3,18 @@ package com.mr.mf_pd.application.view.file
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
@@ -13,13 +22,15 @@ import com.mr.mf_pd.application.databinding.FileListDataBinding
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.data.FileDataActivity
-import com.mr.mf_pd.application.view.file.DirectoryFragment.Companion.getInstance
+
 import com.mr.mf_pd.application.view.file.DirectoryFragment.FileClickListener
 import com.mr.mf_pd.application.view.file.filter.FileFilter
 import com.mr.mf_pd.application.view.file.filter.PatternFilter
+import kotlinx.android.synthetic.main.activity_file_picker.*
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickListener {
 
@@ -28,7 +39,18 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     private var mCurrent = mStart
     private var mTitle: CharSequence? = null
     private var mCloseable = true
+    private var isDeleteModel = false
+    private var mChooseDir = false
     private var mFilter: FileFilter? = null
+
+    private var mFileTypeTv: TextView? = null
+
+    private var directoryListeners: ArrayList<DirectoryListener> = ArrayList()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        mChooseDir = intent.getBooleanExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
+        super.onCreate(savedInstanceState)
+    }
 
     private fun initArguments(savedInstanceState: Bundle?) {
         if (intent.hasExtra(ARG_FILTER)) {
@@ -81,46 +103,105 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     }
 
     private fun updateTitle() {
-//        if (supportActionBar != null) {
-//            val titlePath = mCurrent!!.absolutePath
-//            if (TextUtils.isEmpty(mTitle)) {
-//                supportActionBar!!.title = titlePath
-//            } else {
-//                supportActionBar!!.subtitle = titlePath
-//            }
-//        }
+        val homeDir = mStart?.absolutePath
+        if (homeDir != null && mCurrent != null) {
+            val titlePath = mCurrent!!.absolutePath.substring(homeDir.length)
+            var dirStr = "/"
+            if (!TextUtils.isEmpty(titlePath)) {
+                dirStr = titlePath
+            }
+            filePathTv.text = dirStr
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_file, menu)
-        return false
+        if (mChooseDir) {
+            menuInflater.inflate(R.menu.menu_choose_dir, menu)
+        } else {
+            menuInflater.inflate(R.menu.menu_file, menu)
+        }
+        return true
     }
 
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
-        if (menuItem.itemId == android.R.id.home) {
-            onBackPressed()
-        } else if (menuItem.itemId == R.id.action_close) {
-            finish()
+        when (menuItem.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+            }
+            R.id.action_close -> {
+                finish()
+            }
+            R.id.menu_new_dir -> {
+                MaterialDialog(this).show {
+                    title(text = "请输入文件夹名称")
+                    input { _, text ->
+                        mCurrent?.let {
+                            val file = File(it, text.toString())
+                            if (file.mkdir()) {
+                                Log.d("zhangan", "文件夹创建成功")
+                            }
+                        }
+                    }
+                    lifecycleOwner(this@FilePickerActivity)
+                }
+            }
+            R.id.menu_edit_dir -> {
+                val dirName = mCurrent?.name
+                MaterialDialog(this).show {
+                    title(text = "请输入文件夹名称")
+                    input(prefill = dirName) { dialog, text ->
+                        mCurrent?.let {
+                            val file = File(it, text.toString())
+                            if (file.mkdir()) {
+                                Log.d("zhangan", "文件夹创建成功")
+                            }
+                        }
+                    }
+                    lifecycleOwner(this@FilePickerActivity)
+                }
+            }
+            R.id.menu_cut -> {
+
+            }
+            R.id.menu_paste -> {
+
+            }
+            R.id.menu_delete -> {
+                isDeleteModel = true
+                directoryListeners.forEach {
+                    it.deleteModel(isDeleteModel)
+                }
+            }
+            R.id.menu_share -> {
+
+            }
         }
         return super.onOptionsItemSelected(menuItem)
     }
 
     private fun addFragmentToBackStack(file: File?) {
+        val fragment = DirectoryFragment.getInstance(
+            file,
+            mFilter
+        )
+        directoryListeners.add(fragment)
         supportFragmentManager
             .beginTransaction()
             .replace(
                 R.id.container,
-                getInstance(
-                    file,
-                    mFilter
-                )
+                fragment
             )
             .addToBackStack(null)
             .commit()
     }
 
     override fun onBackAction() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
+        if (isDeleteModel) {
+            isDeleteModel = false
+            directoryListeners.forEach {
+                it.deleteModel(isDeleteModel)
+            }
+        } else if (supportFragmentManager.backStackEntryCount > 1) {
             supportFragmentManager.popBackStack()
             mCurrent = FileUtils.getParentOrNull(mCurrent)
             updateTitle()
@@ -146,11 +227,21 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
 
     private fun handleFileClicked(clickedFile: File?) {
         if (isFinishing) {
+            setResultAndFinish(clickedFile)
             return
         }
-        val intent = Intent(this, FileDataActivity::class.java)
-        intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile?.absolutePath)
-        startActivity(intent)
+        if (clickedFile != null) {
+            if (clickedFile.isFile) {
+                val intent = Intent(this, FileDataActivity::class.java)
+                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile?.absolutePath)
+                startActivity(intent)
+            } else {
+                mCurrent = clickedFile
+                addFragmentToBackStack(clickedFile)
+                updateTitle()
+            }
+        }
+
     }
 
     private fun setResultAndFinish(file: File?) {
@@ -174,8 +265,22 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
 
     override fun initView(savedInstanceState: Bundle?) {
         mToolbar = findViewById(R.id.toolbar)
+        findViewById<View>(R.id.toolbar_div).visibility = View.GONE
         if (savedInstanceState == null) {
             initBackStackState()
+        }
+        mFileTypeTv = findViewById(R.id.fileTypeTv)
+        findViewById<RelativeLayout>(R.id.chooseFileTypeLayout).setOnClickListener {
+            MaterialDialog(this)
+                .show {
+                    listItems(R.array.choose_file_type) { _, index, text ->
+                        mFileTypeTv?.text = text
+                        directoryListeners.forEach {
+                            it.onFileTypeChange(index)
+                        }
+                    }
+                    lifecycleOwner(this@FilePickerActivity)
+                }
         }
     }
 

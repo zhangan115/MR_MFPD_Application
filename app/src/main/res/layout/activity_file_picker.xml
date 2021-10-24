@@ -10,12 +10,77 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/toolbar" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:src="@mipmap/menu_icon_more" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/chooseFileTypeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="@color/white"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="类型"
+                android:textColor="@color/text_content_third_color"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/fileTypeTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="@string/file_type_all"
+                android:textColor="@color/text_title"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#33333333" />
 
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:id="@+id/filePathTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="/"
+                android:textColor="@color/text_title"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 </layout>

@@ -36,6 +36,19 @@
     <string name="type_hf">高频</string>
     <string name="action_close">关闭</string>
 
+    <string name="menu_str_new_dir">新建文件夹</string>
+    <string name="menu_str_edit_dir">编辑文件夹</string>
+    <string name="menu_str_cut">剪切</string>
+    <string name="menu_str_paste">粘贴</string>
+    <string name="menu_str_delete">删除</string>
+    <string name="menu_str_share">共享</string>
+
+    <string name="file_type_all">所有类型</string>
+    <string name="file_type_ac">超声波(AC)</string>
+    <string name="file_type_tev">暂态地电压(TEV)</string>
+    <string name="file_type_hf">高频(HF)</string>
+    <string name="file_type_uhf">特高频(UHF)</string>
+
     <drawable name="bk_color">@color/colorWhite</drawable>
 
 </resources>

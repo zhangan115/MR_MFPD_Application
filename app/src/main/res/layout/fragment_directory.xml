@@ -4,33 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/chooseFileTypeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="类型"
-            android:textColor="@color/text_content_third_color"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:text="所有类型"
-            android:textColor="@color/text_title"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-    </RelativeLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

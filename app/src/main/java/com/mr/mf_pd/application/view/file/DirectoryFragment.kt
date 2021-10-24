@@ -12,20 +12,22 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter
 import com.mr.mf_pd.application.view.file.filter.FileFilter
+import com.mr.mf_pd.application.view.file.listener.LabelClickListener
+import com.mr.mf_pd.application.view.file.listener.PhotoClickListener
 import com.mr.mf_pd.application.view.file.listener.ThrottleClickListener
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
-class DirectoryFragment : Fragment() {
+class DirectoryFragment : Fragment(), DirectoryListener {
 
     private var mEmptyView: View? = null
+    private var isDelete: Boolean = false
+    private var fileType: Int = 0
     private var mFile: File? = null
     private var mFilter: FileFilter? = null
     private var mDirectoryRecyclerView: EmptyRecyclerView? = null
     private var mDirectoryAdapter: DirectoryAdapter? = null
     private var mFileClickListener: FileClickListener? = null
-
-    private var fileType: Int = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -45,10 +47,6 @@ class DirectoryFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
         mDirectoryRecyclerView = view.findViewById(R.id.directory_recycler_view)
         mEmptyView = view.findViewById(R.id.directory_empty_view)
-        view.findViewById<RelativeLayout>(R.id.chooseFileTypeLayout).setOnClickListener {
-
-        }
-
         return view
     }
 
@@ -66,6 +64,16 @@ class DirectoryFragment : Fragment() {
                 if (mFileClickListener != null) {
                     mFileClickListener!!.onFileClicked(mDirectoryAdapter!!.getModel(position))
                 }
+            }
+        })
+        mDirectoryAdapter?.setOnPhotoClickListener(object : PhotoClickListener() {
+            override fun onItemClickThrottled(view: View?, position: Int) {
+
+            }
+        })
+        mDirectoryAdapter?.setOnLabelClickListener(object : LabelClickListener() {
+            override fun onItemClickThrottled(view: View?, position: Int) {
+
             }
         })
         mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
@@ -104,5 +112,15 @@ class DirectoryFragment : Fragment() {
             instance.arguments = args
             return instance
         }
+    }
+
+    override fun onFileTypeChange(fileType: Int) {
+        this.fileType = fileType
+        initFilesList()
+    }
+
+    override fun deleteModel(isDelete: Boolean) {
+        this.isDelete = isDelete
+        initFilesList()
     }
 }

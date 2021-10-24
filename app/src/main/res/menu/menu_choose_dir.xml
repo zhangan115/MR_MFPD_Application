@@ -6,6 +6,14 @@
         android:title="@string/action_close"
         app:showAsAction="collapseActionView" />
     <item
+        android:id="@+id/menu_new_dir"
+        android:title="@string/menu_str_new_dir"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_edit_dir"
+        android:title="@string/menu_str_edit_dir"
+        app:showAsAction="collapseActionView" />
+    <item
         android:id="@+id/menu_cut"
         android:title="@string/menu_str_cut"
         app:showAsAction="collapseActionView" />
