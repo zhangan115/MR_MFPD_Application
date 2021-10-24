@@ -41,20 +41,11 @@ public class PrPsCubeList {
     }
 
     public void updateRow(int row) {
-        valueCount = 0;
-        for (int i = 0; i < values.size(); i++) {
-            if (values.get(i) != null) {
-                valueCount = valueCount + 1;
-            }
-        }
-        float[] vertexPoints = new float[valueCount * 8 * VERTEX_POSITION_SIZE];
-        int hasValuePosition = 0;
+        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
                 zTopPosition = (1 + values.get(i) / (bottomValue / 2));
-            }else {
-                continue;
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
@@ -70,8 +61,7 @@ public class PrPsCubeList {
                     startX + stepX / 2, startY + stepY / 2, zTopPosition,
                     startX + stepX / 2, startY, zTopPosition,
             };
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * hasValuePosition * VERTEX_POSITION_SIZE, vertexPoint.length);
-            hasValuePosition = +1;
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
         }
         vertexBuffer.put(vertexPoints);
         vertexBuffer.position(0);
@@ -85,21 +75,12 @@ public class PrPsCubeList {
 
     private void appPrPsCubeList(ArrayList<Float> values) {
         this.values = values;
-        valueCount = 0;
-        for (int i = 0; i < values.size(); i++) {
-            if (values.get(i) != null) {
-                valueCount = valueCount + 1;
-            }
-        }
-        int hasValuePosition = 0;
-        float[] vertexPoints = new float[valueCount * 8 * VERTEX_POSITION_SIZE];
-        float[] colors = new float[valueCount * 8 * VERTEX_COLOR_SIZE];
+        float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
+        float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
                 zTopPosition = (1 + values.get(i) / (bottomValue / 2));
-            } else {
-                continue;
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1f;
@@ -125,9 +106,8 @@ public class PrPsCubeList {
             } else {
                 color = Constants.INSTANCE.getGreenColors();
             }
-            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * hasValuePosition * VERTEX_POSITION_SIZE, vertexPoint.length);
-            System.arraycopy(color, 0, colors, 8 * hasValuePosition * VERTEX_COLOR_SIZE, color.length);
-            hasValuePosition = +1;
+            System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
+            System.arraycopy(color, 0, colors, 8 * i * VERTEX_COLOR_SIZE, color.length);
         }
 
         //分配内存空间,每个浮点型占4字节空间
@@ -155,15 +135,13 @@ public class PrPsCubeList {
         GLES30.glVertexAttribPointer(1, VERTEX_COLOR_SIZE, GLES30.GL_FLOAT, false, 0, colorBuffer);
         //启用颜色顶点属性
         GLES30.glEnableVertexAttribArray(1);
-        short[] indices1 =  new short[Constants.INSTANCE.getIndices().length * valueCount];
         short[] indices = Constants.INSTANCE.getIndicesList();
-        if (indices1.length >= 0) System.arraycopy(indices, 0, indices1, 0, indices1.length);
-        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices1.length * 4)
+        ShortBuffer indicesBuffer = ByteBuffer.allocateDirect(indices.length * 4)
                 .order(ByteOrder.nativeOrder())
                 .asShortBuffer();
         //传入指定的数据
-        indicesBuffer.put(indices1);
+        indicesBuffer.put(indices);
         indicesBuffer.position(0);
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices1.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, indices.length, GLES30.GL_UNSIGNED_SHORT, indicesBuffer);
     }
 }

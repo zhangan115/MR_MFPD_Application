@@ -14,8 +14,11 @@ import java.util.Map;
 public class FileTypeUtils {
 
     public enum FileType {
-        DIRECTORY(R.drawable.ic_folder_48dp, R.string.type_directory),
-        DOCUMENT(R.drawable.ic_document_box, R.string.type_document);
+        DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
+        UHF(R.drawable.ic_document_box, R.string.type_uhf),
+        AC(R.drawable.ic_document_box, R.string.type_ac),
+        TEV(R.drawable.ic_document_box, R.string.type_tev),
+        HF(R.drawable.ic_document_box, R.string.type_hf);
         private final int icon;
         private final int description;
         private final String[] extensions;
@@ -59,7 +62,7 @@ public class FileTypeUtils {
             return fileType;
         }
 
-        return FileType.DOCUMENT;
+        return FileType.DIRECTORY;
     }
 
     private static String getExtension(String fileName) {

@@ -111,7 +111,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.draw()
 
         val timeEnd = System.currentTimeMillis()
-//        Log.d("za", "cost time ${timeEnd - timeStart}")
+        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()
     }
 

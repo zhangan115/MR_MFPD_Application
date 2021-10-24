@@ -95,7 +95,7 @@
 
     <color name="empty_directory_hint">#c7c7c7</color>
 
-    <color name="compatibility_pressed_color">#1a000000</color>
-    <color name="compatibility_focus_color">#48000000</color>
+    <color name="compatibility_pressed_color">#88F6F6F7</color>
+    <color name="compatibility_focus_color">#F6F6F7</color>
 
 </resources>

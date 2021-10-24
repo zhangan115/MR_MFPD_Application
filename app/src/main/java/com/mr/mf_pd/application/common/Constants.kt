@@ -23,14 +23,14 @@ object Constants {
     )
 
     var transparentColors = floatArrayOf(
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
-        0f, 0f, 0f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
+        1f, 1f, 1f, 0f,
     )
     var whiteColors = floatArrayOf(
         1f, 1f, 1f, 1f,

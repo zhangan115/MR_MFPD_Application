@@ -1,37 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.mr.mf_pd.application.widget.EmptyRecyclerView
-        android:id="@+id/directory_recycler_view"
+    <RelativeLayout
+        android:id="@+id/chooseFileTypeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical" />
-
-    <LinearLayout
-        android:id="@+id/directory_empty_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_file_gray_116dp" />
+        android:layout_height="34dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/empty_directory_hint"
-            android:textColor="@color/empty_directory_hint"
-            android:textSize="24sp" />
+            android:layout_centerVertical="true"
+            android:text="类型"
+            android:textColor="@color/text_content_third_color"
+            android:textSize="14sp" />
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="所有类型"
+            android:textColor="@color/text_title"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-</FrameLayout>
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.mr.mf_pd.application.widget.EmptyRecyclerView
+            android:id="@+id/directory_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:id="@+id/directory_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_file_gray_116dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/empty_directory_hint"
+                android:textColor="@color/empty_directory_hint"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

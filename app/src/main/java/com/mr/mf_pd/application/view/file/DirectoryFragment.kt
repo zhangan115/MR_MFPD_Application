@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.R
@@ -24,6 +25,8 @@ class DirectoryFragment : Fragment() {
     private var mDirectoryAdapter: DirectoryAdapter? = null
     private var mFileClickListener: FileClickListener? = null
 
+    private var fileType: Int = 0
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mFileClickListener = context as FileClickListener
@@ -42,6 +45,10 @@ class DirectoryFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
         mDirectoryRecyclerView = view.findViewById(R.id.directory_recycler_view)
         mEmptyView = view.findViewById(R.id.directory_empty_view)
+        view.findViewById<RelativeLayout>(R.id.chooseFileTypeLayout).setOnClickListener {
+
+        }
+
         return view
     }
 

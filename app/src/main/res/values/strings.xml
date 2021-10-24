@@ -30,6 +30,10 @@
 
     <string name="type_directory">文件夹</string>
     <string name="type_document">文件</string>
+    <string name="type_uhf">特高频</string>
+    <string name="type_ac">超声波</string>
+    <string name="type_tev">暂态地电压</string>
+    <string name="type_hf">高频</string>
     <string name="action_close">关闭</string>
 
     <drawable name="bk_color">@color/colorWhite</drawable>
