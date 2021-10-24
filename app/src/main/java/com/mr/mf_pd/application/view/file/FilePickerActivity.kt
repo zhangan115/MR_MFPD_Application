@@ -146,18 +146,20 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                 }
             }
             R.id.menu_edit_dir -> {
-                val dirName = mCurrent?.name
-                MaterialDialog(this).show {
-                    title(text = "请输入文件夹名称")
-                    input(prefill = dirName) { dialog, text ->
-                        mCurrent?.let {
-                            val file = File(it, text.toString())
-                            if (file.mkdir()) {
-                                Log.d("zhangan", "文件夹创建成功")
+                if (mCurrent != null && mStart != null && !mCurrent!!.absolutePath.equals(mStart!!.absolutePath)) {
+                    val dirName = mCurrent?.name
+                    MaterialDialog(this).show {
+                        title(text = "请输入文件夹名称")
+                        input(prefill = dirName) { dialog, text ->
+                            mCurrent?.let {
+                                val file = File(it, text.toString())
+                                if (file.mkdir()) {
+                                    Log.d("zhangan", "文件夹创建成功")
+                                }
                             }
                         }
+                        lifecycleOwner(this@FilePickerActivity)
                     }
-                    lifecycleOwner(this@FilePickerActivity)
                 }
             }
             R.id.menu_cut -> {

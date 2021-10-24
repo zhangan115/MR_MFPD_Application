@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.file.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,6 +49,7 @@ internal class DirectoryAdapter(private val mFiles: List<File>) :
         )
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
         val currentFile = mFiles[position]
         val fileType = FileTypeUtils.getFileType(currentFile)
@@ -58,11 +60,14 @@ internal class DirectoryAdapter(private val mFiles: List<File>) :
             holder.mNextImage.visibility = View.VISIBLE
             holder.mPhotoImage.visibility = View.GONE
             holder.mLabelImage.visibility = View.GONE
+            holder.mFileSubtitle.text = "对象：" + currentFile.listFiles().size
         } else {
             holder.mNextImage.visibility = View.GONE
 
             holder.mPhotoImage.visibility = View.VISIBLE
             holder.mLabelImage.visibility = View.VISIBLE
+
+            holder.mFileSubtitle.text = "特高频"
         }
     }
 
