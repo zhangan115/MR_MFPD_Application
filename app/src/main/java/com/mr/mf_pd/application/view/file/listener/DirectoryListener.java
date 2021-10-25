@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.file;
+package com.mr.mf_pd.application.view.file.listener;
 
 public interface DirectoryListener {
 

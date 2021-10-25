@@ -26,6 +26,7 @@ import com.mr.mf_pd.application.view.data.FileDataActivity
 import com.mr.mf_pd.application.view.file.DirectoryFragment.FileClickListener
 import com.mr.mf_pd.application.view.file.filter.FileFilter
 import com.mr.mf_pd.application.view.file.filter.PatternFilter
+import com.mr.mf_pd.application.view.file.listener.DirectoryListener
 import kotlinx.android.synthetic.main.activity_file_picker.*
 import java.io.File
 import java.util.*
@@ -146,15 +147,19 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                 }
             }
             R.id.menu_edit_dir -> {
+                val dirName = mCurrent?.name
                 if (mCurrent != null && mStart != null && !mCurrent!!.absolutePath.equals(mStart!!.absolutePath)) {
-                    val dirName = mCurrent?.name
                     MaterialDialog(this).show {
                         title(text = "请输入文件夹名称")
-                        input(prefill = dirName) { dialog, text ->
+                        input(prefill = dirName) { _, text ->
                             mCurrent?.let {
-                                val file = File(it, text.toString())
-                                if (file.mkdir()) {
-                                    Log.d("zhangan", "文件夹创建成功")
+                                if (!TextUtils.isEmpty(text)) {
+                                    val file = File(it.parentFile, text.toString())
+                                    if (it.renameTo(file)) {
+                                        mCurrent = file
+                                        Log.d("zhangan", "文件夹名称修改成功")
+                                    }
+                                    updateTitle()
                                 }
                             }
                         }

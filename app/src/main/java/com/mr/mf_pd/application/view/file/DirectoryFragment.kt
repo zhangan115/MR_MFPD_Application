@@ -5,20 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter
 import com.mr.mf_pd.application.view.file.filter.FileFilter
+import com.mr.mf_pd.application.view.file.listener.DirectoryListener
 import com.mr.mf_pd.application.view.file.listener.LabelClickListener
 import com.mr.mf_pd.application.view.file.listener.PhotoClickListener
 import com.mr.mf_pd.application.view.file.listener.ThrottleClickListener
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
-class DirectoryFragment : Fragment(), DirectoryListener {
+class DirectoryFragment : Fragment(),
+    DirectoryListener {
 
     private var mEmptyView: View? = null
     private var isDelete: Boolean = false
