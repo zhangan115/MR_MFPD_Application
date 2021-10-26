@@ -45,7 +45,7 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = (1 + values.get(i) / (bottomValue / 2));
+                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
@@ -80,7 +80,7 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = (1 + values.get(i) / (bottomValue / 2));
+                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1f;

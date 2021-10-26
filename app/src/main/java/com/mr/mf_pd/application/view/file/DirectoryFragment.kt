@@ -2,19 +2,21 @@ package com.mr.mf_pd.application.view.file
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter
 import com.mr.mf_pd.application.view.file.filter.FileFilter
 import com.mr.mf_pd.application.view.file.listener.LabelClickListener
 import com.mr.mf_pd.application.view.file.listener.PhotoClickListener
 import com.mr.mf_pd.application.view.file.listener.ThrottleClickListener
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
@@ -28,6 +30,8 @@ class DirectoryFragment : Fragment(), DirectoryListener {
     private var mDirectoryRecyclerView: EmptyRecyclerView? = null
     private var mDirectoryAdapter: DirectoryAdapter? = null
     private var mFileClickListener: FileClickListener? = null
+
+    private var checkDataFileModels: ArrayList<CheckDataFileModel> = ArrayList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -57,7 +61,7 @@ class DirectoryFragment : Fragment(), DirectoryListener {
     }
 
     private fun initFilesList() {
-        mDirectoryAdapter = DirectoryAdapter(FileUtils.getFileList(mFile, mFilter))
+        mDirectoryAdapter = DirectoryAdapter(checkDataFileModels)
         mDirectoryAdapter?.setOnItemClickListener(object : ThrottleClickListener() {
 
             override fun onItemClickThrottled(view: View?, position: Int) {
@@ -79,6 +83,13 @@ class DirectoryFragment : Fragment(), DirectoryListener {
         mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
         mDirectoryRecyclerView?.adapter = mDirectoryAdapter
         mDirectoryRecyclerView?.setEmptyView(mEmptyView)
+
+        FileUtils.getFileList(mFile, FileTypeUtils.CheckType.ALL) {
+            Log.d("zhangan",Thread.currentThread().name)
+            this.checkDataFileModels.clear()
+            this.checkDataFileModels.addAll(it)
+            this.mDirectoryAdapter?.notifyDataSetChanged()
+        }
     }
 
     private fun initArgs() {
@@ -91,7 +102,7 @@ class DirectoryFragment : Fragment(), DirectoryListener {
 
     internal interface FileClickListener {
 
-        fun onFileClicked(clickedFile: File?)
+        fun onFileClicked(clickedFile: CheckDataFileModel?)
 
     }
 

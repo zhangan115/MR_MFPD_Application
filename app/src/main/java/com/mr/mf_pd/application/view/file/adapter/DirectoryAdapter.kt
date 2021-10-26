@@ -14,9 +14,10 @@ import com.mr.mf_pd.application.view.file.listener.OnItemClickListener
 import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter.DirectoryViewHolder
 import com.mr.mf_pd.application.view.file.listener.OnItemLabelClickListener
 import com.mr.mf_pd.application.view.file.listener.OnItemPhotoClickListener
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import java.io.File
 
-internal class DirectoryAdapter(private val mFiles: List<File>) :
+internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
     RecyclerView.Adapter<DirectoryViewHolder>() {
 
     private var mOnItemClickListener: OnItemClickListener? = null
@@ -54,13 +55,13 @@ internal class DirectoryAdapter(private val mFiles: List<File>) :
         val currentFile = mFiles[position]
         val fileType = FileTypeUtils.getFileType(currentFile)
         holder.mFileImage.setImageResource(fileType.icon)
-        holder.mFileTitle.text = currentFile.name
+        holder.mFileTitle.text = currentFile.file.name
         holder.mFileSubtitle.setText(fileType.description)
         if (fileType == FileTypeUtils.FileType.DIRECTORY) {
             holder.mNextImage.visibility = View.VISIBLE
             holder.mPhotoImage.visibility = View.GONE
             holder.mLabelImage.visibility = View.GONE
-            holder.mFileSubtitle.text = "对象：" + currentFile.listFiles().size
+            holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
         } else {
             holder.mNextImage.visibility = View.GONE
 
@@ -75,7 +76,7 @@ internal class DirectoryAdapter(private val mFiles: List<File>) :
         return mFiles.size
     }
 
-    fun getModel(index: Int): File {
+    fun getModel(index: Int): CheckDataFileModel {
         return mFiles[index]
     }
 

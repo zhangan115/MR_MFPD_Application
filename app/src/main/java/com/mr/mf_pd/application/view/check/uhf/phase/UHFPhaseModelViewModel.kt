@@ -16,6 +16,16 @@ class UHFPhaseModelViewModel(val repository: DataRepository) : ViewModel() {
 
     fun start() {
         uhfData = repository.getHufData()
+        repository.hufDataListener()
+    }
+
+    fun addHUfData(callback: DataRepository.DataCallback) {
+        repository.addHufData(callback)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.removeHufDataListener()
     }
 
 }

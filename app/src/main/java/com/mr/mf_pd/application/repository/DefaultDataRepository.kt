@@ -23,6 +23,7 @@ class DefaultDataRepository : DataRepository {
     var acModelBean: ACModelBean? = null
     var pointList: ArrayList<HashMap<Int, Float>> = ArrayList()
     private var prPsCubeList: ArrayList<PrPsCubeList> = ArrayList()
+    private var callbacks: ArrayList<DataRepository.DataCallback> = ArrayList()
 
     init {
         for (i in 0..4) {
@@ -56,6 +57,7 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun addHufData(callback: DataRepository.DataCallback) {
+        callbacks.add(callback)
         var prPsCube: PrPsCubeList? = null
         if (prPsCubeList.isNotEmpty()) {
             prPsCube = prPsCubeList.lastOrNull()
@@ -65,6 +67,9 @@ class DefaultDataRepository : DataRepository {
             map = pointList.lastOrNull()
         }
         if (prPsCube != null && map != null) {
+//            callbacks.forEach {
+//                it.addData(map, prPsCube)
+//            }
             callback.addData(map, prPsCube)
             prPsCubeList.removeLast()
             pointList.removeLast()

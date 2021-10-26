@@ -26,6 +26,7 @@ import com.mr.mf_pd.application.view.data.FileDataActivity
 import com.mr.mf_pd.application.view.file.DirectoryFragment.FileClickListener
 import com.mr.mf_pd.application.view.file.filter.FileFilter
 import com.mr.mf_pd.application.view.file.filter.PatternFilter
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import kotlinx.android.synthetic.main.activity_file_picker.*
 import java.io.File
 import java.util.*
@@ -223,23 +224,23 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         outState.putSerializable(STATE_START_FILE, mStart)
     }
 
-    override fun onFileClicked(clickedFile: File?) {
+    override fun onFileClicked(clickedFile: CheckDataFileModel?) {
         Handler().postDelayed({ handleFileClicked(clickedFile) }, HANDLE_CLICK_DELAY.toLong())
     }
 
-    private fun handleFileClicked(clickedFile: File?) {
+    private fun handleFileClicked(clickedFile: CheckDataFileModel?) {
         if (isFinishing) {
-            setResultAndFinish(clickedFile)
+            setResultAndFinish(clickedFile?.file)
             return
         }
         if (clickedFile != null) {
-            if (clickedFile.isFile) {
+            if (clickedFile.isCheckFile) {
                 val intent = Intent(this, FileDataActivity::class.java)
-                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile?.absolutePath)
+                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile.file.absolutePath)
                 startActivity(intent)
             } else {
-                mCurrent = clickedFile
-                addFragmentToBackStack(clickedFile)
+                mCurrent = clickedFile.file
+                addFragmentToBackStack(clickedFile.file)
                 updateTitle()
             }
         }

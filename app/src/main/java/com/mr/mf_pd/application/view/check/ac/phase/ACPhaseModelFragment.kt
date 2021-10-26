@@ -83,7 +83,7 @@ class ACPhaseModelFragment : BaseFragment<ACPhaseDataBinding>() {
         if (pointChartsRenderer != null) {
             val data = Point2DChartPoint(pointValue)
             surfaceView1.queueEvent {
-                pointChartsRenderer?.pointChange(data)
+
             }
         }
     }

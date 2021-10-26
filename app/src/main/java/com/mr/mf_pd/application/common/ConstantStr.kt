@@ -15,6 +15,7 @@ interface ConstantStr {
         const val PROMISE_READ = "promise_read"
         const val CURRENT_VERSION = "当前版本：V1.0"
         const val USER_LOCATION = "user_location"
+        const val CHECK_FILE_CONFIG = "check_config.json"
 
         /**
          * 登录账户的信息key值

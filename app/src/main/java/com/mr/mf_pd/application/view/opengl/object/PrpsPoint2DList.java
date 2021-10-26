@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.opengl.object;
 import android.opengl.GLES30;
 
 import com.mr.mf_pd.application.common.Constants;
+import com.mr.mf_pd.application.view.check.uhf.renderer.PointChartsRenderer;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
 
 import java.nio.ByteBuffer;
@@ -10,7 +11,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,26 +19,26 @@ import java.util.Set;
 /**
  * 展示PrPs在平面的数据
  */
-public class PrpsPointList {
+public class PrpsPoint2DList {
+
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
     public static final float bottomValue = -80.0f;
 
-    private Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
+    //保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
+    private Map<Integer, Map<Float, Integer>> values = new HashMap<>();
     private PrPsColorPointShaderProgram colorProgram;
 
-    public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
-            + 1 - PrPsXZLines.offsetXPointValueEnd) / Constants.PRPS_COLUMN;
-    public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+    public static final float stepX = (1 - PointChartsRenderer.Companion.getOffsetXPointValueStart()
+            + 1 - PointChartsRenderer.Companion.getOffsetXPointValueEnd()) / Constants.PRPS_COLUMN;
     private short[] indices;
 
     private List<Float> color1 = new ArrayList<>();
     private List<Float> color2 = new ArrayList<>();
     private List<Float> color3 = new ArrayList<>();
 
-    public PrpsPointList() {
+    public PrpsPoint2DList() {
         color1.add(1f);
         color1.add(0f);
         color1.add(0f);
@@ -82,11 +82,13 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zTopPosition = 1 - (entry2.getKey() / (bottomValue / 2));
-                float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * entry1.getKey();
+                float zY = 1 - (entry2.getKey() / (bottomValue /
+                        (2 - PointChartsRenderer.Companion.getOffsetYPointValueTop()
+                                - PointChartsRenderer.Companion.getOffsetYPointValueBottom())));
+                float startX = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart() + stepX * entry1.getKey();
                 vertexPointList.add(startX);
-                vertexPointList.add(1f);
-                vertexPointList.add(zTopPosition);
+                vertexPointList.add(zY);
+                vertexPointList.add(0f);
                 if (entry2.getValue() < 10) {
                     colorList.addAll(color1);
                 } else if (entry2.getValue() >= 10 && entry2.getValue() <= 20) {

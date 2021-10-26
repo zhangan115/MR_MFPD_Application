@@ -4,6 +4,7 @@ import android.webkit.MimeTypeMap;
 
 
 import com.mr.mf_pd.application.R;
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -11,7 +12,43 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public class FileTypeUtils {
+
+    public enum CheckType {
+        ALL, UHF, AC, TEV, HF
+    }
+
+    public static String getCheckTypeStr(CheckType fileType) {
+        if (fileType == CheckType.AC) {
+            return ".check_ac";
+        } else if (fileType == CheckType.HF) {
+            return ".check_hf";
+        } else if (fileType == CheckType.UHF) {
+            return ".check_uhf";
+        } else if (fileType == CheckType.TEV) {
+            return ".check_tev";
+        }
+        return "";
+    }
+
+    @Nullable
+    public static CheckType getCheckTypeFromFile(File file) {
+        if (file.getName().startsWith(".check_ac")) {
+            return CheckType.AC;
+        }
+        if (file.getName().startsWith(".check_hf")) {
+            return CheckType.HF;
+        }
+        if (file.getName().startsWith(".check_tev")) {
+            return CheckType.TEV;
+        }
+        if (file.getName().startsWith(".check_uhf")) {
+            return CheckType.UHF;
+        }
+        return null;
+    }
 
     public enum FileType {
         DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
@@ -52,16 +89,19 @@ public class FileTypeUtils {
         }
     }
 
-    public static FileType getFileType(File file) {
-        if (file.isDirectory()) {
-            return FileType.DIRECTORY;
+    public static FileType getFileType(CheckDataFileModel file) {
+        if (file.getFile().getName().startsWith(".check_ac")) {
+            return FileType.AC;
         }
-
-        FileType fileType = fileTypeExtensions.get(getExtension(file.getName()));
-        if (fileType != null) {
-            return fileType;
+        if (file.getFile().getName().startsWith(".check_hf")) {
+            return FileType.HF;
         }
-
+        if (file.getFile().getName().startsWith(".check_tev")) {
+            return FileType.TEV;
+        }
+        if (file.getFile().getName().startsWith(".check_uhf")) {
+            return FileType.UHF;
+        }
         return FileType.DIRECTORY;
     }
 
