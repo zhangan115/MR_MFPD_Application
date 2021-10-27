@@ -195,10 +195,12 @@ public class SocketManager {
         this.callback = callback;
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
-                    SocketManager.this.lastSendData = data;
-                    emitter.onNext(data);
-                    outputStream.write(data);
-                    outputStream.flush();
+                    if (outputStream!=null&&!socket.isClosed()){
+                        SocketManager.this.lastSendData = data;
+                        emitter.onNext(data);
+                        outputStream.write(data);
+                        outputStream.flush();
+                    }
                     emitter.onComplete();
                 }).observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
