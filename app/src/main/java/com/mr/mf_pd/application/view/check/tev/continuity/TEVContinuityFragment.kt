@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.databinding.ACContinuityDataBinding
 import com.mr.mf_pd.application.databinding.TEVContinuityDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.check.ac.continuity.ACContinuityFragment
 
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -22,8 +20,8 @@ class TEVContinuityFragment : BaseFragment<TEVContinuityDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACContinuityFragment {
-            val fragment = ACContinuityFragment()
+        fun create(deviceBean: DeviceBean?): TEVContinuityFragment {
+            val fragment = TEVContinuityFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle

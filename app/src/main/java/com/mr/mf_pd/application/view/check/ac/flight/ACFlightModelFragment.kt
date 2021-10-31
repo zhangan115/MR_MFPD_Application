@@ -1,29 +1,27 @@
-package com.mr.mf_pd.application.view.check.hf.real
+package com.mr.mf_pd.application.view.check.ac.flight
 
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.databinding.HFRealDataBinding
+import com.mr.mf_pd.application.databinding.ACFlightDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.check.ac.real.ACRealFragment
 
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.check.tev.real.TEVRealModelViewModel
 
 /**
- * HF 实时模式
+ * AC 飞行模式
  */
-class HFRealFragment : BaseFragment<HFRealDataBinding>() {
+class ACFlightModelFragment : BaseFragment<ACFlightDataBinding>() {
 
-    private val viewModel by viewModels<TEVRealModelViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<ACFlightModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACRealFragment {
-            val fragment = ACRealFragment()
+        fun create(deviceBean: DeviceBean?): ACFlightModelFragment {
+            val fragment = ACFlightModelFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
@@ -36,7 +34,7 @@ class HFRealFragment : BaseFragment<HFRealDataBinding>() {
     }
 
     override fun getContentView(): Int {
-        return R.layout.fragment_hf_real
+        return R.layout.fragment_ac_flight
     }
 
     override fun initData() {
@@ -47,7 +45,7 @@ class HFRealFragment : BaseFragment<HFRealDataBinding>() {
 
     }
 
-    override fun setViewModel(dataBinding: HFRealDataBinding?) {
+    override fun setViewModel(dataBinding: ACFlightDataBinding?) {
         dataBinding?.vm = viewModel
     }
 }

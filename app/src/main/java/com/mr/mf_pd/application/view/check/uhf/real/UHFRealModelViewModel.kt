@@ -23,6 +23,14 @@ class UHFRealModelViewModel(val repository: DataRepository) : ViewModel() {
         repository.addHufData(callback)
     }
 
+    fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+        return repository.getPhaseData(1)
+    }
+
+    fun getCaChePhaseData(): ArrayList<HashMap<Int, Float>> {
+        return repository.getCachePhaseData(1)
+    }
+
     override fun onCleared() {
         super.onCleared()
         repository.removeHufDataListener()

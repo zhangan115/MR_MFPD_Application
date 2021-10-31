@@ -9,9 +9,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.CheckHFDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
-import com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelFragment
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
-import com.mr.mf_pd.application.view.check.tev.real.TEVRealFragment
+import com.mr.mf_pd.application.view.check.hf.phase.HFPhaseModelFragment
+import com.mr.mf_pd.application.view.check.hf.real.HFRealModelFragment
 import com.mr.mf_pd.application.view.check.hf.setting.HFSettingActivity
 import kotlinx.android.synthetic.main.activity_check_hf.*
 
@@ -55,9 +55,9 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() {
 
     override fun createCheckFragment(position: Int): Fragment {
         return if (position == 0) {
-            TEVPhaseModelFragment.create(mDeviceBean)
+            HFPhaseModelFragment.create(mDeviceBean)
         } else {
-            TEVRealFragment.create(mDeviceBean)
+            HFRealModelFragment.create(mDeviceBean)
         }
     }
 

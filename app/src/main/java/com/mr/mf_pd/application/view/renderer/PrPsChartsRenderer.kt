@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.check.uhf.renderer
+package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
 import android.opengl.GLES30
@@ -67,8 +67,11 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         )
     }
 
-    fun addPrpsData(pointValue: HashMap<Int, Float>, prPsList: PrPsCubeList?) {
+    fun addPrpsData(pointValue: HashMap<Int, Float>) {
         prPsPoints?.addValue(pointValue)
+    }
+
+    fun addPrpsData(prPsList: PrPsCubeList?) {
         if (prpsCubeList != null && prPsList!=null) {
             for (i in 0 until prpsCubeList!!.size) {
                 prpsCubeList!![i].updateRow(i + 1)

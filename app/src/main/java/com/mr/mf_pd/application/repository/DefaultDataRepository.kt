@@ -1,17 +1,19 @@
 package com.mr.mf_pd.application.repository
 
 import android.util.Log
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.ReadListener
-import com.mr.mf_pd.application.manager.socket.ReceiverCallback
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.ACModelBean
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.DataUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -19,11 +21,56 @@ import kotlin.collections.HashMap
 class DefaultDataRepository : DataRepository {
 
     var uhfModelBean: UHFModelBean? = null
-    private var checkDir: File? = null
     var acModelBean: ACModelBean? = null
-    var pointList: ArrayList<HashMap<Int, Float>> = ArrayList()
-    private var prPsCubeList: ArrayList<PrPsCubeList> = ArrayList()
+    var isSaving = false
+
+    private var checkDir: File? = null
+    var saveDataFileThread: Thread? = null
+    var tempDir: File? = null
+    val mFos: FileOutputStream? = null
+
+    private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var cachePhaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
+
+    private var realPointData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var realPointCachePhaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
+
+    var realData: ArrayList<PrPsCubeList> = ArrayList()
+
+    override fun getPhaseData(chartType:Int): ArrayList<HashMap<Int, Float>> {
+        val list = ArrayList<HashMap<Int, Float>>()
+        if (chartType == 0) {
+            if (phaseData.isNotEmpty()) {
+                list.add(phaseData.removeAt(0))
+            }
+        }else if (chartType == 1){
+            if (realPointData.isNotEmpty()) {
+                list.add(realPointData.removeAt(0))
+            }
+        }
+        return list
+    }
+
+    override fun getCachePhaseData(chartType:Int): ArrayList<HashMap<Int, Float>> {
+        val list = ArrayList<HashMap<Int, Float>>()
+        if (chartType == 0) {
+            list.addAll(cachePhaseData)
+            cachePhaseData.clear()
+        }else if (chartType == 1){
+            list.addAll(realPointCachePhaseData)
+            realPointCachePhaseData.clear()
+        }
+        return list
+    }
+
+
     private var callbacks: ArrayList<DataRepository.DataCallback> = ArrayList()
+
+
+    /**
+     * 实时模式获取数据
+     */
+    private var realDataCallback: DataRepository.RealDataCallback? = null
 
     init {
         for (i in 0..4) {
@@ -35,6 +82,16 @@ class DefaultDataRepository : DataRepository {
         }
     }
 
+    override fun startSaveData() {
+        val dirName = DataUtil.timeFormat(System.currentTimeMillis(), "yyyy_mm_dd_hh_mm_ss")
+        tempDir = File(MRApplication.instance.fileCacheFile(), dirName)
+        isSaving = true
+    }
+
+    override fun stopSaveData() {
+        isSaving = false
+    }
+
     override fun setCheckFileDir(dir: File) {
         this.checkDir = dir
     }
@@ -42,7 +99,6 @@ class DefaultDataRepository : DataRepository {
     override fun getCheckFileDir(): File? {
         return checkDir
     }
-
 
     override fun getHufData(): UHFModelBean? {
         return uhfModelBean
@@ -59,20 +115,18 @@ class DefaultDataRepository : DataRepository {
     override fun addHufData(callback: DataRepository.DataCallback) {
         callbacks.add(callback)
         var prPsCube: PrPsCubeList? = null
-        if (prPsCubeList.isNotEmpty()) {
-            prPsCube = prPsCubeList.lastOrNull()
+        if (realData.isNotEmpty()) {
+            prPsCube = realData.lastOrNull()
         }
         var map: HashMap<Int, Float>? = null
-        if (pointList.isNotEmpty()) {
-            map = pointList.lastOrNull()
+        if (phaseData.isNotEmpty()) {
+            map = phaseData.lastOrNull()
         }
         if (prPsCube != null && map != null) {
-//            callbacks.forEach {
-//                it.addData(map, prPsCube)
-//            }
             callback.addData(map, prPsCube)
-            prPsCubeList.removeLast()
-            pointList.removeLast()
+            if (realData.isNotEmpty()) {
+                realData.removeLast()
+            }
         }
     }
 
@@ -80,22 +134,37 @@ class DefaultDataRepository : DataRepository {
         SocketManager.getInstance().removeReadListener(hufListener)
     }
 
-    override fun toSaveData() {
-
-    }
-
     override fun switchPassageway(passageway: Int) {
         val bytes = CommandHelp.switchPassageway(passageway)
+        cleanData()
         SocketManager.getInstance().sendData(bytes) { newBytes ->
             if (Arrays.equals(newBytes, bytes)) {
-                Log.d("zhangan", "通道打开成功")
+                Log.d("zhangan", "通道${passageway}打开成功")
             }
         }
     }
 
+    override fun setRealDataCallback(callback: DataRepository.RealDataCallback) {
+        this.realDataCallback = callback
+    }
+
+    override fun cleanData() {
+        phaseData.clear()
+        realData.clear()
+    }
+
     private val hufListener = object : ReadListener(0) {
-        override fun onRead(bytes: ByteArray?) {
+        override fun onRead(source: ByteArray, bytes: ByteArray?) {
             if (bytes != null) {
+                // TODO: 10/31/21 将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
+                if (phaseData.isNotEmpty()) {
+                    cachePhaseData.addAll(phaseData)
+                }
+                phaseData.clear()
+                if (realPointData.isNotEmpty()) {
+                    realPointCachePhaseData.addAll(realPointData)
+                }
+                realPointData.clear()
                 val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
                 val newPointList = ArrayList<HashMap<Int, Float>>()
                 newPointList.add(HashMap())
@@ -117,12 +186,16 @@ class DefaultDataRepository : DataRepository {
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]
                     val prPsCube = PrPsCubeList(floatArray)
-                    if (prPsCubeList.size == Constants.PRPS_ROW) {
-                        prPsCubeList.removeFirst()
+                    if (realData.size == Constants.PRPS_ROW) {
+                        realData.removeFirst()
                     }
-                    prPsCubeList.add(prPsCube)
+                    realData.add(prPsCube)
                 }
-                pointList.addAll(newPointList)
+                phaseData.addAll(newPointList)
+                realPointData.addAll(newPointList)
+                if (isSaving) {
+
+                }
             }
         }
     }

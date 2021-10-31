@@ -1,20 +1,17 @@
 package com.mr.mf_pd.application.view.check.uhf.real
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.UHFRealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsXZPoints
-import com.mr.mf_pd.application.view.check.uhf.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.check.uhf.renderer.ValueChangeRenderer
 import kotlinx.android.synthetic.main.fragment_uhf_real.*
 
 class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
@@ -58,10 +55,16 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         prPsChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
+                    viewModel.getCaChePhaseData().forEach {
+                        prPsChartsRenderer?.addPrpsData(it)
+                    }
+                    viewModel.getPhaseData().forEach {
+                        prPsChartsRenderer?.addPrpsData(it)
+                    }
                     viewModel.addHUfData(object : DataRepository.DataCallback {
 
                         override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                            prPsChartsRenderer?.addPrpsData(map, prPsCube)
+                            prPsChartsRenderer?.addPrpsData(prPsCube)
                         }
                     })
                 }
@@ -78,17 +81,8 @@ class UHFRealModelFragment : BaseFragment<UHFRealDataBinding>() {
         }
         image4.setOnClickListener { }
         image5.setOnClickListener { }
-    }
 
-    val list = ArrayList<Float>()
-
-    private fun valueChange() {
-        list.add(Math.random().toFloat())
-        if (valueChangeRenderer != null) {
-            surfaceView1.queueEvent {
-                valueChangeRenderer?.valueChange(list.toFloatArray())
-            }
-        }
+        rendererSet = true
     }
 
     override fun setViewModel(dataBinding: UHFRealDataBinding?) {

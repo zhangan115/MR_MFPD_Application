@@ -96,9 +96,9 @@ class ViewModelFactory constructor(
                 ACRealModelViewModel(dataRepository)
 
             isAssignableFrom(HFPhaseModelViewModel::class.java) ->
-                TEVPhaseModelViewModel(dataRepository)
+                HFPhaseModelViewModel(dataRepository)
             isAssignableFrom(HFRealModelViewModel::class.java) ->
-                TEVRealModelViewModel(dataRepository)
+                HFRealModelViewModel(dataRepository)
             isAssignableFrom(HFSettingViewModel::class.java) ->
                 HFSettingViewModel(dataRepository, settingRepository)
             isAssignableFrom(CheckHFViewModel::class.java) ->

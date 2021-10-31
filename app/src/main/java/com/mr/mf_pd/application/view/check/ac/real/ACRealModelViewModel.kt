@@ -9,7 +9,7 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 class ACRealModelViewModel(val repository: DataRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
-    var location: MutableLiveData<String> = MutableLiveData("/榆林有色220kV")
+    var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
 
     var num1Str: MutableLiveData<String> = MutableLiveData("-76")
     var num2Str: MutableLiveData<String> = MutableLiveData("-78")
@@ -22,8 +22,16 @@ class ACRealModelViewModel(val repository: DataRepository) : ViewModel() {
         repository.hufDataListener()
     }
 
-    fun addACData( callback:DataRepository.DataCallback) {
+    fun addHUfData(callback: DataRepository.DataCallback) {
         repository.addHufData(callback)
+    }
+
+    fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+        return repository.getPhaseData(1)
+    }
+
+    fun getCaChePhaseData(): ArrayList<HashMap<Int, Float>> {
+        return repository.getCachePhaseData(1)
     }
 
     override fun onCleared() {

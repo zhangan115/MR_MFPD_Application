@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.check.uhf.renderer
+package com.mr.mf_pd.application.view.renderer
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.MotionEvent
 
-class RealView : GLSurfaceView {
+open class RealView : GLSurfaceView {
 
     constructor(context: Context?) : super(context!!)
 

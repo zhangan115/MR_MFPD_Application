@@ -2,11 +2,24 @@ package com.mr.mf_pd.application.common
 
 object Constants {
 
- //   const val host = "172.16.40.45" //请求地址
+    //   const val host = "172.16.40.45" //请求地址
     const val host = "192.168.88.2" //请求地址
 
     const val port = 8000 //端口
 
+    const val CHECK_REAL = "real.mr"//实时数据
+
+    /**
+     * 检测类型
+     */
+    enum class CheckType {
+        AC, HF, TEV, UHF
+    }
+
+    const val CHECK_UHF = "uhf"
+    const val CHECK_AC = "ac"
+    const val CHECK_TEV = "tev"
+    const val CHECK_HF = "hf"
 
     const val BYTES_PER_FLOAT = 4
 
@@ -92,11 +105,4 @@ object Constants {
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100
-
-    /**
-     * 检测类型
-     */
-    enum class CheckType {
-        AC, HF, TEV, UHF
-    }
 }

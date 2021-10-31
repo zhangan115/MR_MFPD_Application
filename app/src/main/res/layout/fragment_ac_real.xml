@@ -163,7 +163,7 @@
 
         </LinearLayout>
 
-        <com.mr.mf_pd.application.view.check.uhf.renderer.RealView
+        <com.mr.mf_pd.application.view.renderer.RealView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"

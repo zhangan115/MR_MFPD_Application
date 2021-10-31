@@ -8,5 +8,5 @@ public abstract class ReadListener {
         this.filter = filter;
     }
 
-    public abstract void onRead( byte[] bytes);
+    public abstract void onRead(byte[] sourceBytes, byte[] bytes);
 }

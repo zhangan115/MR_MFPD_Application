@@ -9,15 +9,15 @@ import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.check.uhf.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.check.uhf.renderer.ValueChangeRenderer
+import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import kotlinx.android.synthetic.main.fragment_ac_real.*
 
 /**
  * AC 实时模式
  */
-class ACRealFragment : BaseFragment<ACRealDataBinding>() {
+class ACRealModelFragment : BaseFragment<ACRealDataBinding>() {
 
     private val viewModel by viewModels<ACRealModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
@@ -26,8 +26,8 @@ class ACRealFragment : BaseFragment<ACRealDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACRealFragment {
-            val fragment = ACRealFragment()
+        fun create(deviceBean: DeviceBean?): ACRealModelFragment {
+            val fragment = ACRealModelFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
@@ -58,10 +58,16 @@ class ACRealFragment : BaseFragment<ACRealDataBinding>() {
         prPsChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
-                    viewModel.addACData(object : DataRepository.DataCallback {
+                    viewModel.getCaChePhaseData().forEach {
+                        prPsChartsRenderer?.addPrpsData(it)
+                    }
+                    viewModel.getPhaseData().forEach {
+                        prPsChartsRenderer?.addPrpsData(it)
+                    }
+                    viewModel.addHUfData(object : DataRepository.DataCallback {
 
                         override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                            prPsChartsRenderer?.addPrpsData(map, prPsCube)
+                            prPsChartsRenderer?.addPrpsData(prPsCube)
                         }
                     })
                 }
@@ -77,6 +83,7 @@ class ACRealFragment : BaseFragment<ACRealDataBinding>() {
 
         }
         image4.setOnClickListener { }
+        rendererSet = true
     }
 
     override fun setViewModel(dataBinding: ACRealDataBinding?) {

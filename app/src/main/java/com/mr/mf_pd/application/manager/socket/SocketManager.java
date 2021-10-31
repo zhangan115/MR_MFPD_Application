@@ -96,11 +96,13 @@ public class SocketManager {
                 while ((size = inputStream.read(buf)) != -1) {
                     if (buf[0] == DEVICE_NO) {
                         if (buf[1] == 8) {
+                            byte[] sources = new byte[size];
+                            System.arraycopy(buf, 0, sources, 0, size);
                             for (ReadListener listener : readListeners) {
                                 byte[] newBuf = new byte[size - 9];
                                 System.arraycopy(buf, 5, newBuf, 0, size - 9);
                                 if (buf[2] == listener.filter) {
-                                    listener.onRead(newBuf);
+                                    listener.onRead(sources, newBuf);
                                 }
                             }
                         } else {
@@ -195,7 +197,7 @@ public class SocketManager {
         this.callback = callback;
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
-                    if (outputStream!=null&&!socket.isClosed()){
+                    if (outputStream != null && socket != null && !socket.isClosed()) {
                         SocketManager.this.lastSendData = data;
                         emitter.onNext(data);
                         outputStream.write(data);

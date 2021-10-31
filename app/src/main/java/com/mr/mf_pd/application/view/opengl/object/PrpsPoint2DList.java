@@ -3,7 +3,9 @@ package com.mr.mf_pd.application.view.opengl.object;
 import android.opengl.GLES30;
 
 import com.mr.mf_pd.application.common.Constants;
-import com.mr.mf_pd.application.view.check.uhf.renderer.PointChartsRenderer;
+import com.mr.mf_pd.application.view.renderer.PointChartsRenderer;
+import com.mr.mf_pd.application.view.opengl.data.VertexArray;
+import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
 
 import java.nio.ByteBuffer;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.microedition.khronos.opengles.GL;
+
 /**
  * 展示PrPs在平面的数据
  */
@@ -27,16 +31,16 @@ public class PrpsPoint2DList {
     public static final float bottomValue = -80.0f;
 
     //保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
-    private Map<Integer, Map<Float, Integer>> values = new HashMap<>();
-    private PrPsColorPointShaderProgram colorProgram;
+    private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();
+    private Point2DColorPointShaderProgram colorProgram;
 
     public static final float stepX = (1 - PointChartsRenderer.Companion.getOffsetXPointValueStart()
             + 1 - PointChartsRenderer.Companion.getOffsetXPointValueEnd()) / Constants.PRPS_COLUMN;
     private short[] indices;
 
-    private List<Float> color1 = new ArrayList<>();
-    private List<Float> color2 = new ArrayList<>();
-    private List<Float> color3 = new ArrayList<>();
+    private final List<Float> color1 = new ArrayList<>();
+    private final List<Float> color2 = new ArrayList<>();
+    private final List<Float> color3 = new ArrayList<>();
 
     public PrpsPoint2DList() {
         color1.add(1f);
@@ -51,7 +55,6 @@ public class PrpsPoint2DList {
         color3.add(0f);
         color3.add(1f);
     }
-
     /**
      * 增加数据
      *
@@ -78,13 +81,13 @@ public class PrpsPoint2DList {
         List<Short> indicesList = new ArrayList<>();
         Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
         short count = 0;
+        float h = 1 - PointChartsRenderer.Companion.getOffsetYPointValueTop() + 1 - PointChartsRenderer.Companion.getOffsetYPointValueBottom();
+        float startY = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart();
         for (Map.Entry<Integer, Map<Float, Integer>> entry1 : entrySet1) {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zY = 1 - (entry2.getKey() / (bottomValue /
-                        (2 - PointChartsRenderer.Companion.getOffsetYPointValueTop()
-                                - PointChartsRenderer.Companion.getOffsetYPointValueBottom())));
+                float zY =  startY  + (entry2.getKey() / (bottomValue / h));
                 float startX = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart() + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(zY);
@@ -130,7 +133,7 @@ public class PrpsPoint2DList {
         values.clear();
     }
 
-    public void bindData(PrPsColorPointShaderProgram colorProgram) {
+    public void bindData(Point2DColorPointShaderProgram colorProgram) {
         this.colorProgram = colorProgram;
     }
 

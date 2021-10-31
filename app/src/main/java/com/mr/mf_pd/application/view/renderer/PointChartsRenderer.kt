@@ -1,12 +1,12 @@
-package com.mr.mf_pd.application.view.check.uhf.renderer
+package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
@@ -31,7 +31,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
 
-    private lateinit var colorPointProgram: PrPsColorPointShaderProgram
+    private lateinit var colorPointProgram: Point2DColorPointShaderProgram
     private var texture: Int = 0
 
     private var prPsPoints: PrpsPoint2DList? = null
@@ -43,7 +43,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         textureProgram = TextureShaderProgram(context)
         colorProgram = Point2DColorShaderProgram(context)
-        colorPointProgram = PrPsColorPointShaderProgram(context)
+        colorPointProgram = Point2DColorPointShaderProgram(context)
 
         texture = TextureUtils.loadTextureWithText(xTextList[0])
 

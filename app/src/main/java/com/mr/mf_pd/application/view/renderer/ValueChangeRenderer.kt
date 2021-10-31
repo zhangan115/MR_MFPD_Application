@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.check.uhf.renderer
+package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
 import android.opengl.GLES30

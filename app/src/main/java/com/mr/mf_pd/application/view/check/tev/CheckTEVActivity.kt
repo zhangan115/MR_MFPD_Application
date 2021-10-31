@@ -12,7 +12,7 @@ import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.check.tev.continuity.TEVContinuityFragment
 import com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelFragment
-import com.mr.mf_pd.application.view.check.tev.real.TEVRealFragment
+import com.mr.mf_pd.application.view.check.tev.real.TEVRealModelFragment
 import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingActivity
 import kotlinx.android.synthetic.main.activity_check_tev.*
 
@@ -59,9 +59,9 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
         return if (position == 0) {
             TEVContinuityFragment.create(mDeviceBean)
         } else if (position == 1) {
-            TEVRealFragment.create(mDeviceBean)
+            TEVPhaseModelFragment.create(mDeviceBean)
         }else{
-            TEVRealFragment.create(mDeviceBean)
+            TEVRealModelFragment.create(mDeviceBean)
         }
     }
 

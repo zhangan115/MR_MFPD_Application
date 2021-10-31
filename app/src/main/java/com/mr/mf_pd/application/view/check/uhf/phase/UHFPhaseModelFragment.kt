@@ -9,9 +9,9 @@ import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.check.uhf.renderer.PointChartsRenderer
-import com.mr.mf_pd.application.view.check.uhf.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.check.uhf.renderer.ValueChangeRenderer
+import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
+import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import kotlinx.android.synthetic.main.fragment_uhf_phase.*
 
@@ -19,6 +19,8 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
 
     private val viewModel by viewModels<UHFPhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
+    var pointChartsRenderer: PointChartsRenderer? = null
+    var valueChangeRenderer: ValueChangeRenderer? = null
 
     companion object {
 
@@ -44,8 +46,7 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
 
     }
 
-    var pointChartsRenderer: PointChartsRenderer? = null
-    var valueChangeRenderer: ValueChangeRenderer? = null
+
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
@@ -57,51 +58,31 @@ class UHFPhaseModelFragment : BaseFragment<UHFPhaseDataBinding>() {
         surfaceView1.setRenderer(pointChartsRenderer)
         surfaceView2.setRenderer(valueChangeRenderer)
 
-
         pointChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
-                    viewModel.addHUfData(object : DataRepository.DataCallback {
 
-                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                            pointChartsRenderer?.addPrpsData(map)
-                        }
-                    })
+                    viewModel.getCaChePhaseData().forEach {
+                        pointChartsRenderer?.addPrpsData(it)
+                    }
+                    viewModel.getPhaseData().forEach {
+                        pointChartsRenderer?.addPrpsData(it)
+                    }
                 }
             }
 
         image1.setOnClickListener {
-            pointValueChange()
+
         }
 
         image2.setOnClickListener {
-            valueChange()
+
         }
         image3.setOnClickListener { }
         image4.setOnClickListener { }
         image5.setOnClickListener { }
-    }
 
-    private fun pointValueChange() {
-        val pointValue = FloatArray(100)
-        for (i in pointValue.indices) {
-            pointValue[i] = Math.random().toFloat() * 2f - 1f
-        }
-        if (pointChartsRenderer != null) {
-            surfaceView1.queueEvent {
-
-            }
-        }
-    }
-
-    val list = ArrayList<Float>()
-    private fun valueChange() {
-        list.add(Math.random().toFloat())
-        if (valueChangeRenderer != null) {
-            surfaceView1.queueEvent {
-                valueChangeRenderer?.valueChange(list.toFloatArray())
-            }
-        }
+        rendererSet = true
     }
 
     override fun setViewModel(dataBinding: UHFPhaseDataBinding?) {
