@@ -45,6 +45,7 @@ object Constants {
         1f, 1f, 1f, 0f,
         1f, 1f, 1f, 0f,
     )
+
     var whiteColors = floatArrayOf(
         1f, 1f, 1f, 1f,
         1f, 1f, 1f, 1f,
@@ -101,7 +102,6 @@ object Constants {
     )
 
     var indicesList = shortArrayOf()
-
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100

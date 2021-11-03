@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="TEVPhaseDataBinding">
+    <data class="PhaseDataBinding">
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelViewModel" />
+            type="com.mr.mf_pd.application.view.fragment.phase.PhaseModelViewModel" />
 
         <import type="android.view.View" />
     </data>

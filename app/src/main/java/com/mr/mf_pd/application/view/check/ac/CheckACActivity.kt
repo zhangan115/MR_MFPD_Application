@@ -17,9 +17,9 @@ import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.check.ac.setting.ACSettingActivity
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
-import com.mr.mf_pd.application.view.check.ac.continuity.ACContinuityModelFragment
-import com.mr.mf_pd.application.view.check.ac.phase.ACPhaseModelFragment
-import com.mr.mf_pd.application.view.check.ac.real.ACRealModelFragment
+import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
+import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
+import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
 import com.sito.tool.library.utils.DisplayUtil
 import kotlinx.android.synthetic.main.activity_check_ac.*
 
@@ -112,13 +112,13 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() {
 
     override fun createCheckFragment(position: Int): Fragment {
         return if (position == 0) {
-            ACContinuityModelFragment.create(mDeviceBean)
+            ContinuityModelFragment.create(mDeviceBean)
         } else if (position == 1) {
-            ACPhaseModelFragment.create(mDeviceBean)
+            PhaseModelFragment.create(mDeviceBean)
         } else if (position == 2) {
             ACFlightModelFragment.create(mDeviceBean)
         } else if (position == 3) {
-            ACRealModelFragment.create(mDeviceBean)
+            RealModelFragment.create(mDeviceBean)
         } else {
             ACPulseModelFragment.create(mDeviceBean)
         }

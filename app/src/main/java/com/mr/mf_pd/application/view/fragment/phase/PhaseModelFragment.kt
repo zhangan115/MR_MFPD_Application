@@ -1,33 +1,29 @@
-package com.mr.mf_pd.application.view.check.ac.real
+package com.mr.mf_pd.application.view.fragment.phase
 
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.databinding.ACRealDataBinding
+import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import kotlinx.android.synthetic.main.fragment_ac_real.*
+import kotlinx.android.synthetic.main.fragment_phase.*
 
-/**
- * AC 实时模式
- */
-class ACRealModelFragment : BaseFragment<ACRealDataBinding>() {
+class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
 
-    private val viewModel by viewModels<ACRealModelViewModel> { getViewModelFactory() }
+    private val viewModel by viewModels<PhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
+    var pointChartsRenderer: PointChartsRenderer? = null
     var valueChangeRenderer: ValueChangeRenderer? = null
-    var prPsChartsRenderer: PrPsChartsRenderer? = null
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACRealModelFragment {
-            val fragment = ACRealModelFragment()
+        fun create(deviceBean: DeviceBean?): PhaseModelFragment {
+            val fragment = PhaseModelFragment()
             val bundle = Bundle()
             bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
@@ -35,43 +31,44 @@ class ACRealModelFragment : BaseFragment<ACRealDataBinding>() {
         }
     }
 
+
     override fun lazyLoad() {
         viewModel.start()
     }
 
     override fun getContentView(): Int {
-        return R.layout.fragment_ac_real
+        return R.layout.fragment_phase
     }
 
     override fun initData() {
 
     }
 
+
+
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         surfaceView2.setEGLContextClientVersion(3)
+        pointChartsRenderer = PointChartsRenderer(this.requireContext())
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
-        prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
-        surfaceView1.setRenderer(prPsChartsRenderer)
+
+        surfaceView1.setRenderer(pointChartsRenderer)
         surfaceView2.setRenderer(valueChangeRenderer)
-        prPsChartsRenderer?.getPrpsValueCallback =
+
+        pointChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
+
                     viewModel.getCaChePhaseData().forEach {
-                        prPsChartsRenderer?.addPrpsData(it)
+                        pointChartsRenderer?.addPrpsData(it)
                     }
                     viewModel.getPhaseData().forEach {
-                        prPsChartsRenderer?.addPrpsData(it)
+                        pointChartsRenderer?.addPrpsData(it)
                     }
-                    viewModel.addHUfData(object : DataRepository.DataCallback {
-
-                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                            prPsChartsRenderer?.addPrpsData(prPsCube)
-                        }
-                    })
                 }
             }
+
         image1.setOnClickListener {
 
         }
@@ -79,14 +76,14 @@ class ACRealModelFragment : BaseFragment<ACRealDataBinding>() {
         image2.setOnClickListener {
 
         }
-        image3.setOnClickListener {
-
-        }
+        image3.setOnClickListener { }
         image4.setOnClickListener { }
+        image5.setOnClickListener { }
+
         rendererSet = true
     }
 
-    override fun setViewModel(dataBinding: ACRealDataBinding?) {
+    override fun setViewModel(dataBinding: PhaseDataBinding?) {
         dataBinding?.vm = viewModel
     }
 

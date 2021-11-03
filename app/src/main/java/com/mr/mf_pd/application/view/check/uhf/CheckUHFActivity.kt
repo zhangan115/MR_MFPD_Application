@@ -10,8 +10,8 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
-import com.mr.mf_pd.application.view.check.uhf.phase.UHFPhaseModelFragment
-import com.mr.mf_pd.application.view.check.uhf.real.UHFRealModelFragment
+import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
+import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
 import com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingActivity
 import kotlinx.android.synthetic.main.activity_check_uhf.*
 
@@ -54,9 +54,9 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
 
     override fun createCheckFragment(position: Int): Fragment {
         return if (position == 0) {
-            UHFPhaseModelFragment.create(mDeviceBean)
+            PhaseModelFragment.create(mDeviceBean)
         } else {
-            UHFRealModelFragment.create(mDeviceBean)
+            RealModelFragment.create(mDeviceBean)
         }
     }
 

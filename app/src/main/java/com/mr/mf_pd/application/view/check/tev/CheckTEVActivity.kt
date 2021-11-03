@@ -10,10 +10,10 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.CheckTEVDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
-import com.mr.mf_pd.application.view.check.tev.continuity.TEVContinuityFragment
-import com.mr.mf_pd.application.view.check.tev.phase.TEVPhaseModelFragment
-import com.mr.mf_pd.application.view.check.tev.real.TEVRealModelFragment
+import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingActivity
+import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
+import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
 import kotlinx.android.synthetic.main.activity_check_tev.*
 
 class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
@@ -56,12 +56,16 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
     }
 
     override fun createCheckFragment(position: Int): Fragment {
-        return if (position == 0) {
-            TEVContinuityFragment.create(mDeviceBean)
-        } else if (position == 1) {
-            TEVPhaseModelFragment.create(mDeviceBean)
-        }else{
-            TEVRealModelFragment.create(mDeviceBean)
+        return when (position) {
+            0 -> {
+                ContinuityModelFragment.create(mDeviceBean)
+            }
+            1 -> {
+                PhaseModelFragment.create(mDeviceBean)
+            }
+            else -> {
+                RealModelFragment.create(mDeviceBean)
+            }
         }
     }
 

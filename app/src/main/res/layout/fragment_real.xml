@@ -2,22 +2,22 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="HFPhaseDataBinding">
+    <data class="RealDataBinding">
+
+        <import type="android.view.View" />
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.check.hf.phase.HFPhaseModelViewModel" />
-
-        <import type="android.view.View" />
+            type="com.mr.mf_pd.application.view.fragment.real.RealModelViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:keepScreenOn="true"
         android:background="@color/colorWhite"
         android:orientation="vertical"
         app:toast="@{vm.toastStr}">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -164,7 +164,7 @@
 
         </LinearLayout>
 
-        <android.opengl.GLSurfaceView
+        <com.mr.mf_pd.application.view.renderer.RealView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -282,7 +282,6 @@
 
             </RelativeLayout>
         </LinearLayout>
-
 
         <TextView
             android:id="@+id/location"

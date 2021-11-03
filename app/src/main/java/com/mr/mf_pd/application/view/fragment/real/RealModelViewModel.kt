@@ -1,11 +1,11 @@
-package com.mr.mf_pd.application.view.check.tev.phase
+package com.mr.mf_pd.application.view.fragment.real
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
-class TEVPhaseModelViewModel(val repository: DataRepository) : ViewModel() {
+class RealModelViewModel(val repository: DataRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
@@ -19,17 +19,20 @@ class TEVPhaseModelViewModel(val repository: DataRepository) : ViewModel() {
         repository.hufDataListener()
     }
 
+    fun addHUfData(callback: DataRepository.DataCallback) {
+        repository.addHufData(callback)
+    }
+
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getPhaseData(0)
+        return repository.getPhaseData(1)
     }
 
     fun getCaChePhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getCachePhaseData(0)
+        return repository.getCachePhaseData(1)
     }
 
     override fun onCleared() {
         super.onCleared()
         repository.removeHufDataListener()
     }
-
 }
