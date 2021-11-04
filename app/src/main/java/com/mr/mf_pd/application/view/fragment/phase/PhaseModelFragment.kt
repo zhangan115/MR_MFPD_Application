@@ -31,7 +31,6 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
         }
     }
 
-
     override fun lazyLoad() {
         viewModel.start()
     }
@@ -45,21 +44,17 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
     }
 
 
-
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        surfaceView2.setEGLContextClientVersion(3)
         pointChartsRenderer = PointChartsRenderer(this.requireContext())
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
 
         surfaceView1.setRenderer(pointChartsRenderer)
-        surfaceView2.setRenderer(valueChangeRenderer)
 
         pointChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
-
                     viewModel.getCaChePhaseData().forEach {
                         pointChartsRenderer?.addPrpsData(it)
                     }
@@ -76,10 +71,15 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
         image2.setOnClickListener {
 
         }
-        image3.setOnClickListener { }
-        image4.setOnClickListener { }
-        image5.setOnClickListener { }
+        image3.setOnClickListener {
 
+        }
+        image4.setOnClickListener {
+
+        }
+        image5.setOnClickListener {
+
+        }
         rendererSet = true
     }
 
@@ -91,7 +91,6 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
         super.onResume()
         if (rendererSet) {
             surfaceView1.onResume()
-            surfaceView2.onResume()
         }
     }
 
@@ -99,7 +98,6 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
         super.onPause()
         if (rendererSet) {
             surfaceView1.onPause()
-            surfaceView2.onPause()
         }
     }
 }

@@ -1,33 +1,32 @@
 package com.mr.mf_pd.application.repository
 
 import android.util.Log
-import com.mr.mf_pd.application.app.MRApplication
+import androidx.lifecycle.MutableLiveData
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.model.ACModelBean
-import com.mr.mf_pd.application.model.UHFModelBean
+import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.utils.DataUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
 
 class DefaultDataRepository : DataRepository {
 
-    var uhfModelBean: UHFModelBean? = null
-    var acModelBean: ACModelBean? = null
-    var isSaving = false
-
     private var checkDir: File? = null
-    var saveDataFileThread: Thread? = null
-    var tempDir: File? = null
-    val mFos: FileOutputStream? = null
+    private var tempDir: File? = null
+    private lateinit var mCheckType: CheckType
+    var checkParamsBean: CheckParamsBean? = null
+    var receiverCount = 0
+    var mcCount = 0
+    var gainFloatList = ArrayList<Float>()
+    var gainValue: MutableLiveData<List<Float>> = MutableLiveData(ArrayList())
 
     private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
     private var cachePhaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
@@ -37,13 +36,13 @@ class DefaultDataRepository : DataRepository {
 
     var realData: ArrayList<PrPsCubeList> = ArrayList()
 
-    override fun getPhaseData(chartType:Int): ArrayList<HashMap<Int, Float>> {
+    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
         val list = ArrayList<HashMap<Int, Float>>()
         if (chartType == 0) {
             if (phaseData.isNotEmpty()) {
                 list.add(phaseData.removeAt(0))
             }
-        }else if (chartType == 1){
+        } else if (chartType == 1) {
             if (realPointData.isNotEmpty()) {
                 list.add(realPointData.removeAt(0))
             }
@@ -51,12 +50,12 @@ class DefaultDataRepository : DataRepository {
         return list
     }
 
-    override fun getCachePhaseData(chartType:Int): ArrayList<HashMap<Int, Float>> {
+    override fun getCachePhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
         val list = ArrayList<HashMap<Int, Float>>()
         if (chartType == 0) {
             list.addAll(cachePhaseData)
             cachePhaseData.clear()
-        }else if (chartType == 1){
+        } else if (chartType == 1) {
             list.addAll(realPointCachePhaseData)
             realPointCachePhaseData.clear()
         }
@@ -82,30 +81,12 @@ class DefaultDataRepository : DataRepository {
         }
     }
 
-    override fun startSaveData() {
-        val dirName = DataUtil.timeFormat(System.currentTimeMillis(), "yyyy_mm_dd_hh_mm_ss")
-        tempDir = File(MRApplication.instance.fileCacheFile(), dirName)
-        isSaving = true
-    }
-
-    override fun stopSaveData() {
-        isSaving = false
-    }
-
     override fun setCheckFileDir(dir: File) {
         this.checkDir = dir
     }
 
     override fun getCheckFileDir(): File? {
         return checkDir
-    }
-
-    override fun getHufData(): UHFModelBean? {
-        return uhfModelBean
-    }
-
-    override fun getAcData(): ACModelBean? {
-        return acModelBean
     }
 
     override fun hufDataListener() {
@@ -149,8 +130,26 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun cleanData() {
+        receiverCount = 0
+        mcCount = 0
+        gainFloatList.clear()
         phaseData.clear()
         realData.clear()
+    }
+
+
+    override fun setCheckType(checkType: CheckType) {
+        mCheckType = checkType
+        checkParamsBean = mCheckType.checkParams.value
+        checkType.checkParams.value
+    }
+
+    override fun getCheckType(): CheckType {
+        return mCheckType
+    }
+
+    override fun getGainValueList(): MutableLiveData<List<Float>> {
+        return gainValue
     }
 
     private val hufListener = object : ReadListener(0) {
@@ -172,6 +171,7 @@ class DefaultDataRepository : DataRepository {
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
+                var maxValue = 0f
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -180,8 +180,10 @@ class DefaultDataRepository : DataRepository {
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
                     val f = ByteUtil.getFloat(height)
+                    maxValue = max(f, maxValue)
                     newValueList[row][column] = f
                     newPointList[row][column] = f
+                    mcCount++
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
                     val floatArray = newValueList[i]
@@ -193,8 +195,16 @@ class DefaultDataRepository : DataRepository {
                 }
                 phaseData.addAll(newPointList)
                 realPointData.addAll(newPointList)
-                if (isSaving) {
-
+                if (receiverCount == 10) {
+                    checkParamsBean?.fzAttr = "${maxValue}dBm"
+                    checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
+                    mCheckType.checkParams.postValue(checkParamsBean)
+                    gainFloatList.add(maxValue)
+                    gainValue.postValue(gainFloatList)
+                    receiverCount = 0
+                    mcCount = 0
+                } else {
+                    receiverCount++
                 }
             }
         }

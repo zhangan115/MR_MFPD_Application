@@ -2,20 +2,19 @@ package com.mr.mf_pd.application.view.fragment.real
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mr.mf_pd.application.model.UHFModelBean
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
 class RealModelViewModel(val repository: DataRepository) : ViewModel() {
 
+    lateinit var checkType: CheckType
+    lateinit var gainValues:MutableLiveData<List<Float>>
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
-    var num1Str: MutableLiveData<String> = MutableLiveData("-76")
-    var num2Str: MutableLiveData<String> = MutableLiveData("-78")
-    var num3Str: MutableLiveData<String> = MutableLiveData("-80")
-    var uhfData: UHFModelBean? = null
 
     fun start() {
-        uhfData = repository.getHufData()
+        this.checkType = repository.getCheckType()
+        this.gainValues = repository.getGainValueList()
         repository.hufDataListener()
     }
 

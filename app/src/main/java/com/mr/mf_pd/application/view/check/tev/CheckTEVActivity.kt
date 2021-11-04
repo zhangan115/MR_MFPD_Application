@@ -38,10 +38,6 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
         return R.layout.activity_check_tev
     }
 
-    override fun getToolBarTitle(): String {
-        return "暂态地电压（TEV）"
-    }
-
     override fun getViewPager(): ViewPager2 {
         return viewPager
     }

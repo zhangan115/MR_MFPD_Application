@@ -56,6 +56,7 @@ public class FileTypeUtils {
         AC(R.drawable.ic_document_box, R.string.type_ac),
         TEV(R.drawable.ic_document_box, R.string.type_tev),
         HF(R.drawable.ic_document_box, R.string.type_hf);
+
         private final int icon;
         private final int description;
         private final String[] extensions;

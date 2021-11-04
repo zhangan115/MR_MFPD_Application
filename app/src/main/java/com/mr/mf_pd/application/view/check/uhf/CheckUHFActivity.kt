@@ -28,15 +28,11 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
     override fun initData(savedInstanceState: Bundle?) {
         fragmentCount = 2
         super.initData(savedInstanceState)
-        viewModel.start()
+        viewModel.start(checkType)
     }
 
     override fun getContentView(): Int {
         return R.layout.activity_check_uhf
-    }
-
-    override fun getToolBarTitle(): String {
-        return "特高频（UHF）"
     }
 
     override fun getViewPager(): ViewPager2 {

@@ -48,4 +48,6 @@ class ContinuityModelFragment : BaseFragment<ContinuityDataBinding>() {
     override fun setViewModel(dataBinding: ContinuityDataBinding?) {
         dataBinding?.vm = viewModel
     }
+
+
 }

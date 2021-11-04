@@ -1,4 +1,4 @@
-package com.isuo.inspection.application.adapter
+package com.mr.mf_pd.application.adapter
 
 import android.text.TextUtils
 import android.view.View

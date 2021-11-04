@@ -40,7 +40,6 @@ class ValueChangeRenderer(var context: Context) :
 
         chartsPoints?.bindData(colorPointProgram)
         chartsPoints?.draw()
-
     }
 
 }

@@ -46,12 +46,10 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        surfaceView2.setEGLContextClientVersion(3)
         valueChangeRenderer =
             ValueChangeRenderer(this.requireContext())
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
         surfaceView1.setRenderer(prPsChartsRenderer)
-        surfaceView2.setRenderer(valueChangeRenderer)
         prPsChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
@@ -93,7 +91,6 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
         super.onResume()
         if (rendererSet) {
             surfaceView1.onResume()
-            surfaceView2.onResume()
         }
     }
 
@@ -101,7 +98,6 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
         super.onPause()
         if (rendererSet) {
             surfaceView1.onPause()
-            surfaceView2.onPause()
         }
     }
 }

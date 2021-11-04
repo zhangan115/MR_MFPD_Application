@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
@@ -25,22 +26,26 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     override fun initView(savedInstanceState: Bundle?) {
         uhfDataLayout.setOnClickListener {
             val intent = Intent(this, CheckUHFActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.UHF)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         acTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckACActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AC)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         tevDataLayout.setOnClickListener {
             val intent = Intent(this, CheckTEVActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.TEV)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         hfTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckHFActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, mDeviceBean)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {
@@ -64,7 +69,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
                     }
                 }
             } else {
-
+                SocketManager.getInstance().releaseRequest()
             }
         }
     }

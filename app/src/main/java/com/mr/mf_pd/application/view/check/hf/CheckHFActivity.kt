@@ -36,10 +36,6 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() {
         return R.layout.activity_check_hf
     }
 
-    override fun getToolBarTitle(): String {
-        return "高频（HF）"
-    }
-
     override fun getViewPager(): ViewPager2 {
         return viewPager
     }

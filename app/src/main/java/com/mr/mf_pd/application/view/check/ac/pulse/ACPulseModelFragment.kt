@@ -30,7 +30,7 @@ class ACPulseModelFragment : BaseFragment<ACPulseDataBinding>() {
     }
 
     override fun lazyLoad() {
-
+        viewModel.start()
     }
 
     override fun getContentView(): Int {

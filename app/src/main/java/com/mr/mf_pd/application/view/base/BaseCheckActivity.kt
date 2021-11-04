@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.model.DeviceBean
 import com.sito.tool.library.utils.DisplayUtil
@@ -21,6 +22,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
 
     open var mDeviceBean: DeviceBean? = null
     open var width: Int? = null
+    open lateinit var checkType: CheckType
     open var fragmentCount = 2
     open var titleList: ArrayList<TextView> = ArrayList()
 
@@ -78,7 +80,12 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        mDeviceBean = intent.getParcelableExtra(ConstantStr.KEY_BUNDLE_OBJECT)
+        checkType = intent.getSerializableExtra(ConstantStr.KEY_BUNDLE_OBJECT) as CheckType
+        mDeviceBean = intent.getParcelableExtra(ConstantStr.KEY_BUNDLE_OBJECT_1)
+    }
+
+    override fun getToolBarTitle(): String {
+        return findString(checkType.description)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

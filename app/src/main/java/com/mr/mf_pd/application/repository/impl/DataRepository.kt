@@ -1,21 +1,11 @@
 package com.mr.mf_pd.application.repository.impl
 
-import com.mr.mf_pd.application.model.ACModelBean
-import com.mr.mf_pd.application.model.UHFModelBean
+import androidx.lifecycle.MutableLiveData
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import java.io.File
 
 interface DataRepository {
-
-    /**
-     * 开始保存数据
-     */
-    fun startSaveData()
-
-    /**
-     * 停止保存
-     */
-    fun stopSaveData()
 
     /**
      * 设置当前检测任务的文件夹
@@ -30,26 +20,15 @@ interface DataRepository {
     fun getCheckFileDir(): File?
 
     /**
-     * 获取特高频HUF数据
-     * @return HUF类
-     */
-    fun getHufData(): UHFModelBean?
-
-    /**
      * 获取图表数据
      */
-    fun getPhaseData(chartType:Int): ArrayList<HashMap<Int, Float>>
+    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
 
     /**
      * 获取缓冲的图表数据
      */
-    fun getCachePhaseData(chartType:Int): ArrayList<HashMap<Int, Float>>
+    fun getCachePhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
 
-    /**
-     * 获取超波AC数据
-     * @return AC类
-     */
-    fun getAcData(): ACModelBean?
 
     fun hufDataListener()
 
@@ -70,7 +49,14 @@ interface DataRepository {
     interface RealDataCallback {
 
         fun update(prPsCube: PrPsCubeList)
+
     }
 
     fun cleanData()
+
+    fun setCheckType(checkType: CheckType)
+
+    fun getCheckType(): CheckType
+
+    fun getGainValueList(): MutableLiveData<List<Float>>
 }

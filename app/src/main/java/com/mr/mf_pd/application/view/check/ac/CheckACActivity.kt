@@ -89,10 +89,6 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() {
         return R.layout.activity_check_ac
     }
 
-    override fun getToolBarTitle(): String {
-        return "超声波形（AC）"
-    }
-
     override fun getViewPager(): ViewPager2 {
         return viewPager
     }
