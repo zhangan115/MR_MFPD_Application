@@ -10,7 +10,6 @@ import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
 
 class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
@@ -18,7 +17,6 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
     private val viewModel by viewModels<PhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
     var pointChartsRenderer: PointChartsRenderer? = null
-    var valueChangeRenderer: ValueChangeRenderer? = null
 
     companion object {
 
@@ -47,8 +45,6 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         pointChartsRenderer = PointChartsRenderer(this.requireContext())
-        valueChangeRenderer =
-            ValueChangeRenderer(this.requireContext())
 
         surfaceView1.setRenderer(pointChartsRenderer)
 

@@ -24,6 +24,4 @@ class TextureShaderProgram(context: Context) : ShaderProgram(
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
         GLES30.glUniform1i(uTextureUnitLocation, 0)
     }
-
-
 }

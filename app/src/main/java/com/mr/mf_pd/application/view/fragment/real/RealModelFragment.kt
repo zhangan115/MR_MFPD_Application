@@ -10,7 +10,6 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.renderer.ValueChangeRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import kotlinx.android.synthetic.main.fragment_real.*
 
@@ -18,7 +17,6 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
 
     private val viewModel by viewModels<RealModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
-    var valueChangeRenderer: ValueChangeRenderer? = null
     var prPsChartsRenderer: PrPsChartsRenderer? = null
 
     companion object {
@@ -46,8 +44,6 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        valueChangeRenderer =
-            ValueChangeRenderer(this.requireContext())
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
         surfaceView1.setRenderer(prPsChartsRenderer)
         prPsChartsRenderer?.getPrpsValueCallback =

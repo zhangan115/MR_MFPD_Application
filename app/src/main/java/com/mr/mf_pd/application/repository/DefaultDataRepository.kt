@@ -137,10 +137,12 @@ class DefaultDataRepository : DataRepository {
         realData.clear()
     }
 
+    var maxValue = 0f
 
     override fun setCheckType(checkType: CheckType) {
         mCheckType = checkType
         checkParamsBean = mCheckType.checkParams.value
+        maxValue = mCheckType.minValue
         checkType.checkParams.value
     }
 
@@ -171,7 +173,7 @@ class DefaultDataRepository : DataRepository {
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
-                var maxValue = 0f
+
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -195,14 +197,15 @@ class DefaultDataRepository : DataRepository {
                 }
                 phaseData.addAll(newPointList)
                 realPointData.addAll(newPointList)
+                gainFloatList.add(maxValue)
+                gainValue.postValue(gainFloatList)
                 if (receiverCount == 10) {
                     checkParamsBean?.fzAttr = "${maxValue}dBm"
                     checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
                     mCheckType.checkParams.postValue(checkParamsBean)
-                    gainFloatList.add(maxValue)
-                    gainValue.postValue(gainFloatList)
                     receiverCount = 0
                     mcCount = 0
+                    maxValue = mCheckType.minValue
                 } else {
                     receiverCount++
                 }

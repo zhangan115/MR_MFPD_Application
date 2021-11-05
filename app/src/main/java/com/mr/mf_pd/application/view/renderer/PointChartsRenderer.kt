@@ -1,8 +1,15 @@
 package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.TypedValue
+import android.widget.TextView
+import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
@@ -16,7 +23,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
 
-    companion object{
+    companion object {
         var offsetXPointValueStart = 0.15f
         var offsetXPointValueEnd = 0.15f
         var offsetYPointValueTop = 0.15f
@@ -70,6 +77,29 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.draw()
 
         getPrpsValueCallback?.getData()
+    }
+
+    private fun createBitmap(text: String): Bitmap {
+        val textView = TextView(context)
+        textView.text = text
+        textView.setTextColor(context.getColor(R.color.text_title))
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+
+        val p = Paint()
+        p.color = context.getColor(R.color.text_title)
+        p.typeface = textView.typeface
+        p.textSize = textView.textSize
+
+        val metrics = p.fontMetricsInt
+        val height = metrics.bottom - metrics.top
+        val rect = Rect()
+        p.getTextBounds(text, 0, text.length, rect)
+        val width = rect.width()//文本的宽度
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        val canvas = Canvas(bitmap)
+        canvas.drawText(text, 0f, (-metrics.ascent).toFloat(), p)
+        canvas.save()
+        return bitmap
     }
 
 }
