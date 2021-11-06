@@ -76,6 +76,10 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
 
+        textureProgram.useProgram()
+        textureProgram.setUniforms(texture)
+
+
         getPrpsValueCallback?.getData()
     }
 

@@ -47,8 +47,10 @@ class GainChartView : LinearLayout {
         lineChart.setScaleEnabled(false)
         lineChart.setPinchZoom(false)
         lineChart.legend.isEnabled = false
+        lineChart.axisLeft.setDrawZeroLine(false)
         lineChart.xAxis.isEnabled = false
-        lineChart.axisLeft.isEnabled = false
+        lineChart.axisLeft.isEnabled = true
+        lineChart.xAxis.mAxisMinimum = -100f
         lineChart.axisRight.isEnabled = false
     }
 
