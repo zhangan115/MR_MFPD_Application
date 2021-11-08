@@ -7,11 +7,15 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.Log
 import android.util.TypedValue
 import android.widget.TextView
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import com.mr.mf_pd.application.view.opengl.`object`.TextGlHelp
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
@@ -31,8 +35,9 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     private lateinit var chartsLines: Point2DChartLine
-
-    private val xTextList = listOf("0", "90", "180", "270", "360")
+    private val textHelp = TextGlHelp()
+    private var textMaps = HashMap<String, ArrayList<String>>()
+    private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
     private val yTextList = listOf("0", "0.5", "1,", "1.5")
 
     private lateinit var textureProgram: TextureShaderProgram
@@ -44,15 +49,20 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private var prPsPoints: PrpsPoint2DList? = null
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+        Log.d("za", "onSurfaceCreated")
         GLES30.glClearColor(1f, 1f, 1f, 1f)
-
+        val unit = ArrayList<String>()
+        unit.add("dBm")
+        textMaps[Constants.KEY_UNIT] = unit
+        textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
+        textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
         prPsPoints = PrpsPoint2DList()
 
         textureProgram = TextureShaderProgram(context)
         colorProgram = Point2DColorShaderProgram(context)
         colorPointProgram = Point2DColorPointShaderProgram(context)
 
-        texture = TextureUtils.loadTextureWithText(xTextList[0])
+
 
         chartsLines = Point2DChartLine(4, 4, 90)
     }
@@ -62,11 +72,23 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+        Log.d("za", "---height $height ---width $width")
+        TextureUtils.height = height
+        TextureUtils.width = width
+        texture = TextureUtils.loadTextureWithText(context, textMaps)
         GLES30.glViewport(0, 0, width, height)
     }
 
     override fun onDrawFrame(gl: GL10?) {
+//        Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+
+        textureProgram.useProgram()
+        textureProgram.setUniforms(texture)
+
+        textHelp.bindData(textureProgram)
+        textHelp.draw()
+
         colorProgram.useProgram()
         colorProgram.setUniforms(0.4f, 0.4f, 0.4f)
         chartsLines.bindData(colorProgram)
@@ -76,34 +98,9 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
 
-        textureProgram.useProgram()
-        textureProgram.setUniforms(texture)
 
 
         getPrpsValueCallback?.getData()
-    }
-
-    private fun createBitmap(text: String): Bitmap {
-        val textView = TextView(context)
-        textView.text = text
-        textView.setTextColor(context.getColor(R.color.text_title))
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-
-        val p = Paint()
-        p.color = context.getColor(R.color.text_title)
-        p.typeface = textView.typeface
-        p.textSize = textView.textSize
-
-        val metrics = p.fontMetricsInt
-        val height = metrics.bottom - metrics.top
-        val rect = Rect()
-        p.getTextBounds(text, 0, text.length, rect)
-        val width = rect.width()//文本的宽度
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        val canvas = Canvas(bitmap)
-        canvas.drawText(text, 0f, (-metrics.ascent).toFloat(), p)
-        canvas.save()
-        return bitmap
     }
 
 }

@@ -2,7 +2,7 @@ package com.mr.mf_pd.application.common
 
 object Constants {
 
-//       const val host = "172.16.40.45" //请求地址
+    //       const val host = "172.16.40.45" //请求地址
     const val host = "192.168.88.2" //请求地址
 
     const val port = 8000 //端口
@@ -91,4 +91,8 @@ object Constants {
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100
+
+    const val KEY_UNIT = "key_unit"
+    const val KEY_X_TEXT = "key_x_text"
+    const val KEY_Y_TEXT = "key_y_text"
 }

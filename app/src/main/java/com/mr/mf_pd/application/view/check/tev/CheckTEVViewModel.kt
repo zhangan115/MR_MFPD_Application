@@ -6,8 +6,6 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 
 class CheckTEVViewModel(val dataRepository: DataRepository) : ViewModel() {
 
-    var currentIndex: MutableLiveData<Int> = MutableLiveData(0)
-
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
     fun start(){
