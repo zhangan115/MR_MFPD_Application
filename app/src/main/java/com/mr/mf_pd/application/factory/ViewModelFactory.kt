@@ -65,18 +65,18 @@ class ViewModelFactory constructor(
             isAssignableFrom(SplashViewModel::class.java) ->
                 SplashViewModel(userRepository)
             isAssignableFrom(CheckUHFViewModel::class.java) ->
-                CheckUHFViewModel(dataRepository)
+                CheckUHFViewModel(dataRepository,settingRepository)
             isAssignableFrom(RealModelViewModel::class.java) ->
                 RealModelViewModel(dataRepository)
             isAssignableFrom(PhaseModelViewModel::class.java) ->
                 PhaseModelViewModel(dataRepository)
             isAssignableFrom(UHFSettingViewModel::class.java) ->
-                UHFSettingViewModel(dataRepository, settingRepository)
+                UHFSettingViewModel(settingRepository)
             isAssignableFrom(CheckACViewModel::class.java) ->
-                CheckACViewModel(dataRepository)
+                CheckACViewModel(dataRepository,settingRepository)
 
             isAssignableFrom(ACSettingViewModel::class.java) ->
-                ACSettingViewModel(dataRepository, settingRepository)
+                ACSettingViewModel(settingRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
                 ACFlightModelViewModel(dataRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->
@@ -84,10 +84,10 @@ class ViewModelFactory constructor(
             isAssignableFrom(HFSettingViewModel::class.java) ->
                 HFSettingViewModel(dataRepository, settingRepository)
             isAssignableFrom(CheckHFViewModel::class.java) ->
-                CheckHFViewModel(dataRepository)
+                CheckHFViewModel(dataRepository,settingRepository)
 
             isAssignableFrom(CheckTEVViewModel::class.java) ->
-                CheckTEVViewModel(dataRepository)
+                CheckTEVViewModel(dataRepository,settingRepository)
             isAssignableFrom(TEVSettingViewModel::class.java) ->
                 TEVSettingViewModel(dataRepository, settingRepository)
             isAssignableFrom(ContinuityModelViewModel::class.java) ->

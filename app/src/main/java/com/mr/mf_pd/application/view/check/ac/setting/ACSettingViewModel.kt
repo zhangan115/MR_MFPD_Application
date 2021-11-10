@@ -2,10 +2,9 @@ package com.mr.mf_pd.application.view.check.ac.setting
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class ACSettingViewModel(dataRepository: DataRepository, setting:SettingRepository) : ViewModel() {
+class ACSettingViewModel(settingRepository:SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     //相位同步
@@ -32,6 +31,7 @@ class ACSettingViewModel(dataRepository: DataRepository, setting:SettingReposito
     var maximumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-30")
     //最小幅值
     var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-80")
+
     fun start(){}
 
 

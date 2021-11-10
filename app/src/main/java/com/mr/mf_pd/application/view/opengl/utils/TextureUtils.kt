@@ -89,10 +89,10 @@ object TextureUtils {
         //字体为红色
         p.color = context.getColor(R.color.text_title)
         p.typeface = typeface
-        p.textSize = DisplayUtil.sp2px(context,12f).toFloat()
+        p.textSize = DisplayUtil.sp2px(context, 12f).toFloat()
         DisplayUtil.px2dip(context, height.toFloat())
         //绘制字体
-        val step = (width - 0.3 * width  )/ 2 / 4
+
         textMaps.entries.forEach {
             when (it.key) {
                 Constants.KEY_UNIT -> {
@@ -100,11 +100,24 @@ object TextureUtils {
                 }
                 Constants.KEY_X_TEXT -> {
                     for (i in 0 until it.value.size) {
-                        canvas.drawText(it.value[i], (i * step + 81).toFloat(), height-30f, p)
+                        val rect = Rect()
+                        val step = width / it.value.size
+                        p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
+                        canvas.drawText(
+                            it.value[i],
+                            (i * step + 81).toFloat(),
+                            height - (rect.height()).toFloat(),
+                            p
+                        )
                     }
                 }
                 Constants.KEY_Y_TEXT -> {
-
+                    for (i in 0 until it.value.size) {
+                        val rect = Rect()
+                        val step = height / it.value.size
+                        p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
+                        canvas.drawText(it.value[i], 15f, (step * i).toFloat(), p)
+                    }
                 }
             }
         }

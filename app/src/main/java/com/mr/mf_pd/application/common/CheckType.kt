@@ -3,8 +3,8 @@ package com.mr.mf_pd.application.common
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.SettingBean
 import java.io.File
-
 
 enum class CheckType(
     val type: Int,
@@ -14,6 +14,7 @@ enum class CheckType(
     val icon: Int,
     val minValue: Float,
     val maxValue: Float,
+    var settingBean:SettingBean,
     val checkParams: MutableLiveData<CheckParamsBean>
 ) {
     UHF(
@@ -23,6 +24,7 @@ enum class CheckType(
         ".check_uhf",
         R.mipmap.img_check_icon,
         -85f, -10f,
+        SettingBean(cacheKey = ConstantStr.SETTING_UHF),
         MutableLiveData(CheckParamsBean(0))
     ),
     AC(
@@ -32,6 +34,7 @@ enum class CheckType(
         ".check_ac",
         R.mipmap.img_check_icon,
         0f, 100f,
+        SettingBean(cacheKey = ConstantStr.SETTING_AC),
         MutableLiveData(CheckParamsBean(1))
     ),
     TEV(
@@ -41,6 +44,7 @@ enum class CheckType(
         ".check_tev",
         R.mipmap.img_check_icon,
         -40f, 50f,
+        SettingBean(cacheKey = ConstantStr.SETTING_TEV),
         MutableLiveData(CheckParamsBean(2))
     ),
     HF(
@@ -50,6 +54,7 @@ enum class CheckType(
         ".check_hf",
         R.mipmap.img_check_icon,
         0f, 1900f,
+        SettingBean(cacheKey = ConstantStr.SETTING_HF),
         MutableLiveData(CheckParamsBean(3))
     );
 

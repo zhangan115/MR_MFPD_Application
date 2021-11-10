@@ -38,7 +38,7 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val textHelp = TextGlHelp()
     private var textMaps = HashMap<String, ArrayList<String>>()
     private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
-    private val yTextList = listOf("0", "0.5", "1,", "1.5")
+    private val yTextList = listOf("0", "0.5", "1.0", "1.5")
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
@@ -49,7 +49,6 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private var prPsPoints: PrpsPoint2DList? = null
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        Log.d("za", "onSurfaceCreated")
         GLES30.glClearColor(1f, 1f, 1f, 1f)
         val unit = ArrayList<String>()
         unit.add("dBm")
@@ -72,7 +71,6 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        Log.d("za", "---height $height ---width $width")
         TextureUtils.height = height
         TextureUtils.width = width
         texture = TextureUtils.loadTextureWithText(context, textMaps)
@@ -80,7 +78,6 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
-//        Log.d("za", "onDrawFrame")
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
         textureProgram.useProgram()

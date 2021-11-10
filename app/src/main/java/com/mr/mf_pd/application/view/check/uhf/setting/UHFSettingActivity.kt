@@ -16,6 +16,7 @@ class UHFSettingActivity : AbsBaseActivity<UHFSettingDataBinding>() {
     private val viewModel by viewModels<UHFSettingViewModel> { getViewModelFactory() }
 
     override fun initView(savedInstanceState: Bundle?) {
+
         phaseModelLayout.setOnClickListener {
             //相位同步
             MaterialDialog(this)

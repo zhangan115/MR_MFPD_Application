@@ -5,17 +5,18 @@ import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class UHFSettingViewModel(dataRepository: DataRepository,setting:SettingRepository) : ViewModel() {
+class UHFSettingViewModel(setting:SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    //实时上传
+    var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
+
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
     var bandDetectionInt: MutableLiveData<Int> = MutableLiveData()
-    //实时上传
-    var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
     //自动同步
     var isAutoSync: MutableLiveData<Boolean> = MutableLiveData(true)
     //噪音过滤
@@ -32,8 +33,12 @@ class UHFSettingViewModel(dataRepository: DataRepository,setting:SettingReposito
     var maximumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-30")
     //最小幅值
     var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-80")
-    fun start(){}
 
+    fun start(){
 
+    }
 
+    fun saveSetting(){
+
+    }
 }
