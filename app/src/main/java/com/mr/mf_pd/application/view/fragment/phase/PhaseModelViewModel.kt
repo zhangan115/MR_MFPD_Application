@@ -3,8 +3,6 @@ package com.mr.mf_pd.application.view.fragment.phase
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.model.CheckParamsBean
-import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
 class PhaseModelViewModel(val repository: DataRepository) : ViewModel() {

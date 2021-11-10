@@ -39,6 +39,7 @@ data class SettingBean(
     val cacheKey:String,//缓存的Key
     var xwTb: Int = 0,//相位同步
     var autoTb: Int = 0,//自动同步
+    var pdJc: Int = 0,//频带检测
     var lyXc: Int = 0,//滤音消除
     var xwPy: Int = 0,//相位偏移
     var ljTime: Int = 0,//图谱累积时间
@@ -46,7 +47,7 @@ data class SettingBean(
     var maxValue: Int = 0,//最大幅值
     var minValue: Int = 0,//最小幅值
 
-    var nTbPl: Int = 0,//内同步频率
+    var nTbPl: Float = 0f,//内同步频率
     var fzUnit: String = "mV",//幅值单位
     var outVoice: Int = 0, //声音输出
     var pdDown: Int = 50, //频带下限

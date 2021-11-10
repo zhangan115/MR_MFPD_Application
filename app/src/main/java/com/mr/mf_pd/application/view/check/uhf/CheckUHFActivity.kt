@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
@@ -45,6 +46,7 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
 
     override fun settingClick() {
         val intent = Intent(this, UHFSettingActivity::class.java)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,checkType)
         startActivity(intent)
     }
 

@@ -95,4 +95,7 @@ object Constants {
     const val KEY_UNIT = "key_unit"
     const val KEY_X_TEXT = "key_x_text"
     const val KEY_Y_TEXT = "key_y_text"
+
+    val PHASE_MODEL_LIST = listOf("内同步", "无线同步")
+    val BAND_DETECTION_LIST = listOf("全通", "高通", "低通")
 }

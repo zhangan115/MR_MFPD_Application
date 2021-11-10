@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.check.ac.pulse
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mr.mf_pd.application.model.UHFModelBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
 class ACPulseModelViewModel(val repository: DataRepository) : ViewModel() {
