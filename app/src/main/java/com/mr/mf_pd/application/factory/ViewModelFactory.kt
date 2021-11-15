@@ -82,14 +82,14 @@ class ViewModelFactory constructor(
             isAssignableFrom(ACPulseModelViewModel::class.java) ->
                 ACPulseModelViewModel(dataRepository)
             isAssignableFrom(HFSettingViewModel::class.java) ->
-                HFSettingViewModel(dataRepository, settingRepository)
+                HFSettingViewModel(settingRepository)
             isAssignableFrom(CheckHFViewModel::class.java) ->
                 CheckHFViewModel(dataRepository,settingRepository)
 
             isAssignableFrom(CheckTEVViewModel::class.java) ->
                 CheckTEVViewModel(dataRepository,settingRepository)
             isAssignableFrom(TEVSettingViewModel::class.java) ->
-                TEVSettingViewModel(dataRepository, settingRepository)
+                TEVSettingViewModel(settingRepository)
             isAssignableFrom(ContinuityModelViewModel::class.java) ->
                 ContinuityModelViewModel(dataRepository)
             else ->

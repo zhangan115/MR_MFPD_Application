@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="fz_unit_list">
+        <item>@string/fz_unit_1</item>
+        <item>@string/fz_unit_2</item>
+    </string-array>
     <string-array name="choose_phase_model">
         <item>@string/phase_model_1</item>
         <item>@string/phase_model_2</item>

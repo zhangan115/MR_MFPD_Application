@@ -30,32 +30,6 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="12dp"
-                    android:background="@drawable/shape_content_bg">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:padding="15dp"
-                        android:text="实时上传"
-                        android:textColor="@color/text_content_third_color"
-                        android:textSize="14sp" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchUpload"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="15dp"
-                        android:checked="@={vm.isUploadReal()}" />
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/phaseModelLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -212,11 +186,43 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="15dp"
+                            android:text="以放电量为单位"
+                            android:textColor="@color/text_content_third_color"
+                            android:textSize="14sp" />
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:checked="@={vm.isFdUnit}" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/bandDetectionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginEnd="12dp"
                     android:background="@drawable/shape_content_bg">
 
@@ -253,6 +259,68 @@
                         android:layout_height="wrap_content"
                         android:padding="15dp"
                         android:text="图谱累计时间，秒"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:padding="15dp"
+                        android:text="@={vm.totalTimeStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="30" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="校准系数，pc/mv"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:padding="15dp"
+                        android:text="@={vm.totalTimeStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="30" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="校准器输出，pc"
                         android:textColor="@color/text_content_third_color"
                         android:textSize="14sp" />
 

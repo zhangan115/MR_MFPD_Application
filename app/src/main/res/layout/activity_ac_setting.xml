@@ -33,6 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
                     android:background="@drawable/shape_content_bg">
@@ -81,6 +82,35 @@
                         android:textColor="#ff333333"
                         android:textSize="14sp"
                         tools:text="内同步" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/fzUnitLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="15dp"
+                        android:text="幅值单位"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        android:text="@{vm.fzUnitStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="mV" />
 
                 </LinearLayout>
 
@@ -179,6 +209,36 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="15dp"
+                            android:text="自动增益"
+                            android:textColor="@color/text_content_third_color"
+                            android:textSize="14sp" />
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:checked="@={vm.isAutoZy}" />
+                    </LinearLayout>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -198,7 +258,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:padding="15dp"
-                            android:text="噪声滤除"
+                            android:text="声音输出"
                             android:textColor="@color/text_content_third_color"
                             android:textSize="14sp" />
 
@@ -206,13 +266,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15dp"
-                            android:checked="@={vm.isNoiseFiltering}" />
+                            android:checked="@={vm.isOutVoice}" />
                     </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/bandDetectionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
@@ -221,22 +280,56 @@
                     android:background="@drawable/shape_content_bg">
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="频带下限(表贴超声)"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
                         android:padding="15dp"
-                        android:text="检测频带"
-                        android:textColor="@color/text_content_third_color"
-                        android:textSize="14sp" />
+                        android:text="@={vm.pdDownStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="30" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="15dp"
-                        android:text="@{vm.bandDetectionStr}"
+                        android:padding="15dp"
+                        android:text="频带上限(表贴超声)"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:padding="15dp"
+                        android:text="@={vm.pdUpStr}"
                         android:textColor="#ff333333"
                         android:textSize="14sp"
-                        tools:text="全通" />
+                        tools:text="30" />
 
                 </LinearLayout>
 
@@ -316,7 +409,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
-                            android:text="最大幅值"
+                            android:text="最大幅值1"
                             android:textColor="@color/text_content_third_color"
                             android:textSize="14sp" />
 
@@ -327,7 +420,7 @@
                             android:background="@null"
                             android:gravity="end"
                             android:padding="15dp"
-                            android:text="@={vm.maximumAmplitudeStr}"
+                            android:text="@={vm.maximumAmplitudeStr1}"
                             android:textSize="14sp"
                             app:edit_enable="@{vm.isFixedScale}"
                             tools:text="-30" />
@@ -350,7 +443,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="15dp"
-                            android:text="最小幅值"
+                            android:text="最小幅值1"
                             android:textColor="@color/text_content_third_color"
                             android:textSize="14sp" />
 
@@ -361,7 +454,75 @@
                             android:background="@null"
                             android:gravity="end"
                             android:padding="15dp"
-                            android:text="@={vm.minimumAmplitudeStr}"
+                            android:text="@={vm.minimumAmplitudeStr1}"
+                            android:textSize="14sp"
+                            app:edit_enable="@{vm.isFixedScale}"
+                            tools:text="-30" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="#D9D9D9" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_content_bg">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:text="最大幅值2"
+                            android:textColor="@color/text_content_third_color"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:gravity="end"
+                            android:padding="15dp"
+                            android:text="@={vm.maximumAmplitudeStr2}"
+                            android:textSize="14sp"
+                            app:edit_enable="@{vm.isFixedScale}"
+                            tools:text="-30" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:background="#D9D9D9" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_content_bg">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:text="最小幅值2"
+                            android:textColor="@color/text_content_third_color"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:gravity="end"
+                            android:padding="15dp"
+                            android:text="@={vm.minimumAmplitudeStr2}"
                             android:textSize="14sp"
                             app:edit_enable="@{vm.isFixedScale}"
                             tools:text="-30" />

@@ -20,7 +20,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
     open lateinit var checkType: CheckType
 
     override fun initView(savedInstanceState: Bundle?) {
-        getPhaseModelLayout().setOnClickListener {
+        getPhaseModelLayout()?.setOnClickListener {
             //相位同步
             MaterialDialog(this)
                 .show {
@@ -30,7 +30,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
                     lifecycleOwner(this@BaseSettingActivity)
                 }
         }
-        getBandDetectionLayout().setOnClickListener {
+        getBandDetectionLayout()?.setOnClickListener {
             //检测频带
             MaterialDialog(this)
                 .show {
@@ -66,9 +66,9 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
 
     }
 
-    abstract fun getPhaseModelLayout(): LinearLayout
+    abstract fun getPhaseModelLayout(): LinearLayout?
 
-    abstract fun getBandDetectionLayout(): LinearLayout
+    abstract fun getBandDetectionLayout(): LinearLayout?
 
     abstract fun onPhaseModelChange(text:String,index:Int)
 
