@@ -30,33 +30,6 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="12dp"
-                    android:visibility="gone"
-                    android:background="@drawable/shape_content_bg">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:padding="15dp"
-                        android:text="实时上传"
-                        android:textColor="@color/text_content_third_color"
-                        android:textSize="14sp" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchUpload"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="15dp"
-                        android:checked="@={vm.isUploadReal()}" />
-
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/phaseModelLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
