@@ -142,7 +142,6 @@ class DefaultDataRepository : DataRepository {
     override fun setCheckType(checkType: CheckType) {
         mCheckType = checkType
         checkParamsBean = mCheckType.checkParams.value
-        maxValue = mCheckType.minValue
         checkType.checkParams.value
     }
 
@@ -205,7 +204,7 @@ class DefaultDataRepository : DataRepository {
                     mCheckType.checkParams.postValue(checkParamsBean)
                     receiverCount = 0
                     mcCount = 0
-                    maxValue = mCheckType.minValue
+
                 } else {
                     receiverCount++
                 }

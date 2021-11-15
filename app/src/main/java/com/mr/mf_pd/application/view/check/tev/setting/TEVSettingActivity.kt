@@ -14,6 +14,7 @@ class TEVSettingActivity : BaseSettingActivity<TEVSettingDataBinding>() {
     private val viewModel by viewModels<TEVSettingViewModel> { getViewModelFactory() }
 
     override fun initData(savedInstanceState: Bundle?) {
+        super.initData(savedInstanceState)
         dataBinding.vm = viewModel
         viewModel.start(checkType)
     }

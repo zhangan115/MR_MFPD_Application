@@ -36,6 +36,7 @@ class ACSettingActivity : BaseSettingActivity<ACSettingDataBinding>() {
     }
 
     override fun initData(savedInstanceState: Bundle?) {
+        super.initData(savedInstanceState)
         dataBinding.vm = viewModel
         viewModel.start(checkType)
     }

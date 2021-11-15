@@ -14,6 +14,7 @@ class CheckACViewModel(val dataRepository: DataRepository,val settingRepository:
 
     fun start(checkType: CheckType) {
         settingRepository.getSettingData(checkType)
+        dataRepository.setCheckType(checkType)
         dataRepository.switchPassageway(2)
     }
 

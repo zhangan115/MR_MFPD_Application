@@ -12,8 +12,6 @@ enum class CheckType(
     val checkName: Int,
     val checkFile: String,
     val icon: Int,
-    val minValue: Float,
-    val maxValue: Float,
     var settingBean:SettingBean,
     val checkParams: MutableLiveData<CheckParamsBean>
 ) {
@@ -23,7 +21,6 @@ enum class CheckType(
         R.string.type_uhf,
         ".check_uhf",
         R.mipmap.img_check_icon,
-        -85f, -10f,
         SettingBean(cacheKey = ConstantStr.SETTING_UHF),
         MutableLiveData(CheckParamsBean(0))
     ),
@@ -33,7 +30,6 @@ enum class CheckType(
         R.string.type_ac,
         ".check_ac",
         R.mipmap.img_check_icon,
-        0f, 100f,
         SettingBean(cacheKey = ConstantStr.SETTING_AC),
         MutableLiveData(CheckParamsBean(1))
     ),
@@ -43,7 +39,6 @@ enum class CheckType(
         R.string.type_tev,
         ".check_tev",
         R.mipmap.img_check_icon,
-        -40f, 50f,
         SettingBean(cacheKey = ConstantStr.SETTING_TEV),
         MutableLiveData(CheckParamsBean(2))
     ),
@@ -53,7 +48,6 @@ enum class CheckType(
         R.string.type_hf,
         ".check_hf",
         R.mipmap.img_check_icon,
-        0f, 1900f,
         SettingBean(cacheKey = ConstantStr.SETTING_HF),
         MutableLiveData(CheckParamsBean(3))
     );
