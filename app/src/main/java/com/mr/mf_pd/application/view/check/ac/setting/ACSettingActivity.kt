@@ -8,13 +8,10 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACSettingDataBinding
-import com.mr.mf_pd.application.databinding.UHFSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
-import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.BaseSettingActivity
 import kotlinx.android.synthetic.main.activity_ac_setting.*
 import kotlinx.android.synthetic.main.activity_uhf_setting.*
-import kotlinx.android.synthetic.main.activity_uhf_setting.bandDetectionLayout
 import kotlinx.android.synthetic.main.activity_uhf_setting.phaseModelLayout
 
 class ACSettingActivity : BaseSettingActivity<ACSettingDataBinding>() {
