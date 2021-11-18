@@ -16,7 +16,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:text="选择标题颜色"
             android:textColor="@color/text_title"
             android:textSize="14sp" />
@@ -30,57 +29,57 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_1"
-                android:button="@null" />
+                android:button="@null"
+                android:tag="0" />
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_2"
                 android:button="@null"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="1" />
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_3"
                 android:button="@null"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="2" />
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_4"
                 android:button="@null"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="3" />
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_5"
                 android:button="@null"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="4" />
 
             <RadioButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/selector_color_level_6"
                 android:button="@null"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="5" />
         </RadioGroup>
 
     </LinearLayout>

@@ -6,8 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
@@ -21,8 +25,7 @@ import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
-class DirectoryFragment : Fragment(),
-    DirectoryListener {
+class DirectoryFragment : Fragment(), DirectoryListener {
 
     private var mEmptyView: View? = null
     private var isDelete: Boolean = false
@@ -68,7 +71,8 @@ class DirectoryFragment : Fragment(),
 
             override fun onItemClickThrottled(view: View?, position: Int) {
                 if (mFileClickListener != null) {
-                    mFileClickListener!!.onFileClicked(mDirectoryAdapter!!.getModel(position))
+//                    mFileClickListener!!.onFileClicked(mDirectoryAdapter!!.getModel(position))
+                    showCheckDataNoteDialog()
                 }
             }
         })
@@ -87,7 +91,6 @@ class DirectoryFragment : Fragment(),
         mDirectoryRecyclerView?.setEmptyView(mEmptyView)
 
         FileUtils.getFileList(mFile, FileTypeUtils.CheckType.ALL) {
-            Log.d("zhangan",Thread.currentThread().name)
             this.checkDataFileModels.clear()
             this.checkDataFileModels.addAll(it)
             this.mDirectoryAdapter?.notifyDataSetChanged()
@@ -135,5 +138,24 @@ class DirectoryFragment : Fragment(),
     override fun deleteModel(isDelete: Boolean) {
         this.isDelete = isDelete
         initFilesList()
+    }
+
+    /**
+     * 显示标记的Dialog
+     */
+    private fun showCheckDataNoteDialog() {
+        MaterialDialog(requireActivity()).show {
+            setContentView(R.layout.dialog_check_data_note)
+            val radioGroup = findViewById<RadioGroup>(R.id.chooseColorRg)
+            findViewById<TextView>(R.id.cancelTv).setOnClickListener {
+                dismiss()
+            }
+            findViewById<TextView>(R.id.saveTv).setOnClickListener {
+                val rb: RadioButton = findViewById(radioGroup.checkedRadioButtonId)
+                val tag = rb.tag to Int
+
+                dismiss()
+            }
+        }
     }
 }

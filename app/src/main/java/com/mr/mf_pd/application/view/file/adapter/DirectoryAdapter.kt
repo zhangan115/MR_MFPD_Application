@@ -63,11 +63,9 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
             holder.mLabelImage.visibility = View.GONE
             holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
         } else {
-            holder.mNextImage.visibility = View.GONE
-
+            holder.mNextImage.visibility = View.VISIBLE
             holder.mPhotoImage.visibility = View.VISIBLE
             holder.mLabelImage.visibility = View.VISIBLE
-
             holder.mFileSubtitle.text = "特高频"
         }
     }
@@ -101,6 +99,7 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
             mPhotoImage = itemView.findViewById(R.id.photoIv)
             mLabelImage = itemView.findViewById(R.id.labelIv)
             mNextImage = itemView.findViewById(R.id.iconNextIv)
+
             isDeleteCb = itemView.findViewById(R.id.deleteCb)
             mFileTitle = itemView.findViewById(R.id.item_file_title)
             mFileSubtitle = itemView.findViewById(R.id.item_file_subtitle)
