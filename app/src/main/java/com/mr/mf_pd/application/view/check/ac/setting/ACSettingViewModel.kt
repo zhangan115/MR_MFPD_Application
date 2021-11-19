@@ -6,7 +6,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class ACSettingViewModel(settingRepository: SettingRepository) : ViewModel() {
+class ACSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     lateinit var checkType: CheckType
@@ -83,5 +83,27 @@ class ACSettingViewModel(settingRepository: SettingRepository) : ViewModel() {
         minimumAmplitudeStr2.postValue(settingBean.minValue2.toString())
     }
 
+
+
+    fun toSave(){
+        val settingBean = checkType.settingBean
+        settingBean.xwTb = phaseModelInt.value!!
+        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
+        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+        settingBean.ljTime = totalTimeStr.value!!.toInt()
+        settingBean.maxValue = maximumAmplitudeStr1.value!!.toInt()
+        settingBean.minValue = minimumAmplitudeStr1.value!!.toInt()
+
+        settingBean.maxValue2 = maximumAmplitudeStr2.value!!.toInt()
+        settingBean.minValue2 = minimumAmplitudeStr2.value!!.toInt()
+
+        settingBean.autoZy = if (isAutoZy.value!!) 1 else 0
+        settingBean.outVoice = if (isOutVoice.value!!) 1 else 0
+
+        setting.toSaveSettingData(checkType)
+    }
 
 }

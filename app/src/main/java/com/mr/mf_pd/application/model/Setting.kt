@@ -5,12 +5,12 @@ data class SettingBean(
     var xwTb: Int = 0,//相位同步
     var autoTb: Int = 0,//自动同步
     var pdJc: Int = 0,//频带检测
-    var lyXc: Int = 0,//滤音消除
+    var lyXc: Int = 1,//滤音消除
     var xwPy: Int = 0,//相位偏移
-    var ljTime: Int = 0,//图谱累积时间
-    var gdCd: Int = 0,//固定尺度
-    var maxValue: Int = 0,//最大幅值
-    var minValue: Int = 0,//最小幅值
+    var ljTime: Int = 15,//图谱累积时间
+    var gdCd: Int = 1,//固定尺度
+    var maxValue: Int = -20,//最大幅值
+    var minValue: Int = -80,//最小幅值
 
     var nTbPl: Float = 0f,//内同步频率
     var fzUnit: Int = 0,//幅值单位

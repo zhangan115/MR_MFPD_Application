@@ -45,4 +45,10 @@ class HFSettingActivity : BaseSettingActivity<HFSettingDataBinding>() {
     override fun onBandDetectionChange(text: String, index: Int) {
 
     }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.toSave()
+    }
+
 }

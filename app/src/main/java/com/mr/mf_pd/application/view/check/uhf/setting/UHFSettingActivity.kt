@@ -42,4 +42,10 @@ class UHFSettingActivity : BaseSettingActivity<UHFSettingDataBinding>() {
         viewModel.bandDetectionStr.postValue(text)
         viewModel.bandDetectionInt.postValue(index)
     }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.toSave()
+    }
+
 }

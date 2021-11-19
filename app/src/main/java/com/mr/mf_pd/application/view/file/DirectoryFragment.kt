@@ -71,8 +71,7 @@ class DirectoryFragment : Fragment(), DirectoryListener {
 
             override fun onItemClickThrottled(view: View?, position: Int) {
                 if (mFileClickListener != null) {
-//                    mFileClickListener!!.onFileClicked(mDirectoryAdapter!!.getModel(position))
-                    showCheckDataNoteDialog()
+                    mFileClickListener!!.onFileClicked(mDirectoryAdapter!!.getModel(position))
                 }
             }
         })

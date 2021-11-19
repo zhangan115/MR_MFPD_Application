@@ -6,11 +6,11 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class UHFSettingViewModel(setting: SettingRepository) : ViewModel() {
+class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
-    lateinit var checkType:CheckType
+    lateinit var checkType: CheckType
 
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -33,19 +33,19 @@ class UHFSettingViewModel(setting: SettingRepository) : ViewModel() {
     var isFixedScale: MutableLiveData<Boolean> = MutableLiveData(false)
 
     //内同步频率
-    var internalSyncStr: MutableLiveData<String> = MutableLiveData("50.00")
+    var internalSyncStr: MutableLiveData<String> = MutableLiveData()
 
     //相位偏移
-    var phaseOffsetStr: MutableLiveData<String> = MutableLiveData("0°")
+    var phaseOffsetStr: MutableLiveData<String> = MutableLiveData()
 
     //累计时间
-    var totalTimeStr: MutableLiveData<String> = MutableLiveData("30")
+    var totalTimeStr: MutableLiveData<String> = MutableLiveData()
 
     //最大幅值
-    var maximumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-30")
+    var maximumAmplitudeStr: MutableLiveData<String> = MutableLiveData()
 
     //最小幅值
-    var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData("-80")
+    var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData()
 
     fun start(checkType: CheckType) {
         this.checkType = checkType
@@ -64,8 +64,19 @@ class UHFSettingViewModel(setting: SettingRepository) : ViewModel() {
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
     }
 
-    fun toSave(){
-
+    fun toSave() {
+        val settingBean = checkType.settingBean
+        settingBean.xwTb = phaseModelInt.value!!
+        settingBean.pdJc = bandDetectionInt.value!!
+        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
+        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+        settingBean.ljTime = totalTimeStr.value!!.toInt()
+        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
+        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+        setting.toSaveSettingData(checkType)
     }
 
 }

@@ -182,8 +182,14 @@ class DefaultDataRepository : DataRepository {
                     System.arraycopy(values, 2, height, 0, 4)
                     val f = ByteUtil.getFloat(height)
                     maxValue = max(f, maxValue)
-                    newValueList[row][column] = f
-                    newPointList[row][column] = f
+                    //根据偏移量修改
+                    val off = getCheckType().settingBean.xwPy
+                    var a = column - off
+                    if (a < 0) {
+                        a += 360
+                    }
+                    newValueList[row][a] = f
+                    newPointList[row][a] = f
                     mcCount++
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
@@ -197,6 +203,10 @@ class DefaultDataRepository : DataRepository {
                 phaseData.addAll(newPointList)
                 realPointData.addAll(newPointList)
                 gainFloatList.add(maxValue)
+                //根据累计时间修改
+                if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
+                    gainFloatList.removeFirst()
+                }
                 gainValue.postValue(gainFloatList)
                 if (receiverCount == 10) {
                     checkParamsBean?.fzAttr = "${maxValue}dBm"

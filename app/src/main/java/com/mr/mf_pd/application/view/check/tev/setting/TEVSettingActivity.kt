@@ -40,4 +40,9 @@ class TEVSettingActivity : BaseSettingActivity<TEVSettingDataBinding>() {
     override fun onBandDetectionChange(text: String, index: Int) {
 
     }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.toSave()
+    }
 }

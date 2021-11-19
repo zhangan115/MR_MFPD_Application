@@ -15,9 +15,9 @@ object EditTextEnableAdapter {
         isEnable: Boolean = true
     ) {
         if (isEnable) {
-            et.setTextColor(et.context.resources.getColor(R.color.text_content_secondary_color))
-        } else {
             et.setTextColor(et.context.resources.getColor(R.color.text_second_title))
+        } else {
+            et.setTextColor(et.context.resources.getColor(R.color.text_content_secondary_color))
         }
         et.isEnabled = isEnable
     }

@@ -6,7 +6,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class TEVSettingViewModel(setting: SettingRepository) : ViewModel() {
+class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
@@ -55,5 +55,18 @@ class TEVSettingViewModel(setting: SettingRepository) : ViewModel() {
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
     }
 
+    fun toSave(){
+        val settingBean = checkType.settingBean
+        settingBean.xwTb = phaseModelInt.value!!
+        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
+        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+        settingBean.ljTime = totalTimeStr.value!!.toInt()
+        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
+        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+        setting.toSaveSettingData(checkType)
+    }
 
 }
