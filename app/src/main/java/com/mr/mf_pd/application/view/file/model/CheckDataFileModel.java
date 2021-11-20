@@ -10,7 +10,7 @@ public class CheckDataFileModel {
     private File file;//当前的检测文件
     private String marks;//文件描述
     private boolean hasPhoto;//是否存在图片
-    private int color;//文件标识颜色
+    private int color = -1;//文件标识颜色
     private FileTypeUtils.CheckType checkType;//检测文件类型
     private boolean isSelect;//是否被选中
 

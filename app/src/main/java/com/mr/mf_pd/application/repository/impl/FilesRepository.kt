@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.repository.impl
 
+import androidx.lifecycle.MutableLiveData
 import java.io.File
 
 interface FilesRepository {
@@ -18,5 +19,6 @@ interface FilesRepository {
 
     fun toSaveData2File()//保存数据到文件中
 
+    fun isSaveData(): MutableLiveData<Boolean>?
 
 }

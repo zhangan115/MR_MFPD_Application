@@ -2,10 +2,12 @@ package com.mr.mf_pd.application.view.file
 
 import android.content.Context
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -82,7 +84,7 @@ class DirectoryFragment : Fragment(), DirectoryListener {
         })
         mDirectoryAdapter?.setOnLabelClickListener(object : LabelClickListener() {
             override fun onItemClickThrottled(view: View?, position: Int) {
-
+                showCheckDataNoteDialog(checkDataFileModels[position])
             }
         })
         mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
@@ -142,16 +144,27 @@ class DirectoryFragment : Fragment(), DirectoryListener {
     /**
      * 显示标记的Dialog
      */
-    private fun showCheckDataNoteDialog() {
+    private fun showCheckDataNoteDialog(model: CheckDataFileModel?) {
         MaterialDialog(requireActivity()).show {
             setContentView(R.layout.dialog_check_data_note)
             val radioGroup = findViewById<RadioGroup>(R.id.chooseColorRg)
+            val noteEt = findViewById<EditText>(R.id.noteEt)
+            if (model != null) {
+                if (!TextUtils.isEmpty(model.marks)) {
+                    noteEt.setText(model.marks)
+                }
+                if (model.color != -1) {
+                    radioGroup.check(radioGroup.getChildAt(model.color).id)
+                }
+            }
             findViewById<TextView>(R.id.cancelTv).setOnClickListener {
                 dismiss()
             }
             findViewById<TextView>(R.id.saveTv).setOnClickListener {
                 val rb: RadioButton = findViewById(radioGroup.checkedRadioButtonId)
-                val tag = rb.tag to Int
+                val tag: Int = rb.tag as Int
+                model?.marks = noteEt.text.toString()
+                model?.color = tag
 
                 dismiss()
             }

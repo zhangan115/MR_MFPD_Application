@@ -167,6 +167,7 @@ class DefaultDataRepository : DataRepository {
                 realPointData.clear()
                 val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
                 val newPointList = ArrayList<HashMap<Int, Float>>()
+
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
                 newPointList.add(HashMap())
@@ -183,13 +184,12 @@ class DefaultDataRepository : DataRepository {
                     val f = ByteUtil.getFloat(height)
                     maxValue = max(f, maxValue)
                     //根据偏移量修改
-                    val off = getCheckType().settingBean.xwPy
-                    var a = column - off
-                    if (a < 0) {
-                        a += 360
+                    var off = column - getCheckType().settingBean.xwPy
+                    if (off < 0) {
+                        off += 360
                     }
-                    newValueList[row][a] = f
-                    newPointList[row][a] = f
+                    newValueList[row][off] = f
+                    newPointList[row][off] = f
                     mcCount++
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {
@@ -203,7 +203,7 @@ class DefaultDataRepository : DataRepository {
                 phaseData.addAll(newPointList)
                 realPointData.addAll(newPointList)
                 gainFloatList.add(maxValue)
-                //根据累计时间修改
+                //根据图谱累计时间修改
                 if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
                     gainFloatList.removeFirst()
                 }
@@ -214,7 +214,6 @@ class DefaultDataRepository : DataRepository {
                     mCheckType.checkParams.postValue(checkParamsBean)
                     receiverCount = 0
                     mcCount = 0
-
                 } else {
                     receiverCount++
                 }
