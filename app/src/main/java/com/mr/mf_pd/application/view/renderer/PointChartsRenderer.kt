@@ -95,9 +95,11 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
 
-
-
         getPrpsValueCallback?.getData()
+    }
+
+    fun cleanData(){
+        prPsPoints?.cleanAllData()
     }
 
 }

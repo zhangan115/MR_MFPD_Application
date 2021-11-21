@@ -186,7 +186,7 @@ class DefaultDataRepository : DataRepository {
                     //根据偏移量修改
                     var off = column - getCheckType().settingBean.xwPy
                     if (off < 0) {
-                        off += 360
+                        off += 359
                     }
                     newValueList[row][off] = f
                     newPointList[row][off] = f

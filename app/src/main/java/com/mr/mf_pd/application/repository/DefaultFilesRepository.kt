@@ -13,11 +13,11 @@ class DefaultFilesRepository : FilesRepository {
     }
 
     override fun startSaveData() {
-
+        isSaving?.postValue(true)
     }
 
     override fun stopSaveData() {
-
+        isSaving?.postValue(false)
     }
 
     override fun getCurrentCheckFile(): File {

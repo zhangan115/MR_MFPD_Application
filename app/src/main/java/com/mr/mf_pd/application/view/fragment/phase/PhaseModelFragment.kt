@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
 import android.os.Bundle
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -59,11 +60,22 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
                     }
                 }
             }
-
+        viewModel.isSaveData?.observe(this, {
+            if (it) {
+                val animation =
+                    AnimationUtils.loadAnimation(requireContext(), R.anim.twinkle_anim)
+                image1.startAnimation(animation)
+            } else {
+                image1.clearAnimation()
+            }
+        })
         image1.setOnClickListener {
-
+            if (image1.animation == null) {
+                viewModel.startSaveData()
+            } else {
+                viewModel.stopSaveData()
+            }
         }
-
         image2.setOnClickListener {
 
         }
@@ -74,7 +86,8 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
 
         }
         image5.setOnClickListener {
-
+            viewModel.cleanCurrentData()
+            pointChartsRenderer?.cleanData()
         }
         rendererSet = true
     }

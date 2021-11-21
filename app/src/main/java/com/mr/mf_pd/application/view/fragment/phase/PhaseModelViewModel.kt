@@ -6,7 +6,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 
-class PhaseModelViewModel(val repository: DataRepository, val filesRepository: FilesRepository) :
+class PhaseModelViewModel(val repository: DataRepository, private val filesRepository: FilesRepository) :
     ViewModel() {
 
     lateinit var checkType: CheckType
@@ -20,6 +20,7 @@ class PhaseModelViewModel(val repository: DataRepository, val filesRepository: F
         this.checkType = repository.getCheckType()
         this.gainValues = repository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
+        
         repository.hufDataListener()
     }
 
@@ -29,6 +30,19 @@ class PhaseModelViewModel(val repository: DataRepository, val filesRepository: F
 
     fun getCaChePhaseData(): ArrayList<HashMap<Int, Float>> {
         return repository.getCachePhaseData(0)
+    }
+
+    fun startSaveData(){
+        filesRepository.startSaveData()
+    }
+
+    fun stopSaveData(){
+        filesRepository.stopSaveData()
+    }
+
+    fun cleanCurrentData(){
+        repository.getGainValueList().postValue(ArrayList())
+        repository.cleanData()
     }
 
     override fun onCleared() {
