@@ -7,13 +7,14 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
 
-class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
+class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     private val viewModel by viewModels<PhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
@@ -107,6 +108,18 @@ class PhaseModelFragment : BaseFragment<PhaseDataBinding>() {
         super.onPause()
         if (rendererSet) {
             surfaceView1.onPause()
+        }
+    }
+
+    override fun onChangeStateChange() {
+
+    }
+
+    override fun toSaveData2File() {
+        viewModel.isSaveData?.value?.let {
+            if (it){
+
+            }
         }
     }
 }
