@@ -5,6 +5,7 @@ import com.mr.mf_pd.application.app.MRApplication;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -231,6 +232,39 @@ public class CompressUtil {
         }
         mkdir(file.getParentFile());
         file.mkdir();
+    }
+
+    public static void readZipFile(ZipInputStream zipInputStream) throws IOException {
+        while((zipInputStream.getNextEntry())!=null){
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(zipInputStream));
+            String line;
+            while((line = bufferedReader.readLine())!= null){
+                System.out.println(line);
+            }
+        }
+    }
+
+    public static void readZipFile(String filePath) throws Exception {
+        ZipFile zf = new ZipFile(filePath);
+        InputStream in = new BufferedInputStream(new FileInputStream(filePath));
+        ZipInputStream zin = new ZipInputStream(in);
+        ZipEntry ze;
+        while ((ze = zin.getNextEntry()) != null) {
+
+            long size = ze.getSize();
+            if (size > 0) {
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(zf.getInputStream(ze)));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    System.out.println(line);
+                }
+                br.close();
+            }
+            System.out.println();
+        }
+        zin.closeEntry();
     }
 
 }
