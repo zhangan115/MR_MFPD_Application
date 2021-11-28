@@ -1,19 +1,25 @@
 package com.mr.mf_pd.application.view.fragment.real
 
 import android.os.Bundle
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
-import com.mr.mf_pd.application.view.base.BaseFragment
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_real.image1
+import kotlinx.android.synthetic.main.fragment_real.image2
+import kotlinx.android.synthetic.main.fragment_real.image3
+import kotlinx.android.synthetic.main.fragment_real.image4
+import kotlinx.android.synthetic.main.fragment_real.image5
+import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 
-class RealModelFragment : BaseFragment<RealDataBinding>() {
+class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     private val viewModel by viewModels<RealModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
@@ -63,8 +69,23 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
                     })
                 }
             }
-        image1.setOnClickListener {
 
+        viewModel.isSaveData?.observe(this, {
+            if (it) {
+                val animation =
+                    AnimationUtils.loadAnimation(requireContext(), R.anim.twinkle_anim)
+                image1.startAnimation(animation)
+            } else {
+                image1.clearAnimation()
+            }
+        })
+
+        image1.setOnClickListener {
+            if (image1.animation == null) {
+                viewModel.startSaveData()
+            } else {
+                viewModel.stopSaveData()
+            }
         }
 
         image2.setOnClickListener {
@@ -74,7 +95,10 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
 
         }
         image4.setOnClickListener { }
-        image5.setOnClickListener { }
+        image5.setOnClickListener {
+            viewModel.cleanCurrentData()
+            prPsChartsRenderer?.cleanData()
+        }
 
         rendererSet = true
     }
@@ -95,5 +119,21 @@ class RealModelFragment : BaseFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
+    }
+
+    override fun toSaveData2File() {
+        viewModel.isSaveData?.value?.let {
+            if (it) {
+                viewModel.isSaveData!!.postValue(false)
+            }
+        }
+    }
+
+    override fun isSaving(): Boolean {
+        return if (viewModel.isSaveData == null) false else viewModel.isSaveData!!.value!!
+    }
+
+    override fun cancelSaveData() {
+        viewModel.isSaveData?.postValue(false)
     }
 }

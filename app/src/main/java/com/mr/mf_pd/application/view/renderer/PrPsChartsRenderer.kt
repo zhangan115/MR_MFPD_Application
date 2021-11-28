@@ -20,6 +20,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     @Volatile
     var angleX: Float = -60f
+
     @Volatile
     var angleY: Float = -10f
 
@@ -72,7 +73,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     }
 
     fun addPrpsData(prPsList: PrPsCubeList?) {
-        if (prpsCubeList != null && prPsList!=null) {
+        if (prpsCubeList != null && prPsList != null) {
             for (i in 0 until prpsCubeList!!.size) {
                 prpsCubeList!![i].updateRow(i + 1)
             }
@@ -129,5 +130,12 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
 
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
+    }
+
+    fun cleanData() {
+        prPsPoints?.cleanAllData()
+        prpsCubeList?.forEach {
+
+        }
     }
 }

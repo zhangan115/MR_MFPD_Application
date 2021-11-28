@@ -18,6 +18,7 @@ import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.check.ac.setting.ACSettingActivity
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
@@ -108,7 +109,7 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() {
         return false
     }
 
-    override fun createCheckFragment(position: Int): Fragment {
+    override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return if (position == 0) {
             ContinuityModelFragment.create(mDeviceBean)
         } else if (position == 1) {

@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
 import com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingActivity
@@ -50,7 +51,7 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
         startActivity(intent)
     }
 
-    override fun createCheckFragment(position: Int): Fragment {
+    override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return if (position == 0) {
             PhaseModelFragment.create(mDeviceBean)
         } else {

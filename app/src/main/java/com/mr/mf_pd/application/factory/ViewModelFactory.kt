@@ -67,7 +67,7 @@ class ViewModelFactory constructor(
             isAssignableFrom(CheckUHFViewModel::class.java) ->
                 CheckUHFViewModel(dataRepository,settingRepository)
             isAssignableFrom(RealModelViewModel::class.java) ->
-                RealModelViewModel(dataRepository)
+                RealModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(PhaseModelViewModel::class.java) ->
                 PhaseModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(UHFSettingViewModel::class.java) ->

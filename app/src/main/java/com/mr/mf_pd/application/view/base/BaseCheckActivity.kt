@@ -24,7 +24,9 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
     open var width: Int? = null
     open lateinit var checkType: CheckType
     open var fragmentCount = 2
+    open var currentIndex = 0
     open var titleList: ArrayList<TextView> = ArrayList()
+    open var fragments: ArrayList<BaseCheckFragment<*>> = ArrayList()
 
     override fun initView(savedInstanceState: Bundle?) {
         width =
@@ -70,7 +72,9 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
         })
         getViewPager().adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                return createCheckFragment(position)
+                val fragment = createCheckFragment(position)
+                fragments.add(fragment)
+                return fragment
             }
 
             override fun getItemCount(): Int {
@@ -106,11 +110,31 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
 
     abstract fun settingClick()
 
-    abstract fun createCheckFragment(position: Int): Fragment
+    abstract fun createCheckFragment(position: Int): BaseCheckFragment<*>
 
     override fun onClick(v: View?) {
         val tag: Int = Integer.valueOf(v?.tag as String)
-        getViewPager().setCurrentItem(tag, true)
+        if (currentIndex == tag) {
+            return
+        }
+        if (fragments[currentIndex].isSaving()) {
+            fragments[currentIndex].showToSaveDialog {
+                currentIndex = tag
+                getViewPager().setCurrentItem(tag, true)
+            }
+        } else {
+            currentIndex = tag
+            getViewPager().setCurrentItem(tag, true)
+        }
     }
 
+    override fun onBackAction() {
+        if (fragments[currentIndex].isSaving()) {
+            fragments[currentIndex].showToSaveDialog {
+                super.onBackAction()
+            }
+        } else {
+            super.onBackAction()
+        }
+    }
 }

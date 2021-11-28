@@ -6,6 +6,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -13,7 +14,7 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 /**
  * AC 脉冲波形
  */
-class ACPulseModelFragment : BaseFragment<ACPulseDataBinding>() {
+class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     private val viewModel by viewModels<ACPulseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
@@ -47,5 +48,17 @@ class ACPulseModelFragment : BaseFragment<ACPulseDataBinding>() {
 
     override fun setViewModel(dataBinding: ACPulseDataBinding?) {
         dataBinding?.vm = viewModel
+    }
+
+    override fun toSaveData2File() {
+        TODO("Not yet implemented")
+    }
+
+    override fun isSaving(): Boolean {
+        return false
+    }
+
+    override fun cancelSaveData() {
+
     }
 }

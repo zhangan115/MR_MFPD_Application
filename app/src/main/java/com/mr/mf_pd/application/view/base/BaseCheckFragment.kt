@@ -1,32 +1,48 @@
 package com.mr.mf_pd.application.view.base
 
+import android.widget.TextView
 import androidx.databinding.ViewDataBinding
 import com.afollestad.materialdialogs.MaterialDialog
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.view.callback.CheckStateChange
 
-abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), CheckStateChange {
+/**
+ * 检测类型页面的基类
+ * @author zhangan
+ * @since 2021-11-28
+ */
+abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
 
     /**
      * 显示提示保存的Dialog
      */
-    private fun showToSaveDialog() {
+    open fun showToSaveDialog(onCancel: () -> Unit) {
         MaterialDialog(requireContext()).show {
-            title(text = "提示")
-            message(text = "是否保存当前的数据?")
-            cancelable(false)
-            positiveButton(R.string.ok)
-            positiveButton {
-                toSaveData2File()
-                it.dismiss()
+            setContentView(R.layout.dialog_save_data)
+            findViewById<TextView>(R.id.cancelTv).setOnClickListener {
+                onCancel()
+                cancelSaveData()
+                this.dismiss()
             }
-            negativeButton(R.string.cancel)
-            negativeButton {
-                it.dismiss()
+            findViewById<TextView>(R.id.sureTv).setOnClickListener {
+                toSaveData2File()
+                this.dismiss()
             }
         }
     }
 
+    /**
+     * 保存数据
+     */
     abstract fun toSaveData2File()
+
+    /**
+     * 数据是否正在保存
+     */
+    abstract fun isSaving(): Boolean
+
+    /***
+     * 取消数据保存
+     */
+    abstract fun cancelSaveData()
 
 }

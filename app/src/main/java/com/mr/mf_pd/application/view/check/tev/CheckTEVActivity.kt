@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckTEVDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
+import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingActivity
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
@@ -49,11 +50,11 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
 
     override fun settingClick() {
         val intent = Intent(this, TEVSettingActivity::class.java)
-        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,checkType)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, checkType)
         startActivity(intent)
     }
 
-    override fun createCheckFragment(position: Int): Fragment {
+    override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return when (position) {
             0 -> {
                 ContinuityModelFragment.create(mDeviceBean)

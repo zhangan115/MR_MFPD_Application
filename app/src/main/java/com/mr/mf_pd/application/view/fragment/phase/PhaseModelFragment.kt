@@ -111,15 +111,19 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         }
     }
 
-    override fun onChangeStateChange() {
-
-    }
-
     override fun toSaveData2File() {
         viewModel.isSaveData?.value?.let {
-            if (it){
-
+            if (it) {
+                viewModel.isSaveData!!.postValue(false)
             }
         }
+    }
+
+    override fun isSaving(): Boolean {
+        return if (viewModel.isSaveData == null) false else viewModel.isSaveData!!.value!!
+    }
+
+    override fun cancelSaveData() {
+        viewModel.isSaveData?.postValue(false)
     }
 }
