@@ -80,4 +80,15 @@
         <!-- <item name="android:textSize">18sp</item>   字体大小-->
         <item name="navigationIcon">@mipmap/label_icon_back</item>
     </style>
+
+    <style name="Progress">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/down_progressbar
+        </item><!-- progress_horizontal -->
+        <item name="android:indeterminateDrawable">
+            @android:drawable/progress_indeterminate_horizontal
+        </item>
+        <item name="android:minHeight">10dp</item>
+        <item name="android:maxHeight">10dp</item>
+    </style>
 </resources>
