@@ -101,11 +101,12 @@ object TextureUtils {
                 Constants.KEY_X_TEXT -> {
                     for (i in 0 until it.value.size) {
                         val rect = Rect()
-                        val step = width / it.value.size
+                        val start = 0.15f * width / 2
+                        val step = width * 0.925f / it.value.size
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
                         canvas.drawText(
                             it.value[i],
-                            (i * step + 81).toFloat(),
+                            (i * step + start).toFloat(),
                             height - (rect.height()).toFloat(),
                             p
                         )

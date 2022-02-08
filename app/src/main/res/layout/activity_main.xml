@@ -12,16 +12,14 @@
         <import type="android.view.View" />
     </data>
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawerLayout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:toast="@{vm.toastStr}"
-        tools:openDrawer="end">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/contentLayout"
+            app:toast="@{vm.toastStr}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -243,19 +241,6 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/navLayout"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@android:color/white"
-            android:fitsSystemWindows="false"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-
-        </LinearLayout>
-
-    </androidx.drawerlayout.widget.DrawerLayout>
+    </LinearLayout>
 
 </layout>

@@ -1,17 +1,8 @@
 package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
-import android.util.Log
-import android.util.TypedValue
-import android.widget.TextView
-import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList

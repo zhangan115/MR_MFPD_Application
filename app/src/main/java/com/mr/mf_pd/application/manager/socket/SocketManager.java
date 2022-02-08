@@ -1,10 +1,6 @@
 package com.mr.mf_pd.application.manager.socket;
 
-import android.util.Log;
-
 import com.mr.mf_pd.application.common.Constants;
-import com.mr.mf_pd.application.utils.ByteUtil;
-import com.mr.mf_pd.application.utils.DataUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,20 +8,14 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class SocketManager {
@@ -34,8 +24,6 @@ public class SocketManager {
     private OutputStream outputStream;//输出流
 
     private static Socket socket;
-
-    private byte[] lastSendData;//最新发出的数据
 
     private static final int DEVICE_NO = 1;
 
@@ -51,7 +39,7 @@ public class SocketManager {
 
     //执行请求任务的线程池
     private ExecutorService mRequestExecutor;
-    private Future future;
+    private Future<?> future;
 
     /**
      * 单例模式
@@ -67,10 +55,6 @@ public class SocketManager {
 
     private SocketManager() {
 
-    }
-
-    public boolean isConnected() {
-        return isConnected;
     }
 
     public void setCallback(ReceiverCallback callback) {
@@ -91,27 +75,31 @@ public class SocketManager {
                 for (int i = 0; i < linkStateListeners.size(); i++) {
                     linkStateListeners.get(i).onLinkState(Constants.LINK_SUCCESS);
                 }
-                byte[] buf = new byte[1024 * 2];
+                byte[] buf = new byte[1024 * 4];
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
-                    if (buf[0] == DEVICE_NO) {
-                        if (buf[1] == 8) {
-                            byte[] sources = new byte[size];
-                            System.arraycopy(buf, 0, sources, 0, size);
-                            for (ReadListener listener : readListeners) {
-                                byte[] newBuf = new byte[size - 9];
-                                System.arraycopy(buf, 5, newBuf, 0, size - 9);
-                                if (buf[2] == listener.filter) {
-                                    listener.onRead(sources, newBuf);
+                    try {
+                        if (buf[0] == DEVICE_NO) {
+                            if (buf[1] == 8) {
+                                byte[] sources = new byte[size];
+                                System.arraycopy(buf, 0, sources, 0, size);
+                                for (ReadListener listener : readListeners) {
+                                    byte[] newBuf = new byte[size - 9];
+                                    System.arraycopy(buf, 5, newBuf, 0, size - 9);
+                                    if (buf[2] == listener.filter) {
+                                        listener.onRead(sources, newBuf);
+                                    }
+                                }
+                            } else {
+                                byte[] newBuf = new byte[size];
+                                System.arraycopy(buf, 0, newBuf, 0, size);
+                                if (callback != null) {
+                                    callback.onReceiver(newBuf);
                                 }
                             }
-                        } else {
-                            byte[] newBuf = new byte[size];
-                            System.arraycopy(buf, 0, newBuf, 0, size);
-                            if (callback != null) {
-                                callback.onReceiver(newBuf);
-                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             } catch (IOException e) {
@@ -173,37 +161,27 @@ public class SocketManager {
         linkStateListeners.add(listener);
     }
 
-    public Disposable sendData(byte[] data) {
-        return Observable.create((ObservableOnSubscribe<byte[]>)
-                emitter -> {
-                    SocketManager.this.lastSendData = data;
-                    emitter.onNext(data);
-                    outputStream.write(data);
-                    outputStream.flush();
-                    emitter.onComplete();
-                }).observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe(bytes -> {
-
-                });
-    }
-
     /**
      * 发送数据
      *
      * @param data 数据
      */
-    public Disposable sendData(byte[] data, ReceiverCallback callback) {
+    public synchronized Disposable sendData(byte[] data, ReceiverCallback callback) {
         this.callback = callback;
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
-                    if (outputStream != null && socket != null && !socket.isClosed()) {
-                        SocketManager.this.lastSendData = data;
-                        emitter.onNext(data);
-                        outputStream.write(data);
-                        outputStream.flush();
+                    try {
+                        if (outputStream != null && socket != null && !socket.isClosed()) {
+                            emitter.onNext(data);
+                            outputStream.write(data);
+                            outputStream.flush();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        emitter.onError(e);
+                    } finally {
+                        emitter.onComplete();
                     }
-                    emitter.onComplete();
                 }).observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(bytes -> {

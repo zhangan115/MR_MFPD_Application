@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.repository
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
@@ -11,8 +10,10 @@ import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import org.greenrobot.eventbus.Logger
 import java.io.File
 import java.util.*
+import java.util.logging.Level
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -66,11 +67,6 @@ class DefaultDataRepository : DataRepository {
     private var callbacks: ArrayList<DataRepository.DataCallback> = ArrayList()
 
 
-    /**
-     * 实时模式获取数据
-     */
-    private var realDataCallback: DataRepository.RealDataCallback? = null
-
     init {
         for (i in 0..4) {
             val list = ArrayList<Float?>()
@@ -120,13 +116,9 @@ class DefaultDataRepository : DataRepository {
         cleanData()
         SocketManager.getInstance().sendData(bytes) { newBytes ->
             if (Arrays.equals(newBytes, bytes)) {
-                Log.d("zhangan", "通道${passageway}打开成功")
+                Logger.Default.get().log(Level.INFO, "通道${passageway}打开成功")
             }
         }
-    }
-
-    override fun setRealDataCallback(callback: DataRepository.RealDataCallback) {
-        this.realDataCallback = callback
     }
 
     override fun cleanData() {

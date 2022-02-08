@@ -84,7 +84,10 @@ class MRApplication : Application() {
      * 获取当前Activity（堆栈中最后一个压入的）
      */
     fun currentActivity(): Activity? {
-        return activityList?.get(0)
+        if (activityList.isEmpty()) {
+            return null
+        }
+        return activityList[0]
     }
 
     /**

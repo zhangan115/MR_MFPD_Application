@@ -43,15 +43,6 @@ interface DataRepository {
         fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList)
     }
 
-    fun setRealDataCallback(callback: RealDataCallback)
-
-
-    interface RealDataCallback {
-
-        fun update(prPsCube: PrPsCubeList)
-
-    }
-
     fun cleanData()
 
     fun setCheckType(checkType: CheckType)

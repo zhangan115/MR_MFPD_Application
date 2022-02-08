@@ -22,7 +22,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     var angleX: Float = -60f
 
     @Volatile
-    var angleY: Float = -10f
+    var angleY: Float = 0f
 
     interface GetPrpsValueCallback {
         fun getData()
@@ -35,6 +35,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val viewProjectionMatrix = FloatArray(16)
     private val modelViewProjectionMatrix = FloatArray(16)
 
+    @Volatile
     private var prpsCubeList: ArrayList<PrPsCubeList>? = ArrayList()
 
     private lateinit var textureProgram: TextureShaderProgram

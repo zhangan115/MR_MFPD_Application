@@ -69,7 +69,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                     })
                 }
             }
-
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =

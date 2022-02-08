@@ -11,12 +11,9 @@ import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
@@ -30,11 +27,10 @@ import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
-import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
+import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.mr.mf_pd.application.view.setting.SettingActivity
 import com.mr.mf_pd.application.view.task.TaskActivity
 import com.qw.soul.permission.SoulPermission
@@ -42,7 +38,6 @@ import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
 
 class MainActivity : AbsBaseActivity<MainDataBinding>(),
     OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {
@@ -256,10 +251,10 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
     private var currentTime: Long = 0
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-            return
-        }
+//        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            drawerLayout.closeDrawer(GravityCompat.START)
+//            return
+//        }
         if (currentTime == 0L) {
             viewModel.toastStr.postValue("再次点击退出App")
             currentTime = System.currentTimeMillis()

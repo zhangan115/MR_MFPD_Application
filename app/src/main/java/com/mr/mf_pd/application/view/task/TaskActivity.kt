@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.task
 
 import android.os.Bundle
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.databinding.SettingDataBinding
 import com.mr.mf_pd.application.databinding.TaskDataBinding
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 
