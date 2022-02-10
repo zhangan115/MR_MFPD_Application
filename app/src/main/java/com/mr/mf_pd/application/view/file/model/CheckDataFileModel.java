@@ -13,6 +13,7 @@ public class CheckDataFileModel {
     private int color = -1;//文件标识颜色
     private FileTypeUtils.CheckType checkType;//检测文件类型
     private boolean isSelect;//是否被选中
+    private boolean toChooseModel = false;
 
     public boolean isCheckFile() {
         return isCheckFile;
@@ -68,5 +69,13 @@ public class CheckDataFileModel {
 
     public void setSelect(boolean select) {
         isSelect = select;
+    }
+
+    public boolean isToChooseModel() {
+        return toChooseModel;
+    }
+
+    public void setToChooseModel(boolean toChooseModel) {
+        this.toChooseModel = toChooseModel;
     }
 }

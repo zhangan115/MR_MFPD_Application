@@ -4,15 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isVisible
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -48,6 +47,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
 
     private var mFileTypeTv: TextView? = null
     private lateinit var mActionButton: Button
+    private var cutFiles: ArrayList<CheckDataFileModel> = ArrayList()
 
     private var directoryListeners: ArrayList<DirectoryListener> = ArrayList()
     private var currentActionType = ActionType.NULL
@@ -149,7 +149,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                         mCurrent?.let {
                             val file = File(it, text.toString())
                             if (file.mkdir()) {
-
+                                updateDirectoryListener?.updateFiles()
                             }
                         }
                     }
@@ -159,7 +159,6 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             R.id.menu_edit_dir -> {
                 if (mCurrent != null && mStart != null && !mCurrent!!.absolutePath.equals(mStart!!.absolutePath)) {
                     val dirName = mCurrent?.name
-
                     MaterialDialog(this).show {
                         setTheme(R.style.AppTheme_MaterialDialog)
                         title(text = "请输入文件夹名称")
@@ -183,6 +182,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             R.id.menu_paste -> {//粘贴
                 currentActionType = ActionType.Paste
                 startDealAction()
+                finishDealAction(true)
             }
             R.id.menu_delete -> {//删除
                 currentActionType = ActionType.Delete
@@ -305,11 +305,24 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         mActionButton.setOnClickListener {
             MaterialDialog(this).show {
                 setTheme(R.style.AppTheme_MaterialDialog)
+                when (currentActionType) {
+                    ActionType.Delete -> {
+                        title(text = "是否删除选中的文件?")
+                    }
+                    ActionType.Cut -> {
+                        title(text = "是否剪贴选中的文件?")
+                    }
+                    else -> {
+                        this.dismiss()
+                    }
+                }
                 negativeButton {
+                    it.dismiss()
                     finishDealAction()
                 }
                 positiveButton {
-                    finishDealAction()
+                    it.dismiss()
+                    finishDealAction(true)
                 }
             }
         }
@@ -318,24 +331,85 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     private fun startDealAction() {
         when (currentActionType) {
             ActionType.Delete -> {
+                mActionButton.visibility = View.VISIBLE
                 mActionButton.text = "删除"
             }
             ActionType.Cut -> {
+                mActionButton.visibility = View.VISIBLE
                 mActionButton.text = "剪贴"
             }
-            ActionType.Paste -> {
-                mActionButton.text = "粘贴"
-            }
             else -> {
-
+                mActionButton.visibility = View.GONE
             }
         }
         updateDirectoryListener?.updateDirectory(currentActionType)
     }
 
-    private fun finishDealAction() {
-        currentActionType = ActionType.NULL
+
+    private fun finishDealAction(hasAction: Boolean = false) {
         mActionButton.visibility = View.GONE
+        if (hasAction && updateDirectoryListener != null) {
+            when (currentActionType) {
+                ActionType.Delete -> {
+                    val fileList = ArrayList<File>()
+                    updateDirectoryListener!!.getSelectData().map {
+                        fileList.add(it.file)
+                    }
+                    FileUtils.deleteFiles(fileList, object :
+                        FileUtils.FileActionListener {
+                        override fun onSuccess() {
+                            updateDirectoryListener?.updateFiles()
+                        }
+
+                        override fun onFail() {
+                            Toast.makeText(this@FilePickerActivity, "文件删除失败", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    })
+                }
+                ActionType.Cut -> {
+                    cutFiles.clear()
+                    cutFiles.addAll(updateDirectoryListener!!.getSelectData())
+                    Toast.makeText(this, "剪贴成功", Toast.LENGTH_SHORT).show()
+                }
+                ActionType.Paste -> {
+                    if (cutFiles.isNotEmpty() && mCurrent != null) {
+                        val fileList = ArrayList<File>()
+                        cutFiles.map {
+                            fileList.add(it.file)
+                        }
+                        FileUtils.cutFiles(
+                            mCurrent!!,
+                            fileList,
+                            object : FileUtils.FileActionListener {
+
+                                override fun onSuccess() {
+                                    FileUtils.deleteFiles(fileList,object :FileUtils.FileActionListener{
+                                        override fun onSuccess() {
+                                            cutFiles.clear()
+                                            updateDirectoryListener?.updateFiles()
+                                        }
+
+                                        override fun onFail() {
+
+                                        }
+                                    })
+                                }
+
+                                override fun onFail() {
+
+                                }
+                            })
+                    } else {
+                        Toast.makeText(this, "没有选择中文件", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else -> {
+
+                }
+            }
+        }
+        currentActionType = ActionType.NULL
         updateDirectoryListener?.updateDirectory(currentActionType)
     }
 

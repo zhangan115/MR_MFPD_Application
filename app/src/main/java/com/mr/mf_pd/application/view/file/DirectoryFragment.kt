@@ -171,19 +171,28 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
     }
 
     override fun updateDirectory(action: FilePickerActivity.ActionType) {
-        when (action) {
-            FilePickerActivity.ActionType.Delete -> {
-
+        if (action == FilePickerActivity.ActionType.NULL || action == FilePickerActivity.ActionType.Paste) {
+            checkDataFileModels.forEach { model ->
+                model.isSelect = false
+                model.isToChooseModel = false
             }
-            FilePickerActivity.ActionType.Cut -> {
-
-            }
-            FilePickerActivity.ActionType.Paste -> {
-
-            }
-            else ->{
-
+        } else {
+            checkDataFileModels.forEach { model ->
+                model.isSelect = false
+                model.isToChooseModel = true
             }
         }
+        mDirectoryAdapter?.notifyDataSetChanged()
     }
+
+    override fun getSelectData(): List<CheckDataFileModel> {
+        return checkDataFileModels.filter { it.isSelect }
+
+    }
+
+    override fun updateFiles() {
+        initFilesList()
+    }
+
+
 }

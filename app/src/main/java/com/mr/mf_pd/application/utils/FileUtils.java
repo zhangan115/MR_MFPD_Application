@@ -2,37 +2,27 @@ package com.mr.mf_pd.application.utils;
 
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.mr.mf_pd.application.common.ConstantStr;
-import com.mr.mf_pd.application.view.file.filter.FileFilter;
 import com.mr.mf_pd.application.view.file.model.CheckConfigModel;
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import io.objectbox.android.AndroidScheduler;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class FileUtils {
@@ -159,5 +149,168 @@ public class FileUtils {
         fos.write(str.getBytes(StandardCharsets.UTF_8));
         fos.flush();
         fos.close();
+    }
+
+    /**
+     * 删除文件集合(异步)
+     *
+     * @param files    文件集合
+     * @param listener 回调
+     * @return 订阅
+     */
+    public static Disposable deleteFiles(List<File> files, FileActionListener listener) {
+        Observable<Boolean> observable = Observable.create(emitter -> {
+            try {
+                boolean isSuccess = true;
+                for (int i = 0; i < files.size(); i++) {
+                    if (!deleteFile(files.get(i))) {
+                        isSuccess = false;
+                        break;
+                    }
+                }
+                emitter.onNext(isSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(e);
+            } finally {
+                emitter.onComplete();
+            }
+        });
+        return observable.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
+                .subscribe(isSuccess -> {
+                    if (isSuccess) {
+                        listener.onSuccess();
+                    } else {
+                        listener.onFail();
+                    }
+                }, throwable -> listener.onFail());
+    }
+
+    /**
+     * 删除掉文件或者文件夹
+     *
+     * @param dirFile 文件
+     * @return 删除是否成功
+     */
+    public static boolean deleteFile(File dirFile) {
+        // 如果dir对应的文件不存在，则退出
+        if (!dirFile.exists()) {
+            return false;
+        }
+        if (dirFile.isFile()) {
+            return dirFile.delete();
+        } else {
+            File[] files = dirFile.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    deleteFile(file);
+                }
+            }
+        }
+        return dirFile.delete();
+    }
+
+
+    public interface FileActionListener {
+
+        void onSuccess();
+
+        void onFail();
+    }
+
+    public static Disposable cutFiles(File target, ArrayList<File> files, FileActionListener listener) {
+        Observable<Boolean> observable = Observable.create(emitter -> {
+            try {
+                boolean isSuccess = cutFiles(target, files);
+                emitter.onNext(isSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(e);
+            } finally {
+                emitter.onComplete();
+            }
+        });
+        return observable.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
+                .subscribe(isSuccess -> {
+                    if (isSuccess) {
+                        listener.onSuccess();
+                    } else {
+                        listener.onFail();
+                    }
+                }, throwable -> listener.onFail());
+    }
+
+    public static boolean cutFiles(File target, ArrayList<File> files) {
+        for (int i = 0; i < files.size(); i++) {
+            if (isInFile(target, files.get(i))) {
+                return false;
+            }
+        }
+        for (int i = 0; i < files.size(); i++) {
+            copyFileTiFile(target, files.get(i));
+        }
+        return true;
+    }
+
+    private static boolean isInFile(File target, File cutFile) {
+        if (cutFile.isDirectory()) {
+            File[] files = cutFile.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory() && target.getAbsolutePath().equals(file.getAbsolutePath())) {
+                        return true;
+                    } else if (file.isDirectory()) {
+                        if (isInFile(target, file)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void copyFileTiFile(File target, File file) {
+        if (file.isDirectory()) {
+            File newFile = new File(target, file.getName());
+            if (newFile.mkdir()) {
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File value : files) {
+                        copyFileTiFile(newFile, value);
+                    }
+                }
+            }
+        } else {
+            FileInputStream fis = null;
+            FileOutputStream fos = null;
+            try {
+                fis = new FileInputStream(file);
+                File f = new File(target, file.getName());
+                if (f.createNewFile()) {
+                    fos = new FileOutputStream(f, true);
+                    byte[] bytes = new byte[1024 * 4];
+                    int size;
+                    while ((size = fis.read(bytes)) != -1) {
+                        fos.write(bytes, 0, size);
+                        fos.flush();
+                    }
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

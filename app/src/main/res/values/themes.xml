@@ -107,7 +107,7 @@
         <item name="android:progressDrawable">@drawable/progressbar_3</item>
     </style>
 
-    <style name="Progress4">
+    <style name="Progress4" parent="continuity_progress_bar">
         <item name="android:progressDrawable">@drawable/progressbar_4</item>
 
     </style>
