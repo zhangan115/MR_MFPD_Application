@@ -27,7 +27,7 @@ import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
 import java.io.File
 
-class DirectoryFragment : Fragment(), DirectoryListener {
+class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener {
 
     private var mEmptyView: View? = null
     private var isDelete: Boolean = false
@@ -165,8 +165,24 @@ class DirectoryFragment : Fragment(), DirectoryListener {
                 val tag: Int = rb.tag as Int
                 model?.marks = noteEt.text.toString()
                 model?.color = tag
-
                 dismiss()
+            }
+        }
+    }
+
+    override fun updateDirectory(action: FilePickerActivity.ActionType) {
+        when (action) {
+            FilePickerActivity.ActionType.Delete -> {
+
+            }
+            FilePickerActivity.ActionType.Cut -> {
+
+            }
+            FilePickerActivity.ActionType.Paste -> {
+
+            }
+            else ->{
+
             }
         }
     }

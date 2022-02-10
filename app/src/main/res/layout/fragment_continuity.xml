@@ -110,9 +110,10 @@
 
                             <ProgressBar
                                 android:id="@+id/progressBar1"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
+                                style="@style/Progress1"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp" />
+                                android:layout_height="36dp"
+                                android:progress="78" />
 
                             <com.github.mikephil.charting.charts.LineChart
                                 android:id="@+id/lineChart1"
@@ -175,9 +176,10 @@
 
                             <ProgressBar
                                 android:id="@+id/progressBar2"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
+                                style="@style/Progress2"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp" />
+                                android:layout_height="36dp"
+                                android:progress="33" />
 
                             <com.github.mikephil.charting.charts.LineChart
                                 android:id="@+id/lineChart2"
@@ -239,9 +241,10 @@
 
                             <ProgressBar
                                 android:id="@+id/progressBar3"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
+                                style="@style/Progress3"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp" />
+                                android:layout_height="36dp"
+                                android:progress="45" />
 
                             <com.github.mikephil.charting.charts.LineChart
                                 android:id="@+id/lineChart3"
@@ -304,9 +307,10 @@
 
                             <ProgressBar
                                 android:id="@+id/progressBar4"
-                                style="@android:style/Widget.ProgressBar.Horizontal"
+                                style="@style/Progress4"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp" />
+                                android:layout_height="36dp"
+                                android:progress="10" />
 
                             <com.github.mikephil.charting.charts.LineChart
                                 android:id="@+id/lineChart4"

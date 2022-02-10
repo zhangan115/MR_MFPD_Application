@@ -176,12 +176,12 @@ class DefaultDataRepository : DataRepository {
                     val f = ByteUtil.getFloat(height)
                     maxValue = max(f, maxValue)
                     //根据偏移量修改
-                    var off = column - getCheckType().settingBean.xwPy
-                    if (off < 0) {
-                        off += 359
-                    }
-                    newValueList[row][off] = f
-                    newPointList[row][off] = f
+//                    var off = column - getCheckType().settingBean.xwPy
+//                    if (off < 0) {
+//                        off += 359
+//                    }
+                    newValueList[row][column] = f
+                    newPointList[row][column] = f
                     mcCount++
                 }
                 for (i in 0 until PrPsCubeList.defaultValues.size) {

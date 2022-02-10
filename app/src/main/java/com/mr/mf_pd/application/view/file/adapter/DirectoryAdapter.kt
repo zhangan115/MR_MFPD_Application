@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,9 +16,8 @@ import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter.DirectoryView
 import com.mr.mf_pd.application.view.file.listener.OnItemLabelClickListener
 import com.mr.mf_pd.application.view.file.listener.OnItemPhotoClickListener
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
-import java.io.File
 
-internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
+internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) :
     RecyclerView.Adapter<DirectoryViewHolder>() {
 
     private var mOnItemClickListener: OnItemClickListener? = null
@@ -52,7 +52,7 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
-        val currentFile = mFiles[position]
+        val currentFile = dataList[position]
         val fileType = FileTypeUtils.getFileType(currentFile)
         holder.mFileImage.setImageResource(fileType.icon)
         holder.mFileTitle.text = currentFile.file.name
@@ -68,14 +68,19 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
             holder.mLabelImage.visibility = View.VISIBLE
             holder.mFileSubtitle.text = "特高频"
         }
+        holder.mSelectButton.setTag(R.id.tag_position,position)
+        holder.mSelectButton.setOnClickListener {
+            val p = it.getTag(R.id.tag_position) as Int
+            dataList[p].isSelect = !dataList[p].isSelect
+        }
     }
 
     override fun getItemCount(): Int {
-        return mFiles.size
+        return dataList.size
     }
 
     fun getModel(index: Int): CheckDataFileModel {
-        return mFiles[index]
+        return dataList[index]
     }
 
     internal class DirectoryViewHolder(
@@ -92,6 +97,7 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
         val isDeleteCb: CheckBox
         val mFileTitle: TextView
         val mFileSubtitle: TextView
+        val mSelectButton: Button
 
         init {
             itemView.setOnClickListener { v -> clickListener?.onItemClick(v, adapterPosition) }
@@ -103,6 +109,7 @@ internal class DirectoryAdapter(private val mFiles: List<CheckDataFileModel>) :
             isDeleteCb = itemView.findViewById(R.id.deleteCb)
             mFileTitle = itemView.findViewById(R.id.item_file_title)
             mFileSubtitle = itemView.findViewById(R.id.item_file_subtitle)
+            mSelectButton = itemView.findViewById(R.id.selectButton)
             mPhotoImage.setOnClickListener { v ->
                 photoClickListener?.onItemClick(
                     v,

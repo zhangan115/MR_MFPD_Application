@@ -50,6 +50,11 @@
         <item name="enterAnim">@anim/slide_in_right</item>
     </style>
 
+    <style name="AppTheme.MaterialDialog">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorAccent</item>
+    </style>
+
 
     <style name="AppTheme.NoActionBar.Black">
         <item name="windowActionBar">false</item>
@@ -81,14 +86,29 @@
         <item name="navigationIcon">@mipmap/label_icon_back</item>
     </style>
 
-    <style name="Progress">
+    <style name="continuity_progress_bar">
         <item name="android:indeterminateOnly">false</item>
-        <item name="android:progressDrawable">@drawable/down_progressbar
-        </item><!-- progress_horizontal -->
         <item name="android:indeterminateDrawable">
             @android:drawable/progress_indeterminate_horizontal
         </item>
-        <item name="android:minHeight">10dp</item>
-        <item name="android:maxHeight">10dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:maxHeight">36dp</item>
+    </style>
+
+    <style name="Progress1" parent="continuity_progress_bar">
+        <item name="android:progressDrawable">@drawable/progressbar_1</item>
+    </style>
+
+    <style name="Progress2" parent="continuity_progress_bar">
+        <item name="android:progressDrawable">@drawable/progressbar_2</item>
+    </style>
+
+    <style name="Progress3" parent="continuity_progress_bar">
+        <item name="android:progressDrawable">@drawable/progressbar_3</item>
+    </style>
+
+    <style name="Progress4">
+        <item name="android:progressDrawable">@drawable/progressbar_4</item>
+
     </style>
 </resources>

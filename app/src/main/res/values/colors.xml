@@ -57,6 +57,7 @@
     <color name="color_divide">#e6e6e6</color>
     <!-- main bg color   -->
     <color name="main_yellow_color">#ffe6b406</color>
+    <color name="main_yellow_color_tran">#88e6b406</color>
     <color name="main_blue_color">#02948F</color>
     <color name="main_red_color">#D6011F</color>
     <color name="line_select_color">#028A81</color>

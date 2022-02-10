@@ -8,9 +8,11 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -41,13 +43,19 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     private var mCurrent = mStart
     private var mTitle: CharSequence? = null
     private var mCloseable = true
-    private var isDeleteModel = false
     private var mChooseDir = false
     private var mFilter: FileFilter? = null
 
     private var mFileTypeTv: TextView? = null
+    private lateinit var mActionButton: Button
 
     private var directoryListeners: ArrayList<DirectoryListener> = ArrayList()
+    private var currentActionType = ActionType.NULL
+    private var updateDirectoryListener: UpdateDirectoryListener? = null
+
+    enum class ActionType {
+        Delete, Cut, Paste, NULL
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mChooseDir = intent.getBooleanExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
@@ -135,12 +143,13 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             }
             R.id.menu_new_dir -> {
                 MaterialDialog(this).show {
+                    setTheme(R.style.AppTheme_MaterialDialog)
                     title(text = "请输入文件夹名称")
                     input { _, text ->
                         mCurrent?.let {
                             val file = File(it, text.toString())
                             if (file.mkdir()) {
-                                Log.d("zhangan", "文件夹创建成功")
+
                             }
                         }
                     }
@@ -150,13 +159,16 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             R.id.menu_edit_dir -> {
                 if (mCurrent != null && mStart != null && !mCurrent!!.absolutePath.equals(mStart!!.absolutePath)) {
                     val dirName = mCurrent?.name
+
                     MaterialDialog(this).show {
+                        setTheme(R.style.AppTheme_MaterialDialog)
                         title(text = "请输入文件夹名称")
-                        input(prefill = dirName) { dialog, text ->
+                        input(prefill = dirName) { _, text ->
                             mCurrent?.let {
-                                val file = File(it, text.toString())
-                                if (file.mkdir()) {
-                                    Log.d("zhangan", "文件夹创建成功")
+                                val file = File(it.parentFile, text.toString())
+                                if (it.renameTo(file)) {
+                                    mCurrent = file
+                                    updateTitle()
                                 }
                             }
                         }
@@ -164,17 +176,17 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                     }
                 }
             }
-            R.id.menu_cut -> {
-
+            R.id.menu_cut -> {//剪贴
+                currentActionType = ActionType.Cut
+                startDealAction()
             }
-            R.id.menu_paste -> {
-
+            R.id.menu_paste -> {//粘贴
+                currentActionType = ActionType.Paste
+                startDealAction()
             }
-            R.id.menu_delete -> {
-                isDeleteModel = true
-                directoryListeners.forEach {
-                    it.deleteModel(isDeleteModel)
-                }
+            R.id.menu_delete -> {//删除
+                currentActionType = ActionType.Delete
+                startDealAction()
             }
             R.id.menu_share -> {
 
@@ -188,6 +200,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             file,
             mFilter
         )
+        updateDirectoryListener = fragment
         directoryListeners.add(fragment)
         supportFragmentManager
             .beginTransaction()
@@ -200,18 +213,19 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     }
 
     override fun onBackAction() {
-        if (isDeleteModel) {
-            isDeleteModel = false
-            directoryListeners.forEach {
-                it.deleteModel(isDeleteModel)
+        when {
+            supportFragmentManager.backStackEntryCount > 1 -> {
+                supportFragmentManager.popBackStack()
+                mCurrent = FileUtils.getParentOrNull(mCurrent)
+                updateTitle()
             }
-        } else if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStack()
-            mCurrent = FileUtils.getParentOrNull(mCurrent)
-            updateTitle()
-        } else {
-            setResult(RESULT_CANCELED)
-            finish()
+            currentActionType != ActionType.NULL -> {
+                finishDealAction()
+            }
+            else -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
         }
     }
 
@@ -277,6 +291,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         findViewById<RelativeLayout>(R.id.chooseFileTypeLayout).setOnClickListener {
             MaterialDialog(this)
                 .show {
+                    setTheme(R.style.AppTheme_MaterialDialog)
                     listItems(R.array.choose_file_type) { _, index, text ->
                         mFileTypeTv?.text = text
                         directoryListeners.forEach {
@@ -286,6 +301,42 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                     lifecycleOwner(this@FilePickerActivity)
                 }
         }
+        mActionButton = findViewById(R.id.actionButton)
+        mActionButton.setOnClickListener {
+            MaterialDialog(this).show {
+                setTheme(R.style.AppTheme_MaterialDialog)
+                negativeButton {
+                    finishDealAction()
+                }
+                positiveButton {
+                    finishDealAction()
+                }
+            }
+        }
+    }
+
+    private fun startDealAction() {
+        when (currentActionType) {
+            ActionType.Delete -> {
+                mActionButton.text = "删除"
+            }
+            ActionType.Cut -> {
+                mActionButton.text = "剪贴"
+            }
+            ActionType.Paste -> {
+                mActionButton.text = "粘贴"
+            }
+            else -> {
+
+            }
+        }
+        updateDirectoryListener?.updateDirectory(currentActionType)
+    }
+
+    private fun finishDealAction() {
+        currentActionType = ActionType.NULL
+        mActionButton.visibility = View.GONE
+        updateDirectoryListener?.updateDirectory(currentActionType)
     }
 
     override fun initData(savedInstanceState: Bundle?) {
