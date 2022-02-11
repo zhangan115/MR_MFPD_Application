@@ -63,21 +63,4 @@ public class ReadOrWriteFile {
         }
         return isSave;
     }
-
-    public void test(){
-        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<String> emitter) throws Exception {
-                emitter.onNext("");
-                emitter.onComplete();
-            }
-        }).observeOn(Schedulers.io()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-
-            }
-        }).dispose();
-    }
-
-
 }

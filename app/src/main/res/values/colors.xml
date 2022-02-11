@@ -99,4 +99,7 @@
     <color name="compatibility_pressed_color">#88F6F6F7</color>
     <color name="compatibility_focus_color">#F6F6F7</color>
 
+    <color name="chart_xy_color">#9E9E9E</color>
+    <color name="chart_line_color">#D1D1D1</color>
+
 </resources>

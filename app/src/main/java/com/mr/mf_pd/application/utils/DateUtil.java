@@ -14,7 +14,7 @@ import java.util.Locale;
  * Created by zhangan on 2017-06-21.
  */
 
-public final class DataUtil {
+public final class DateUtil {
 
     /**
      * 格式化时间

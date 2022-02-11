@@ -6,9 +6,11 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import kotlinx.android.synthetic.main.fragment_ac_flight.*
 
 /**
  * AC 飞行模式
@@ -16,7 +18,6 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     private val viewModel by viewModels<ACFlightModelViewModel> { getViewModelFactory() }
-    private var rendererSet = false
 
     companion object {
 
@@ -30,7 +31,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun lazyLoad() {
-
+        viewModel.start()
     }
 
     override fun getContentView(): Int {
@@ -42,7 +43,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun initView() {
-
+        activity?.let {
+            LineChartUtils.initChart(lineChart, it.applicationContext)
+        }
     }
 
     override fun setViewModel(dataBinding: ACFlightDataBinding?) {

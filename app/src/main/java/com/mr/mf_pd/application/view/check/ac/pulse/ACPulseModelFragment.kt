@@ -1,15 +1,17 @@
 package com.mr.mf_pd.application.view.check.ac.pulse
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 
-import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import kotlinx.android.synthetic.main.fragment_ac_pulse.*
 
 /**
  * AC 脉冲波形
@@ -17,7 +19,6 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     private val viewModel by viewModels<ACPulseModelViewModel> { getViewModelFactory() }
-    private var rendererSet = false
 
     companion object {
 
@@ -43,7 +44,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun initView() {
-
+        activity?.let {
+            LineChartUtils.initChart(lineChart, it.applicationContext)
+        }
     }
 
     override fun setViewModel(dataBinding: ACPulseDataBinding?) {
@@ -51,7 +54,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun toSaveData2File() {
-        TODO("Not yet implemented")
+
     }
 
     override fun isSaving(): Boolean {
@@ -60,5 +63,17 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun cancelSaveData() {
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("zhangan", "onResume")
+        viewModel.openPulseData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("zhangan", "onPause")
+        viewModel.closePulseData()
     }
 }

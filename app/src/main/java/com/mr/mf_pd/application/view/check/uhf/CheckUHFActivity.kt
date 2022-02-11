@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr

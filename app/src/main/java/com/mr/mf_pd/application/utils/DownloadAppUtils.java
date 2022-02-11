@@ -26,8 +26,6 @@ public class DownloadAppUtils {
         Long downLoadId = null;
         DownloadManager.Request request;
         request = new DownloadManager.Request(Uri.parse(apkUrl));
-//        request.addRequestHeader("Cookie", Api.getCookieStr());
-//        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName + ".apk");
         request.setTitle("下载更新中");
         request.setDescription("下载完成后点击安装");

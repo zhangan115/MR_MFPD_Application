@@ -86,7 +86,7 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun hufDataListener() {
-        SocketManager.getInstance().addReadListener(hufListener)
+        SocketManager.getInstance().setReadListener(hufListener)
     }
 
     override fun addHufData(callback: DataRepository.DataCallback) {
@@ -108,7 +108,7 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun removeHufDataListener() {
-        SocketManager.getInstance().removeReadListener(hufListener)
+        SocketManager.getInstance().removeReadListener()
     }
 
     override fun switchPassageway(passageway: Int) {
@@ -146,69 +146,69 @@ class DefaultDataRepository : DataRepository {
     }
 
     private val hufListener = object : ReadListener(0) {
-        override fun onRead(source: ByteArray, bytes: ByteArray?) {
-            if (bytes != null) {
-                // TODO: 10/31/21 将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
-                if (phaseData.isNotEmpty()) {
-                    cachePhaseData.addAll(phaseData)
-                }
-                phaseData.clear()
-                if (realPointData.isNotEmpty()) {
-                    realPointCachePhaseData.addAll(realPointData)
-                }
-                realPointData.clear()
-                val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
-                val newPointList = ArrayList<HashMap<Int, Float>>()
+        override fun onRead(source: ByteArray) {
+            //  将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
+            val bytes = ByteArray(source.size - 9)
+            System.arraycopy(source, 5, bytes, 0, source.size - 9)
+            if (phaseData.isNotEmpty()) {
+                cachePhaseData.addAll(phaseData)
+            }
+            phaseData.clear()
+            if (realPointData.isNotEmpty()) {
+                realPointCachePhaseData.addAll(realPointData)
+            }
+            realPointData.clear()
+            val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
+            val newPointList = ArrayList<HashMap<Int, Float>>()
 
-                newPointList.add(HashMap())
-                newPointList.add(HashMap())
-                newPointList.add(HashMap())
-                newPointList.add(HashMap())
-                newPointList.add(HashMap())
+            newPointList.add(HashMap())
+            newPointList.add(HashMap())
+            newPointList.add(HashMap())
+            newPointList.add(HashMap())
+            newPointList.add(HashMap())
 
-                for (i in 0 until (bytes.size / 6)) {
-                    val values = ByteArray(6)
-                    System.arraycopy(bytes, 6 * i, values, 0, 6)
-                    val row = values[0].toInt()
-                    val column = values[1].toInt()
-                    val height = ByteArray(4)
-                    System.arraycopy(values, 2, height, 0, 4)
-                    val f = ByteUtil.getFloat(height)
-                    maxValue = max(f, maxValue)
-                    //根据偏移量修改
+            for (i in 0 until (bytes.size / 6)) {
+                val values = ByteArray(6)
+                System.arraycopy(bytes, 6 * i, values, 0, 6)
+                val row = values[0].toInt()
+                val column = values[1].toInt()
+                val height = ByteArray(4)
+                System.arraycopy(values, 2, height, 0, 4)
+                val f = ByteUtil.getFloat(height)
+                maxValue = max(f, maxValue)
+                //根据偏移量修改
 //                    var off = column - getCheckType().settingBean.xwPy
 //                    if (off < 0) {
 //                        off += 359
 //                    }
-                    newValueList[row][column] = f
-                    newPointList[row][column] = f
-                    mcCount++
+                newValueList[row][column] = f
+                newPointList[row][column] = f
+                mcCount++
+            }
+            for (i in 0 until PrPsCubeList.defaultValues.size) {
+                val floatArray = newValueList[i]
+                val prPsCube = PrPsCubeList(floatArray)
+                if (realData.size == Constants.PRPS_ROW) {
+                    realData.removeFirst()
                 }
-                for (i in 0 until PrPsCubeList.defaultValues.size) {
-                    val floatArray = newValueList[i]
-                    val prPsCube = PrPsCubeList(floatArray)
-                    if (realData.size == Constants.PRPS_ROW) {
-                        realData.removeFirst()
-                    }
-                    realData.add(prPsCube)
-                }
-                phaseData.addAll(newPointList)
-                realPointData.addAll(newPointList)
-                gainFloatList.add(maxValue)
-                //根据图谱累计时间修改
-                if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
-                    gainFloatList.removeFirst()
-                }
-                gainValue.postValue(gainFloatList)
-                if (receiverCount == 10) {
-                    checkParamsBean?.fzAttr = "${maxValue}dBm"
-                    checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
-                    mCheckType.checkParams.postValue(checkParamsBean)
-                    receiverCount = 0
-                    mcCount = 0
-                } else {
-                    receiverCount++
-                }
+                realData.add(prPsCube)
+            }
+            phaseData.addAll(newPointList)
+            realPointData.addAll(newPointList)
+            gainFloatList.add(maxValue)
+            //根据图谱累计时间修改
+            if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
+                gainFloatList.removeFirst()
+            }
+            gainValue.postValue(gainFloatList)
+            if (receiverCount == 10) {
+                checkParamsBean?.fzAttr = "${maxValue}dBm"
+                checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
+                mCheckType.checkParams.postValue(checkParamsBean)
+                receiverCount = 0
+                mcCount = 0
+            } else {
+                receiverCount++
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.base
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -97,7 +98,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
      * 查找颜色
      */
     fun findColor(color: Int): Int {
-        return resources.getColor(color)
+        return resources.getColor(color,null)
     }
 
     /**
@@ -110,8 +111,9 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
     /**
      * 查找图片e
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     fun findDrawable(drawable: Int): Drawable {
-        return resources.getDrawable(drawable)
+        return resources.getDrawable(drawable,null)
     }
 
 }

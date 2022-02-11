@@ -57,9 +57,12 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_content_bg"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
 
@@ -126,6 +129,12 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <com.mr.mf_pd.application.widget.GainChartView
+            android:id="@+id/gainChartView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:gain_value="@{vm.gainValues}" />
 
         <TextView
             android:id="@+id/location"

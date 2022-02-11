@@ -8,6 +8,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.utils.LineChartUtils
 import kotlinx.android.synthetic.main.layout_gain_chart.view.*
 import kotlin.math.max
 import kotlin.math.min
@@ -32,25 +33,7 @@ class GainChartView : LinearLayout {
 
     private fun init() {
         inflate(context, R.layout.layout_gain_chart, this)
-        initCharts()
-    }
-
-    private fun initCharts() {
-        lineChart.clear()
-        lineChart.description = null
-        lineChart.setNoDataText("")
-        lineChart.alpha = 1f
-        lineChart.setMaxVisibleValueCount(1000)
-        lineChart.minOffset = 0f
-        lineChart.setTouchEnabled(false)
-        lineChart.isDragEnabled = false
-        lineChart.setScaleEnabled(false)
-        lineChart.setPinchZoom(false)
-        lineChart.legend.isEnabled = false
-        lineChart.xAxis.isEnabled = false
-        lineChart.axisLeft.setDrawZeroLine(false)
-        lineChart.axisLeft.isEnabled = false
-        lineChart.axisRight.isEnabled = false
+        LineChartUtils.initNoAxisChart(lineChart)
     }
 
     private fun getLineData(chartDataList: List<Float>): LineData {

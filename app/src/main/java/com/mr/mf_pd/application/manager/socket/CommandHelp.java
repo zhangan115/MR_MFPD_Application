@@ -92,5 +92,41 @@ public class CommandHelp {
         return data;
     }
 
+    /**
+     * 读取脉冲数据
+     *
+     * @param passageway 通道号
+     * @return 读取脉冲数据命令
+     */
+    public static byte[] readPulseData(int passageway) {
+        byte b = (byte) passageway;
+        byte[] bytes = new byte[]{
+                0x01, 0x13, 0x00, b, 0x00, (byte) 0xff
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
+    /**
+     * 读取脉冲数据
+     *
+     * @param passageway 通道号
+     * @return 读取脉冲数据命令
+     */
+    public static byte[] stopReadPulseData(int passageway) {
+        byte b = (byte) passageway;
+        byte[] bytes = new byte[]{
+                0x01, 0x13, 0x00, b, 0x00, 0x00
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
 
 }

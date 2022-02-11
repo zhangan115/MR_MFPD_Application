@@ -31,7 +31,9 @@ public class SocketManager {
 
     private static SocketManager instance;
 
-    private List<ReadListener> readListeners = new ArrayList<>();
+    private ReadListener readListener;
+
+    private PulseDataListener mPulseDataListener;
 
     private List<LinkStateListener> linkStateListeners;
 
@@ -80,17 +82,21 @@ public class SocketManager {
                 while ((size = inputStream.read(buf)) != -1) {
                     try {
                         if (buf[0] == DEVICE_NO) {
-                            if (buf[1] == 8) {
+                            if (buf[1] == 8) {//上送实时数据
                                 byte[] sources = new byte[size];
                                 System.arraycopy(buf, 0, sources, 0, size);
-                                for (ReadListener listener : readListeners) {
-                                    byte[] newBuf = new byte[size - 9];
-                                    System.arraycopy(buf, 5, newBuf, 0, size - 9);
-                                    if (buf[2] == listener.filter) {
-                                        listener.onRead(sources, newBuf);
+                                if (readListener != null) {
+                                    if (buf[2] == readListener.filter) {
+                                        readListener.onRead(sources);
                                     }
                                 }
-                            } else {
+                            } else if (buf[1] == 12) {//上送原始脉冲数据
+                                byte[] sources = new byte[size];
+                                System.arraycopy(buf, 0, sources, 0, size);
+                                if (mPulseDataListener != null) {
+                                    mPulseDataListener.onRead(sources);
+                                }
+                            } else {//其他数据
                                 byte[] newBuf = new byte[size];
                                 System.arraycopy(buf, 0, newBuf, 0, size);
                                 if (callback != null) {
@@ -205,22 +211,15 @@ public class SocketManager {
      *
      * @param listener 读取监控
      */
-    public void addReadListener(ReadListener listener) {
-        if (readListeners == null) {
-            readListeners = new ArrayList<>();
-        }
-        readListeners.add(listener);
+    public void setReadListener(ReadListener listener) {
+        readListener = listener;
     }
 
     /**
      * 移除读取回调
-     *
-     * @param listener 读取监控
      */
-    public void removeReadListener(ReadListener listener) {
-        if (readListeners != null && !readListeners.isEmpty() && listener != null) {
-            readListeners.remove(listener);
-        }
+    public void removeReadListener() {
+        readListener = null;
     }
 
     /**
