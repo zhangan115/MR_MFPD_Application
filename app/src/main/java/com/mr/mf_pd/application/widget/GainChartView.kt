@@ -9,7 +9,9 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.LineChartUtils
+import com.mr.mf_pd.application.utils.StringUtils
 import kotlinx.android.synthetic.main.layout_gain_chart.view.*
+import java.text.DecimalFormat
 import kotlin.math.max
 import kotlin.math.min
 
@@ -52,13 +54,12 @@ class GainChartView : LinearLayout {
             val dataSet = LineDataSet(entries, "")
             initDataSet(dataSet)
             dataSets.add(dataSet)
-            num1.text = max.toString()
-            num2.text = chartDataList.last().toString()
-            num3.text = min.toString()
+            num1.text = StringUtils.floatValueToStr(max)
+            num2.text = StringUtils.floatValueToStr(chartDataList.last())
+            num3.text = StringUtils.floatValueToStr(min)
         }
         return LineData(dataSets)
     }
-
 
     private fun initDataSet(dataSet: LineDataSet) {
         dataSet.lineWidth = 2.0f

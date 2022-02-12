@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
@@ -9,6 +10,7 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.StringUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import org.greenrobot.eventbus.Logger
 import java.io.File
@@ -147,9 +149,10 @@ class DefaultDataRepository : DataRepository {
 
     private val hufListener = object : ReadListener(0) {
         override fun onRead(source: ByteArray) {
+            val startTime = System.currentTimeMillis()
             //  将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
-            val bytes = ByteArray(source.size - 9)
-            System.arraycopy(source, 5, bytes, 0, source.size - 9)
+            val bytes = ByteArray(source.size - 7)
+            System.arraycopy(source, 5, bytes, 0, source.size - 7)
             if (phaseData.isNotEmpty()) {
                 cachePhaseData.addAll(phaseData)
             }
@@ -202,7 +205,7 @@ class DefaultDataRepository : DataRepository {
             }
             gainValue.postValue(gainFloatList)
             if (receiverCount == 10) {
-                checkParamsBean?.fzAttr = "${maxValue}dBm"
+                checkParamsBean?.fzAttr = "${StringUtils.floatValueToStr(maxValue)}dBm"
                 checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
                 mCheckType.checkParams.postValue(checkParamsBean)
                 receiverCount = 0
@@ -210,6 +213,8 @@ class DefaultDataRepository : DataRepository {
             } else {
                 receiverCount++
             }
+            val endTime = System.currentTimeMillis()
+//            Log.d("zhangan", (endTime - startTime).toString())
         }
     }
 }

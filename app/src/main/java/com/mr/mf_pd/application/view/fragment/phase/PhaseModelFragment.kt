@@ -13,6 +13,8 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
@@ -46,7 +48,16 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        pointChartsRenderer = PointChartsRenderer(this.requireContext())
+        val value =
+            viewModel.checkType.settingBean.maxValue - viewModel.checkType.settingBean.minValue
+        val step = value / 4
+        val yList = ArrayList<String>()
+        for (i in 0..4) {
+            val str = viewModel.checkType.settingBean.minValue + step * i
+            yList.add(str.toString())
+        }
+        yList.reverse()
+        pointChartsRenderer = PointChartsRenderer(this.requireContext(), yList)
 
         surfaceView1.setRenderer(pointChartsRenderer)
 

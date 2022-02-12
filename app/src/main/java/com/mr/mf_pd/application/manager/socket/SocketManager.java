@@ -1,5 +1,7 @@
 package com.mr.mf_pd.application.manager.socket;
 
+import android.util.Log;
+
 import com.mr.mf_pd.application.common.Constants;
 
 import java.io.IOException;
@@ -81,6 +83,7 @@ public class SocketManager {
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
                     try {
+                        Log.d("zhangan", System.currentTimeMillis() + "   接收到：" + size);
                         if (buf[0] == DEVICE_NO) {
                             if (buf[1] == 8) {//上送实时数据
                                 byte[] sources = new byte[size];

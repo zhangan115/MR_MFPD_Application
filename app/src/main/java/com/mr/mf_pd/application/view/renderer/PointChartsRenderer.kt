@@ -14,7 +14,7 @@ import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
+class PointChartsRenderer(var context: Context,var yTextList:List<String>) : GLSurfaceView.Renderer {
 
     var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
 
@@ -29,7 +29,6 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private val textHelp = TextGlHelp()
     private var textMaps = HashMap<String, ArrayList<String>>()
     private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
-    private val yTextList = listOf("0", "0.5", "1.0", "1.5")
 
     private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: Point2DColorShaderProgram
@@ -51,8 +50,6 @@ class PointChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         textureProgram = TextureShaderProgram(context)
         colorProgram = Point2DColorShaderProgram(context)
         colorPointProgram = Point2DColorPointShaderProgram(context)
-
-
 
         chartsLines = Point2DChartLine(4, 4, 90)
     }
