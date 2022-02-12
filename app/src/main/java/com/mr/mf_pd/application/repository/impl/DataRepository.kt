@@ -45,6 +45,8 @@ interface DataRepository {
 
     fun cleanData()
 
+    fun closePassageway()
+
     fun setCheckType(checkType: CheckType)
 
     fun getCheckType(): CheckType

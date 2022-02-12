@@ -70,6 +70,11 @@ class DefaultDataRepository : DataRepository {
 
 
     init {
+        cleanDefaultValueCache()
+    }
+
+    private fun cleanDefaultValueCache() {
+        PrPsCubeList.defaultValues.clear()
         for (i in 0..4) {
             val list = ArrayList<Float?>()
             for (j in 0 until Constants.PRPS_COLUMN) {
@@ -131,6 +136,16 @@ class DefaultDataRepository : DataRepository {
         realData.clear()
     }
 
+    override fun closePassageway() {
+        val bytes = CommandHelp.closePassageway()
+        cleanData()
+        SocketManager.getInstance().sendData(bytes) { newBytes ->
+            if (Arrays.equals(newBytes, bytes)) {
+                Logger.Default.get().log(Level.INFO, "通道关闭成功")
+            }
+        }
+    }
+
     var maxValue = 0f
 
     override fun setCheckType(checkType: CheckType) {
@@ -161,14 +176,12 @@ class DefaultDataRepository : DataRepository {
                 realPointCachePhaseData.addAll(realPointData)
             }
             realPointData.clear()
+            cleanDefaultValueCache()
             val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
             val newPointList = ArrayList<HashMap<Int, Float>>()
-
-            newPointList.add(HashMap())
-            newPointList.add(HashMap())
-            newPointList.add(HashMap())
-            newPointList.add(HashMap())
-            newPointList.add(HashMap())
+            for (i in 0..4) {
+                newPointList.add(HashMap())
+            }
 
             for (i in 0 until (bytes.size / 6)) {
                 val values = ByteArray(6)
@@ -214,7 +227,7 @@ class DefaultDataRepository : DataRepository {
                 receiverCount++
             }
             val endTime = System.currentTimeMillis()
-//            Log.d("zhangan", (endTime - startTime).toString())
+            Log.d("zhangan", (endTime - startTime).toString())
         }
     }
 }

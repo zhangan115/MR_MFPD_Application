@@ -55,6 +55,22 @@ public class CommandHelp {
     }
 
     /**
+     * 关闭当前打开的通道
+     *
+     * @return 命令
+     */
+    public static byte[] closePassageway() {
+        byte[] bytes = new byte[]{
+                0x01, 0x07, 0x00, 0x00, 0x00, (byte) 0xff
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
+    /**
      * 读取设置的定值
      *
      * @param passageway 通道

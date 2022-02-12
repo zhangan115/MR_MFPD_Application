@@ -80,6 +80,7 @@ public class SocketManager {
                     linkStateListeners.get(i).onLinkState(Constants.LINK_SUCCESS);
                 }
                 byte[] buf = new byte[1024 * 4];
+                List<Byte> byteList = new ArrayList<>();
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
                     try {

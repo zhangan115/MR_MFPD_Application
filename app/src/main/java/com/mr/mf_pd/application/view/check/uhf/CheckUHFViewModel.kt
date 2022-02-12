@@ -6,7 +6,10 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 
-class CheckUHFViewModel(val dataRepository: DataRepository, private val settingRepository: SettingRepository) : ViewModel() {
+class CheckUHFViewModel(
+    val dataRepository: DataRepository,
+    private val settingRepository: SettingRepository
+) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
@@ -16,4 +19,8 @@ class CheckUHFViewModel(val dataRepository: DataRepository, private val settingR
         dataRepository.switchPassageway(0)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        dataRepository.closePassageway()
+    }
 }
