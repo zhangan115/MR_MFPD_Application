@@ -30,9 +30,9 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
-        acTaskLayout.setOnClickListener {
+        aeTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckACActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AC)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AE)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }

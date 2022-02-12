@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -58,20 +59,20 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         }
         yList.reverse()
         pointChartsRenderer = PointChartsRenderer(this.requireContext(), yList)
-
         surfaceView1.setRenderer(pointChartsRenderer)
+        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
 
-        pointChartsRenderer?.getPrpsValueCallback =
-            object : PrPsChartsRenderer.GetPrpsValueCallback {
-                override fun getData() {
-                    viewModel.getCaChePhaseData().forEach {
-                        pointChartsRenderer?.addPrpsData(it)
-                    }
-                    viewModel.getPhaseData().forEach {
-                        pointChartsRenderer?.addPrpsData(it)
-                    }
-                }
-            }
+//        pointChartsRenderer?.getPrpsValueCallback =
+//            object : PrPsChartsRenderer.GetPrpsValueCallback {
+//                override fun getData() {
+//                    viewModel.getCaChePhaseData().forEach {
+//                        pointChartsRenderer?.addPrpsData(it)
+//                    }
+//                    viewModel.getPhaseData().forEach {
+//                        pointChartsRenderer?.addPrpsData(it)
+//                    }
+//                }
+//            }
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -113,6 +114,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
+        viewModel.setRealCallback()
     }
 
     override fun onPause() {

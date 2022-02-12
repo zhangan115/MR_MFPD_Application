@@ -16,17 +16,11 @@ import javax.microedition.khronos.opengles.GL10
 
 class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
-    var getPrpsValueCallback: GetPrpsValueCallback? = null
-
     @Volatile
     var angleX: Float = -60f
 
     @Volatile
     var angleY: Float = 0f
-
-    interface GetPrpsValueCallback {
-        fun getData()
-    }
 
     private val projectionMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
@@ -116,8 +110,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.draw()
 
         val timeEnd = System.currentTimeMillis()
-//        Log.d("za", "cost time ${timeEnd - timeStart}")
-        getPrpsValueCallback?.getData()
+        Log.d("za", "cost time ${timeEnd - timeStart}")
     }
 
     private fun position() {

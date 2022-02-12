@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.StringUtils
@@ -28,16 +29,18 @@ class DefaultDataRepository : DataRepository {
     var checkParamsBean: CheckParamsBean? = null
     var receiverCount = 0
     var mcCount = 0
+    var maxValue = 0f
     var gainFloatList = ArrayList<Float>()
+
     var gainValue: MutableLiveData<List<Float>> = MutableLiveData(ArrayList())
 
     private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
-    private var cachePhaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
 
     private var realPointData: ArrayList<HashMap<Int, Float>> = ArrayList()
-    private var realPointCachePhaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
 
     var realData: ArrayList<PrPsCubeList> = ArrayList()
+
+    private var realDataCallback: RealDataCallback? = null
 
     override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
         val list = ArrayList<HashMap<Int, Float>>()
@@ -53,36 +56,6 @@ class DefaultDataRepository : DataRepository {
         return list
     }
 
-    override fun getCachePhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
-        val list = ArrayList<HashMap<Int, Float>>()
-        if (chartType == 0) {
-            list.addAll(cachePhaseData)
-            cachePhaseData.clear()
-        } else if (chartType == 1) {
-            list.addAll(realPointCachePhaseData)
-            realPointCachePhaseData.clear()
-        }
-        return list
-    }
-
-
-    private var callbacks: ArrayList<DataRepository.DataCallback> = ArrayList()
-
-
-    init {
-        cleanDefaultValueCache()
-    }
-
-    private fun cleanDefaultValueCache() {
-        PrPsCubeList.defaultValues.clear()
-        for (i in 0..4) {
-            val list = ArrayList<Float?>()
-            for (j in 0 until Constants.PRPS_COLUMN) {
-                list.add(null)
-            }
-            PrPsCubeList.defaultValues.add(list)
-        }
-    }
 
     override fun setCheckFileDir(dir: File) {
         this.checkDir = dir
@@ -92,12 +65,15 @@ class DefaultDataRepository : DataRepository {
         return checkDir
     }
 
-    override fun hufDataListener() {
-        SocketManager.getInstance().setReadListener(hufListener)
+    override fun realDataListener() {
+        SocketManager.getInstance().setReadListener(realDataListener)
+    }
+
+    override fun removeRealDataListener() {
+        SocketManager.getInstance().removeReadListener()
     }
 
     override fun addHufData(callback: DataRepository.DataCallback) {
-        callbacks.add(callback)
         var prPsCube: PrPsCubeList? = null
         if (realData.isNotEmpty()) {
             prPsCube = realData.lastOrNull()
@@ -114,8 +90,12 @@ class DefaultDataRepository : DataRepository {
         }
     }
 
-    override fun removeHufDataListener() {
-        SocketManager.getInstance().removeReadListener()
+    override fun cleanData() {
+        receiverCount = 0
+        mcCount = 0
+        gainFloatList.clear()
+        phaseData.clear()
+        realData.clear()
     }
 
     override fun switchPassageway(passageway: Int) {
@@ -128,14 +108,6 @@ class DefaultDataRepository : DataRepository {
         }
     }
 
-    override fun cleanData() {
-        receiverCount = 0
-        mcCount = 0
-        gainFloatList.clear()
-        phaseData.clear()
-        realData.clear()
-    }
-
     override fun closePassageway() {
         val bytes = CommandHelp.closePassageway()
         cleanData()
@@ -145,8 +117,6 @@ class DefaultDataRepository : DataRepository {
             }
         }
     }
-
-    var maxValue = 0f
 
     override fun setCheckType(checkType: CheckType) {
         mCheckType = checkType
@@ -162,31 +132,25 @@ class DefaultDataRepository : DataRepository {
         return gainValue
     }
 
-    private val hufListener = object : ReadListener(0) {
+    private val realDataListener = object : ReadListener(0) {
         override fun onRead(source: ByteArray) {
             val startTime = System.currentTimeMillis()
             //  将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
-            if (phaseData.isNotEmpty()) {
-                cachePhaseData.addAll(phaseData)
-            }
             phaseData.clear()
-            if (realPointData.isNotEmpty()) {
-                realPointCachePhaseData.addAll(realPointData)
-            }
             realPointData.clear()
-            cleanDefaultValueCache()
-            val newValueList = PrPsCubeList.defaultValues.clone() as ArrayList<ArrayList<Float>>
-            val newPointList = ArrayList<HashMap<Int, Float>>()
-            for (i in 0..4) {
-                newPointList.add(HashMap())
+
+            val newValueList: ArrayList<Float?> = ArrayList()
+            for (j in 0 until Constants.PRPS_COLUMN) {
+                newValueList.add(null)
             }
+            val newPointList = HashMap<Int, Float>()
 
             for (i in 0 until (bytes.size / 6)) {
                 val values = ByteArray(6)
                 System.arraycopy(bytes, 6 * i, values, 0, 6)
-                val row = values[0].toInt()
+                val row = values[0].toInt()//暂不使用
                 val column = values[1].toInt()
                 val height = ByteArray(4)
                 System.arraycopy(values, 2, height, 0, 4)
@@ -197,37 +161,38 @@ class DefaultDataRepository : DataRepository {
 //                    if (off < 0) {
 //                        off += 359
 //                    }
-                newValueList[row][column] = f
-                newPointList[row][column] = f
+                newValueList[column] = f
+                newPointList[column] = f
                 mcCount++
             }
-            for (i in 0 until PrPsCubeList.defaultValues.size) {
-                val floatArray = newValueList[i]
-                val prPsCube = PrPsCubeList(floatArray)
-                if (realData.size == Constants.PRPS_ROW) {
-                    realData.removeFirst()
-                }
-                realData.add(prPsCube)
+            val prPsCube = PrPsCubeList(newValueList)
+            realData.add(prPsCube)
+            if (realData.size == Constants.PRPS_ROW) {
+                realData.removeFirst()
             }
-            phaseData.addAll(newPointList)
-            realPointData.addAll(newPointList)
+            phaseData.add(newPointList)
+            realPointData.add(newPointList)
             gainFloatList.add(maxValue)
-            //根据图谱累计时间修改
+
             if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
                 gainFloatList.removeFirst()
             }
             gainValue.postValue(gainFloatList)
-            if (receiverCount == 10) {
+            if (receiverCount == 50) { //一秒钟刷新一次数据
                 checkParamsBean?.fzAttr = "${StringUtils.floatValueToStr(maxValue)}dBm"
                 checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
                 mCheckType.checkParams.postValue(checkParamsBean)
                 receiverCount = 0
                 mcCount = 0
+                realDataCallback?.onReceiverValueChange()
             } else {
                 receiverCount++
             }
+            realDataCallback?.onRealDataChanged()
             val endTime = System.currentTimeMillis()
             Log.d("zhangan", (endTime - startTime).toString())
         }
     }
+
+
 }

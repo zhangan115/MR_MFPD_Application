@@ -3,10 +3,8 @@ package com.mr.mf_pd.application.view.opengl.object;
 import android.opengl.GLES30;
 
 import com.mr.mf_pd.application.common.Constants;
-import com.mr.mf_pd.application.view.renderer.PointChartsRenderer;
-import com.mr.mf_pd.application.view.opengl.data.VertexArray;
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram;
-import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
+import com.mr.mf_pd.application.view.renderer.PointChartsRenderer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.microedition.khronos.opengles.GL;
 
 /**
  * 展示PrPs在平面的数据

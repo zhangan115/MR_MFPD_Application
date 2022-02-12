@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.repository.impl
 
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import java.io.File
 
@@ -25,31 +26,55 @@ interface DataRepository {
     fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
 
     /**
-     * 获取缓冲的图表数据
+     * 实时数据监测
      */
-    fun getCachePhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
+    fun realDataListener()
 
+    /**
+     * 移除实时数据回调
+     */
+    fun removeRealDataListener()
 
-    fun hufDataListener()
+    /**
+     * 设置实时数据的回调
+     * @param callback 回调
+     */
+    fun setRealDataCallback(callback: RealDataCallback)
+
+    /**
+     * 切换实时数据监测通道
+     */
+    fun switchPassageway(passageway: Int)
 
     fun addHufData(callback: DataCallback)
-
-    fun removeHufDataListener()
-
-    fun switchPassageway(passageway: Int)
 
     interface DataCallback {
 
         fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList)
     }
 
+    /**
+     * 清理数据
+     */
     fun cleanData()
 
+    /**
+     * 关闭实时数据监测通道
+     */
     fun closePassageway()
 
+    /**
+     * 设置检测类型
+     */
     fun setCheckType(checkType: CheckType)
 
+    /**
+     * 获取检测类型
+     */
     fun getCheckType(): CheckType
 
+    /**
+     * 获取线性图表数据
+     */
     fun getGainValueList(): MutableLiveData<List<Float>>
 }

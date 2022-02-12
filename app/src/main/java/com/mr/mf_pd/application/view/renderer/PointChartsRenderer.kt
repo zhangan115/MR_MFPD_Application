@@ -14,9 +14,8 @@ import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PointChartsRenderer(var context: Context,var yTextList:List<String>) : GLSurfaceView.Renderer {
-
-    var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
+class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
+    GLSurfaceView.Renderer {
 
     companion object {
         var offsetXPointValueStart = 0.15f
@@ -36,6 +35,7 @@ class PointChartsRenderer(var context: Context,var yTextList:List<String>) : GLS
     private lateinit var colorPointProgram: Point2DColorPointShaderProgram
     private var texture: Int = 0
 
+    @Volatile
     private var prPsPoints: PrpsPoint2DList? = null
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -82,11 +82,9 @@ class PointChartsRenderer(var context: Context,var yTextList:List<String>) : GLS
         colorPointProgram.useProgram()
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
-
-        getPrpsValueCallback?.getData()
     }
 
-    fun cleanData(){
+    fun cleanData() {
         prPsPoints?.cleanAllData()
     }
 

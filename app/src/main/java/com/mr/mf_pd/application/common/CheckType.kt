@@ -24,7 +24,7 @@ enum class CheckType(
         SettingBean(cacheKey = ConstantStr.SETTING_UHF),
         MutableLiveData(CheckParamsBean(0))
     ),
-    AC(
+    AE(
         1,
         R.string.file_type_ac,
         R.string.type_ac,

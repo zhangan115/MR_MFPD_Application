@@ -47,7 +47,7 @@
     <string name="menu_str_share">共享</string>
 
     <string name="file_type_all">所有类型</string>
-    <string name="file_type_ac">超声波(AC)</string>
+    <string name="file_type_ac">超声波(AE)</string>
     <string name="file_type_tev">暂态地电压(TEV)</string>
     <string name="file_type_hf">高频(HF)</string>
     <string name="file_type_uhf">特高频(UHF)</string>

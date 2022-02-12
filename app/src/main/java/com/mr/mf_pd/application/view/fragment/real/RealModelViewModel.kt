@@ -18,7 +18,7 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
         this.checkType = repository.getCheckType()
         this.gainValues = repository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
-        repository.hufDataListener()
+        repository.realDataListener()
     }
 
     fun addHUfData(callback: DataRepository.DataCallback) {
@@ -26,11 +26,7 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getPhaseData(1)
-    }
-
-    fun getCaChePhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getCachePhaseData(1)
+        return repository.getPhaseData(checkType.type)
     }
 
     fun startSaveData(){
@@ -48,6 +44,6 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
 
     override fun onCleared() {
         super.onCleared()
-        repository.removeHufDataListener()
+        repository.removeRealDataListener()
     }
 }

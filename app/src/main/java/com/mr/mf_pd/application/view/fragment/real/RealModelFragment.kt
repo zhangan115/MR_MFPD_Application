@@ -52,23 +52,23 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
         surfaceView1.setRenderer(prPsChartsRenderer)
-        prPsChartsRenderer?.getPrpsValueCallback =
-            object : PrPsChartsRenderer.GetPrpsValueCallback {
-                override fun getData() {
-                    viewModel.getCaChePhaseData().forEach {
-                        prPsChartsRenderer?.addPrpsData(it)
-                    }
-                    viewModel.getPhaseData().forEach {
-                        prPsChartsRenderer?.addPrpsData(it)
-                    }
-                    viewModel.addHUfData(object : DataRepository.DataCallback {
-
-                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                            prPsChartsRenderer?.addPrpsData(prPsCube)
-                        }
-                    })
-                }
-            }
+//        prPsChartsRenderer?.getPrpsValueCallback =
+//            object : PrPsChartsRenderer.GetPrpsValueCallback {
+//                override fun getData() {
+//                    viewModel.getCaChePhaseData().forEach {
+//                        prPsChartsRenderer?.addPrpsData(it)
+//                    }
+//                    viewModel.getPhaseData().forEach {
+//                        prPsChartsRenderer?.addPrpsData(it)
+//                    }
+//                    viewModel.addHUfData(object : DataRepository.DataCallback {
+//
+//                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
+//                            prPsChartsRenderer?.addPrpsData(prPsCube)
+//                        }
+//                    })
+//                }
+//            }
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
