@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.fragment.real
 
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -7,17 +8,13 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import kotlinx.android.synthetic.main.fragment_real.image1
-import kotlinx.android.synthetic.main.fragment_real.image2
-import kotlinx.android.synthetic.main.fragment_real.image3
-import kotlinx.android.synthetic.main.fragment_real.image4
-import kotlinx.android.synthetic.main.fragment_real.image5
-import kotlinx.android.synthetic.main.fragment_real.surfaceView1
+import kotlinx.android.synthetic.main.fragment_real.*
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
@@ -52,23 +49,32 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
         surfaceView1.setRenderer(prPsChartsRenderer)
-//        prPsChartsRenderer?.getPrpsValueCallback =
-//            object : PrPsChartsRenderer.GetPrpsValueCallback {
-//                override fun getData() {
-//                    viewModel.getCaChePhaseData().forEach {
-//                        prPsChartsRenderer?.addPrpsData(it)
-//                    }
-//                    viewModel.getPhaseData().forEach {
-//                        prPsChartsRenderer?.addPrpsData(it)
-//                    }
-//                    viewModel.addHUfData(object : DataRepository.DataCallback {
-//
-//                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-//                            prPsChartsRenderer?.addPrpsData(prPsCube)
-//                        }
-//                    })
-//                }
-//            }
+        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+        viewModel.setRealCallback(object : RealDataCallback {
+
+            override fun onRealDataChanged() {
+                viewModel.getPhaseData().forEach {
+                    prPsChartsRenderer?.addPrpsData(it)
+                }
+                viewModel.addHUfData(object : DataRepository.DataCallback {
+
+                    override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
+                        prPsChartsRenderer?.addPrpsData(prPsCube)
+                    }
+                })
+                activity?.runOnUiThread {
+                    if (surfaceView1 != null) {
+                        surfaceView1.requestRender()
+                    }
+                }
+            }
+
+            override fun onReceiverValueChange() {
+                activity?.runOnUiThread {
+
+                }
+            }
+        })
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =

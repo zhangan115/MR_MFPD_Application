@@ -1,10 +1,14 @@
 package com.mr.mf_pd.application.view.check.uhf.setting
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.activity.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.UHFSettingDataBinding
+import com.mr.mf_pd.application.manager.socket.CommandHelp
+import com.mr.mf_pd.application.manager.socket.CommandType
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseSettingActivity
 import kotlinx.android.synthetic.main.activity_uhf_setting.*
@@ -46,6 +50,10 @@ class UHFSettingActivity : BaseSettingActivity<UHFSettingDataBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.toSave()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 }

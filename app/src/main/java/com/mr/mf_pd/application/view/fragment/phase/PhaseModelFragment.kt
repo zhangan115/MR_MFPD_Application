@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -62,17 +63,6 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         surfaceView1.setRenderer(pointChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
 
-//        pointChartsRenderer?.getPrpsValueCallback =
-//            object : PrPsChartsRenderer.GetPrpsValueCallback {
-//                override fun getData() {
-//                    viewModel.getCaChePhaseData().forEach {
-//                        pointChartsRenderer?.addPrpsData(it)
-//                    }
-//                    viewModel.getPhaseData().forEach {
-//                        pointChartsRenderer?.addPrpsData(it)
-//                    }
-//                }
-//            }
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -114,7 +104,23 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.setRealCallback()
+        viewModel.setRealCallback(object : RealDataCallback {
+
+            override fun onRealDataChanged() {
+                viewModel.getPhaseData().forEach {
+                    pointChartsRenderer?.addPrpsData(it)
+                }
+                activity?.runOnUiThread {
+                    if (surfaceView1!=null){
+                        surfaceView1.requestRender()
+                    }
+                }
+            }
+
+            override fun onReceiverValueChange() {
+
+            }
+        })
     }
 
     override fun onPause() {

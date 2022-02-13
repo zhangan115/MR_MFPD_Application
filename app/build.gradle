@@ -152,4 +152,5 @@ dependencies {
     implementation 'com.contrarywind:Android-PickerView:4.1.9'
     //文件选择器
     implementation 'com.leon:lfilepickerlibrary:1.8.0'
+    implementation("com.google.guava:guava:31.0.1-android")
 }

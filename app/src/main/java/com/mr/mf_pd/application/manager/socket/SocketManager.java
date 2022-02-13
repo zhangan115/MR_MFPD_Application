@@ -2,7 +2,9 @@ package com.mr.mf_pd.application.manager.socket;
 
 import android.util.Log;
 
+import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.common.Constants;
+import com.mr.mf_pd.application.utils.ByteUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +12,20 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -39,7 +48,7 @@ public class SocketManager {
 
     private List<LinkStateListener> linkStateListeners;
 
-    private ReceiverCallback callback;
+    private final Map<Byte, ReceiverCallback> callbackMap = new HashMap<>();
 
     //执行请求任务的线程池
     private ExecutorService mRequestExecutor;
@@ -61,10 +70,6 @@ public class SocketManager {
 
     }
 
-    public void setCallback(ReceiverCallback callback) {
-        this.callback = callback;
-    }
-
     private final Runnable requestRunnable = new Runnable() {
         @Override
         public void run() {
@@ -84,29 +89,10 @@ public class SocketManager {
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
                     try {
-                        if (buf[0] == DEVICE_NO) {
-                            if (buf[1] == 8) {//上送实时数据
-                                byte[] sources = new byte[size];
-                                System.arraycopy(buf, 0, sources, 0, size);
-                                if (readListener != null) {
-                                    if (buf[2] == readListener.filter) {
-                                        readListener.onRead(sources);
-                                    }
-                                }
-                            } else if (buf[1] == 12) {//上送原始脉冲数据
-                                byte[] sources = new byte[size];
-                                System.arraycopy(buf, 0, sources, 0, size);
-                                if (mPulseDataListener != null) {
-                                    mPulseDataListener.onRead(sources);
-                                }
-                            } else {//其他数据
-                                byte[] newBuf = new byte[size];
-                                System.arraycopy(buf, 0, newBuf, 0, size);
-                                if (callback != null) {
-                                    callback.onReceiver(newBuf);
-                                }
-                            }
-                        }
+                        byte[] sources = new byte[size];
+                        System.arraycopy(buf, 0, sources, 0, size);
+                        byteList.addAll(Bytes.asList(sources));
+                        dealStickyBytes(byteList);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -136,6 +122,61 @@ public class SocketManager {
         }
     };
 
+    /***
+     * 处理黏包
+     * @param byteList 字节集合
+     */
+    private void dealStickyBytes(List<Byte> byteList) {
+        if (byteList.size() > 3 && byteList.get(0) == 1) {
+            //对定长的数据进行单独处理
+            if (byteList.get(1) == CommandType.SendTime.getFunCode()) {
+                if (byteList.size() >= CommandType.SendTime.getLength()) {
+                    byteList.removeAll(handOut(byteList, CommandType.SendTime.getLength()));
+                }
+            } else if (byteList.get(1) == CommandType.SwitchPassageway.getFunCode()) {
+                if (byteList.size() >= CommandType.SwitchPassageway.getLength()) {
+                    byteList.removeAll(handOut(byteList, CommandType.SwitchPassageway.getLength()));
+                }
+            } else if (byteList.get(1) == CommandType.ReadYcData.getFunCode()) {
+                int length = byteList.get(2).intValue() * 4 + 5;
+                byteList.removeAll(handOut(byteList, length));
+            } else if (byteList.get(1) == CommandType.ReadSettingValue.getFunCode()) {
+                int length = byteList.get(2).intValue() * 4 + 5;
+                byteList.removeAll(handOut(byteList, length));
+            } else {
+                //byte数组中包含长度
+                byte[] l = new byte[]{byteList.get(3), byteList.get(4)};
+                int length = ByteUtil.getShort(l, 0) + 7;
+                byteList.removeAll(handOut(byteList, length));
+            }
+        }
+        if (byteList.size() > 0) {
+            dealStickyBytes(byteList);
+        }
+    }
+
+    private List<Byte> handOut(List<Byte> byteList, int length) {
+        List<Byte> list = byteList.subList(0, length);
+        byte[] sources = Bytes.toArray(list);
+        if (sources[1] == CommandType.RealData.getFunCode()) {//上送实时数据
+            if (readListener != null) {
+                if (sources[2] == readListener.filter) {
+                    readListener.onRead(sources);
+                }
+            }
+        } else if (sources[1] == CommandType.SendPulse.getFunCode()) {//上送原始脉冲数据
+            if (mPulseDataListener != null) {
+                mPulseDataListener.onRead(sources);
+            }
+        } else {//其他数据
+            if (callbackMap.containsKey(sources[1])) {
+                Objects.requireNonNull(callbackMap.remove(sources[1])).onReceiver(sources);
+            }
+        }
+        return list;
+    }
+
+
     /**
      * 释放请求线程
      */
@@ -148,6 +189,7 @@ public class SocketManager {
             mRequestExecutor.shutdownNow();
             mRequestExecutor = null;
         }
+        callbackMap.clear();
     }
 
     /**
@@ -173,10 +215,14 @@ public class SocketManager {
     /**
      * 发送数据
      *
-     * @param data 数据
+     * @param data     数据
+     * @param cmdType  命令类型
+     * @param callback 回调
      */
-    public synchronized Disposable sendData(byte[] data, ReceiverCallback callback) {
-        this.callback = callback;
+    public synchronized Disposable sendData(byte[] data, CommandType cmdType, ReceiverCallback callback) {
+        if (callback != null) {
+            this.callbackMap.put(cmdType.getFunCode(), callback);
+        }
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
                     try {
@@ -191,11 +237,10 @@ public class SocketManager {
                     } finally {
                         emitter.onComplete();
                     }
-                }).observeOn(Schedulers.io())
+                })
                 .subscribeOn(Schedulers.io())
-                .subscribe(bytes -> {
-
-                });
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     /**

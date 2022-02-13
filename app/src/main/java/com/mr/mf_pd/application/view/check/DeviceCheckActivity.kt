@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
 import com.mr.mf_pd.application.manager.socket.CommandHelp
+import com.mr.mf_pd.application.manager.socket.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
@@ -63,9 +65,13 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         SocketManager.getInstance().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
                 val timeBytes = CommandHelp.getTimeCommand()
-                SocketManager.getInstance().sendData(timeBytes) { bytes ->
-                    if (Arrays.equals(timeBytes, bytes)) {
-                        Log.d("zhangan", "对时成功")
+                SocketManager.getInstance().sendData(timeBytes,CommandType.SendTime) { bytes ->
+                    runOnUiThread {
+                        if (Arrays.equals(timeBytes, bytes)) {
+                            ToastAdapter.bindToast(uhfDataLayout, "对时成功")
+                        } else {
+                            ToastAdapter.bindToast(uhfDataLayout, "对时失败")
+                        }
                     }
                 }
             } else {

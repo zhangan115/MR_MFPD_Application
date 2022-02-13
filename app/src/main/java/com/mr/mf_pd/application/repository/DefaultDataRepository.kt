@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
+import com.mr.mf_pd.application.manager.socket.CommandType
 import com.mr.mf_pd.application.manager.socket.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
@@ -73,6 +74,10 @@ class DefaultDataRepository : DataRepository {
         SocketManager.getInstance().removeReadListener()
     }
 
+    override fun setRealDataCallback(callback: RealDataCallback) {
+        realDataCallback = callback
+    }
+
     override fun addHufData(callback: DataRepository.DataCallback) {
         var prPsCube: PrPsCubeList? = null
         if (realData.isNotEmpty()) {
@@ -101,7 +106,7 @@ class DefaultDataRepository : DataRepository {
     override fun switchPassageway(passageway: Int) {
         val bytes = CommandHelp.switchPassageway(passageway)
         cleanData()
-        SocketManager.getInstance().sendData(bytes) { newBytes ->
+        SocketManager.getInstance().sendData(bytes,CommandType.SwitchPassageway) { newBytes ->
             if (Arrays.equals(newBytes, bytes)) {
                 Logger.Default.get().log(Level.INFO, "通道${passageway}打开成功")
             }
@@ -111,11 +116,7 @@ class DefaultDataRepository : DataRepository {
     override fun closePassageway() {
         val bytes = CommandHelp.closePassageway()
         cleanData()
-        SocketManager.getInstance().sendData(bytes) { newBytes ->
-            if (Arrays.equals(newBytes, bytes)) {
-                Logger.Default.get().log(Level.INFO, "通道关闭成功")
-            }
-        }
+        SocketManager.getInstance().sendData(bytes,CommandType.SwitchPassageway,null)
     }
 
     override fun setCheckType(checkType: CheckType) {
@@ -190,7 +191,7 @@ class DefaultDataRepository : DataRepository {
             }
             realDataCallback?.onRealDataChanged()
             val endTime = System.currentTimeMillis()
-            Log.d("zhangan", (endTime - startTime).toString())
+//            Log.d("zhangan", (endTime - startTime).toString())
         }
     }
 

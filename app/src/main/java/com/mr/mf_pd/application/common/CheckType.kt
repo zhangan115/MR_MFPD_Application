@@ -7,13 +7,13 @@ import com.mr.mf_pd.application.model.SettingBean
 import java.io.File
 
 enum class CheckType(
-    val type: Int,
-    val description: Int,
-    val checkName: Int,
-    val checkFile: String,
-    val icon: Int,
-    var settingBean:SettingBean,
-    val checkParams: MutableLiveData<CheckParamsBean>
+    val type: Int,//通道号
+    val description: Int,//描述
+    val checkName: Int,//检测名称
+    val checkFile: String,//检测文件类型
+    val icon: Int,//图标
+    var settingBean: SettingBean,//设置
+    val checkParams: MutableLiveData<CheckParamsBean>,//检测数据
 ) {
     UHF(
         0,
@@ -24,23 +24,23 @@ enum class CheckType(
         SettingBean(cacheKey = ConstantStr.SETTING_UHF),
         MutableLiveData(CheckParamsBean(0))
     ),
-    AE(
-        1,
-        R.string.file_type_ac,
-        R.string.type_ac,
-        ".check_ac",
-        R.mipmap.img_check_icon,
-        SettingBean(cacheKey = ConstantStr.SETTING_AC),
-        MutableLiveData(CheckParamsBean(1))
-    ),
     TEV(
-        2,
+        1,
         R.string.file_type_tev,
         R.string.type_tev,
         ".check_tev",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_TEV),
         MutableLiveData(CheckParamsBean(2))
+    ),
+    AE(
+        2,
+        R.string.file_type_ac,
+        R.string.type_ac,
+        ".check_ac",
+        R.mipmap.img_check_icon,
+        SettingBean(cacheKey = ConstantStr.SETTING_AC),
+        MutableLiveData(CheckParamsBean(1))
     ),
     HF(
         3,

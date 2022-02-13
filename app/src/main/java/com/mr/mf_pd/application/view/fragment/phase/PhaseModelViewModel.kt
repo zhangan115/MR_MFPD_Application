@@ -27,18 +27,8 @@ class PhaseModelViewModel(
         repository.realDataListener()
     }
 
-    fun setRealCallback() {
-        repository.setRealDataCallback(object : RealDataCallback {
-
-            override fun onRealDataChanged() {
-
-            }
-
-            override fun onReceiverValueChange() {
-
-            }
-
-        })
+    fun setRealCallback(callback:RealDataCallback) {
+        repository.setRealDataCallback(callback)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {

@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.fragment.real
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 
@@ -19,6 +20,10 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
         this.gainValues = repository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
         repository.realDataListener()
+    }
+
+    fun setRealCallback(callback: RealDataCallback) {
+        repository.setRealDataCallback(callback)
     }
 
     fun addHUfData(callback: DataRepository.DataCallback) {

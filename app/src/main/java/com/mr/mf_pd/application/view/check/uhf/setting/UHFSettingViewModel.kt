@@ -1,10 +1,18 @@
 package com.mr.mf_pd.application.view.check.uhf.setting
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.socket.CommandHelp
+import com.mr.mf_pd.application.manager.socket.CommandType
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.repository.impl.SettingRepository
+import com.mr.mf_pd.application.utils.ByteUtil
+import org.checkerframework.checker.index.qual.LengthOf
+import kotlin.math.max
 
 class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -48,6 +56,24 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData()
 
     fun start(checkType: CheckType) {
+        val command = CommandHelp.readSettingValue(checkType.type, 8)
+        SocketManager.getInstance().sendData(command, CommandType.ReadSettingValue) {
+            Log.d("zhangan", it.size.toString())
+            val valueList = ArrayList<Float>()
+            if (it.size > 2) {
+                val length = it[2].toInt()
+                val source = ByteArray(length * 4)
+
+                System.arraycopy(it, 3, source, 0, it.size - 5)
+                for (i in 0 until (source.size / 4)) {
+                    val value = ByteArray(4)
+                    System.arraycopy(source, 4 * i, value, 0, 4)
+                    val f = ByteUtil.getFloat(value)
+                    valueList.add(f)
+                }
+                Log.d("zhangan",valueList.toString())
+            }
+        }
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)

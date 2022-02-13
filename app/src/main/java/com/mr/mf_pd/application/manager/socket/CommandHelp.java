@@ -71,16 +71,15 @@ public class CommandHelp {
     }
 
     /**
-     * 读取设置的定值
+     * 读取全遥测数据
      *
-     * @param passageway 通道
-     * @return 定值数组
+     * @param passageway 通道号
+     * @return 命令
      */
-    public static byte[] readSettingValue(int passageway) {
-        // TODO: 11/15/21 定值命令需要修改
+    public static byte[] readYcValue(int passageway) {
         byte b = (byte) passageway;
         byte[] bytes = new byte[]{
-                0x01, 0x04, 0x00, b, 0x00, 0x07
+                0x01, 0x03, 0x00, b, 0x00, 0x07
         };
         byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
         byte[] data = new byte[crcByte.length + bytes.length];
@@ -88,6 +87,27 @@ public class CommandHelp {
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
         return data;
     }
+
+    /***
+     * 读取固定值
+     * @param passageway 通道
+     * @param length 长度
+     * @return 命令
+     */
+    public static byte[] readSettingValue(int passageway, int length) {
+        byte b = (byte) passageway;
+        byte[] l = new byte[2];
+        ByteUtil.putShort(l, (short) length, 0);
+        byte[] bytes = new byte[]{
+                0x01, 0x04, 0x00, b, l[0], l[1]
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
 
     /**
      * 写设置的定值
