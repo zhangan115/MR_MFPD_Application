@@ -24,4 +24,6 @@ data class SettingBean(
     var fdlUnit: Int = 0, //以放电量单位
     var jzRatio: Float = 1.0f,//校准系数
     var jzOutValue: Float = 10.0f,//校准器输出
+
+    var limitValue:Int = 0//通道门限值
 )

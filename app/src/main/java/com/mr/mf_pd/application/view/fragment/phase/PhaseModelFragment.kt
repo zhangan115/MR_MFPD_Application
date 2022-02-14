@@ -116,10 +116,6 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                     }
                 }
             }
-
-            override fun onReceiverValueChange() {
-
-            }
         })
     }
 

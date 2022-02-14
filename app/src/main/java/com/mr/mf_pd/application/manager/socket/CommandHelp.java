@@ -2,6 +2,8 @@ package com.mr.mf_pd.application.manager.socket;
 
 import com.mr.mf_pd.application.model.SettingBean;
 import com.mr.mf_pd.application.utils.ByteUtil;
+import com.sito.tool.library.utils.ByteLibUtil;
+import com.sito.tool.library.utils.NumberLibUtils;
 
 import java.util.Calendar;
 
@@ -109,17 +111,20 @@ public class CommandHelp {
     }
 
 
-    /**
+    /***
      * 写设置的定值
-     *
      * @param passageway 通道
-     * @return 读取定值命令
+     * @param valuePosition 数值位置
+     * @param value 值
+     * @return 命令
      */
-    public static byte[] setSettingValue(int passageway, SettingBean settingBean) {
-        // TODO: 11/15/21 定值命令需要修改
+    public static byte[] writeSettingValue(int passageway, int valuePosition, Float value) {
         byte b = (byte) passageway;
+
+        byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(value));
+
         byte[] bytes = new byte[]{
-                0x01, 0x0c, 0x00, b, 0x00, 0x00
+                0x01, 0x10, b, (byte) valuePosition, valueByte[0], valueByte[1], valueByte[2], valueByte[3]
         };
         byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
         byte[] data = new byte[crcByte.length + bytes.length];

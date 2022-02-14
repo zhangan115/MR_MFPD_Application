@@ -19,6 +19,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
     lateinit var checkType: CheckType
+    //通道门限值
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
 
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -56,24 +58,6 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     var minimumAmplitudeStr: MutableLiveData<String> = MutableLiveData()
 
     fun start(checkType: CheckType) {
-        val command = CommandHelp.readSettingValue(checkType.type, 8)
-        SocketManager.getInstance().sendData(command, CommandType.ReadSettingValue) {
-            Log.d("zhangan", it.size.toString())
-            val valueList = ArrayList<Float>()
-            if (it.size > 2) {
-                val length = it[2].toInt()
-                val source = ByteArray(length * 4)
-
-                System.arraycopy(it, 3, source, 0, it.size - 5)
-                for (i in 0 until (source.size / 4)) {
-                    val value = ByteArray(4)
-                    System.arraycopy(source, 4 * i, value, 0, 4)
-                    val f = ByteUtil.getFloat(value)
-                    valueList.add(f)
-                }
-                Log.d("zhangan",valueList.toString())
-            }
-        }
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
@@ -88,6 +72,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
+        limitValueStr.postValue(this.checkType.settingBean.limitValue.toString())
+        Log.d("zhangan",this.checkType.settingBean.limitValue.toString())
     }
 
     fun toSave() {
@@ -103,6 +89,39 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
         settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
         setting.toSaveSettingData(checkType)
+        limitValueStr.value?.let {
+            val value = it.toFloatOrNull()
+            if (value != null) {
+                writeValue(7,value)
+            }
+        }
+    }
+
+    private fun writeValue(position:Int,value:Float){
+        val writeCommand = CommandHelp.writeSettingValue(checkType.type, position, value)
+        SocketManager.getInstance().sendData(writeCommand, CommandType.WriteValue) {
+            if (it.contentEquals(writeCommand)) {
+                Log.d("zhangan", "写入输入成功")
+            }
+        }
+    }
+
+    private fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {
+        val valueList = ArrayList<Float>()
+        if (bytes.size > 2) {
+            val length = bytes[2].toInt()
+            val source = ByteArray(length * 4)
+
+            System.arraycopy(bytes, 3, source, 0, bytes.size - 5)
+            for (i in 0 until (source.size / 4)) {
+                val value = ByteArray(4)
+                System.arraycopy(source, 4 * i, value, 0, 4)
+                val f = ByteUtil.getFloat(value)
+                valueList.add(f)
+            }
+            Log.d("zhangan", valueList.toString())
+        }
+        return valueList
     }
 
 }

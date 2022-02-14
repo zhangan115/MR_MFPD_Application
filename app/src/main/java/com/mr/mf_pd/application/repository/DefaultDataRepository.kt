@@ -106,7 +106,7 @@ class DefaultDataRepository : DataRepository {
     override fun switchPassageway(passageway: Int) {
         val bytes = CommandHelp.switchPassageway(passageway)
         cleanData()
-        SocketManager.getInstance().sendData(bytes,CommandType.SwitchPassageway) { newBytes ->
+        SocketManager.getInstance().sendData(bytes, CommandType.SwitchPassageway) { newBytes ->
             if (Arrays.equals(newBytes, bytes)) {
                 Logger.Default.get().log(Level.INFO, "通道${passageway}打开成功")
             }
@@ -116,7 +116,7 @@ class DefaultDataRepository : DataRepository {
     override fun closePassageway() {
         val bytes = CommandHelp.closePassageway()
         cleanData()
-        SocketManager.getInstance().sendData(bytes,CommandType.SwitchPassageway,null)
+        SocketManager.getInstance().sendData(bytes, CommandType.SwitchPassageway, null)
     }
 
     override fun setCheckType(checkType: CheckType) {
@@ -162,8 +162,10 @@ class DefaultDataRepository : DataRepository {
 //                    if (off < 0) {
 //                        off += 359
 //                    }
-                newValueList[column] = f
-                newPointList[column] = f
+                if (column < Constants.PRPS_COLUMN && column > 0) {
+                    newValueList[column] = f
+                    newPointList[column] = f
+                }
                 mcCount++
             }
             val prPsCube = PrPsCubeList(newValueList)
@@ -185,7 +187,6 @@ class DefaultDataRepository : DataRepository {
                 mCheckType.checkParams.postValue(checkParamsBean)
                 receiverCount = 0
                 mcCount = 0
-                realDataCallback?.onReceiverValueChange()
             } else {
                 receiverCount++
             }

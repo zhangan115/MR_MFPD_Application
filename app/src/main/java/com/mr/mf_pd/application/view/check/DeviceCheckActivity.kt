@@ -66,12 +66,10 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             if (it == Constants.LINK_SUCCESS) {
                 val timeBytes = CommandHelp.getTimeCommand()
                 SocketManager.getInstance().sendData(timeBytes,CommandType.SendTime) { bytes ->
-                    runOnUiThread {
-                        if (Arrays.equals(timeBytes, bytes)) {
-                            ToastAdapter.bindToast(uhfDataLayout, "对时成功")
-                        } else {
-                            ToastAdapter.bindToast(uhfDataLayout, "对时失败")
-                        }
+                    if (Arrays.equals(timeBytes, bytes)) {
+                        ToastAdapter.bindToast(uhfDataLayout, "对时成功")
+                    } else {
+                        ToastAdapter.bindToast(uhfDataLayout, "对时失败")
                     }
                 }
             } else {

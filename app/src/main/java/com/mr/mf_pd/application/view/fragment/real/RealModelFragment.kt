@@ -68,12 +68,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                     }
                 }
             }
-
-            override fun onReceiverValueChange() {
-                activity?.runOnUiThread {
-
-                }
-            }
         })
         viewModel.isSaveData?.observe(this, {
             if (it) {

@@ -11,6 +11,7 @@ import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import com.mr.mf_pd.application.adapter.GenericQuickAdapter
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.MainDataBinding
+import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.wifi.BaseWiFiManager
 import com.mr.mf_pd.application.manager.wifi.WiFiManager
@@ -27,6 +29,8 @@ import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.NumberUtils
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
@@ -38,6 +42,8 @@ import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AbsBaseActivity<MainDataBinding>(),
     OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {

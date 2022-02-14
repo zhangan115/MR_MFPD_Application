@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.utils.ByteUtil;
+import com.sito.tool.library.utils.ByteLibUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +23,17 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class SocketManager {
@@ -49,6 +56,8 @@ public class SocketManager {
     private List<LinkStateListener> linkStateListeners;
 
     private final Map<Byte, ReceiverCallback> callbackMap = new HashMap<>();
+    private final Map<Byte, Observable<byte[]>> sendDataObservableMap = new HashMap<>();
+    private final Map<Byte, ObservableEmitter<byte[]>> emitterMap = new HashMap<>();
 
     //执行请求任务的线程池
     private ExecutorService mRequestExecutor;
@@ -143,10 +152,11 @@ public class SocketManager {
             } else if (byteList.get(1) == CommandType.ReadSettingValue.getFunCode()) {
                 int length = byteList.get(2).intValue() * 4 + 5;
                 byteList.removeAll(handOut(byteList, length));
+            } else if (byteList.get(1) == CommandType.WriteValue.getFunCode()) {
+                byteList.removeAll(handOut(byteList, CommandType.WriteValue.getLength()));
             } else {
                 //byte数组中包含长度
-                byte[] l = new byte[]{byteList.get(3), byteList.get(4)};
-                int length = ByteUtil.getShort(l, 0) + 7;
+                int length = byteList.get(4).intValue() * 4 + 7;
                 byteList.removeAll(handOut(byteList, length));
             }
         }
@@ -169,8 +179,12 @@ public class SocketManager {
                 mPulseDataListener.onRead(sources);
             }
         } else {//其他数据
-            if (callbackMap.containsKey(sources[1])) {
-                Objects.requireNonNull(callbackMap.remove(sources[1])).onReceiver(sources);
+            if (emitterMap.containsKey(sources[1])) {
+                ObservableEmitter<byte[]> emitter = emitterMap.remove(sources[1]);
+                if (emitter != null) {
+                    emitter.onNext(sources);
+                    emitter.onComplete();
+                }
             }
         }
         return list;
@@ -226,21 +240,29 @@ public class SocketManager {
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
                     try {
+                        if (emitterMap.containsKey(cmdType.getFunCode())) {
+                            ObservableEmitter<byte[]> e = emitterMap.remove(cmdType.getFunCode());
+                            if (!e.isDisposed()) {
+                                e.onError(new Throwable("send command repeat"));
+                            }
+                        }
+                        emitterMap.put(cmdType.getFunCode(), emitter);
                         if (outputStream != null && socket != null && !socket.isClosed()) {
-                            emitter.onNext(data);
                             outputStream.write(data);
                             outputStream.flush();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         emitter.onError(e);
-                    } finally {
-                        emitter.onComplete();
                     }
                 })
+                .timeout(3, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(bytes -> {
+                    if (callback != null) {
+                        callback.onReceiver(bytes);
+                    }
+                }, Throwable::printStackTrace);
     }
 
     /**
