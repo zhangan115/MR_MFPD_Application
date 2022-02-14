@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.utils.StringUtils
 import kotlinx.android.synthetic.main.layout_gain_chart.view.*
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import kotlin.math.max
 import kotlin.math.min
@@ -54,9 +55,11 @@ class GainChartView : LinearLayout {
             val dataSet = LineDataSet(entries, "")
             initDataSet(dataSet)
             dataSets.add(dataSet)
-            num1.text = StringUtils.floatValueToStr(max)
-            num2.text = StringUtils.floatValueToStr(chartDataList.last())
-            num3.text = StringUtils.floatValueToStr(min)
+
+            num1.text = BigDecimal(max.toDouble()).stripTrailingZeros().toPlainString()
+            num2.text =
+                BigDecimal(chartDataList.last().toDouble()).stripTrailingZeros().toPlainString()
+            num3.text = BigDecimal(min.toDouble()).stripTrailingZeros().toPlainString()
         }
         return LineData(dataSets)
     }

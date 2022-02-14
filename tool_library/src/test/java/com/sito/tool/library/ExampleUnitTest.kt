@@ -26,12 +26,19 @@ class ExampleUnitTest {
                 )
             )
         )
-
-        val array = ByteLibUtil.intToByteArray(100)
+        val values = ByteArray(4)
+        values[0] = 0
+        values[1] = 0
+        values[2] = 0
+        values[3] = -126
+        val array = ByteLibUtil.intToByteArray(130)
 //        System.out.println(ByteLibUtil.getIntHeightByte(array.first()))
 //        System.out.println(ByteLibUtil.getIntLowByte(array.last()))
         System.out.println(ByteLibUtil.bytes2HexStr(array))
         System.out.println(Arrays.toString(array))
+
+        System.out.println(ByteLibUtil.getInt(values))
+
         assertEquals(4, 2 + 2)
 
 

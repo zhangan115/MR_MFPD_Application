@@ -7,6 +7,8 @@ import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.utils.ByteUtil;
 import com.sito.tool.library.utils.ByteLibUtil;
 
+import org.checkerframework.checker.index.qual.LengthOf;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,8 +57,6 @@ public class SocketManager {
 
     private List<LinkStateListener> linkStateListeners;
 
-    private final Map<Byte, ReceiverCallback> callbackMap = new HashMap<>();
-    private final Map<Byte, Observable<byte[]>> sendDataObservableMap = new HashMap<>();
     private final Map<Byte, ObservableEmitter<byte[]>> emitterMap = new HashMap<>();
 
     //执行请求任务的线程池
@@ -106,6 +106,7 @@ public class SocketManager {
                         e.printStackTrace();
                     }
                 }
+                Log.d("zhangan", "读取完成");
             } catch (IOException e) {
                 e.printStackTrace();
                 socket = null;
@@ -154,6 +155,13 @@ public class SocketManager {
                 byteList.removeAll(handOut(byteList, length));
             } else if (byteList.get(1) == CommandType.WriteValue.getFunCode()) {
                 byteList.removeAll(handOut(byteList, CommandType.WriteValue.getLength()));
+            } else if (byteList.get(1) == CommandType.RealData.getFunCode()) {
+                byte[] lengthBytes = new byte[]{0x00, 0x00, byteList.get(3), byteList.get(4)};
+                int length = ByteLibUtil.getInt(lengthBytes) * 6 + 7;
+                if (ByteLibUtil.getInt(lengthBytes) > Constants.PRPS_COLUMN) {
+                    Log.d("zhangan", String.valueOf(length));
+                }
+                byteList.removeAll(handOut(byteList, length));
             } else {
                 //byte数组中包含长度
                 int length = byteList.get(4).intValue() * 4 + 7;
@@ -186,6 +194,7 @@ public class SocketManager {
                     emitter.onComplete();
                 }
             }
+            Log.d("zhangan", "接收数据:" + Bytes.asList(sources).toString());
         }
         return list;
     }
@@ -203,7 +212,7 @@ public class SocketManager {
             mRequestExecutor.shutdownNow();
             mRequestExecutor = null;
         }
-        callbackMap.clear();
+        emitterMap.clear();
     }
 
     /**
@@ -234,29 +243,25 @@ public class SocketManager {
      * @param callback 回调
      */
     public synchronized Disposable sendData(byte[] data, CommandType cmdType, ReceiverCallback callback) {
-        if (callback != null) {
-            this.callbackMap.put(cmdType.getFunCode(), callback);
-        }
         return Observable.create((ObservableOnSubscribe<byte[]>)
                 emitter -> {
                     try {
-                        if (emitterMap.containsKey(cmdType.getFunCode())) {
-                            ObservableEmitter<byte[]> e = emitterMap.remove(cmdType.getFunCode());
-                            if (!e.isDisposed()) {
-                                e.onError(new Throwable("send command repeat"));
-                            }
-                        }
+                        emitterMap.remove(cmdType.getFunCode());
                         emitterMap.put(cmdType.getFunCode(), emitter);
                         if (outputStream != null && socket != null && !socket.isClosed()) {
                             outputStream.write(data);
+                            Log.d("zhangan", "发送数据:" + Bytes.asList(data).toString());
                             outputStream.flush();
+                        } else {
+                            Log.d("zhangan", "发送失败");
+                            emitter.onComplete();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         emitter.onError(e);
                     }
                 })
-                .timeout(3, TimeUnit.SECONDS)
+                .timeout(5, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(bytes -> {
                     if (callback != null) {

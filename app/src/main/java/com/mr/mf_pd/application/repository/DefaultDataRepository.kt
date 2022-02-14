@@ -16,6 +16,7 @@ import com.mr.mf_pd.application.utils.StringUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import org.greenrobot.eventbus.Logger
 import java.io.File
+import java.math.BigDecimal
 import java.util.*
 import java.util.logging.Level
 import kotlin.collections.ArrayList
@@ -28,7 +29,7 @@ class DefaultDataRepository : DataRepository {
     private var tempDir: File? = null
     private lateinit var mCheckType: CheckType
     var checkParamsBean: CheckParamsBean? = null
-    var receiverCount = 0
+    var receiverCount = 1
     var mcCount = 0
     var maxValue = 0f
     var gainFloatList = ArrayList<Float>()
@@ -96,7 +97,7 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun cleanData() {
-        receiverCount = 0
+        receiverCount = 1
         mcCount = 0
         gainFloatList.clear()
         phaseData.clear()
@@ -136,7 +137,7 @@ class DefaultDataRepository : DataRepository {
     private val realDataListener = object : ReadListener(0) {
         override fun onRead(source: ByteArray) {
             val startTime = System.currentTimeMillis()
-            //  将之前的数据全部存储到缓冲中，下次获取数据直接展示，避免数据积累
+
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
             phaseData.clear()
@@ -175,20 +176,23 @@ class DefaultDataRepository : DataRepository {
             }
             phaseData.add(newPointList)
             realPointData.add(newPointList)
-            gainFloatList.add(maxValue)
-
-            if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
-                gainFloatList.removeFirst()
+            if (receiverCount % 5 == 0) {
+                gainFloatList.add(maxValue)
+                if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
+                    gainFloatList.removeFirst()
+                }
+                gainValue.postValue(gainFloatList)
             }
-            gainValue.postValue(gainFloatList)
             if (receiverCount == 50) { //一秒钟刷新一次数据
-                checkParamsBean?.fzAttr = "${StringUtils.floatValueToStr(maxValue)}dBm"
+                Log.d("zhangan",newValueList.toString())
+                val str = BigDecimal(maxValue.toDouble()).stripTrailingZeros().toPlainString()
+                checkParamsBean?.fzAttr = "${str}dBm"
                 checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
                 mCheckType.checkParams.postValue(checkParamsBean)
-                receiverCount = 0
+                receiverCount = 1
                 mcCount = 0
-            } else {
-                receiverCount++
+            }  else {
+                ++receiverCount
             }
             realDataCallback?.onRealDataChanged()
             val endTime = System.currentTimeMillis()

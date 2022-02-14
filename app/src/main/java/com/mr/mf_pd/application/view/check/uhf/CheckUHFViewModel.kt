@@ -24,7 +24,8 @@ class CheckUHFViewModel(
     fun start(checkType: CheckType) {
         settingBean = settingRepository.getSettingData(checkType)
         dataRepository.setCheckType(checkType)
-        readUHFValue(checkType)
+        dataRepository.switchPassageway(checkType.type)
+//        readUHFValue(checkType)
     }
 
     private fun readUHFValue(checkType: CheckType) {
@@ -40,7 +41,7 @@ class CheckUHFViewModel(
                         SocketManager.getInstance()
                             .sendData(readYcCommand, CommandType.ReadYcData) { ycBytes ->
                                 dealYcValue(ycBytes)
-                                dataRepository.switchPassageway(checkType.type)
+//                                dataRepository.switchPassageway(checkType.type)
                             })
                 })
     }
@@ -48,7 +49,7 @@ class CheckUHFViewModel(
     private fun dealSettingValue(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
 
-        settingBean?.limitValue =  valueList.last().toInt()
+        settingBean?.limitValue = valueList.last().toInt()
     }
 
     private fun dealYcValue(bytes: ByteArray) {

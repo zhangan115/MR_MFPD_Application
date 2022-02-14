@@ -251,4 +251,9 @@ public class ByteLibUtil {
         return (a & 0x0F);
     }
 
+    public static int getInt(byte[] bytes) {
+        return (0xff000000 & (bytes[0] << 24) | (0xff0000 & (bytes[1] << 16)) | (0xff00 & (bytes[2] << 8))
+                | (0xff & bytes[3]));
+    }
+
 }
