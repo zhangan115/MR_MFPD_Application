@@ -58,11 +58,17 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
             val str = viewModel.checkType.settingBean.minValue + step * i
             yList.add(str.toString())
         }
-        yList.reverse()
         pointChartsRenderer = PointChartsRenderer(this.requireContext(), yList)
         surfaceView1.setRenderer(pointChartsRenderer)
-        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
 
+        pointChartsRenderer?.getPrpsValueCallback =
+            object : PrPsChartsRenderer.GetPrpsValueCallback {
+                override fun getData() {
+                    viewModel.getPhaseData().forEach {
+                        pointChartsRenderer?.addPrpsData(it)
+                    }
+                }
+            }
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -104,19 +110,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.setRealCallback(object : RealDataCallback {
-
-            override fun onRealDataChanged() {
-                viewModel.getPhaseData().forEach {
-                    pointChartsRenderer?.addPrpsData(it)
-                }
-                activity?.runOnUiThread {
-                    if (surfaceView1!=null){
-                        surfaceView1.requestRender()
-                    }
-                }
-            }
-        })
+        viewModel.cleanCurrentData()
     }
 
     override fun onPause() {

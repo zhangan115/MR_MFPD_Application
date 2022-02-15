@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.view.fragment.real
 
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -8,12 +7,11 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_real.*
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
@@ -49,26 +47,20 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer = PrPsChartsRenderer(this.requireContext())
         surfaceView1.setRenderer(prPsChartsRenderer)
-        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-        viewModel.setRealCallback(object : RealDataCallback {
-
-            override fun onRealDataChanged() {
-                viewModel.getPhaseData().forEach {
-                    prPsChartsRenderer?.addPrpsData(it)
-                }
-                viewModel.addHUfData(object : DataRepository.DataCallback {
-
-                    override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
-                        prPsChartsRenderer?.addPrpsData(prPsCube)
+        prPsChartsRenderer?.getPrpsValueCallback =
+            object : PrPsChartsRenderer.GetPrpsValueCallback {
+                override fun getData() {
+                    viewModel.getPhaseData().forEach {
+                        prPsChartsRenderer?.addPrpsData(it)
                     }
-                })
-                activity?.runOnUiThread {
-                    if (surfaceView1 != null) {
-                        surfaceView1.requestRender()
-                    }
+                    viewModel.addHUfData(object : DataRepository.DataCallback {
+
+                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
+                            prPsChartsRenderer?.addPrpsData(prPsCube)
+                        }
+                    })
                 }
             }
-        })
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -111,6 +103,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
+        viewModel.cleanCurrentData()
     }
 
     override fun onPause() {

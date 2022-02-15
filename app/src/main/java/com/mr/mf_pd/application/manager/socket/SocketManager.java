@@ -3,8 +3,10 @@ package com.mr.mf_pd.application.manager.socket;
 import android.util.Log;
 
 import com.google.common.primitives.Bytes;
+import com.mr.mf_pd.application.app.MRApplication;
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.utils.ByteUtil;
+import com.mr.mf_pd.application.utils.DateUtil;
 import com.sito.tool.library.utils.ByteLibUtil;
 
 import org.checkerframework.checker.index.qual.LengthOf;
@@ -83,7 +85,7 @@ public class SocketManager {
         @Override
         public void run() {
             try {
-                InetSocketAddress address = new InetSocketAddress(Constants.host, Constants.port);
+                InetSocketAddress address = new InetSocketAddress(MRApplication.appHost(), MRApplication.port());
                 socket = new Socket();
                 socket.connect(address, 2000);
                 socket.setKeepAlive(true);
@@ -100,6 +102,7 @@ public class SocketManager {
                     try {
                         byte[] sources = new byte[size];
                         System.arraycopy(buf, 0, sources, 0, size);
+//                        Log.d("zhangan", "接收内容 " + Bytes.asList(sources).toString());
                         byteList.addAll(Bytes.asList(sources));
                         dealStickyBytes(byteList);
                     } catch (Exception e) {
@@ -155,20 +158,24 @@ public class SocketManager {
                 byteList.removeAll(handOut(byteList, length));
             } else if (byteList.get(1) == CommandType.WriteValue.getFunCode()) {
                 byteList.removeAll(handOut(byteList, CommandType.WriteValue.getLength()));
+            } else if (byteList.get(1) == CommandType.FdData.getFunCode()) {
+                byte[] lengthBytes = new byte[]{0x00, 0x00, byteList.get(2), byteList.get(3)};
+                int length = ByteLibUtil.getInt(lengthBytes) + 2;
+                byteList.removeAll(handOut(byteList, length));
             } else if (byteList.get(1) == CommandType.RealData.getFunCode()) {
                 byte[] lengthBytes = new byte[]{0x00, 0x00, byteList.get(3), byteList.get(4)};
                 int length = ByteLibUtil.getInt(lengthBytes) * 6 + 7;
-                if (ByteLibUtil.getInt(lengthBytes) > Constants.PRPS_COLUMN) {
-                    Log.d("zhangan", String.valueOf(length));
-                }
                 byteList.removeAll(handOut(byteList, length));
             } else {
                 //byte数组中包含长度
                 int length = byteList.get(4).intValue() * 4 + 7;
                 byteList.removeAll(handOut(byteList, length));
             }
+        } else {
+            byteList.clear();
         }
         if (byteList.size() > 0) {
+            Log.d("zhangan", "分包处理的数据" + byteList.toString());
             dealStickyBytes(byteList);
         }
     }
@@ -186,6 +193,8 @@ public class SocketManager {
             if (mPulseDataListener != null) {
                 mPulseDataListener.onRead(sources);
             }
+        } else if (sources[1] == CommandType.FdData.getFunCode()) {//上送局部放电数据
+
         } else {//其他数据
             if (emitterMap.containsKey(sources[1])) {
                 ObservableEmitter<byte[]> emitter = emitterMap.remove(sources[1]);
@@ -194,8 +203,9 @@ public class SocketManager {
                     emitter.onComplete();
                 }
             }
-            Log.d("zhangan", "接收数据:" + Bytes.asList(sources).toString());
+//            Log.d("zhangan", "接收数据:" + Bytes.asList(sources).toString());
         }
+//        Log.d("zhangan", "处理数据:" + list.toString());
         return list;
     }
 

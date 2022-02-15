@@ -22,16 +22,12 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
         repository.realDataListener()
     }
 
-    fun setRealCallback(callback: RealDataCallback) {
-        repository.setRealDataCallback(callback)
-    }
-
     fun addHUfData(callback: DataRepository.DataCallback) {
         repository.addHufData(callback)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getPhaseData(checkType.type)
+        return repository.getPhaseData(1)
     }
 
     fun startSaveData(){

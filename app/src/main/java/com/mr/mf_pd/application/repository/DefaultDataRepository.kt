@@ -12,11 +12,11 @@ import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.utils.StringUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import org.greenrobot.eventbus.Logger
 import java.io.File
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.util.*
 import java.util.logging.Level
 import kotlin.collections.ArrayList
@@ -29,9 +29,9 @@ class DefaultDataRepository : DataRepository {
     private var tempDir: File? = null
     private lateinit var mCheckType: CheckType
     var checkParamsBean: CheckParamsBean? = null
-    var receiverCount = 1
+    var receiverCount = 0
     var mcCount = 0
-    var maxValue = 0f
+    var maxValue: Float? = null
     var gainFloatList = ArrayList<Float>()
 
     var gainValue: MutableLiveData<List<Float>> = MutableLiveData(ArrayList())
@@ -48,11 +48,11 @@ class DefaultDataRepository : DataRepository {
         val list = ArrayList<HashMap<Int, Float>>()
         if (chartType == 0) {
             if (phaseData.isNotEmpty()) {
-                list.add(phaseData.removeAt(0))
+                list.add(phaseData.removeFirst())
             }
         } else if (chartType == 1) {
             if (realPointData.isNotEmpty()) {
-                list.add(realPointData.removeAt(0))
+                list.add(realPointData.removeFirst())
             }
         }
         return list
@@ -97,7 +97,7 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun cleanData() {
-        receiverCount = 1
+        receiverCount = 0
         mcCount = 0
         gainFloatList.clear()
         phaseData.clear()
@@ -136,19 +136,14 @@ class DefaultDataRepository : DataRepository {
 
     private val realDataListener = object : ReadListener(0) {
         override fun onRead(source: ByteArray) {
-            val startTime = System.currentTimeMillis()
-
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
-            phaseData.clear()
-            realPointData.clear()
 
             val newValueList: ArrayList<Float?> = ArrayList()
             for (j in 0 until Constants.PRPS_COLUMN) {
                 newValueList.add(null)
             }
             val newPointList = HashMap<Int, Float>()
-
             for (i in 0 until (bytes.size / 6)) {
                 val values = ByteArray(6)
                 System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -157,48 +152,49 @@ class DefaultDataRepository : DataRepository {
                 val height = ByteArray(4)
                 System.arraycopy(values, 2, height, 0, 4)
                 val f = ByteUtil.getFloat(height)
-                maxValue = max(f, maxValue)
+                if (maxValue == null) {
+                    maxValue = f
+                } else {
+                    maxValue = max(f, maxValue!!)
+                }
                 //根据偏移量修改
 //                    var off = column - getCheckType().settingBean.xwPy
-//                    if (off < 0) {
-//                        off += 359
-//                    }
-                if (column < Constants.PRPS_COLUMN && column > 0) {
+                if (column < Constants.PRPS_COLUMN && column >= 0) {
                     newValueList[column] = f
                     newPointList[column] = f
+                } else {
+                    Log.d("zhangan", "数据相位异常：$column")
                 }
                 mcCount++
             }
-            val prPsCube = PrPsCubeList(newValueList)
-            realData.add(prPsCube)
+            phaseData.add(newPointList)
+            realPointData.add(newPointList)
             if (realData.size == Constants.PRPS_ROW) {
                 realData.removeFirst()
             }
-            phaseData.add(newPointList)
-            realPointData.add(newPointList)
+            realData.add(PrPsCubeList(newValueList))
             if (receiverCount % 5 == 0) {
-                gainFloatList.add(maxValue)
+                if (maxValue != null) {
+                    gainFloatList.add(maxValue!!)
+                }
                 if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
                     gainFloatList.removeFirst()
                 }
                 gainValue.postValue(gainFloatList)
             }
             if (receiverCount == 50) { //一秒钟刷新一次数据
-                Log.d("zhangan",newValueList.toString())
-                val str = BigDecimal(maxValue.toDouble()).stripTrailingZeros().toPlainString()
-                checkParamsBean?.fzAttr = "${str}dBm"
+                if (maxValue != null) {
+                    val df1 = DecimalFormat("0.00")
+                    checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
+                }
                 checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
                 mCheckType.checkParams.postValue(checkParamsBean)
-                receiverCount = 1
+                receiverCount = 0
                 mcCount = 0
-            }  else {
+            } else {
                 ++receiverCount
             }
             realDataCallback?.onRealDataChanged()
-            val endTime = System.currentTimeMillis()
-//            Log.d("zhangan", (endTime - startTime).toString())
         }
     }
-
-
 }

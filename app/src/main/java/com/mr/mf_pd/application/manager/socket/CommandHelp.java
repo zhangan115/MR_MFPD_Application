@@ -133,6 +133,21 @@ public class CommandHelp {
         return data;
     }
 
+    public static byte[] writeIntSettingValue(int passageway, int valuePosition, Integer value) {
+        byte b = (byte) passageway;
+
+        byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(value.floatValue()));
+
+        byte[] bytes = new byte[]{
+                0x01, 0x10, b, (byte) valuePosition, valueByte[0], valueByte[1], valueByte[2], valueByte[3]
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
     /**
      * 读取脉冲数据
      *

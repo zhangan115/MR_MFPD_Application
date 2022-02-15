@@ -9,4 +9,11 @@ interface SettingRepository {
 
     fun getSettingData(checkType: CheckType): SettingBean
 
+    fun getLinkIP(): String?
+
+    fun saveLinkIP(ip: String?)
+
+    fun getLinkPort(): String
+
+    fun saveLinkPort(ip: String?)
 }

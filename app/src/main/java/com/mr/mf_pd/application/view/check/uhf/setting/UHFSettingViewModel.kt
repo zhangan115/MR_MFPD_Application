@@ -1,9 +1,7 @@
 package com.mr.mf_pd.application.view.check.uhf.setting
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
@@ -11,14 +9,34 @@ import com.mr.mf_pd.application.manager.socket.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import org.checkerframework.checker.index.qual.LengthOf
-import kotlin.math.max
 
 class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
     lateinit var checkType: CheckType
+
+    //警戒门限
+    var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //过高门限
+    var overLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //告警门限
+    var alarmLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //最大幅值与平均值最小差值
+    var maxAverageValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //1秒放电周期最小值
+    var secondCycleMinValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //1秒最小放电次数
+    var secondDischargeMinCountStr: MutableLiveData<String> = MutableLiveData()
+
+    //噪声宽度门限
+    var noiseLimitStr: MutableLiveData<String> = MutableLiveData()
+
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
 
@@ -72,37 +90,29 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
-        limitValueStr.postValue(this.checkType.settingBean.limitValue.toString())
-        Log.d("zhangan",this.checkType.settingBean.limitValue.toString())
+        limitValueStr.postValue(settingBean.limitValue.toString())
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.type, 10)
+        SocketManager.getInstance()
+            .sendData(readSettingCommand, CommandType.ReadSettingValue) { settingBytes ->
+                dealSettingValue(settingBytes)
+            }
     }
 
-    fun toSave() {
-        val settingBean = checkType.settingBean
-        settingBean.xwTb = phaseModelInt.value!!
-        settingBean.pdJc = bandDetectionInt.value!!
-        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
-        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
-        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
-        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
-        settingBean.ljTime = totalTimeStr.value!!.toInt()
-        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
-        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
-        setting.toSaveSettingData(checkType)
-        limitValueStr.value?.let {
-            val value = it.toFloatOrNull()
-            if (value != null) {
-                writeValue(7,value)
-            }
-        }
-    }
-
-    private fun writeValue(position:Int,value:Float){
-        val writeCommand = CommandHelp.writeSettingValue(checkType.type, position, value)
-        SocketManager.getInstance().sendData(writeCommand, CommandType.WriteValue) {
-            if (it.contentEquals(writeCommand)) {
-                Log.d("zhangan", "写入输入成功")
-            }
+    private fun dealSettingValue(bytes: ByteArray) {
+        val valueList = splitBytesToValue(bytes)
+        if (valueList.size >= 10) {
+            jjLimitValueStr.postValue(valueList[0].toInt().toString())
+            overLimitValueStr.postValue(valueList[1].toInt().toString())
+            alarmLimitValueStr.postValue(valueList[2].toInt().toString())
+            maxAverageValueStr.postValue(valueList[3].toInt().toString())
+            secondCycleMinValueStr.postValue(valueList[4].toInt().toString())
+            secondDischargeMinCountStr.postValue(valueList[5].toInt().toString())
+            noiseLimitStr.postValue(valueList[6].toInt().toString())
+            limitValueStr.postValue(valueList[7].toInt().toString())
+            bandDetectionInt.postValue(valueList[8].toInt())
+            bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
+            phaseModelInt.postValue(valueList[9].toInt())
+            phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[9].toInt()])
         }
     }
 
@@ -119,9 +129,68 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
                 val f = ByteUtil.getFloat(value)
                 valueList.add(f)
             }
-            Log.d("zhangan", valueList.toString())
         }
         return valueList
+    }
+
+    fun toSave() {
+        toWriteSettingValue()
+        val settingBean = checkType.settingBean
+        settingBean.xwTb = phaseModelInt.value!!
+        settingBean.pdJc = bandDetectionInt.value!!
+        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
+        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+        settingBean.ljTime = totalTimeStr.value!!.toInt()
+        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
+        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+        setting.toSaveSettingData(checkType)
+    }
+
+    private fun toWriteSettingValue() {
+        jjLimitValueStr.value?.let {
+            writeValue(0, it.toFloat())
+        }
+        overLimitValueStr.value?.let {
+            writeValue(1, it.toFloat())
+        }
+        alarmLimitValueStr.value?.let {
+            writeValue(2, it.toFloat())
+        }
+        maxAverageValueStr.value?.let {
+            writeValue(3, it.toFloat())
+        }
+        secondCycleMinValueStr.value?.let {
+            writeValue(4, it.toFloat())
+        }
+        secondDischargeMinCountStr.value?.let {
+            writeValue(5, it.toFloat())
+        }
+        noiseLimitStr.value?.let {
+            writeValue(6, it.toFloat())
+        }
+        limitValueStr.value?.let {
+            writeValue(7, it.toFloat())
+        }
+        bandDetectionInt.let {
+            val value = it.value
+            if (value != null) {
+                writeValue(8, value.toFloat())
+            }
+        }
+        phaseModelInt.let {
+            val value = it.value
+            if (value != null) {
+                writeValue(9, value.toFloat())
+            }
+        }
+    }
+
+    private fun writeValue(position: Int, value: Float) {
+        val writeCommand = CommandHelp.writeSettingValue(checkType.type, position, value)
+        SocketManager.getInstance().sendData(writeCommand, CommandType.WriteValue, null)
     }
 
 }

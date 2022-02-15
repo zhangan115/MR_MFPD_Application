@@ -65,14 +65,19 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         SocketManager.getInstance().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
                 val timeBytes = CommandHelp.getTimeCommand()
-                SocketManager.getInstance().sendData(timeBytes,CommandType.SendTime) { bytes ->
+                SocketManager.getInstance().sendData(timeBytes, CommandType.SendTime) { bytes ->
                     if (Arrays.equals(timeBytes, bytes)) {
                         ToastAdapter.bindToast(uhfDataLayout, "对时成功")
+                        //解决不断上传的问题，对时成功后先关闭采集通道
+                        val close = CommandHelp.closePassageway()
+                        SocketManager.getInstance()
+                            .sendData(close, CommandType.SwitchPassageway, null)
                     } else {
                         ToastAdapter.bindToast(uhfDataLayout, "对时失败")
                     }
                 }
             } else {
+                ToastAdapter.bindToast(uhfDataLayout, "设备连接失败")
                 SocketManager.getInstance().releaseRequest()
             }
         }

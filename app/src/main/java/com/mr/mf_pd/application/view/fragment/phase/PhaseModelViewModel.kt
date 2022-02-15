@@ -27,12 +27,8 @@ class PhaseModelViewModel(
         repository.realDataListener()
     }
 
-    fun setRealCallback(callback:RealDataCallback) {
-        repository.setRealDataCallback(callback)
-    }
-
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getPhaseData(checkType.type)
+        return repository.getPhaseData(0)
     }
 
     fun startSaveData() {

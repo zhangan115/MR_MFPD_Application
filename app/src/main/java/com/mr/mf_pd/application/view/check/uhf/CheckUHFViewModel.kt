@@ -7,6 +7,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
@@ -21,16 +22,18 @@ class CheckUHFViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     private val disposableList = ArrayList<Disposable>()
     var settingBean: SettingBean? = null
+    var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
+
     fun start(checkType: CheckType) {
         settingBean = settingRepository.getSettingData(checkType)
+        checkParamsBean = checkType.checkParams
         dataRepository.setCheckType(checkType)
-        dataRepository.switchPassageway(checkType.type)
-//        readUHFValue(checkType)
+        readUHFValue(checkType)
     }
 
     private fun readUHFValue(checkType: CheckType) {
         //读取设置
-        val command = CommandHelp.readSettingValue(checkType.type, 8)
+        val command = CommandHelp.readSettingValue(checkType.type, 10)
         disposableList.add(
             SocketManager.getInstance()
                 .sendData(command, CommandType.ReadSettingValue) { settingBytes ->
@@ -41,20 +44,25 @@ class CheckUHFViewModel(
                         SocketManager.getInstance()
                             .sendData(readYcCommand, CommandType.ReadYcData) { ycBytes ->
                                 dealYcValue(ycBytes)
-//                                dataRepository.switchPassageway(checkType.type)
+                                dataRepository.switchPassageway(checkType.type)
                             })
                 })
     }
 
     private fun dealSettingValue(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
-
-        settingBean?.limitValue = valueList.last().toInt()
+        if (valueList.size >= 10) {
+            settingBean?.limitValue = valueList[7].toInt()
+        }
     }
 
     private fun dealYcValue(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
-        // TODO: 2/14/22
+        if (valueList.size >= 2) {
+            //频率
+            checkParamsBean?.value?.hzAttr = valueList[1].toString()
+            checkParamsBean?.postValue(checkParamsBean?.value)
+        }
     }
 
     private fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {
@@ -70,7 +78,6 @@ class CheckUHFViewModel(
                 val f = ByteUtil.getFloat(value)
                 valueList.add(f)
             }
-            Log.d("zhangan", valueList.toString())
         }
         return valueList
     }

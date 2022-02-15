@@ -22,14 +22,26 @@ class MRApplication : Application() {
     companion object {
         lateinit var instance: MRApplication
 
+        @JvmStatic
         fun appHost(): String {
             return SPHelper.readString(
                 instance,
                 ConstantStr.USER_INFO,
                 ConstantStr.APP_HOST,
-                ""
+                "192.168.3.199"
             )
         }
+
+        @JvmStatic
+        fun port(): Int {
+            return SPHelper.readInt(
+                instance,
+                ConstantStr.USER_INFO,
+                ConstantStr.APP_PORT,
+                8000
+            )
+        }
+
     }
 
     init {

@@ -51,4 +51,39 @@ class DefaultSettingRepository : SettingRepository {
         return settingBean
     }
 
+    override fun getLinkIP(): String? {
+        return SPHelper.readString(
+            MRApplication.instance,
+            ConstantStr.USER_INFO,
+            ConstantStr.APP_HOST,
+            "192.168.3.199"
+        )
+    }
+
+    override fun saveLinkIP(ip: String?) {
+        SPHelper.write(
+            MRApplication.instance, ConstantStr.USER_INFO,
+            ConstantStr.APP_HOST, ip
+        )
+    }
+
+    override fun getLinkPort(): String {
+        return SPHelper.readInt(
+            MRApplication.instance,
+            ConstantStr.USER_INFO,
+            ConstantStr.APP_PORT,
+            8000
+        ).toString()
+    }
+
+    override fun saveLinkPort(port: String?) {
+        val portIntValue = port?.toIntOrNull()
+        portIntValue?.let {
+            SPHelper.write(
+                MRApplication.instance, ConstantStr.USER_INFO,
+                ConstantStr.APP_PORT, it
+            )
+        }
+    }
+
 }

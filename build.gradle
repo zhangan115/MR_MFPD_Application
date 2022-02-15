@@ -9,9 +9,10 @@ buildscript {
         maven{
             url 'https://maven.aliyun.com/repository/google'
         }
-        maven { url "https://jitpack.io" }
+
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
@@ -23,12 +24,18 @@ buildscript {
 
 allprojects {
     repositories {
+        maven{
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven{
+            url 'https://maven.aliyun.com/repository/google'
+        }
         google()
+//        maven{
+//            url 'http://zhanganson.top:8081/nexus/content/groups/support/'
+//        }
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven{
-            url 'http://zhanganson.top:8081/nexus/content/groups/support/'
-        }
     }
 }
 

@@ -38,6 +38,7 @@ import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelViewMode
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelViewModel
 import com.mr.mf_pd.application.view.fragment.real.RealModelViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
+import com.mr.mf_pd.application.view.setting.SettingViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
 
 
@@ -92,6 +93,8 @@ class ViewModelFactory constructor(
                 TEVSettingViewModel(settingRepository)
             isAssignableFrom(ContinuityModelViewModel::class.java) ->
                 ContinuityModelViewModel(dataRepository)
+            isAssignableFrom(SettingViewModel::class.java) ->
+                SettingViewModel(settingRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

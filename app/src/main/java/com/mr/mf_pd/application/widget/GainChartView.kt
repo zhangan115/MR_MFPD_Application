@@ -9,7 +9,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.LineChartUtils
-import com.mr.mf_pd.application.utils.StringUtils
 import kotlinx.android.synthetic.main.layout_gain_chart.view.*
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -48,18 +47,17 @@ class GainChartView : LinearLayout {
             var max = chartDataList.first()
             var min = chartDataList.first()
             for (i in chartDataList.indices) {
-                entries.add(Entry(i.toFloat(), chartDataList[i]))
+                entries.add(Entry(i.toFloat(), -1 * chartDataList[i]))
                 min = min(min, chartDataList[i])
                 max = max(max, chartDataList[i])
             }
             val dataSet = LineDataSet(entries, "")
             initDataSet(dataSet)
             dataSets.add(dataSet)
-
-            num1.text = BigDecimal(max.toDouble()).stripTrailingZeros().toPlainString()
-            num2.text =
-                BigDecimal(chartDataList.last().toDouble()).stripTrailingZeros().toPlainString()
-            num3.text = BigDecimal(min.toDouble()).stripTrailingZeros().toPlainString()
+            val df1 = DecimalFormat("0.00")
+            num1.text = df1.format(max)
+            num2.text = df1.format(chartDataList.last())
+            num3.text = df1.format(min)
         }
         return LineData(dataSets)
     }

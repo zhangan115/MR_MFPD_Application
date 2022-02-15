@@ -11,6 +11,7 @@ interface ConstantStr {
         const val cancelVersion = "cancelVersion" //取消的版本升级
         const val USER_CONFIG_FILE = "user_config"
         const val APP_HOST = "app_host"
+        const val APP_PORT = "app_port"
         const val NEED_LOGIN = "need_login"
         const val PROMISE_READ = "promise_read"
         const val CURRENT_VERSION = "当前版本：V1.0"

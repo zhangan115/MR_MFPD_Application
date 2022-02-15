@@ -33,8 +33,6 @@ public class PrPsCubeList {
     public static final float bottomValue = -80.0f;
 
     //默认数据
-    public static ArrayList<Float> defaultValues = new ArrayList<>();
-    private int valueCount;
 
     public PrPsCubeList(ArrayList<Float> height) {
         appPrPsCubeList(height);

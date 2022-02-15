@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10
 
 class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     GLSurfaceView.Renderer {
-
+    var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
     companion object {
         var offsetXPointValueStart = 0.15f
         var offsetXPointValueEnd = 0.15f
@@ -82,6 +82,8 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         colorPointProgram.useProgram()
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
+
+        getPrpsValueCallback?.getData()
     }
 
     fun cleanData() {
