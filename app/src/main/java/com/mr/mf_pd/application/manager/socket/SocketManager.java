@@ -102,6 +102,7 @@ public class SocketManager {
                     try {
                         byte[] sources = new byte[size];
                         System.arraycopy(buf, 0, sources, 0, size);
+                        Log.d("zhangan", "接收长度 " + String.valueOf(size));
 //                        Log.d("zhangan", "接收内容 " + Bytes.asList(sources).toString());
                         byteList.addAll(Bytes.asList(sources));
                         dealStickyBytes(byteList);
@@ -109,7 +110,6 @@ public class SocketManager {
                         e.printStackTrace();
                     }
                 }
-                Log.d("zhangan", "读取完成");
             } catch (IOException e) {
                 e.printStackTrace();
                 socket = null;
@@ -165,11 +165,13 @@ public class SocketManager {
             } else if (byteList.get(1) == CommandType.RealData.getFunCode()) {
                 byte[] lengthBytes = new byte[]{0x00, 0x00, byteList.get(3), byteList.get(4)};
                 int length = ByteLibUtil.getInt(lengthBytes) * 6 + 7;
-                byteList.removeAll(handOut(byteList, length));
+                handOut(byteList, length);
+                byteList = byteList.subList(length, byteList.size()-1);
             } else {
                 //byte数组中包含长度
                 int length = byteList.get(4).intValue() * 4 + 7;
-                byteList.removeAll(handOut(byteList, length));
+                List<Byte> removeList = handOut(byteList, length);
+                byteList.removeAll(removeList);
             }
         } else {
             byteList.clear();
