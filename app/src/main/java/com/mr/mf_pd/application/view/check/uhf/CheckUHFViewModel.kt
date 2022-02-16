@@ -26,6 +26,7 @@ class CheckUHFViewModel(
     private val disposableList = ArrayList<Disposable>()
     var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
+    private var disposable: Disposable? = null
 
     fun start(checkType: CheckType) {
         settingBean = settingRepository.getSettingData(checkType)
@@ -107,5 +108,7 @@ class CheckUHFViewModel(
             }
         }
         disposableList.clear()
+        disposable?.dispose()
     }
+
 }

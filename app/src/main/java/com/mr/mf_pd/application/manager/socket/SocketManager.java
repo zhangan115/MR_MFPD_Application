@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -103,13 +104,10 @@ public class SocketManager {
                         if (size < buf.length) {
                             byteList.clear();
                         }
-                        long startTime = System.currentTimeMillis();
                         byte[] sources = new byte[size];
                         System.arraycopy(buf, 0, sources, 0, size);
                         byteList.addAll(Bytes.asList(sources));
                         dealStickyBytes(byteList);
-                        long endTime = System.currentTimeMillis();
-                        Log.d("zhangan", "耗时  " + (endTime - startTime) + "  接收数据长度  " + size);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -182,7 +180,6 @@ public class SocketManager {
             byteList.clear();
         }
         if (dealByteList.size() > 0) {
-            Log.d("zhangan", "分包处理的数据长度" + dealByteList.size());
             dealStickyBytes(dealByteList);
         } else {
             byteList.clear();
@@ -212,9 +209,7 @@ public class SocketManager {
                     emitter.onComplete();
                 }
             }
-//            Log.d("zhangan", "接收数据:" + Bytes.asList(sources).toString());
         }
-//        Log.d("zhangan", "处理数据:" + list.toString());
         return list;
     }
 
@@ -269,10 +264,8 @@ public class SocketManager {
                         emitterMap.put(cmdType.getFunCode(), emitter);
                         if (outputStream != null && socket != null && !socket.isClosed()) {
                             outputStream.write(data);
-                            Log.d("zhangan", "发送数据:" + Bytes.asList(data).toString());
                             outputStream.flush();
                         } else {
-                            Log.d("zhangan", "发送失败");
                             emitter.onComplete();
                         }
                     } catch (Exception e) {
@@ -301,22 +294,44 @@ public class SocketManager {
                     try {
                         if (outputStream != null && socket != null && !socket.isClosed()) {
                             outputStream.write(data);
-                            Log.d("zhangan", "发送数据:" + Bytes.asList(data).toString());
                             outputStream.flush();
                             emitter.onNext(true);
                         } else {
                             Log.d("zhangan", "发送失败");
+                            emitter.onNext(false);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         emitter.onError(e);
-                        Log.d("zhangan", "发送失败");
                     } finally {
                         emitter.onComplete();
                     }
                 })
-                .timeout(5, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe();
+    }
+
+    public synchronized Disposable sendRepeatData(byte[] data) {
+        return Observable.create((ObservableOnSubscribe<Boolean>)
+                emitter -> {
+                    try {
+                        if (outputStream != null && socket != null && !socket.isClosed()) {
+                            outputStream.write(data);
+                            outputStream.flush();
+                            emitter.onNext(true);
+                        } else {
+                            Log.d("zhangan", "发送失败");
+                            emitter.onNext(false);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        emitter.onError(e);
+                    } finally {
+                        emitter.onComplete();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .repeatWhen(objectObservable -> objectObservable.delay(10, TimeUnit.SECONDS))
                 .observeOn(AndroidSchedulers.mainThread()).subscribe();
     }
 
