@@ -1,9 +1,9 @@
 package com.mr.mf_pd.application.view.check.uhf
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.CommandHelp
 import com.mr.mf_pd.application.manager.socket.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
@@ -12,6 +12,9 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import com.mr.mf_pd.application.view.opengl.`object`.PrpsPointList
 import io.reactivex.disposables.Disposable
 
 class CheckUHFViewModel(
@@ -26,6 +29,16 @@ class CheckUHFViewModel(
 
     fun start(checkType: CheckType) {
         settingBean = settingRepository.getSettingData(checkType)
+        settingBean?.let {
+            PrpsPoint2DList.maxValue = it.maxValue.toFloat()
+            PrpsPoint2DList.minValue = it.minValue.toFloat()
+
+            PrpsPointList.maxValue = it.maxValue.toFloat()
+            PrpsPointList.minValue = it.minValue.toFloat()
+
+            PrPsCubeList.maxValue = it.maxValue.toFloat()
+            PrPsCubeList.minValue = it.minValue.toFloat()
+        }
         checkParamsBean = checkType.checkParams
         dataRepository.setCheckType(checkType)
         readUHFValue(checkType)
@@ -53,6 +66,9 @@ class CheckUHFViewModel(
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 10) {
             settingBean?.limitValue = valueList[7].toInt()
+            checkParamsBean?.value?.frequencyBandAttr = Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+            checkParamsBean?.postValue(checkParamsBean?.value)
         }
     }
 

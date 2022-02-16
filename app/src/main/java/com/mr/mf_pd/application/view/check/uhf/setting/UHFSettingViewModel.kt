@@ -149,48 +149,35 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         setting.toSaveSettingData(checkType)
     }
 
+    val values = ArrayList<Float>()
     private fun toWriteSettingValue() {
-        jjLimitValueStr.value?.let {
-            writeValue(0, it.toFloat())
-        }
-        overLimitValueStr.value?.let {
-            writeValue(1, it.toFloat())
-        }
-        alarmLimitValueStr.value?.let {
-            writeValue(2, it.toFloat())
-        }
-        maxAverageValueStr.value?.let {
-            writeValue(3, it.toFloat())
-        }
-        secondCycleMinValueStr.value?.let {
-            writeValue(4, it.toFloat())
-        }
-        secondDischargeMinCountStr.value?.let {
-            writeValue(5, it.toFloat())
-        }
-        noiseLimitStr.value?.let {
-            writeValue(6, it.toFloat())
-        }
-        limitValueStr.value?.let {
-            writeValue(7, it.toFloat())
-        }
-        bandDetectionInt.let {
-            val value = it.value
-            if (value != null) {
-                writeValue(8, value.toFloat())
-            }
-        }
-        phaseModelInt.let {
-            val value = it.value
-            if (value != null) {
-                writeValue(9, value.toFloat())
-            }
+        values.clear()
+        saveDataToList(jjLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(overLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(alarmLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(maxAverageValueStr.value?.toFloatOrNull())
+        saveDataToList(secondCycleMinValueStr.value?.toFloatOrNull())
+        saveDataToList(secondDischargeMinCountStr.value?.toFloatOrNull())
+        saveDataToList(noiseLimitStr.value?.toFloatOrNull())
+        saveDataToList(limitValueStr.value?.toFloatOrNull())
+        saveDataToList(bandDetectionInt.value?.toFloat())
+        saveDataToList(phaseModelInt.value?.toFloat())
+        if (values.size == 10) {
+            writeValue()
         }
     }
 
-    private fun writeValue(position: Int, value: Float) {
-        val writeCommand = CommandHelp.writeSettingValue(checkType.type, position, value)
-        SocketManager.getInstance().sendData(writeCommand, CommandType.WriteValue, null)
+    private fun saveDataToList(float: Float?) {
+        if (float == null) {
+            values.add(0f)
+        } else {
+            values.add(float)
+        }
+    }
+
+    private fun writeValue() {
+        val writeCommand = CommandHelp.writeSettingValue(checkType.type, values)
+        SocketManager.getInstance().sendData(writeCommand)
     }
 
 }

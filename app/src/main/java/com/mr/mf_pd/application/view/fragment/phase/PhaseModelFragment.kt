@@ -1,22 +1,18 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
-import android.opengl.GLSurfaceView
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
-import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
@@ -58,6 +54,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
             val str = viewModel.checkType.settingBean.minValue + step * i
             yList.add(str.toString())
         }
+        yList.reverse()
         pointChartsRenderer = PointChartsRenderer(this.requireContext(), yList)
         surfaceView1.setRenderer(pointChartsRenderer)
 

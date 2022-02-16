@@ -100,12 +100,16 @@ public class SocketManager {
                 int size;
                 while ((size = inputStream.read(buf)) != -1) {
                     try {
+                        if (size < buf.length) {
+                            byteList.clear();
+                        }
+                        long startTime = System.currentTimeMillis();
                         byte[] sources = new byte[size];
                         System.arraycopy(buf, 0, sources, 0, size);
-                        Log.d("zhangan", "接收长度 " + String.valueOf(size));
-//                        Log.d("zhangan", "接收内容 " + Bytes.asList(sources).toString());
                         byteList.addAll(Bytes.asList(sources));
                         dealStickyBytes(byteList);
+                        long endTime = System.currentTimeMillis();
+                        Log.d("zhangan", "耗时  " + (endTime - startTime) + "  接收数据长度  " + size);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -113,9 +117,6 @@ public class SocketManager {
             } catch (IOException e) {
                 e.printStackTrace();
                 socket = null;
-                for (int i = 0; i < linkStateListeners.size(); i++) {
-                    linkStateListeners.get(i).onLinkState(Constants.LINK_FAIL);
-                }
             } finally {
                 try {
                     isConnected = false;
@@ -127,6 +128,9 @@ public class SocketManager {
                     }
                     if (socket != null) {
                         socket.close();
+                    }
+                    for (int i = 0; i < linkStateListeners.size(); i++) {
+                        linkStateListeners.get(i).onLinkState(Constants.LINK_FAIL);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -140,7 +144,8 @@ public class SocketManager {
      * @param byteList 字节集合
      */
     private void dealStickyBytes(List<Byte> byteList) {
-        if (byteList.size() > 3 && byteList.get(0) == 1) {
+        List<Byte> dealByteList = new ArrayList<>();
+        if (byteList.size() > 3 && byteList.get(0) == DEVICE_NO) {
             //对定长的数据进行单独处理
             if (byteList.get(1) == CommandType.SendTime.getFunCode()) {
                 if (byteList.size() >= CommandType.SendTime.getLength()) {
@@ -166,7 +171,7 @@ public class SocketManager {
                 byte[] lengthBytes = new byte[]{0x00, 0x00, byteList.get(3), byteList.get(4)};
                 int length = ByteLibUtil.getInt(lengthBytes) * 6 + 7;
                 handOut(byteList, length);
-                byteList = byteList.subList(length, byteList.size()-1);
+                dealByteList = byteList.subList(length, byteList.size());
             } else {
                 //byte数组中包含长度
                 int length = byteList.get(4).intValue() * 4 + 7;
@@ -176,9 +181,11 @@ public class SocketManager {
         } else {
             byteList.clear();
         }
-        if (byteList.size() > 0) {
-            Log.d("zhangan", "分包处理的数据" + byteList.toString());
-            dealStickyBytes(byteList);
+        if (dealByteList.size() > 0) {
+            Log.d("zhangan", "分包处理的数据长度" + dealByteList.size());
+            dealStickyBytes(dealByteList);
+        } else {
+            byteList.clear();
         }
     }
 
@@ -280,6 +287,37 @@ public class SocketManager {
                         callback.onReceiver(bytes);
                     }
                 }, Throwable::printStackTrace);
+    }
+
+    /**
+     * 无需返回的发送数据
+     *
+     * @param data 数据
+     * @return 订阅
+     */
+    public synchronized Disposable sendData(byte[] data) {
+        return Observable.create((ObservableOnSubscribe<Boolean>)
+                emitter -> {
+                    try {
+                        if (outputStream != null && socket != null && !socket.isClosed()) {
+                            outputStream.write(data);
+                            Log.d("zhangan", "发送数据:" + Bytes.asList(data).toString());
+                            outputStream.flush();
+                            emitter.onNext(true);
+                        } else {
+                            Log.d("zhangan", "发送失败");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        emitter.onError(e);
+                        Log.d("zhangan", "发送失败");
+                    } finally {
+                        emitter.onComplete();
+                    }
+                })
+                .timeout(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe();
     }
 
     /**

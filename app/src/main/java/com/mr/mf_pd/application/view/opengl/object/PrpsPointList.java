@@ -23,7 +23,8 @@ public class PrpsPointList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-    public static final float bottomValue = -80.0f;
+    public static float minValue = -80.0f;
+    public static float maxValue = -20.0f;
 
     private Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
@@ -34,9 +35,9 @@ public class PrpsPointList {
             + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
     private short[] indices;
 
-    private List<Float> color1 = new ArrayList<>();
-    private List<Float> color2 = new ArrayList<>();
-    private List<Float> color3 = new ArrayList<>();
+    private final List<Float> color1 = new ArrayList<>();
+    private final List<Float> color2 = new ArrayList<>();
+    private final List<Float> color3 = new ArrayList<>();
 
     public PrpsPointList() {
         color1.add(1f);
@@ -82,17 +83,18 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zTopPosition = 1 - (entry2.getKey() / (bottomValue / 2));
+//                float zTopPosition = 1 - (entry2.getKey() / (bottomValue / 2));
+                float  zTopPosition = 0+ (entry2.getKey() - minValue) / (maxValue - minValue) * 2;
                 float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(1f);
                 vertexPointList.add(zTopPosition);
                 if (entry2.getValue() < 10) {
-                    colorList.addAll(color1);
+                    colorList.addAll(color3);
                 } else if (entry2.getValue() >= 10 && entry2.getValue() <= 20) {
                     colorList.addAll(color2);
                 } else {
-                    colorList.addAll(color3);
+                    colorList.addAll(color1);
                 }
                 count++;
             }

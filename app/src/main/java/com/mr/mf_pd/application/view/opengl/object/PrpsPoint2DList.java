@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.opengl.object;
 
 import android.opengl.GLES30;
+import android.util.Log;
 
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram;
@@ -24,7 +25,8 @@ public class PrpsPoint2DList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-    public static final float bottomValue = -80.0f;
+    public static float minValue = -80.0f;
+    public static float maxValue = -20.0f;
 
     //保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();
@@ -51,6 +53,7 @@ public class PrpsPoint2DList {
         color3.add(0f);
         color3.add(1f);
     }
+
     /**
      * 增加数据
      *
@@ -83,17 +86,17 @@ public class PrpsPoint2DList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zY =  startY  + (entry2.getKey() / (bottomValue / h));
+                float zY = startY + (entry2.getKey() - minValue) / (maxValue - minValue) * h;
                 float startX = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart() + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(zY);
                 vertexPointList.add(0f);
                 if (entry2.getValue() < 10) {
-                    colorList.addAll(color1);
+                    colorList.addAll(color3);
                 } else if (entry2.getValue() >= 10 && entry2.getValue() <= 20) {
                     colorList.addAll(color2);
                 } else {
-                    colorList.addAll(color3);
+                    colorList.addAll(color1);
                 }
                 count++;
             }

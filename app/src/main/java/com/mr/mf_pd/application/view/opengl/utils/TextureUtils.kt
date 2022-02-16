@@ -96,17 +96,17 @@ object TextureUtils {
         textMaps.entries.forEach {
             when (it.key) {
                 Constants.KEY_UNIT -> {
-                    canvas.drawText(it.value[0], 10f, 50f, p)
+                    canvas.drawText(it.value[0], 10f, 30f, p)
                 }
                 Constants.KEY_X_TEXT -> {
                     for (i in 0 until it.value.size) {
                         val rect = Rect()
                         val start = 0.15f * width / 2
-                        val step = width * 0.925f / it.value.size
+                        val step = height * 17 / 20 / (it.value.size -1)
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
                         canvas.drawText(
                             it.value[i],
-                            (i * step + start).toFloat(),
+                            (i * step + start),
                             height - (rect.height()).toFloat(),
                             p
                         )
@@ -115,9 +115,10 @@ object TextureUtils {
                 Constants.KEY_Y_TEXT -> {
                     for (i in 0 until it.value.size) {
                         val rect = Rect()
-                        val step = height / it.value.size
+                        val start = 0.15f * height / 2
+                        val step = height * 17 / 20 / (it.value.size -1)
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
-                        canvas.drawText(it.value[i], 15f, (step * i).toFloat(), p)
+                        canvas.drawText(it.value[i], 15f, (step * i + start), p)
                     }
                 }
             }

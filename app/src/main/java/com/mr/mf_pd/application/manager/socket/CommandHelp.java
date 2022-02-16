@@ -1,11 +1,14 @@
 package com.mr.mf_pd.application.manager.socket;
 
+import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.model.SettingBean;
 import com.mr.mf_pd.application.utils.ByteUtil;
 import com.sito.tool.library.utils.ByteLibUtil;
 import com.sito.tool.library.utils.NumberLibUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * 命令类
@@ -133,14 +136,24 @@ public class CommandHelp {
         return data;
     }
 
-    public static byte[] writeIntSettingValue(int passageway, int valuePosition, Integer value) {
+    /**
+     * 写入数据
+     *
+     * @param passageway 通道号
+     * @param value      写入的数值
+     * @return 命令
+     */
+    public static byte[] writeSettingValue(int passageway, ArrayList<Float> value) {
         byte b = (byte) passageway;
-
-        byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(value.floatValue()));
-
-        byte[] bytes = new byte[]{
-                0x01, 0x10, b, (byte) valuePosition, valueByte[0], valueByte[1], valueByte[2], valueByte[3]
-        };
+        List<Byte> byteList = new ArrayList<>(Bytes.asList(new byte[]{0x01, 0x10}));
+        byte size = (byte) (value.size() * 4 + 1);
+        byteList.addAll(Bytes.asList(size));
+        byteList.addAll(Bytes.asList(b));
+        for (Float f : value) {
+            byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(f));
+            byteList.addAll(Bytes.asList(valueByte));
+        }
+        byte[] bytes = Bytes.toArray(byteList);
         byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);

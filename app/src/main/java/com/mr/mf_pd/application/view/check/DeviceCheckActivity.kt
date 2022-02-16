@@ -77,7 +77,9 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
                     }
                 }
             } else {
-                ToastAdapter.bindToast(uhfDataLayout, "设备连接失败")
+                runOnUiThread {
+                    ToastAdapter.bindToast(uhfDataLayout, "设备连接失败")
+                }
                 SocketManager.getInstance().releaseRequest()
             }
         }

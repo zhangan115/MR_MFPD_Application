@@ -13,6 +13,7 @@ import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
 import org.greenrobot.eventbus.Logger
 import java.io.File
 import java.math.BigDecimal
@@ -22,6 +23,7 @@ import java.util.logging.Level
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
+import kotlin.math.min
 
 class DefaultDataRepository : DataRepository {
 
@@ -32,6 +34,7 @@ class DefaultDataRepository : DataRepository {
     var receiverCount = 0
     var mcCount = 0
     var maxValue: Float? = null
+    var minValue: Float? = null
     var gainFloatList = ArrayList<Float>()
 
     var gainValue: MutableLiveData<List<Float>> = MutableLiveData(ArrayList())
@@ -152,16 +155,44 @@ class DefaultDataRepository : DataRepository {
                 val height = ByteArray(4)
                 System.arraycopy(values, 2, height, 0, 4)
                 val f = ByteUtil.getFloat(height)
-                if (maxValue == null) {
-                    maxValue = f
+                var value = f
+                maxValue = if (maxValue == null) {
+                    f
                 } else {
-                    maxValue = max(f, maxValue!!)
+                    max(f, maxValue!!)
                 }
-                //根据偏移量修改
-//                    var off = column - getCheckType().settingBean.xwPy
-                if (column < Constants.PRPS_COLUMN && column >= 0) {
-                    newValueList[column] = f
-                    newPointList[column] = f
+                minValue = if (minValue == null) {
+                    f
+                } else {
+                    min(f, minValue!!)
+                }
+                //根据设置处理数据
+                val setting = getCheckType().settingBean
+                //处理固定尺度
+                if (setting.gdCd == 1) {
+                    if (f > setting.maxValue) {
+                        value = setting.maxValue.toFloat()
+                    } else if (f < setting.minValue) {
+                        value = setting.minValue.toFloat()
+                    }
+                }else{
+
+                }
+                //处理偏移量
+                val py = setting.xwPy
+                val off: Int = if (py in 1..359) {
+                    val pyValue = (py / 3.6f).toInt()
+                    if (column + pyValue > 99) {
+                        column + pyValue - 100
+                    } else {
+                        column + pyValue
+                    }
+                } else {
+                    column
+                }
+                if (off < Constants.PRPS_COLUMN && off >= 0) {
+                    newValueList[off] = value
+                    newPointList[off] = value
                 } else {
                     Log.d("zhangan", "数据相位异常：$column")
                 }

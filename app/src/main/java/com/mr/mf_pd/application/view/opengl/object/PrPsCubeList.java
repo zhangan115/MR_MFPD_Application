@@ -19,6 +19,8 @@ public class PrPsCubeList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
+    public static float minValue = -80.0f;
+    public static float maxValue = -20.0f;
 
     private ArrayList<Float> values;
     private PrPsColorPointShaderProgram colorProgram;
@@ -29,8 +31,6 @@ public class PrPsCubeList {
             + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
     public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
             + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
-
-    public static final float bottomValue = -80.0f;
 
     //默认数据
 
@@ -43,7 +43,8 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
+                zTopPosition= 0 + (values.get(i)- minValue) / (maxValue - minValue) * 2;
+//                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
@@ -78,7 +79,8 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
+                zTopPosition= 0 + (values.get(i)- minValue) / (maxValue - minValue) * 2;
+//                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
             float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
             float startY = -1f;
