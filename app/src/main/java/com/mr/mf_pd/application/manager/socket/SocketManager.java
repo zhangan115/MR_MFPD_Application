@@ -5,11 +5,7 @@ import android.util.Log;
 import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.app.MRApplication;
 import com.mr.mf_pd.application.common.Constants;
-import com.mr.mf_pd.application.utils.ByteUtil;
-import com.mr.mf_pd.application.utils.DateUtil;
 import com.sito.tool.library.utils.ByteLibUtil;
-
-import org.checkerframework.checker.index.qual.LengthOf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,13 +13,9 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -32,13 +24,8 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class SocketManager {
@@ -138,7 +125,7 @@ public class SocketManager {
     };
 
     /***
-     * 处理黏包
+     * 处理连包
      * @param byteList 字节集合
      */
     private void dealStickyBytes(List<Byte> byteList) {

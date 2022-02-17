@@ -67,7 +67,8 @@ class CheckUHFViewModel(
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 10) {
             settingBean?.limitValue = valueList[7].toInt()
-            checkParamsBean?.value?.frequencyBandAttr = Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+            checkParamsBean?.value?.frequencyBandAttr =
+                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
             checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
@@ -87,7 +88,6 @@ class CheckUHFViewModel(
         if (bytes.size > 2) {
             val length = bytes[2].toInt()
             val source = ByteArray(length * 4)
-
             System.arraycopy(bytes, 3, source, 0, bytes.size - 5)
             for (i in 0 until (source.size / 4)) {
                 val value = ByteArray(4)
@@ -108,7 +108,6 @@ class CheckUHFViewModel(
             }
         }
         disposableList.clear()
-        disposable?.dispose()
     }
 
 }
