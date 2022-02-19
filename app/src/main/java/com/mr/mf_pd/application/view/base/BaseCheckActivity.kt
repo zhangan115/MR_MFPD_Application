@@ -45,7 +45,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
             override fun onPageScrolled(
                 position: Int,
                 positionOffset: Float,
-                positionOffsetPixels: Int
+                positionOffsetPixels: Int,
             ) {
                 if (getScrollBlueBgView() != null && width != null) {
                     val layoutParams = RelativeLayout.LayoutParams(
@@ -117,7 +117,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
         if (currentIndex == tag) {
             return
         }
-        if (fragments[currentIndex].isSaving()) {
+        if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
             fragments[currentIndex].showToSaveDialog {
                 currentIndex = tag
                 getViewPager().setCurrentItem(tag, true)
@@ -129,7 +129,7 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
     }
 
     override fun onBackAction() {
-        if (fragments[currentIndex].isSaving()) {
+        if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
             fragments[currentIndex].showToSaveDialog {
                 super.onBackAction()
             }

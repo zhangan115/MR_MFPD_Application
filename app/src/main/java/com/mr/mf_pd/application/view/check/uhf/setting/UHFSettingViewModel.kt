@@ -4,9 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 
@@ -91,11 +92,23 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
         limitValueStr.postValue(settingBean.limitValue.toString())
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.type, 10)
-        SocketManager.getInstance()
-            .sendData(readSettingCommand, CommandType.ReadSettingValue) { settingBytes ->
-                dealSettingValue(settingBytes)
-            }
+        jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
+        overLimitValueStr.postValue(settingBean.overLimitValue.toString())
+        alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
+        maxAverageValueStr.postValue(settingBean.maxAverageValue.toString())
+        secondCycleMinValueStr.postValue(settingBean.secondCycleMinValue.toString())
+        secondDischargeMinCountStr.postValue(settingBean.secondDischargeMinCount.toString())
+        noiseLimitStr.postValue(settingBean.noiseLimit.toString())
+        SocketManager.get().readSettingDataCallback = readSettingDataCallback
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
+        SocketManager.get()
+            .sendData(readSettingCommand)
+    }
+
+    private val readSettingDataCallback = object : ReadSettingDataCallback {
+        override fun onData(source: ByteArray) {
+            dealSettingValue(source)
+        }
     }
 
     private fun dealSettingValue(bytes: ByteArray) {
@@ -146,6 +159,14 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         settingBean.ljTime = totalTimeStr.value!!.toInt()
         settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
         settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+        settingBean.limitValue = limitValueStr.value!!.toInt()
+        settingBean.jjLimitValue = jjLimitValueStr.value!!.toInt()
+        settingBean.overLimitValue = overLimitValueStr.value!!.toInt()
+        settingBean.alarmLimitValue = alarmLimitValueStr.value!!.toInt()
+        settingBean.maxAverageValue = maxAverageValueStr.value!!.toInt()
+        settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
+        settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
+        settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
         setting.toSaveSettingData(checkType)
     }
 
@@ -176,8 +197,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     }
 
     private fun writeValue() {
-        val writeCommand = CommandHelp.writeSettingValue(checkType.type, values)
-        SocketManager.getInstance().sendData(writeCommand)
+        val writeCommand = CommandHelp.writeSettingValue(checkType.passageway, values)
+        SocketManager.get().sendData(writeCommand)
     }
 
 }

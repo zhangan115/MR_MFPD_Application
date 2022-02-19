@@ -4,19 +4,18 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
-import com.mr.mf_pd.application.manager.socket.ReadListener
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import io.reactivex.disposables.Disposable
 import org.greenrobot.eventbus.Logger
 import java.io.File
-import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.*
 import java.util.logging.Level
@@ -71,11 +70,11 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun realDataListener() {
-        SocketManager.getInstance().setReadListener(realDataListener)
+        SocketManager.get().setReadListener(realDataListener)
     }
 
     override fun removeRealDataListener() {
-        SocketManager.getInstance().removeReadListener()
+        SocketManager.get().removeReadListener()
     }
 
     override fun setRealDataCallback(callback: RealDataCallback) {
@@ -108,19 +107,13 @@ class DefaultDataRepository : DataRepository {
     }
 
     override fun switchPassageway(passageway: Int) {
-        val bytes = CommandHelp.switchPassageway(passageway)
         cleanData()
-        SocketManager.getInstance().sendData(bytes, CommandType.SwitchPassageway) { newBytes ->
-            if (Arrays.equals(newBytes, bytes)) {
-                Logger.Default.get().log(Level.INFO, "通道${passageway}打开成功")
-            }
-        }
+        SocketManager.get().sendData(CommandHelp.switchPassageway(passageway))
     }
 
     override fun closePassageway() {
-        val bytes = CommandHelp.closePassageway()
         cleanData()
-        SocketManager.getInstance().sendData(bytes, CommandType.SwitchPassageway, null)
+        SocketManager.get().sendData(CommandHelp.closePassageway())
     }
 
     override fun setCheckType(checkType: CheckType) {
@@ -137,8 +130,13 @@ class DefaultDataRepository : DataRepository {
         return gainValue
     }
 
-    private val realDataListener = object : ReadListener(0) {
-        override fun onRead(source: ByteArray) {
+    override fun startCycleReadYcValue(): Disposable {
+        return SocketManager.get()
+            .sendRepeatData(CommandHelp.readYcValue(getCheckType().passageway))
+    }
+
+    private val realDataListener = object : ReadListener {
+        override fun onData(source: ByteArray) {
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
 
@@ -150,7 +148,7 @@ class DefaultDataRepository : DataRepository {
             for (i in 0 until (bytes.size / 6)) {
                 val values = ByteArray(6)
                 System.arraycopy(bytes, 6 * i, values, 0, 6)
-                val row = values[0].toInt()//暂不使用
+                val row = values[0].toInt()//周期，暂不使用
                 val column = values[1].toInt()
                 val height = ByteArray(4)
                 System.arraycopy(values, 2, height, 0, 4)
@@ -175,7 +173,7 @@ class DefaultDataRepository : DataRepository {
                     } else if (f < setting.minValue) {
                         value = setting.minValue.toFloat()
                     }
-                }else{
+                } else {
 
                 }
                 //处理偏移量

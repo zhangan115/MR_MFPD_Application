@@ -2,24 +2,27 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.ToastAdapter
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_device_check.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
@@ -59,28 +62,35 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         linkToDevice()
     }
 
+    var disposable: Disposable? = null
+    var isShowTips = false
+
     private fun linkToDevice() {
-        SocketManager.getInstance().releaseRequest()
-        SocketManager.getInstance().initLink()
-        SocketManager.getInstance().addLinkStateListeners {
+        SocketManager.get().releaseRequest()
+        SocketManager.get().initLink()
+        SocketManager.get().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
-                val timeBytes = CommandHelp.getTimeCommand()
-                SocketManager.getInstance().sendData(timeBytes, CommandType.SendTime) { bytes ->
-                    if (Arrays.equals(timeBytes, bytes)) {
-                        ToastAdapter.bindToast(uhfDataLayout, "对时成功")
-                        //解决不断上传的问题，对时成功后先关闭采集通道
-                        val close = CommandHelp.closePassageway()
-                        SocketManager.getInstance()
-                            .sendData(close, CommandType.SwitchPassageway, null)
-                    } else {
-                        ToastAdapter.bindToast(uhfDataLayout, "对时失败")
-                    }
-                }
+                //一分钟一次的连接对时，保证数据接通
+                disposable = SocketManager.get().sendRepeatData(CommandHelp.getTimeCommand(), 60)
             } else {
                 runOnUiThread {
                     ToastAdapter.bindToast(uhfDataLayout, "设备连接失败")
                 }
-                SocketManager.getInstance().releaseRequest()
+                SocketManager.get().releaseRequest()
+            }
+        }
+        SocketManager.get().sendTimeCallback = object : BaseDataCallback {
+            override fun onData(bytes: ByteArray) {
+                if (isShowTips) {
+                    return
+                }
+                isShowTips = true
+                //解决不断上传的问题，对时成功后先关闭采集通道
+                val close = CommandHelp.closePassageway()
+                SocketManager.get().sendData(close)
+                runOnUiThread {
+                    ToastAdapter.bindToast(uhfDataLayout, "设备连接成功")
+                }
             }
         }
     }
@@ -99,6 +109,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        SocketManager.getInstance().releaseRequest()
+        disposable?.dispose()
+        SocketManager.get().releaseRequest()
     }
 }

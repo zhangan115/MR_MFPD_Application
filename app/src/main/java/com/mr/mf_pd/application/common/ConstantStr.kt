@@ -43,7 +43,7 @@ interface ConstantStr {
         const val SETTING_UHF = "setting_key_uhf"
         const val SETTING_TEV = "setting_key_tev"
         const val SETTING_HF = "setting_key_hf"
-        const val SETTING_AC = "setting_key_ac"
+        const val SETTING_AC = "setting_key_ae"
 
         /**
          * user store

@@ -1,6 +1,6 @@
 package com.mr.mf_pd.application.model
 
-data class CheckParamsBean(var type: Int) {
+data class CheckParamsBean(var passageway: Int) {
 
     var fzAttr: String? = null//幅值
     var phaseAttr: String = "内同步"//内同步

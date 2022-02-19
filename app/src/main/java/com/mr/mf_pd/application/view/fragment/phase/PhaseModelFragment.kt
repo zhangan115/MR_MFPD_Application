@@ -42,20 +42,10 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     override fun initData() {
 
     }
-
-
+    
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        val value =
-            viewModel.checkType.settingBean.maxValue - viewModel.checkType.settingBean.minValue
-        val step = value / 4
-        val yList = ArrayList<String>()
-        for (i in 0..4) {
-            val str = viewModel.checkType.settingBean.minValue + step * i
-            yList.add(str.toString())
-        }
-        yList.reverse()
-        pointChartsRenderer = PointChartsRenderer(this.requireContext(), yList)
+        pointChartsRenderer = PointChartsRenderer(this.requireContext(), getYAxisValue())
         surfaceView1.setRenderer(pointChartsRenderer)
 
         pointChartsRenderer?.getPrpsValueCallback =
@@ -89,13 +79,26 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
         }
         image4.setOnClickListener {
-
-        }
-        image5.setOnClickListener {
             viewModel.cleanCurrentData()
             pointChartsRenderer?.cleanData()
         }
+        image5.setOnClickListener {
+
+        }
         rendererSet = true
+    }
+
+    private fun getYAxisValue(): ArrayList<String> {
+        val value =
+            viewModel.checkType.settingBean.maxValue - viewModel.checkType.settingBean.minValue
+        val step = value / 4
+        val yList = ArrayList<String>()
+        for (i in 0..4) {
+            val str = viewModel.checkType.settingBean.minValue + step * i
+            yList.add(str.toString())
+        }
+        yList.reverse()
+        return yList
     }
 
     override fun setViewModel(dataBinding: PhaseDataBinding?) {
@@ -104,6 +107,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun onResume() {
         super.onResume()
+//        pointChartsRenderer?.updateYAxis(getYAxisValue())
         if (rendererSet) {
             surfaceView1.onResume()
         }

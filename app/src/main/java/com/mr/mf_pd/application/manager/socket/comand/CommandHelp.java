@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.manager.socket;
+package com.mr.mf_pd.application.manager.socket.comand;
 
 import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.model.SettingBean;

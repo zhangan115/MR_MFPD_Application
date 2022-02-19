@@ -3,9 +3,8 @@ package com.mr.mf_pd.application.view.check.ac.pulse
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
-import com.mr.mf_pd.application.manager.socket.ReceiverCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.repository.impl.DataRepository
 
@@ -25,7 +24,7 @@ class ACPulseModelViewModel(val repository: DataRepository) : ViewModel() {
 
     fun openPulseData() {
         val cmd = CommandHelp.readPulseData(2)
-        SocketManager.getInstance().sendData(cmd,CommandType.SendPulse) { bytes ->
+        SocketManager.get().sendData(cmd, CommandType.SendPulse) { bytes ->
             if (cmd.contentEquals(bytes)) {
                 Log.d("zhangan", "请求打开读取原始脉冲数据")
             }
@@ -34,7 +33,7 @@ class ACPulseModelViewModel(val repository: DataRepository) : ViewModel() {
 
     fun closePulseData() {
         val cmd = CommandHelp.stopReadPulseData(2)
-        SocketManager.getInstance().sendData(cmd,CommandType.SendPulse) { bytes ->
+        SocketManager.get().sendData(cmd, CommandType.SendPulse) { bytes ->
             if (cmd.contentEquals(bytes)) {
                 Log.d("zhangan", "请求关闭读取原始脉冲数据")
             }

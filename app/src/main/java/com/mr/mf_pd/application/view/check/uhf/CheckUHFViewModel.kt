@@ -4,9 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
@@ -27,8 +29,29 @@ class CheckUHFViewModel(
     var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     private var disposable: Disposable? = null
+    lateinit var mCheckType: CheckType
 
     fun start(checkType: CheckType) {
+        mCheckType = checkType
+        dataRepository.setCheckType(checkType)
+        updateSettingValue(checkType)
+        checkParamsBean = checkType.checkParams
+        openPassageway()
+    }
+
+    private fun openPassageway() {
+        val command = CommandHelp.switchPassageway(mCheckType.passageway)
+        dataRepository.switchPassageway(mCheckType.passageway)
+        SocketManager.get().openPassageway = object : BaseDataCallback {
+            override fun onData(source: ByteArray) {
+                if (source.contentEquals(command)) {
+                    readUHFValue()
+                }
+            }
+        }
+    }
+
+    private fun updateSettingValue(checkType: CheckType) {
         settingBean = settingRepository.getSettingData(checkType)
         settingBean?.let {
             PrpsPoint2DList.maxValue = it.maxValue.toFloat()
@@ -40,27 +63,31 @@ class CheckUHFViewModel(
             PrPsCubeList.maxValue = it.maxValue.toFloat()
             PrPsCubeList.minValue = it.minValue.toFloat()
         }
-        checkParamsBean = checkType.checkParams
-        dataRepository.setCheckType(checkType)
-        readUHFValue(checkType)
     }
 
-    private fun readUHFValue(checkType: CheckType) {
-        //读取设置
-        val command = CommandHelp.readSettingValue(checkType.type, 10)
-        disposableList.add(
-            SocketManager.getInstance()
-                .sendData(command, CommandType.ReadSettingValue) { settingBytes ->
-                    dealSettingValue(settingBytes)
-                    val readYcCommand = CommandHelp.readYcValue(checkType.type)
-                    //读取遥测
-                    disposableList.add(
-                        SocketManager.getInstance()
-                            .sendData(readYcCommand, CommandType.ReadYcData) { ycBytes ->
-                                dealYcValue(ycBytes)
-                                dataRepository.switchPassageway(checkType.type)
-                            })
-                })
+    private fun readUHFValue() {
+        SocketManager.get().ycDataCallback = object : YcDataCallback {
+            override fun onData(source: ByteArray) {
+                dealYcValue(source)
+            }
+        }
+        updateCallback()
+    }
+
+    fun updateCallback() {
+        val command = CommandHelp.readSettingValue(mCheckType.passageway, mCheckType.settingLength)
+        disposableList.add(SocketManager.get().sendData(command))
+        SocketManager.get().readSettingDataCallback = readSettingDataCallback
+    }
+
+    private val readSettingDataCallback = object : ReadSettingDataCallback {
+        override fun onData(source: ByteArray) {
+            dealSettingValue(source)
+            if (disposable == null || disposable!!.isDisposed) {
+                disposable = dataRepository.startCycleReadYcValue()
+                disposableList.add(disposable!!)
+            }
+        }
     }
 
     private fun dealSettingValue(bytes: ByteArray) {
@@ -72,6 +99,7 @@ class CheckUHFViewModel(
             checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
+        updateSettingValue(mCheckType)
     }
 
     private fun dealYcValue(bytes: ByteArray) {
@@ -108,6 +136,8 @@ class CheckUHFViewModel(
             }
         }
         disposableList.clear()
+        disposable = null
+        SocketManager.get().openPassageway = null
     }
 
 }

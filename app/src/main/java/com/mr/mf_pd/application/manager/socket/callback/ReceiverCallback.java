@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.manager.socket;
+package com.mr.mf_pd.application.manager.socket.callback;
 
 public interface ReceiverCallback {
 

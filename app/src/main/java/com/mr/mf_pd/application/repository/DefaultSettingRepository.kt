@@ -47,6 +47,16 @@ class DefaultSettingRepository : SettingRepository {
             settingBean.fdlUnit = cacheSettingBean.fdlUnit
             settingBean.jzRatio = cacheSettingBean.jzRatio
             settingBean.jzOutValue = cacheSettingBean.jzOutValue
+
+            settingBean.limitValue = cacheSettingBean.limitValue
+            settingBean.jjLimitValue = cacheSettingBean.jjLimitValue
+            settingBean.overLimitValue = cacheSettingBean.overLimitValue
+            settingBean.alarmLimitValue = cacheSettingBean.alarmLimitValue
+            settingBean.maxAverageValue = cacheSettingBean.maxAverageValue
+            settingBean.secondCycleMinValue = cacheSettingBean.secondCycleMinValue
+            settingBean.secondDischargeMinCount = cacheSettingBean.secondDischargeMinCount
+            settingBean.noiseLimit = cacheSettingBean.noiseLimit
+
         }
         return settingBean
     }

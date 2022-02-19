@@ -2,16 +2,12 @@ package com.mr.mf_pd.application.view.check.uhf
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckUHFDataBinding
-import com.mr.mf_pd.application.manager.socket.CommandHelp
-import com.mr.mf_pd.application.manager.socket.CommandType
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
@@ -46,6 +42,11 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>() {
 
     override fun getScrollBlueBgView(): View? {
         return scrollBlueBgView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.updateCallback()
     }
 
     override fun settingClick() {

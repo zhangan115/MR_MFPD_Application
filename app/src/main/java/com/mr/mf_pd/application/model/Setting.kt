@@ -1,7 +1,7 @@
 package com.mr.mf_pd.application.model
 
 data class SettingBean(
-    val cacheKey:String,//缓存的Key
+    val cacheKey: String,//缓存的Key
     var xwTb: Int = 0,//相位同步
     var autoTb: Int = 0,//自动同步
     var pdJc: Int = 0,//频带检测
@@ -24,6 +24,20 @@ data class SettingBean(
     var fdlUnit: Int = 0, //以放电量单位
     var jzRatio: Float = 1.0f,//校准系数
     var jzOutValue: Float = 10.0f,//校准器输出
-
-    var limitValue:Int = 0//通道门限值
+    //通道门限值
+    var limitValue: Int? = null,
+    //警戒门限
+    var jjLimitValue: Int? = null,
+    //过高门限
+    var overLimitValue: Int? = null,
+    //告警门限
+    var alarmLimitValue: Int? = null,
+    //最大幅值与平均值最小差值
+    var maxAverageValue: Int? = null,
+    //1秒放电周期最小值
+    var secondCycleMinValue: Int? = null,
+    //1秒最小放电次数
+    var secondDischargeMinCount: Int? = null,
+    //噪声宽度门限
+    var noiseLimit: Int? = null,
 )

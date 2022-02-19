@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.manager.socket
+package com.mr.mf_pd.application.manager.socket.comand
 
 enum class CommandType(
     val funCode: Byte,//功能码

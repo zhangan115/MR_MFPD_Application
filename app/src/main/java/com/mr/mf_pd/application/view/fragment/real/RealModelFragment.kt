@@ -85,10 +85,12 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         image3.setOnClickListener {
 
         }
-        image4.setOnClickListener { }
-        image5.setOnClickListener {
+        image4.setOnClickListener {
             viewModel.cleanCurrentData()
             prPsChartsRenderer?.cleanData()
+        }
+        image5.setOnClickListener {
+
         }
 
         rendererSet = true

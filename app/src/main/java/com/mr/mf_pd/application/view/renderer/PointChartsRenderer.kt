@@ -58,6 +58,11 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         prPsPoints?.addValue(pointValue)
     }
 
+    fun updateYAxis(textList: List<String>){
+        textMaps[Constants.KEY_Y_TEXT] = textList.toList() as ArrayList<String>
+        texture = TextureUtils.loadTextureWithText(context, textMaps)
+    }
+
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         TextureUtils.height = height
         TextureUtils.width = width

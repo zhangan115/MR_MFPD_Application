@@ -33,7 +33,7 @@ class CheckParamsView : LinearLayout {
         fzTextValue.text = checkParamsBean.fzAttr
         plText.text = checkParamsBean.hzAttr
         tbStateText.text = checkParamsBean.phaseAttr
-        when (checkParamsBean.type) {
+        when (checkParamsBean.passageway) {
             0 -> {
                 tempText1.text = "脉冲数："
                 tempText2.text = "检测频带："
