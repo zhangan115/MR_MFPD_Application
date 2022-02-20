@@ -44,7 +44,7 @@ class DefaultDataRepository : DataRepository {
 
     var realData: ArrayList<PrPsCubeList> = ArrayList()
 
-    private var realDataCallback: RealDataCallback? = null
+    private var realDataCallbacks: ArrayList<RealDataCallback> = ArrayList()
 
     override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
         val list = ArrayList<HashMap<Int, Float>>()
@@ -77,8 +77,8 @@ class DefaultDataRepository : DataRepository {
         SocketManager.get().removeReadListener()
     }
 
-    override fun setRealDataCallback(callback: RealDataCallback) {
-        realDataCallback = callback
+    override fun addRealDataCallback(callback: RealDataCallback) {
+        realDataCallbacks.add(callback)
     }
 
     override fun addHufData(callback: DataRepository.DataCallback) {
@@ -137,6 +137,9 @@ class DefaultDataRepository : DataRepository {
 
     private val realDataListener = object : ReadListener {
         override fun onData(source: ByteArray) {
+            realDataCallbacks.forEach {
+                it.onRealDataChanged(source)
+            }
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
 
@@ -223,7 +226,6 @@ class DefaultDataRepository : DataRepository {
             } else {
                 ++receiverCount
             }
-            realDataCallback?.onRealDataChanged()
         }
     }
 }

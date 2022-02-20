@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.app.MRApplication
@@ -19,6 +20,7 @@ import com.mr.mf_pd.application.view.check.ac.CheckACActivity
 import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
+import com.mr.mf_pd.application.view.file.FilePickerActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_device_check.*
 import java.util.*
@@ -54,8 +56,10 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {
-
+            val intent = Intent(this, FilePickerActivity::class.java)
+            startActivity(intent)
         }
+        selfCheckingLayout.visibility = View.GONE
         selfCheckingLayout.setOnClickListener {
 
         }
@@ -80,7 +84,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             }
         }
         SocketManager.get().sendTimeCallback = object : BaseDataCallback {
-            override fun onData(bytes: ByteArray) {
+            override fun onData(source: ByteArray) {
                 if (isShowTips) {
                     return
                 }

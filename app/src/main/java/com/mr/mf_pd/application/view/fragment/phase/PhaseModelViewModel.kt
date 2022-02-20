@@ -6,10 +6,11 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import java.io.File
 
 class PhaseModelViewModel(
     val repository: DataRepository,
-    private val filesRepository: FilesRepository,
+    val filesRepository: FilesRepository,
 ) :
     ViewModel() {
 
@@ -18,13 +19,26 @@ class PhaseModelViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
 
-    var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
+    var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
     fun start() {
         this.checkType = repository.getCheckType()
         this.gainValues = repository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
         repository.realDataListener()
+        repository.addRealDataCallback(object : RealDataCallback {
+            override fun onRealDataChanged(source: ByteArray) {
+                if (filesRepository.isSaveData()?.value == true) {
+                    filesRepository.toSaveData2File(source)
+                }
+            }
+        })
+    }
+
+    fun setCheckFile(filePath: String) {
+        val file = File(filePath)
+        filesRepository.setCurrentChickFile(file)
+        location.postValue(filesRepository.getCurrentCheckName())
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {

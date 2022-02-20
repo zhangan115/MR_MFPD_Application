@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_choose"
+        android:title="@string/action_choose"
+        app:showAsAction="collapseActionView" />
+    <item
         android:id="@+id/action_close"
         android:title="@string/action_close"
         app:showAsAction="collapseActionView" />

@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.file
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -58,7 +59,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        mChooseDir = intent.getBooleanExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
+        mChooseDir = intent.getBooleanExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, false)
         super.onCreate(savedInstanceState)
     }
 
@@ -138,6 +139,12 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
             android.R.id.home -> {
                 onBackPressed()
             }
+            R.id.action_choose -> {
+                val intent = Intent()
+                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, mCurrent?.absolutePath)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
             R.id.action_close -> {
                 finish()
             }
@@ -153,6 +160,9 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                             }
                         }
                     }
+                    negativeButton(res = R.string.cancel, click = {
+                        it.dismiss()
+                    })
                     lifecycleOwner(this@FilePickerActivity)
                 }
             }
@@ -171,6 +181,9 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                                 }
                             }
                         }
+                        negativeButton(res = R.string.cancel, click = {
+                            it.dismiss()
+                        })
                         lifecycleOwner(this@FilePickerActivity)
                     }
                 }
@@ -384,16 +397,17 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                             object : FileUtils.FileActionListener {
 
                                 override fun onSuccess() {
-                                    FileUtils.deleteFiles(fileList,object :FileUtils.FileActionListener{
-                                        override fun onSuccess() {
-                                            cutFiles.clear()
-                                            updateDirectoryListener?.updateFiles()
-                                        }
+                                    FileUtils.deleteFiles(fileList,
+                                        object : FileUtils.FileActionListener {
+                                            override fun onSuccess() {
+                                                cutFiles.clear()
+                                                updateDirectoryListener?.updateFiles()
+                                            }
 
-                                        override fun onFail() {
+                                            override fun onFail() {
 
-                                        }
-                                    })
+                                            }
+                                        })
                                 }
 
                                 override fun onFail() {

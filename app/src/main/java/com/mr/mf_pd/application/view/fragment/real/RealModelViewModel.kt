@@ -20,6 +20,13 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
         this.gainValues = repository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
         repository.realDataListener()
+        repository.addRealDataCallback(object : RealDataCallback {
+            override fun onRealDataChanged(source: ByteArray) {
+                if (filesRepository.isSaveData()?.value == true) {
+                    filesRepository.toSaveData2File(source)
+                }
+            }
+        })
     }
 
     fun addHUfData(callback: DataRepository.DataCallback) {
@@ -36,6 +43,7 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
 
     fun stopSaveData(){
         filesRepository.stopSaveData()
+
     }
 
     fun cleanCurrentData(){

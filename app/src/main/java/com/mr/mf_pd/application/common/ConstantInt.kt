@@ -16,5 +16,9 @@ interface ConstantInt {
         const val REQUEST_STATE_EMPTY = 2
         const val REQUEST_STATE_ERROR = 3
 
+        const val LIMIT_VALUE_STEP = 10
+        const val LIMIT_VALUE_MAX = 8192
+        const val LIMIT_VALUE_MIN = 0
+
     }
 }

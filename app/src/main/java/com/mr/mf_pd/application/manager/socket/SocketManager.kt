@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class SocketManager private constructor() {
     private var inputStream //输入流
@@ -33,11 +34,14 @@ class SocketManager private constructor() {
     private var readListener: ReadListener? = null
     private val mPulseDataListener: PulseDataListener? = null
     private var linkStateListeners: MutableList<LinkStateListener>? = null
-    var writeSettingDataCallback: WriteSettingDataCallback? = null
-    var readSettingDataCallback: ReadSettingDataCallback? = null
+
+    private val writeSettingCallbacks: ArrayList<WriteSettingDataCallback> = ArrayList()
+    private val readSettingCallbacks: ArrayList<ReadSettingDataCallback> = ArrayList()
+
     var ycDataCallback: YcDataCallback? = null
     var sendTimeCallback: BaseDataCallback? = null
     var openPassageway: BaseDataCallback? = null
+
     private var socket: Socket? = null
 
     companion object {
@@ -58,44 +62,20 @@ class SocketManager private constructor() {
         }
     }
 
-    open fun linkInit() {
-        Observable.create { emitter: ObservableEmitter<ByteArray> ->
-            try {
-                val address = InetSocketAddress(appHost(), port())
-                socket = Socket()
-                socket?.connect(address, 2000)
-                if (socket != null) {
-                    socket!!.keepAlive = true
-                    isConnected = socket!!.isConnected
-                    inputStream = socket!!.getInputStream()
-                    outputStream = socket!!.getOutputStream()
-                    for (i in linkStateListeners!!.indices) {
-                        linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
-                    }
-                    val buf = ByteArray(1024 * 4)
-                    val byteList: MutableList<Byte> = ArrayList()
-                    var size: Int
-                    while (inputStream!!.read(buf).also { size = it } != -1) {
-                        try {
-                            if (size < buf.size) {
-                                byteList.clear()
-                            }
-                            val sources = ByteArray(size)
-                            System.arraycopy(buf, 0, sources, 0, size)
-                            byteList.addAll(Bytes.asList(*sources))
-                            dealStickyBytes(byteList)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emitter.onError(e)
-            } finally {
-                emitter.onComplete()
-            }
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe()
+    fun addWriteSettingCallback(callback: WriteSettingDataCallback) {
+        writeSettingCallbacks.add(callback)
+    }
+
+    fun removeWriteSettingCallback(callback: WriteSettingDataCallback) {
+        writeSettingCallbacks.remove(callback)
+    }
+
+    fun addReadSettingCallback(callback: ReadSettingDataCallback) {
+        readSettingCallbacks.add(callback)
+    }
+
+    fun removeReadSettingCallback(callback: ReadSettingDataCallback) {
+        readSettingCallbacks.remove(callback)
     }
 
     //执行请求任务的线程池
@@ -183,7 +163,8 @@ class SocketManager private constructor() {
                     byteList.removeAll(handOut(byteList, length))
                 }
                 CommandType.WriteValue -> {
-                    byteList.removeAll(handOut(byteList, commandType.length))
+                    val length = byteList[2].toInt() + 5
+                    byteList.removeAll(handOut(byteList, length))
                 }
                 CommandType.FdData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
@@ -224,10 +205,14 @@ class SocketManager private constructor() {
                 ycDataCallback?.onData(source)
             }
             CommandType.ReadSettingValue -> {
-                readSettingDataCallback?.onData(source)
+                readSettingCallbacks.forEach {
+                    it.onData(source)
+                }
             }
             CommandType.WriteValue -> {
-                writeSettingDataCallback?.onData(source)
+                writeSettingCallbacks.forEach {
+                    it.onData(source)
+                }
             }
             CommandType.FdData -> {
 

@@ -40,7 +40,7 @@ interface DataRepository {
      * 设置实时数据的回调
      * @param callback 回调
      */
-    fun setRealDataCallback(callback: RealDataCallback)
+    fun addRealDataCallback(callback: RealDataCallback)
 
     /**
      * 切换实时数据监测通道

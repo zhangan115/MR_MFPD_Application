@@ -80,17 +80,17 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         }
 
         image2.setOnClickListener {
-
+            checkActionListener?.downLimitValue()
         }
         image3.setOnClickListener {
-
+            checkActionListener?.addLimitValue()
         }
         image4.setOnClickListener {
             viewModel.cleanCurrentData()
             prPsChartsRenderer?.cleanData()
         }
         image5.setOnClickListener {
-
+            checkActionListener?.changeBandDetectionModel()
         }
 
         rendererSet = true
@@ -106,6 +106,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
             surfaceView1.onResume()
         }
         viewModel.cleanCurrentData()
+        prPsChartsRenderer?.cleanData()
     }
 
     override fun onPause() {

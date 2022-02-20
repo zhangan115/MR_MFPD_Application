@@ -8,10 +8,13 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.WriteSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
+import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
@@ -23,11 +26,13 @@ class CheckUHFViewModel(
     private val dataRepository: DataRepository,
     private val settingRepository: SettingRepository,
 ) : ViewModel() {
-
+    var writeSetting = false
+    var writeSettingCommand: ByteArray? = null
     var toastStr: MutableLiveData<String> = MutableLiveData()
     private val disposableList = ArrayList<Disposable>()
     var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
+    val settingValues: ArrayList<Float> = ArrayList()
     private var disposable: Disposable? = null
     lateinit var mCheckType: CheckType
 
@@ -42,6 +47,7 @@ class CheckUHFViewModel(
     private fun openPassageway() {
         val command = CommandHelp.switchPassageway(mCheckType.passageway)
         dataRepository.switchPassageway(mCheckType.passageway)
+        SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
         SocketManager.get().openPassageway = object : BaseDataCallback {
             override fun onData(source: ByteArray) {
                 if (source.contentEquals(command)) {
@@ -77,7 +83,7 @@ class CheckUHFViewModel(
     fun updateCallback() {
         val command = CommandHelp.readSettingValue(mCheckType.passageway, mCheckType.settingLength)
         disposableList.add(SocketManager.get().sendData(command))
-        SocketManager.get().readSettingDataCallback = readSettingDataCallback
+        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
     }
 
     private val readSettingDataCallback = object : ReadSettingDataCallback {
@@ -90,9 +96,36 @@ class CheckUHFViewModel(
         }
     }
 
+    private val writeSettingDataCallback = object : WriteSettingDataCallback {
+
+        override fun onData(source: ByteArray) {
+            writeSetting = false
+            if (source.contentEquals(writeSettingCommand)) {
+                dealWriteSettingValue(source)
+            }
+        }
+    }
+
     private fun dealSettingValue(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
-        if (valueList.size >= 10) {
+        if (valueList.size == mCheckType.settingLength) {
+            settingValues.clear()
+            settingValues.addAll(valueList)
+            settingBean?.limitValue = valueList[7].toInt()
+            checkParamsBean?.value?.frequencyBandAttr =
+                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+            checkParamsBean?.postValue(checkParamsBean?.value)
+        }
+        updateSettingValue(mCheckType)
+    }
+
+
+    private fun dealWriteSettingValue(bytes: ByteArray) {
+        val valueList = splitWriteBytesToValue(bytes)
+        if (valueList.size == mCheckType.settingLength) {
+            settingValues.clear()
+            settingValues.addAll(valueList)
             settingBean?.limitValue = valueList[7].toInt()
             checkParamsBean?.value?.frequencyBandAttr =
                 Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
@@ -127,6 +160,30 @@ class CheckUHFViewModel(
         return valueList
     }
 
+    private fun splitWriteBytesToValue(bytes: ByteArray): ArrayList<Float> {
+        val valueList = ArrayList<Float>()
+        if (bytes.size > 2) {
+            val length = bytes[2].toInt() - 1
+            val source = ByteArray(length)
+            System.arraycopy(bytes, 4, source, 0, bytes.size - 6)
+            for (i in 0 until (source.size / 4)) {
+                val value = ByteArray(4)
+                System.arraycopy(source, 4 * i, value, 0, 4)
+                val f = ByteUtil.getFloat(value)
+                valueList.add(f)
+            }
+        }
+        return valueList
+    }
+
+    fun writeValue() {
+        if (settingValues.isNotEmpty()) {
+            writeSettingCommand =
+                CommandHelp.writeSettingValue(mCheckType.passageway, settingValues)
+            SocketManager.get().sendData(writeSettingCommand)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         dataRepository.closePassageway()
@@ -137,6 +194,7 @@ class CheckUHFViewModel(
         }
         disposableList.clear()
         disposable = null
+        SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
         SocketManager.get().openPassageway = null
     }
 

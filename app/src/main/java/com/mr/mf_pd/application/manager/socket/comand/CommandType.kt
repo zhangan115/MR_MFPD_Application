@@ -11,7 +11,7 @@ enum class CommandType(
     SwitchPassageway(0x07, "切换通道", 8),
     RealData(0x08, "主动上送实时数据", -1),
     FdData(0x09, "上送局部放电数据", -1),
-    WriteValue(0x10, "写定值", 10),
+    WriteValue(0x10, "写定值", -2),
     SendPulse(0x12, "上送原始脉冲数据", -1),
     ReadPulse(0x13, "读取原始脉冲数据", 8);
 }

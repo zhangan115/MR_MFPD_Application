@@ -1,9 +1,11 @@
 package com.mr.mf_pd.application.view.base
 
+import android.os.Bundle
 import android.widget.TextView
 import androidx.databinding.ViewDataBinding
 import com.afollestad.materialdialogs.MaterialDialog
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.view.callback.CheckActionListener
 
 /**
  * 检测类型页面的基类
@@ -11,6 +13,8 @@ import com.mr.mf_pd.application.R
  * @since 2021-11-28
  */
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
+
+    var checkActionListener: CheckActionListener? = null
 
     /**
      * 显示提示保存的Dialog
@@ -30,6 +34,13 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
         }
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (activity is BaseCheckActivity<*> && activity is CheckActionListener) {
+            checkActionListener = activity as CheckActionListener
+        }
+    }
+
     /**
      * 保存数据
      */
@@ -45,4 +56,16 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
      */
     abstract fun cancelSaveData()
 
+
+    fun changeBandDetectionModel() {
+        checkActionListener?.changeBandDetectionModel()
+    }
+
+    fun addLimitValue() {
+        checkActionListener?.addLimitValue()
+    }
+
+    fun downLimitValue() {
+        checkActionListener?.downLimitValue()
+    }
 }

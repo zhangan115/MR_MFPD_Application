@@ -15,9 +15,25 @@ interface FilesRepository {
      */
     fun stopSaveData()
 
-    fun getCurrentCheckFile(): File//当前项目地址
+    /**
+     * 设置当前文件地址
+     * @param file 文件
+     */
+    fun setCurrentChickFile(file: File)
 
-    fun toSaveData2File()//保存数据到文件中
+    /**
+     * 当前项目地址
+     * @return 文件
+     */
+    fun getCurrentCheckFile(): File?
+
+    /**
+     * 获取当前的项目地址名称
+     * @return 名称
+     */
+    fun getCurrentCheckName(): String?
+
+    fun toSaveData2File(source: ByteArray)//保存数据到文件中
 
     fun isSaveData(): MutableLiveData<Boolean>?
 

@@ -39,6 +39,7 @@
     <string name="type_tev">暂态地电压</string>
     <string name="type_hf">高频</string>
     <string name="action_close">关闭</string>
+    <string name="action_choose">选中</string>
 
     <string name="menu_str_new_dir">新建文件夹</string>
     <string name="menu_str_edit_dir">编辑文件夹</string>

@@ -7,5 +7,5 @@ interface RealDataCallback {
     /**
      * 实时数据变化回调
      */
-    fun onRealDataChanged()
+    fun onRealDataChanged(source:ByteArray)
 }

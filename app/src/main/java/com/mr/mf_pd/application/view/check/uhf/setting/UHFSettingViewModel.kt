@@ -10,6 +10,8 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -99,7 +101,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         secondCycleMinValueStr.postValue(settingBean.secondCycleMinValue.toString())
         secondDischargeMinCountStr.postValue(settingBean.secondDischargeMinCount.toString())
         noiseLimitStr.postValue(settingBean.noiseLimit.toString())
-        SocketManager.get().readSettingDataCallback = readSettingDataCallback
+        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
         SocketManager.get()
             .sendData(readSettingCommand)
@@ -147,30 +149,33 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     }
 
     fun toSave() {
-        toWriteSettingValue()
-        val settingBean = checkType.settingBean
-        settingBean.xwTb = phaseModelInt.value!!
-        settingBean.pdJc = bandDetectionInt.value!!
-        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
-        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
-        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
-        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
-        settingBean.ljTime = totalTimeStr.value!!.toInt()
-        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
-        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
-        settingBean.limitValue = limitValueStr.value!!.toInt()
-        settingBean.jjLimitValue = jjLimitValueStr.value!!.toInt()
-        settingBean.overLimitValue = overLimitValueStr.value!!.toInt()
-        settingBean.alarmLimitValue = alarmLimitValueStr.value!!.toInt()
-        settingBean.maxAverageValue = maxAverageValueStr.value!!.toInt()
-        settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
-        settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
-        settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
-        setting.toSaveSettingData(checkType)
+        GlobalScope.launch {
+            toWriteSettingValue()
+            val settingBean = checkType.settingBean
+            settingBean.xwTb = phaseModelInt.value!!
+            settingBean.pdJc = bandDetectionInt.value!!
+            settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
+            settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+            settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+            settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+            settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+            settingBean.ljTime = totalTimeStr.value!!.toInt()
+            settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
+            settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+            settingBean.limitValue = limitValueStr.value!!.toInt()
+            settingBean.jjLimitValue = jjLimitValueStr.value!!.toInt()
+            settingBean.overLimitValue = overLimitValueStr.value!!.toInt()
+            settingBean.alarmLimitValue = alarmLimitValueStr.value!!.toInt()
+            settingBean.maxAverageValue = maxAverageValueStr.value!!.toInt()
+            settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
+            settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
+            settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
+            setting.toSaveSettingData(checkType)
+        }
     }
 
     val values = ArrayList<Float>()
+
     private fun toWriteSettingValue() {
         values.clear()
         saveDataToList(jjLimitValueStr.value?.toFloatOrNull())
@@ -199,6 +204,11 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     private fun writeValue() {
         val writeCommand = CommandHelp.writeSettingValue(checkType.passageway, values)
         SocketManager.get().sendData(writeCommand)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
     }
 
 }
