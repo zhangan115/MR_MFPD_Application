@@ -11,7 +11,7 @@ public class CheckDataFileModel {
     private String marks;//文件描述
     private boolean hasPhoto;//是否存在图片
     private int color = -1;//文件标识颜色
-    private FileTypeUtils.CheckType checkType;//检测文件类型
+    private FileTypeUtils.FileType fileType;//检测文件类型
     private boolean isSelect;//是否被选中
     private boolean toChooseModel = false;
 
@@ -55,12 +55,12 @@ public class CheckDataFileModel {
         this.color = color;
     }
 
-    public FileTypeUtils.CheckType getCheckType() {
-        return checkType;
+    public FileTypeUtils.FileType getFileType() {
+        return fileType;
     }
 
-    public void setCheckType(FileTypeUtils.CheckType checkType) {
-        this.checkType = checkType;
+    public void setFileType(FileTypeUtils.FileType fileType) {
+        this.fileType = fileType;
     }
 
     public boolean isSelect() {

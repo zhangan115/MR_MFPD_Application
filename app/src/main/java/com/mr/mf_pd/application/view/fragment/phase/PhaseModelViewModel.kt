@@ -18,6 +18,7 @@ class PhaseModelViewModel(
     lateinit var gainValues: MutableLiveData<List<Float>>
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
+    var ycByteArray: ByteArray? = null
 
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
@@ -39,6 +40,11 @@ class PhaseModelViewModel(
         val file = File(filePath)
         filesRepository.setCurrentChickFile(file)
         location.postValue(filesRepository.getCurrentCheckName())
+        createACheckFile()
+    }
+
+    fun createACheckFile(){
+        filesRepository.toCreateCheckFile(checkType,ycByteArray)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
@@ -57,6 +63,7 @@ class PhaseModelViewModel(
         repository.cleanData()
         repository.getGainValueList().postValue(ArrayList())
     }
+
 
     override fun onCleared() {
         super.onCleared()

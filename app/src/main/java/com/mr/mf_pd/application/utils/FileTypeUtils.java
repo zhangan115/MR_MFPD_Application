@@ -20,42 +20,42 @@ public class FileTypeUtils {
         ALL, UHF, AC, TEV, HF
     }
 
-    public static String getCheckTypeStr(CheckType fileType) {
-        if (fileType == CheckType.AC) {
+    public static String getCheckTypeStr(FileType fileType) {
+        if (fileType == FileType.AC) {
             return ".check_ac";
-        } else if (fileType == CheckType.HF) {
+        } else if (fileType == FileType.HF) {
             return ".check_hf";
-        } else if (fileType == CheckType.UHF) {
+        } else if (fileType == FileType.UHF) {
             return ".check_uhf";
-        } else if (fileType == CheckType.TEV) {
+        } else if (fileType == FileType.TEV) {
             return ".check_tev";
         }
         return "";
     }
 
     @Nullable
-    public static CheckType getCheckTypeFromFile(File file) {
+    public static FileType getCheckTypeFromFile(File file) {
         if (file.getName().startsWith(".check_ac")) {
-            return CheckType.AC;
+            return FileType.AC;
         }
         if (file.getName().startsWith(".check_hf")) {
-            return CheckType.HF;
+            return FileType.HF;
         }
         if (file.getName().startsWith(".check_tev")) {
-            return CheckType.TEV;
+            return FileType.TEV;
         }
         if (file.getName().startsWith(".check_uhf")) {
-            return CheckType.UHF;
+            return FileType.UHF;
         }
         return null;
     }
 
     public enum FileType {
         DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
-        UHF(R.drawable.ic_document_box, R.string.type_uhf),
-        AC(R.drawable.ic_document_box, R.string.type_ac),
-        TEV(R.drawable.ic_document_box, R.string.type_tev),
-        HF(R.drawable.ic_document_box, R.string.type_hf);
+        UHF(R.mipmap.detect_icon_uhf, R.string.type_uhf),
+        AC(R.mipmap.detect_icon_ac, R.string.type_ac),
+        TEV(R.mipmap.detect_icon_tev, R.string.type_tev),
+        HF(R.mipmap.detect_icon_hf, R.string.type_hf);
 
         private final int icon;
         private final int description;

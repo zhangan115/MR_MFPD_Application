@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="13dp"
                     android:layout_marginBottom="5dp"
-                    android:text="超声波（AC）"
+                    android:text="超声波（AE）"
                     android:textColor="@color/text_title"
                     android:textSize="15sp" />
 

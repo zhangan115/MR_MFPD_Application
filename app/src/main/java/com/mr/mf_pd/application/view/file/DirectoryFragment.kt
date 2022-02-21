@@ -91,7 +91,7 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
         mDirectoryRecyclerView?.adapter = mDirectoryAdapter
         mDirectoryRecyclerView?.setEmptyView(mEmptyView)
 
-        FileUtils.getFileList(mFile, FileTypeUtils.CheckType.ALL) {
+        FileUtils.getFileList(mFile, FileTypeUtils.FileType.DIRECTORY) {
             this.checkDataFileModels.clear()
             this.checkDataFileModels.addAll(it)
             this.mDirectoryAdapter?.notifyDataSetChanged()
@@ -162,9 +162,9 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
             }
             findViewById<TextView>(R.id.saveTv).setOnClickListener {
                 val rb: RadioButton = findViewById(radioGroup.checkedRadioButtonId)
-                val tag: Int = rb.tag as Int
+                val tag: String = rb.tag as String
                 model?.marks = noteEt.text.toString()
-                model?.color = tag
+                model?.color = tag.toInt()
                 dismiss()
             }
         }

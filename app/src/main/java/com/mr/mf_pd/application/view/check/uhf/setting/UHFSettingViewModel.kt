@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
+import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import kotlinx.coroutines.GlobalScope
@@ -170,6 +171,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
             settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
+            DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
+            DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)
         }
     }

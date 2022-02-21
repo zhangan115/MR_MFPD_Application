@@ -26,13 +26,17 @@ import kotlin.math.min
 
 class DefaultDataRepository : DataRepository {
 
-    private var checkDir: File? = null
-    private var tempDir: File? = null
+    companion object {
+        var realDataMaxValue: MutableLiveData<Int> = MutableLiveData()
+        var realDataMinValue: MutableLiveData<Int> = MutableLiveData()
+    }
+
     private lateinit var mCheckType: CheckType
     var checkParamsBean: CheckParamsBean? = null
     var receiverCount = 0
     var mcCount = 0
     var maxValue: Float? = null
+    var maxGainValue: Float? = null
     var minValue: Float? = null
     var gainFloatList = ArrayList<Float>()
 
@@ -58,15 +62,6 @@ class DefaultDataRepository : DataRepository {
             }
         }
         return list
-    }
-
-
-    override fun setCheckFileDir(dir: File) {
-        this.checkDir = dir
-    }
-
-    override fun getCheckFileDir(): File? {
-        return checkDir
     }
 
     override fun realDataListener() {
@@ -119,6 +114,8 @@ class DefaultDataRepository : DataRepository {
     override fun setCheckType(checkType: CheckType) {
         mCheckType = checkType
         checkParamsBean = mCheckType.checkParams.value
+        realDataMaxValue.postValue(mCheckType.settingBean.maxValue)
+        realDataMinValue.postValue(mCheckType.settingBean.minValue)
         checkType.checkParams.value
     }
 
@@ -130,9 +127,8 @@ class DefaultDataRepository : DataRepository {
         return gainValue
     }
 
-    override fun startCycleReadYcValue(): Disposable {
-        return SocketManager.get()
-            .sendRepeatData(CommandHelp.readYcValue(getCheckType().passageway))
+    override fun readYcValue(): Disposable {
+        return SocketManager.get().sendData(CommandHelp.readYcValue(getCheckType().passageway))
     }
 
     private val realDataListener = object : ReadListener {
@@ -162,6 +158,11 @@ class DefaultDataRepository : DataRepository {
                 } else {
                     max(f, maxValue!!)
                 }
+                maxGainValue = if (maxGainValue == null) {
+                    f
+                } else {
+                    max(f, maxGainValue!!)
+                }
                 minValue = if (minValue == null) {
                     f
                 } else {
@@ -177,7 +178,18 @@ class DefaultDataRepository : DataRepository {
                         value = setting.minValue.toFloat()
                     }
                 } else {
-
+                    if (realDataMaxValue.value != null) {
+                        val maxValue = max(realDataMaxValue.value!!, f.toInt())
+                        if (maxValue != realDataMaxValue.value!!) {
+                            realDataMaxValue.postValue(maxValue)
+                        }
+                    }
+                    if (realDataMinValue.value != null) {
+                        val minValue = min(realDataMinValue.value!!, f.toInt())
+                        if (minValue != realDataMinValue.value!!) {
+                            realDataMinValue.postValue(minValue)
+                        }
+                    }
                 }
                 //处理偏移量
                 val py = setting.xwPy
@@ -206,13 +218,14 @@ class DefaultDataRepository : DataRepository {
             }
             realData.add(PrPsCubeList(newValueList))
             if (receiverCount % 5 == 0) {
-                if (maxValue != null) {
-                    gainFloatList.add(maxValue!!)
+                if (maxGainValue != null) {
+                    gainFloatList.add(maxGainValue!!)
                 }
                 if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
                     gainFloatList.removeFirst()
                 }
                 gainValue.postValue(gainFloatList)
+                maxGainValue = null
             }
             if (receiverCount == 50) { //一秒钟刷新一次数据
                 if (maxValue != null) {
@@ -223,6 +236,7 @@ class DefaultDataRepository : DataRepository {
                 mCheckType.checkParams.postValue(checkParamsBean)
                 receiverCount = 0
                 mcCount = 0
+                maxValue = null
             } else {
                 ++receiverCount
             }

@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.renderer
 import android.content.Context
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
@@ -44,7 +45,11 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         unit.add("dBm")
         textMaps[Constants.KEY_UNIT] = unit
         textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
-        textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
+        if (yTextList.isEmpty()) {
+            textMaps[Constants.KEY_Y_TEXT] = ArrayList()
+        } else {
+            textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
+        }
         prPsPoints = PrpsPoint2DList()
 
         textureProgram = TextureShaderProgram(context)
@@ -59,7 +64,12 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     }
 
     fun updateYAxis(textList: List<String>){
-        textMaps[Constants.KEY_Y_TEXT] = textList.toList() as ArrayList<String>
+        if (textList.isEmpty()) {
+            textMaps[Constants.KEY_Y_TEXT]?.clear()
+        } else {
+            textMaps[Constants.KEY_Y_TEXT]?.clear()
+            textMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+        }
         texture = TextureUtils.loadTextureWithText(context, textMaps)
     }
 

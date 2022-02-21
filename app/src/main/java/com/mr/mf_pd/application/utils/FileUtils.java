@@ -33,7 +33,21 @@ public class FileUtils {
 
     }
 
-    public static Disposable getFileList(File directory, @Nullable FileTypeUtils.CheckType checkType, FilterCallback callback) {
+    public static void copyFile(File source, File targetFile) throws IOException {
+        FileInputStream fis = new FileInputStream(source);
+        if (!targetFile.exists()) {
+            targetFile.createNewFile();
+        }
+        FileOutputStream fos = new FileOutputStream(targetFile, true);
+        byte[] buf = new byte[1024 * 4];
+        int size;
+        while ((size = fis.read(buf)) != -1) {
+            fos.write(buf, 0, size);
+            fos.flush();
+        }
+    }
+
+    public static Disposable getFileList(File directory, @Nullable FileTypeUtils.FileType checkType, FilterCallback callback) {
         Observable<List<CheckDataFileModel>> observable = Observable.create((ObservableOnSubscribe<List<CheckDataFileModel>>) emitter -> {
             List<CheckDataFileModel> checkDataFileModels = new ArrayList<>();
             File[] files = directory.listFiles();
@@ -52,7 +66,7 @@ public class FileUtils {
                             CheckDataFileModel model = new CheckDataFileModel();
                             model.setFile(file);
                             model.setSelect(false);
-                            FileTypeUtils.CheckType ct = FileTypeUtils.getCheckTypeFromFile(file);
+                            FileTypeUtils.FileType ct = FileTypeUtils.getCheckTypeFromFile(file);
                             if (ct != null) {
                                 for (File listFile : Objects.requireNonNull(file.listFiles())) {
                                     if (listFile.getName().endsWith(".png")
@@ -69,7 +83,7 @@ public class FileUtils {
                                     }
                                 }
                                 model.setCheckFile(true);
-                                model.setCheckType(ct);
+                                model.setFileType(ct);
                             } else {
                                 model.setCheckFile(false);
                             }
@@ -145,8 +159,26 @@ public class FileUtils {
      * @throws IOException IO异常
      */
     public static void writeStr2File(String str, File file) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(str.getBytes(StandardCharsets.UTF_8));
+        fos.flush();
+        fos.close();
+    }
+
+    /**
+     * @param source 源数据
+     * @param file   文件
+     * @throws IOException 异常
+     */
+    public static void writeByteArray2File(byte[] source, File file) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(source);
         fos.flush();
         fos.close();
     }

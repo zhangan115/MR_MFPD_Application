@@ -53,14 +53,17 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
         val currentFile = dataList[position]
         val fileType = FileTypeUtils.getFileType(currentFile)
         holder.mFileImage.setImageResource(fileType.icon)
-        holder.mFileTitle.text = currentFile.file.name
+        val fileName = currentFile.file.name
+
         holder.mFileSubtitle.setText(fileType.description)
         if (fileType == FileTypeUtils.FileType.DIRECTORY) {
+            holder.mFileTitle.text = fileName
             holder.mNextImage.visibility = View.VISIBLE
             holder.mPhotoImage.visibility = View.GONE
             holder.mLabelImage.visibility = View.GONE
             holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
         } else {
+            holder.mFileTitle.text = fileName.substring(FileTypeUtils.getCheckTypeStr(fileType).length, fileName.length)
             if (currentFile.isHasPhoto && !currentFile.isToChooseModel) {
                 holder.mPhotoImage.visibility = View.VISIBLE
             } else {
@@ -77,7 +80,8 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
                 }
             }
             holder.mNextImage.visibility = View.VISIBLE
-            holder.mFileSubtitle.text = currentFile.checkType.name
+            holder.mFileSubtitle.text =
+                MRApplication.instance.resources.getText(fileType.description)
         }
         if (currentFile.isToChooseModel) {
             holder.mSelectButton.visibility = View.VISIBLE

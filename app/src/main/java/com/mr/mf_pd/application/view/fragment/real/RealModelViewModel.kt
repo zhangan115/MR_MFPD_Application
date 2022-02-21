@@ -6,6 +6,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import java.io.File
 
 class RealModelViewModel(val repository: DataRepository,private val filesRepository: FilesRepository) : ViewModel() {
 
@@ -13,7 +14,8 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
     lateinit var gainValues:MutableLiveData<List<Float>>
     var isSaveData: MutableLiveData<Boolean>? = null
     var toastStr: MutableLiveData<String> = MutableLiveData()
-    var location: MutableLiveData<String> = MutableLiveData(repository.getCheckFileDir()?.name)
+    var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
+    var ycByteArray: ByteArray? = null
 
     fun start() {
         this.checkType = repository.getCheckType()
@@ -43,8 +45,19 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
 
     fun stopSaveData(){
         filesRepository.stopSaveData()
-
     }
+
+    fun setCheckFile(filePath: String) {
+        val file = File(filePath)
+        filesRepository.setCurrentChickFile(file)
+        location.postValue(filesRepository.getCurrentCheckName())
+        createACheckFile()
+    }
+
+    fun createACheckFile(){
+        filesRepository.toCreateCheckFile(checkType,ycByteArray)
+    }
+
 
     fun cleanCurrentData(){
         repository.getGainValueList().postValue(ArrayList())

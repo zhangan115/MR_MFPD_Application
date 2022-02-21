@@ -31,7 +31,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="0dp"
                 android:background="@drawable/selector_color_level_1"
                 android:button="@null"
                 android:tag="0" />
@@ -39,7 +39,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/selector_color_level_2"
                 android:button="@null"
                 android:gravity="center"
@@ -48,7 +48,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/selector_color_level_3"
                 android:button="@null"
                 android:gravity="center"
@@ -57,7 +57,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/selector_color_level_4"
                 android:button="@null"
                 android:gravity="center"
@@ -66,7 +66,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/selector_color_level_5"
                 android:button="@null"
                 android:gravity="center"
@@ -75,7 +75,7 @@
             <RadioButton
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/selector_color_level_6"
                 android:button="@null"
                 android:gravity="center"

@@ -119,4 +119,8 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>(), CheckActionLi
         }
     }
 
+    override fun getYcByteArray(): ByteArray? {
+        return viewModel.ycByteArray
+    }
+
 }

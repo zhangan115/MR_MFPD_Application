@@ -12,7 +12,14 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import kotlinx.android.synthetic.main.fragment_phase.*
 import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_real.image1
+import kotlinx.android.synthetic.main.fragment_real.image2
+import kotlinx.android.synthetic.main.fragment_real.image3
+import kotlinx.android.synthetic.main.fragment_real.image4
+import kotlinx.android.synthetic.main.fragment_real.image5
+import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
@@ -76,6 +83,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 viewModel.startSaveData()
             } else {
                 viewModel.stopSaveData()
+                showSaveFileDialog()
             }
         }
 
@@ -98,6 +106,16 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun setViewModel(dataBinding: RealDataBinding?) {
         dataBinding?.vm = viewModel
+    }
+
+
+    override fun setCheckFile(str:String) {
+        viewModel.ycByteArray = checkActionListener?.getYcByteArray()
+        viewModel.setCheckFile(str)
+    }
+
+    override fun createACheckFile() {
+        viewModel.createACheckFile()
     }
 
     override fun onResume() {

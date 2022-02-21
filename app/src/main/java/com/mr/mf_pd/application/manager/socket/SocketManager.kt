@@ -167,9 +167,9 @@ class SocketManager private constructor() {
                     byteList.removeAll(handOut(byteList, length))
                 }
                 CommandType.FdData -> {
-                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
-                    val length = ByteLibUtil.getInt(lengthBytes) + 2
-                    byteList.removeAll(handOut(byteList, length))
+//                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
+//                    val length = ByteLibUtil.getInt(lengthBytes) + 2
+//                    byteList.removeAll(handOut(byteList, length))
                 }
                 CommandType.RealData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, byteList[3], byteList[4])
@@ -293,7 +293,7 @@ class SocketManager private constructor() {
     fun sendData(data: ByteArray?, cmdType: CommandType, callback: ReceiverCallback?): Disposable {
         return Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<ByteArray> ->
             try {
-                if (outputStream != null && socket != null && !socket!!.isClosed) {
+                if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                 } else {
@@ -320,7 +320,7 @@ class SocketManager private constructor() {
     fun sendData(data: ByteArray?): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
-                if (outputStream != null && socket != null && !socket!!.isClosed) {
+                if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
@@ -345,7 +345,7 @@ class SocketManager private constructor() {
     ): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
-                if (outputStream != null && socket != null && !socket!!.isClosed) {
+                if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)

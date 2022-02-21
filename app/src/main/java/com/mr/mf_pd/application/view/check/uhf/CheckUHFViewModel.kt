@@ -12,9 +12,7 @@ import com.mr.mf_pd.application.manager.socket.callback.WriteSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
-import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
@@ -35,6 +33,7 @@ class CheckUHFViewModel(
     val settingValues: ArrayList<Float> = ArrayList()
     private var disposable: Disposable? = null
     lateinit var mCheckType: CheckType
+    var ycByteArray: ByteArray? = null
 
     fun start(checkType: CheckType) {
         mCheckType = checkType
@@ -90,8 +89,7 @@ class CheckUHFViewModel(
         override fun onData(source: ByteArray) {
             dealSettingValue(source)
             if (disposable == null || disposable!!.isDisposed) {
-                disposable = dataRepository.startCycleReadYcValue()
-                disposableList.add(disposable!!)
+                disposableList.add(dataRepository.readYcValue())
             }
         }
     }
@@ -130,12 +128,14 @@ class CheckUHFViewModel(
             checkParamsBean?.value?.frequencyBandAttr =
                 Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
             checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+            toastStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
         updateSettingValue(mCheckType)
     }
 
     private fun dealYcValue(bytes: ByteArray) {
+        ycByteArray = bytes
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
             //频率

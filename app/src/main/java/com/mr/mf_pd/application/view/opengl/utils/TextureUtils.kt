@@ -92,7 +92,6 @@ object TextureUtils {
         p.textSize = DisplayUtil.sp2px(context, 12f).toFloat()
         DisplayUtil.px2dip(context, height.toFloat())
         //绘制字体
-
         textMaps.entries.forEach {
             when (it.key) {
                 Constants.KEY_UNIT -> {
@@ -120,6 +119,7 @@ object TextureUtils {
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
                         canvas.drawText(it.value[i], 15f, (step * i + start), p)
                     }
+                    Log.d("zhangan",it.value.toString())
                 }
             }
         }

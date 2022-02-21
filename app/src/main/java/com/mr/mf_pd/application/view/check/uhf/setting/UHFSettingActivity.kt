@@ -47,9 +47,4 @@ class UHFSettingActivity : BaseSettingActivity<UHFSettingDataBinding>() {
         super.onPause()
         viewModel.toSave()
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
 }

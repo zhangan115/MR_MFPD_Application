@@ -10,18 +10,6 @@ import java.io.File
 interface DataRepository {
 
     /**
-     * 设置当前检测任务的文件夹
-     * @param dir 文件夹
-     */
-    fun setCheckFileDir(dir: File)
-
-    /**
-     * 获取当前检测任务的文件夹
-     * @return 文件夹
-     */
-    fun getCheckFileDir(): File?
-
-    /**
      * 获取图表数据
      */
     fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
@@ -80,9 +68,9 @@ interface DataRepository {
     fun getGainValueList(): MutableLiveData<List<Float>>
 
     /**
-     * 循环读取遥测信息
+     * 读取遥测信息
      */
-    fun startCycleReadYcValue(): Disposable
+    fun readYcValue(): Disposable
 
 
 }
