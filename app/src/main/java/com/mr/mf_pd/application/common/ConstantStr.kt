@@ -19,6 +19,7 @@ interface ConstantStr {
 
         const val CHECK_REAL_DATA = "check_real_data"
         const val CHECK_FILE_CONFIG = "check_config.json"
+        const val CHECK_FILE_SETTING = "check_setting.json"
         const val CHECK_YC_FILE_NAME = "check_yc"
 
 

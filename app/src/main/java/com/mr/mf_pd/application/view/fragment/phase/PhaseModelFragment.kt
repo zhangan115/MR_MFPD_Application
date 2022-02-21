@@ -92,7 +92,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         viewModel.setCheckFile(str)
     }
 
-    override fun createACheckFile() {
+    override fun createCheckFile() {
         viewModel.createACheckFile()
     }
 
@@ -127,14 +127,6 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         super.onPause()
         if (rendererSet) {
             surfaceView1.onPause()
-        }
-    }
-
-    override fun toSaveData2File() {
-        viewModel.isSaveData?.value?.let {
-            if (it) {
-                viewModel.isSaveData!!.postValue(false)
-            }
         }
     }
 

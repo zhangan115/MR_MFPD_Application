@@ -53,10 +53,6 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         dataBinding?.vm = viewModel
     }
 
-    override fun toSaveData2File() {
-
-    }
-
     override fun isSaving(): Boolean {
         return false
     }

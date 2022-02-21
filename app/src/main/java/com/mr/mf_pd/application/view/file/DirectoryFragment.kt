@@ -3,18 +3,16 @@ package com.mr.mf_pd.application.view.file
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.gson.Gson
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.file.adapter.DirectoryAdapter
@@ -23,8 +21,10 @@ import com.mr.mf_pd.application.view.file.listener.DirectoryListener
 import com.mr.mf_pd.application.view.file.listener.LabelClickListener
 import com.mr.mf_pd.application.view.file.listener.PhotoClickListener
 import com.mr.mf_pd.application.view.file.listener.ThrottleClickListener
+import com.mr.mf_pd.application.view.file.model.CheckConfigModel
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.widget.EmptyRecyclerView
+import kotlinx.coroutines.GlobalScope
 import java.io.File
 
 class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener {
@@ -53,7 +53,7 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
         mDirectoryRecyclerView = view.findViewById(R.id.directory_recycler_view)
@@ -120,7 +120,7 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
         @JvmStatic
         fun getInstance(
             file: File?,
-            filter: FileFilter?
+            filter: FileFilter?,
         ): DirectoryFragment {
             val instance = DirectoryFragment()
             val args = Bundle()
@@ -160,11 +160,30 @@ class DirectoryFragment : Fragment(), DirectoryListener, UpdateDirectoryListener
             findViewById<TextView>(R.id.cancelTv).setOnClickListener {
                 dismiss()
             }
+            findViewById<ImageView>(R.id.takePhoto).setOnClickListener {
+
+            }
+            findViewById<ImageView>(R.id.checkPhoto).setOnClickListener {
+
+            }
             findViewById<TextView>(R.id.saveTv).setOnClickListener {
                 val rb: RadioButton = findViewById(radioGroup.checkedRadioButtonId)
                 val tag: String = rb.tag as String
                 model?.marks = noteEt.text.toString()
                 model?.color = tag.toInt()
+                model?.let {
+                    GlobalScope.run {
+                        val configFile = File(it.file, ConstantStr.CHECK_FILE_CONFIG)
+                        if (!configFile.exists()) {
+                            configFile.createNewFile()
+                        }
+                        val checkConfig = CheckConfigModel()
+                        checkConfig.color = it.color
+                        checkConfig.marks = it.marks
+                        FileUtils.writeStr2File(Gson().toJson(checkConfig), configFile)
+                    }
+                }
+                mDirectoryRecyclerView?.adapter?.notifyDataSetChanged()
                 dismiss()
             }
         }

@@ -18,6 +18,16 @@ import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 
 internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) :
     RecyclerView.Adapter<DirectoryViewHolder>() {
+    private val colorList = ArrayList<Int>()
+
+    init {
+        colorList.add(R.color.titColor0)
+        colorList.add(R.color.titColor1)
+        colorList.add(R.color.titColor2)
+        colorList.add(R.color.titColor3)
+        colorList.add(R.color.titColor4)
+        colorList.add(R.color.titColor5)
+    }
 
     private var mOnItemClickListener: OnItemClickListener? = null
     private var mOnPhotoClickListener: OnItemPhotoClickListener? = null
@@ -64,6 +74,15 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
             holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
         } else {
             holder.mFileTitle.text = fileName.substring(FileTypeUtils.getCheckTypeStr(fileType).length, fileName.length)
+            val color = currentFile.color
+            if ( color!= -1) {
+                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],null))
+                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],null))
+            } else {
+                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,null))
+                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,null))
+            }
+
             if (currentFile.isHasPhoto && !currentFile.isToChooseModel) {
                 holder.mPhotoImage.visibility = View.VISIBLE
             } else {

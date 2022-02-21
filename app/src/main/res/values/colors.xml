@@ -101,5 +101,11 @@
 
     <color name="chart_xy_color">#9E9E9E</color>
     <color name="chart_line_color">#D1D1D1</color>
+    <color name="titColor0">#000</color>
+    <color name="titColor1">#FC0102</color>
+    <color name="titColor2">#FFA403</color>
+    <color name="titColor3">#008100</color>
+    <color name="titColor4">#0200FB</color>
+    <color name="titColor5">#82007E</color>
 
 </resources>

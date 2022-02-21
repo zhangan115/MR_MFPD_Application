@@ -3,7 +3,6 @@ package com.mr.mf_pd.application.view.base
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.databinding.ViewDataBinding
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -37,7 +36,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
                         intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
                         startActivityForResult(intent, requestChooseDirCode)
                     } else {
-                        createACheckFile()
+                        createCheckFile()
                     }
                 })
                 negativeButton(res = R.string.cancel, click = { dialog ->
@@ -60,7 +59,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
 
     }
 
-    open fun createACheckFile() {
+    open fun createCheckFile() {
 
     }
 
@@ -69,6 +68,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
         if (requestCode == requestChooseDirCode && resultCode == Activity.RESULT_OK) {
             val fileDir = data?.getStringExtra(ConstantStr.KEY_BUNDLE_STR)
             fileDir?.let {
+                location = fileDir
                 setLocationValue(fileDir)
                 setCheckFile(it)
             }
@@ -79,16 +79,29 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
      * 显示提示保存的Dialog
      */
     open fun showToSaveDialog(onCancel: () -> Unit) {
-        MaterialDialog(requireContext()).show {
-            setContentView(R.layout.dialog_save_data)
-            findViewById<TextView>(R.id.cancelTv).setOnClickListener {
-                onCancel()
-                cancelSaveData()
-                this.dismiss()
-            }
-            findViewById<TextView>(R.id.sureTv).setOnClickListener {
-                toSaveData2File()
-                this.dismiss()
+        activity?.let {
+            MaterialDialog(it).show {
+                it.setTheme(R.style.AppTheme_MaterialDialog)
+                title(text = "提示")
+                message(text = "是否保存当前数据？")
+                positiveButton(res = R.string.ok, click = { dialog ->
+                    cancelSaveData()
+                    dialog.dismiss()
+                    if (getLocationValue() == null) {
+                        //选择保存位置
+                        val intent = Intent(activity, FilePickerActivity::class.java)
+                        intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
+                        startActivityForResult(intent, requestChooseDirCode)
+                    } else {
+                        createCheckFile()
+                    }
+                })
+                negativeButton(res = R.string.cancel, click = { dialog ->
+                    cancelSaveData()
+                    onCancel()
+                    dialog.dismiss()
+                })
+                lifecycleOwner(this@BaseCheckFragment)
             }
         }
     }
@@ -99,11 +112,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
             checkActionListener = activity as CheckActionListener
         }
     }
-
-    /**
-     * 保存数据
-     */
-    abstract fun toSaveData2File()
 
     /**
      * 数据是否正在保存

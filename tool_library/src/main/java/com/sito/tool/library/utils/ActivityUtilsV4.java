@@ -55,7 +55,7 @@ public class ActivityUtilsV4 {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(activity, "com.isuo.inspection.application.fileprovider", photoFile);
+                Uri photoURI = FileProvider.getUriForFile(activity, "com.mr.mf_pd.application.fileprovider", photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 activity.startActivityForResult(takePictureIntent, REQUEST_CODE);
             }
@@ -75,7 +75,7 @@ public class ActivityUtilsV4 {
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         ContentValues contentValues = new ContentValues(1);
         contentValues.put(MediaStore.Images.Media.DATA, photoFile.getAbsolutePath());
-        Uri uri = Objects.requireNonNull(fragment.getActivity()).getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        Uri uri = fragment.requireActivity().getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         fragment.startActivityForResult(intent, REQUEST_CODE);
     }

@@ -82,7 +82,7 @@ class DefaultFilesRepository : FilesRepository {
                     val settingStr = Gson().toJson(checkType.settingBean)
                     FileUtils.writeStr2File(
                         settingStr,
-                        File(checkFile, ConstantStr.CHECK_FILE_CONFIG)
+                        File(checkFile, ConstantStr.CHECK_FILE_SETTING)
                     )
                     //保存遥测数据
                     FileUtils.writeByteArray2File(
