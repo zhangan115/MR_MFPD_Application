@@ -62,6 +62,19 @@ public class ActivityUtilsV4 {
         }
     }
 
+    public static void startCameraToPhotoV1(Fragment fragment, File photoFile, int REQUEST_CODE) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (fragment.getActivity() != null) {
+            if (takePictureIntent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(fragment.getActivity(), "com.mr.mf_pd.application.fileprovider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    fragment.startActivityForResult(takePictureIntent, REQUEST_CODE);
+                }
+            }
+        }
+    }
+
     /**
      * 启动相机拍摄照片
      *

@@ -21,6 +21,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileListDataBinding
+import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.data.FileDataActivity
@@ -45,6 +46,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     private var mCloseable = true
     private var mChooseDir = false
     private var mFilter: FileFilter? = null
+    private var mFileType: FileTypeUtils.FileType = FileTypeUtils.FileType.DIRECTORY
 
     private var mFileTypeTv: TextView? = null
     private lateinit var mActionButton: Button
@@ -211,7 +213,8 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
     private fun addFragmentToBackStack(file: File?) {
         val fragment = DirectoryFragment.getInstance(
             file,
-            mFilter
+            mFilter,
+            mFileType
         )
         updateDirectoryListener = fragment
         directoryListeners.add(fragment)
@@ -307,8 +310,9 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                     setTheme(R.style.AppTheme_MaterialDialog)
                     listItems(R.array.choose_file_type) { _, index, text ->
                         mFileTypeTv?.text = text
+                        mFileType = FileTypeUtils.getFileType(index)
                         directoryListeners.forEach {
-                            it.onFileTypeChange(index)
+                            it.onFileTypeChange(mFileType!!)
                         }
                     }
                     lifecycleOwner(this@FilePickerActivity)

@@ -1,15 +1,22 @@
 package com.mr.mf_pd.application.view.base
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import com.mr.mf_pd.application.common.ConstantInt
+import com.mr.mf_pd.application.utils.PhotoCompressUtils
 import java.io.File
+import java.io.IOException
 
 abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
 
@@ -98,7 +105,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
      * 查找颜色
      */
     fun findColor(color: Int): Int {
-        return resources.getColor(color,null)
+        return resources.getColor(color, null)
     }
 
     /**
@@ -113,7 +120,48 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     fun findDrawable(drawable: Int): Drawable {
-        return resources.getDrawable(drawable,null)
+        return resources.getDrawable(drawable, null)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode <= ConstantInt.ACTION_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            if (data?.data == null && photo != null) {
+                if (photo != null) {
+                    val photoURI = FileProvider.getUriForFile(
+                        this.activity!!,
+                        "com.mr.mf_pd.application.fileprovider",
+                        photo!!
+                    )
+                    try {
+                        PhotoCompressUtils.getFile(this.activity!!,createTargetDir(), photoURI, {
+                            dealFile(requestCode, it)
+                        }, {
+                            Toast.makeText(this.activity!!, "图片选择失败！", Toast.LENGTH_SHORT).show()
+                        })
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        } else if (requestCode > ConstantInt.ACTION_TAKE_PHOTO && requestCode <= ConstantInt.ACTION_CHOOSE_FILE && resultCode == Activity.RESULT_OK) {
+            try {
+                PhotoCompressUtils.getFile(this.activity!!,createTargetDir(), data!!.data!!, {
+                    dealFile(requestCode, it)
+                }, {
+                    Toast.makeText(this.activity!!, "图片选择失败！", Toast.LENGTH_SHORT).show()
+                })
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    open fun dealFile(requestCode:Int,file:File){
+
+    }
+
+    open fun createTargetDir():String?{
+        return null
+    }
 }

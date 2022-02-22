@@ -1,8 +1,7 @@
-package com.mr.mf_pd.application.view.file.listener;
+package com.mr.mf_pd.application.view.file.listener
 
-public interface DirectoryListener {
+import com.mr.mf_pd.application.utils.FileTypeUtils
 
-    void onFileTypeChange(int fileType);
-
-    void deleteModel(boolean isDelete);
+interface DirectoryListener {
+    fun onFileTypeChange(fileType: FileTypeUtils.FileType)
 }

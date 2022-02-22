@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/shape_content_white_bg"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_color"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_content_bg"
         android:orientation="vertical"
         android:padding="15dp">
 
@@ -87,8 +88,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/bg_color"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/shape_content_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="15dp">
@@ -109,14 +111,14 @@
 
             <ImageView
                 android:id="@+id/takePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="@mipmap/window_icon_camera" />
 
             <ImageView
                 android:id="@+id/checkPhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 android:background="@mipmap/window_icon_img" />
@@ -127,8 +129,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/bg_color"
+        android:layout_margin="10dp"
+        android:background="@drawable/shape_content_bg"
         android:orientation="horizontal"
         android:padding="15dp">
 
@@ -148,11 +150,11 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/bg_color" />
+        android:background="@color/button_disabled_bg" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="44dp"
         android:orientation="horizontal"
         android:weightSum="2">
 
@@ -169,7 +171,7 @@
         <View
             android:layout_width="1px"
             android:layout_height="match_parent"
-            android:background="@color/bg_color" />
+            android:background="@color/button_disabled_bg" />
 
         <TextView
             android:id="@+id/saveTv"

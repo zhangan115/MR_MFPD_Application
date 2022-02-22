@@ -20,5 +20,8 @@ interface ConstantInt {
         const val LIMIT_VALUE_MAX = 8192
         const val LIMIT_VALUE_MIN = 0
 
+        const val ACTION_TAKE_PHOTO = 1000
+        const val ACTION_CHOOSE_FILE = 2000
+
     }
 }

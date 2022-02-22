@@ -50,6 +50,10 @@ public class FileTypeUtils {
         return null;
     }
 
+    public static FileType getFileType(int type) {
+        return FileType.values()[type];
+    }
+
     public enum FileType {
         DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
         UHF(R.mipmap.detect_icon_uhf, R.string.type_uhf),

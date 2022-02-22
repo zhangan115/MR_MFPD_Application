@@ -48,6 +48,25 @@ object PhotoCompressUtils {
         }).launch()
     }
 
+    fun getFile(context: Context,targetDir:String?, uri: Uri, listener: (File) -> Unit, errorListener: () -> Unit) {
+        val file = from(context, uri)
+        Luban.with(context).setTargetDir(targetDir).load(file).setCompressListener(object : OnCompressListener {
+            override fun onSuccess(file: File?) {
+                file?.let {
+                    listener(it)
+                }
+            }
+
+            override fun onError(e: Throwable?) {
+                errorListener()
+            }
+
+            override fun onStart() {
+
+            }
+        }).launch()
+    }
+
 
     @Throws(IOException::class)
     private fun from(context: Context, uri: Uri?): File? {

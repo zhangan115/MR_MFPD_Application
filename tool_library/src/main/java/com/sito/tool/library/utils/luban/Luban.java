@@ -180,7 +180,6 @@ public class Luban implements Handler.Callback {
         File result;
 
         File outFile = getImageCacheFile(context, Checker.SINGLE.extSuffix(path));
-
         if (mRenameListener != null) {
             String filename = mRenameListener.rename(path.getPath());
             outFile = getImageCustomFile(context, filename);

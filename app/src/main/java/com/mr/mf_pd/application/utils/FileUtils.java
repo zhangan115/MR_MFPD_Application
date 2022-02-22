@@ -56,7 +56,10 @@ public class FileUtils {
                     //需要展示的文件
                     List<File> filterFiles = new ArrayList<>();
                     for (File file : files) {
-                        if (file.getName().startsWith(FileTypeUtils.getCheckTypeStr(checkType))) {
+                        String startName = FileTypeUtils.getCheckTypeStr(checkType);
+                        if (file.getName().startsWith(startName)) {
+                            filterFiles.add(file);
+                        } else if (file.isDirectory() && !file.getName().startsWith(".")) {
                             filterFiles.add(file);
                         }
                     }
@@ -70,7 +73,8 @@ public class FileUtils {
                             if (ct != null) {
                                 for (File listFile : Objects.requireNonNull(file.listFiles())) {
                                     if (listFile.getName().endsWith(".png")
-                                            || listFile.getName().endsWith(".jpg")) {
+                                            || listFile.getName().endsWith(".jpg")
+                                            || listFile.getName().endsWith(".jpeg")) {
                                         model.setHasPhoto(true);
                                     }
                                     if (listFile.getName().equals(ConstantStr.CHECK_FILE_CONFIG)) {
