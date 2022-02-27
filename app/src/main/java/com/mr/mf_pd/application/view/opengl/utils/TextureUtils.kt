@@ -76,6 +76,7 @@ object TextureUtils {
         context: Context,
         textMaps: Map<String, ArrayList<String>>
     ): TextBitmap {
+        Log.d("zhangan",textMaps.toString())
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         //背景颜色
@@ -119,7 +120,7 @@ object TextureUtils {
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
                         canvas.drawText(it.value[i], 15f, (step * i + start), p)
                     }
-                    Log.d("zhangan",it.value.toString())
+                    Log.d("zhangan","createBitmap"+it.value.toString())
                 }
             }
         }

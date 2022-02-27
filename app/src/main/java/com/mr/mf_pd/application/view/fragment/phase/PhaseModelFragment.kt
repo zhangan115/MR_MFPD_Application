@@ -49,6 +49,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         pointChartsRenderer?.getPrpsValueCallback =
             object : PrPsChartsRenderer.GetPrpsValueCallback {
                 override fun getData() {
+                    pointChartsRenderer?.updateYAxis(getYAxisValue())
                     viewModel.getPhaseData().forEach {
                         pointChartsRenderer?.addPrpsData(it)
                     }
@@ -118,7 +119,6 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-//        pointChartsRenderer?.updateYAxis(getYAxisValue())
         viewModel.cleanCurrentData()
         pointChartsRenderer?.cleanData()
     }

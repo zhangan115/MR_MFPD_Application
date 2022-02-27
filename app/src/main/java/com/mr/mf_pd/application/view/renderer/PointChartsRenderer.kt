@@ -3,7 +3,11 @@ package com.mr.mf_pd.application.view.renderer
 import android.content.Context
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
@@ -18,6 +22,7 @@ import javax.microedition.khronos.opengles.GL10
 class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     GLSurfaceView.Renderer {
     var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
+
     companion object {
         var offsetXPointValueStart = 0.15f
         var offsetXPointValueEnd = 0.15f
@@ -27,6 +32,8 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
 
     private lateinit var chartsLines: Point2DChartLine
     private val textHelp = TextGlHelp()
+
+    @Volatile
     private var textMaps = HashMap<String, ArrayList<String>>()
     private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
 
@@ -63,14 +70,13 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         prPsPoints?.addValue(pointValue)
     }
 
-    fun updateYAxis(textList: List<String>){
+    fun updateYAxis(textList: List<String>) {
         if (textList.isEmpty()) {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
         } else {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
             textMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
         }
-        texture = TextureUtils.loadTextureWithText(context, textMaps)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
