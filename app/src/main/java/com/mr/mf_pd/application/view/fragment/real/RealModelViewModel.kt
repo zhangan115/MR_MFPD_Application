@@ -11,7 +11,7 @@ import java.io.File
 class RealModelViewModel(val repository: DataRepository,private val filesRepository: FilesRepository) : ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues:MutableLiveData<List<Float>>
+    lateinit var gainValues:MutableLiveData<ArrayList<Float>>
     var isSaveData: MutableLiveData<Boolean>? = null
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())

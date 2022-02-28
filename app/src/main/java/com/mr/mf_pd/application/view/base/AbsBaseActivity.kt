@@ -19,6 +19,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.leon.lfilepickerlibrary.utils.Constant
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.PhotoCompressUtils
 import com.mr.mf_pd.application.view.base.ext.ACTION_CHOOSE_FILE
 import com.mr.mf_pd.application.view.base.ext.ACTION_TAKE_PHOTO
@@ -168,6 +169,10 @@ abstract class AbsBaseActivity<T : ViewDataBinding> : BaseActivity() {
         toolBar.setNavigationOnClickListener {
             onBackAction()
         }
+    }
+
+    open fun setTitleValue(title:String){
+        titleId?.text = title
     }
 
     /**

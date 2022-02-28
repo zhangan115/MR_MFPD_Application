@@ -75,7 +75,8 @@ class GainChartView : LinearLayout {
         dataSet.highLightColor = context.getColor(R.color.colorTransparent)
     }
 
-    fun updateData(list: List<Float>) {
+    fun updateData(list: ArrayList<Float>) {
+        list.reverse()
         lineChart.data = getLineData(list)
         lineChart.invalidate()
     }

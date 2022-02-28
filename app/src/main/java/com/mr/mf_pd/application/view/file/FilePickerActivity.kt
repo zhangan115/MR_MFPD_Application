@@ -267,7 +267,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
         if (clickedFile != null) {
             if (clickedFile.isCheckFile) {
                 val intent = Intent(this, FileDataActivity::class.java)
-                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile.file.absolutePath)
+                intent.putExtra(ConstantStr.KEY_BUNDLE_STR, clickedFile.file?.absolutePath)
                 startActivity(intent)
             } else {
                 mCurrent = clickedFile.file
@@ -370,7 +370,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                 ActionType.Delete -> {
                     val fileList = ArrayList<File>()
                     updateDirectoryListener!!.getSelectData().map {
-                        fileList.add(it.file)
+                        fileList.add(it.file!!)
                     }
                     FileUtils.deleteFiles(fileList, object :
                         FileUtils.FileActionListener {
@@ -393,7 +393,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                     if (cutFiles.isNotEmpty() && mCurrent != null) {
                         val fileList = ArrayList<File>()
                         cutFiles.map {
-                            fileList.add(it.file)
+                            fileList.add(it.file!!)
                         }
                         FileUtils.cutFiles(
                             mCurrent!!,

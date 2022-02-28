@@ -50,4 +50,6 @@ interface FilesRepository {
      */
     fun isSaveData(): MutableLiveData<Boolean>?
 
+    fun openCheckFile()
+
 }

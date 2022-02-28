@@ -12,7 +12,7 @@ class ACFlightModelViewModel(val repository: DataRepository) : ViewModel() {
     var synchronizationModel: MutableLiveData<String> = MutableLiveData("内同步，50kHz-300kHz")
     var gainLevelStr: MutableLiveData<String> = MutableLiveData("20dB")
 
-    lateinit var gainValues: MutableLiveData<List<Float>>
+    lateinit var gainValues: MutableLiveData<ArrayList<Float>>
 
     fun start() {
         this.gainValues = repository.getGainValueList()

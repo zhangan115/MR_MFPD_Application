@@ -63,7 +63,7 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
         val currentFile = dataList[position]
         val fileType = FileTypeUtils.getFileType(currentFile)
         holder.mFileImage.setImageResource(fileType.icon)
-        val fileName = currentFile.file.name
+        val fileName = currentFile.file!!.name
 
         holder.mFileSubtitle.setText(fileType.description)
         if (fileType == FileTypeUtils.FileType.DIRECTORY) {

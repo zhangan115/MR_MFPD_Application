@@ -40,7 +40,7 @@ class DefaultDataRepository : DataRepository {
     var minValue: Float? = null
     var gainFloatList = ArrayList<Float>()
 
-    var gainValue: MutableLiveData<List<Float>> = MutableLiveData(ArrayList())
+    var gainValue: MutableLiveData<ArrayList<Float>> = MutableLiveData(ArrayList())
 
     private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
 
@@ -123,7 +123,7 @@ class DefaultDataRepository : DataRepository {
         return mCheckType
     }
 
-    override fun getGainValueList(): MutableLiveData<List<Float>> {
+    override fun getGainValueList(): MutableLiveData<ArrayList<Float>> {
         return gainValue
     }
 
@@ -183,12 +183,16 @@ class DefaultDataRepository : DataRepository {
                         if (maxValue != realDataMaxValue.value!!) {
                             realDataMaxValue.postValue(maxValue)
                         }
+                    }else {
+                        realDataMaxValue.postValue(setting.maxValue)
                     }
                     if (realDataMinValue.value != null) {
                         val minValue = min(realDataMinValue.value!!, f.toInt())
                         if (minValue != realDataMinValue.value!!) {
                             realDataMinValue.postValue(minValue)
                         }
+                    } else {
+                        realDataMinValue.postValue(setting.minValue)
                     }
                 }
                 //处理偏移量

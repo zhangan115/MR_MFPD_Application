@@ -66,32 +66,10 @@ public class FileUtils {
                     for (int i = 0; i < filterFiles.size(); i++) {
                         File file = filterFiles.get(i);
                         if (file.isDirectory()) {
-                            CheckDataFileModel model = new CheckDataFileModel();
-                            model.setFile(file);
-                            model.setSelect(false);
-                            FileTypeUtils.FileType ct = FileTypeUtils.getCheckTypeFromFile(file);
-                            if (ct != null) {
-                                for (File listFile : Objects.requireNonNull(file.listFiles())) {
-                                    if (listFile.getName().endsWith(".png")
-                                            || listFile.getName().endsWith(".jpg")
-                                            || listFile.getName().endsWith(".jpeg")) {
-                                        model.setHasPhoto(true);
-                                    }
-                                    if (listFile.getName().equals(ConstantStr.CHECK_FILE_CONFIG)) {
-                                        String str = readStrFromFile(listFile);
-                                        if (!TextUtils.isEmpty(str)) {
-                                            CheckConfigModel checkConfigModel = new Gson().fromJson(str, CheckConfigModel.class);
-                                            model.setColor(checkConfigModel.getColor());
-                                            model.setMarks(checkConfigModel.getMarks());
-                                        }
-                                    }
-                                }
-                                model.setCheckFile(true);
-                                model.setFileType(ct);
-                            } else {
-                                model.setCheckFile(false);
+                            CheckDataFileModel model = isCheckDataFile(file);
+                            if (model != null) {
+                                checkDataFileModels.add(model);
                             }
-                            checkDataFileModels.add(model);
                         }
                     }
                 }
@@ -105,6 +83,39 @@ public class FileUtils {
         });
         return observable.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
                 .subscribe(callback::onResult);
+    }
+
+    @Nullable
+    public static CheckDataFileModel isCheckDataFile(File file) throws IOException {
+        if (file.isDirectory()) {
+            CheckDataFileModel model = new CheckDataFileModel();
+            model.setFile(file);
+            model.setSelect(false);
+            FileTypeUtils.FileType ct = FileTypeUtils.getCheckTypeFromFile(file);
+            if (ct != null) {
+                for (File listFile : Objects.requireNonNull(file.listFiles())) {
+                    if (listFile.getName().endsWith(".png")
+                            || listFile.getName().endsWith(".jpg")
+                            || listFile.getName().endsWith(".jpeg")) {
+                        model.setHasPhoto(true);
+                    }
+                    if (listFile.getName().equals(ConstantStr.CHECK_FILE_CONFIG)) {
+                        String str = readStrFromFile(listFile);
+                        if (!TextUtils.isEmpty(str)) {
+                            CheckConfigModel checkConfigModel = new Gson().fromJson(str, CheckConfigModel.class);
+                            model.setColor(checkConfigModel.getColor());
+                            model.setMarks(checkConfigModel.getMarks());
+                        }
+                    }
+                }
+                model.setCheckFile(true);
+                model.setFileType(ct);
+            } else {
+                model.setCheckFile(false);
+            }
+            return model;
+        }
+        return null;
     }
 
     @Nullable

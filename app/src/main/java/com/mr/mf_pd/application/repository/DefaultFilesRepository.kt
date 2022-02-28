@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.repository
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.common.primitives.Bytes
 import com.google.gson.Gson
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
@@ -18,9 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.util.*
 
 class DefaultFilesRepository : FilesRepository {
@@ -119,6 +118,23 @@ class DefaultFilesRepository : FilesRepository {
 
     override fun isSaveData(): MutableLiveData<Boolean> {
         return isSaving
+    }
+
+    override fun openCheckFile() {
+        val realFile = File(checkFile,ConstantStr.CHECK_REAL_DATA)
+        if (realFile.exists()) {
+            val fis = FileInputStream(realFile)
+            var size = 0
+            val buf = ByteArray(1024*4)
+            while (fis.read(buf).also { size = it } != -1) {
+                try {
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
     }
 
 }

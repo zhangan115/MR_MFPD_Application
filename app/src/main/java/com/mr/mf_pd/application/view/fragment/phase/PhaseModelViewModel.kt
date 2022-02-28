@@ -15,7 +15,7 @@ class PhaseModelViewModel(
     ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues: MutableLiveData<List<Float>>
+    lateinit var gainValues: MutableLiveData<ArrayList<Float>>
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
     var ycByteArray: ByteArray? = null

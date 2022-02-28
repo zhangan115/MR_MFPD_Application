@@ -94,14 +94,30 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
-        limitValueStr.postValue(settingBean.limitValue.toString())
-        jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
-        overLimitValueStr.postValue(settingBean.overLimitValue.toString())
-        alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
-        maxAverageValueStr.postValue(settingBean.maxAverageValue.toString())
-        secondCycleMinValueStr.postValue(settingBean.secondCycleMinValue.toString())
-        secondDischargeMinCountStr.postValue(settingBean.secondDischargeMinCount.toString())
-        noiseLimitStr.postValue(settingBean.noiseLimit.toString())
+        if (settingBean.limitValue != null) {
+            limitValueStr.postValue(settingBean.limitValue.toString())
+        }
+        if (settingBean.jjLimitValue != null) {
+            jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
+        }
+        if (settingBean.overLimitValue != null) {
+            overLimitValueStr.postValue(settingBean.overLimitValue.toString())
+        }
+        if (settingBean.alarmLimitValue!=null) {
+            alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
+        }
+        if (settingBean.maxAverageValue != null) {
+            maxAverageValueStr.postValue(settingBean.maxAverageValue.toString())
+        }
+        if (settingBean.secondCycleMinValue != null) {
+            secondCycleMinValueStr.postValue(settingBean.secondCycleMinValue.toString())
+        }
+        if (settingBean.secondDischargeMinCount != null) {
+            secondDischargeMinCountStr.postValue(settingBean.secondDischargeMinCount.toString())
+        }
+        if (settingBean.noiseLimit != null) {
+            noiseLimitStr.postValue(settingBean.noiseLimit.toString())
+        }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
         SocketManager.get()

@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
+import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -23,6 +24,13 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     @Volatile
     var angleY: Float = 0f
+
+    @Volatile
+    private var textMaps = HashMap<String, ArrayList<String>>()
+    private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
+    private val yTextList = listOf("0","12","25","37","50")
+    private val zTextList = listOf("-80","-60","-40","-20")
+    private val textHelp = TextGlHelp()
 
     interface GetPrpsValueCallback {
         fun getData()
@@ -51,6 +59,10 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
 
+        textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
+        textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
+        textMaps[Constants.KEY_Z_TEXT] = zTextList.toList() as ArrayList<String>
+
         prPsPoints = PrpsPointList()
 
         textureProgram = TextureShaderProgram(context)
@@ -59,6 +71,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         prPs3DXYLines = PrPsXYLines(4, 7, 180)
         prPs3DXZLines = PrPsXZLines(4, 7, 180)
+
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -67,6 +80,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
             projectionMatrix, 45f, width.toFloat()
                     / height.toFloat(), 1f, 10f
         )
+        texture = TextureUtils.loadTextureWithText(context, textMaps)
     }
 
     fun addPrpsData(pointValue: HashMap<Int, Float>) {
@@ -94,6 +108,12 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         val timeStart = System.currentTimeMillis()
 
         position()
+
+//        textureProgram.useProgram()
+//        textureProgram.setUniforms(modelViewProjectionMatrix,texture)
+//
+//        textHelp.bindData(textureProgram)
+//        textHelp.draw()
 
         colorPointProgram.useProgram()
         colorPointProgram.setUniforms(modelViewProjectionMatrix)

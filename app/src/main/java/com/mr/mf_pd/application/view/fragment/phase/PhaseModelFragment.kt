@@ -7,6 +7,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
@@ -98,13 +99,25 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     private fun getYAxisValue(): ArrayList<String> {
-        val value =
-            viewModel.checkType.settingBean.maxValue - viewModel.checkType.settingBean.minValue
-        val step = value / 4
         val yList = ArrayList<String>()
-        for (i in 0..4) {
-            val str = viewModel.checkType.settingBean.minValue + step * i
-            yList.add(str.toString())
+        if (viewModel.checkType.settingBean.gdCd == 1) {
+            val value =
+                viewModel.checkType.settingBean.maxValue - viewModel.checkType.settingBean.minValue
+            val step = value / 4
+            for (i in 0..4) {
+                val str = viewModel.checkType.settingBean.minValue + step * i
+                yList.add(str.toString())
+            }
+        }else{
+            if (DefaultDataRepository.realDataMaxValue.value != null && DefaultDataRepository.realDataMinValue.value != null) {
+                val value =
+                    DefaultDataRepository.realDataMaxValue.value!! - DefaultDataRepository.realDataMinValue.value!!
+                val step = value / 4
+                for (i in 0..4) {
+                    val str = DefaultDataRepository.realDataMinValue.value!! + step * i
+                    yList.add(str.toString())
+                }
+            }
         }
         yList.reverse()
         return yList

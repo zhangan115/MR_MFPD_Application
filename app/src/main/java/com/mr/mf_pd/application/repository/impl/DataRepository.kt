@@ -65,7 +65,7 @@ interface DataRepository {
     /**
      * 获取线性图表数据
      */
-    fun getGainValueList(): MutableLiveData<List<Float>>
+    fun getGainValueList(): MutableLiveData<ArrayList<Float>>
 
     /**
      * 读取遥测信息

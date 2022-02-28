@@ -75,7 +75,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
                 val intent = Intent(this@DirectoryFragment.activity, PhotoListActivity::class.java)
                 intent.putExtra(
                     ConstantStr.KEY_BUNDLE_STR,
-                    checkDataFileModels[position].file.absolutePath
+                    checkDataFileModels[position].file!!.absolutePath
                 )
                 startActivity(intent)
             }

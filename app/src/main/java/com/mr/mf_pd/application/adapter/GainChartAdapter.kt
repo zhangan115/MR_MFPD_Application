@@ -11,7 +11,7 @@ object GainChartAdapter {
     )
     fun bindGainValue(
         view: GainChartView,
-        values: List<Float>
+        values: ArrayList<Float>
     ) {
         view.updateData(values)
     }

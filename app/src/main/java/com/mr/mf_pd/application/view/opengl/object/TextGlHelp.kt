@@ -41,6 +41,21 @@ open class TextGlHelp {
         )
     }
 
+    fun bindData(textureProgram: TextureShaderProgram,floatArray:FloatArray){
+        vertexArray = VertexArray(floatArray)
+        vertexArray.setVertexAttributePointer(
+            0,
+            textureProgram.positionAttributeLocation,
+            POSITION_COMPONENT_COUNT, STRIDE
+        )
+        vertexArray.setVertexAttributePointer(
+            POSITION_COMPONENT_COUNT,
+            textureProgram.textureCoordinatesAttributeLocation,
+            TEXTURE_COORDINATES_COUNT,
+            STRIDE
+        )
+    }
+
     fun draw() {
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4)
     }
