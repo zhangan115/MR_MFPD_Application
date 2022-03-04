@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.check.uhf
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2

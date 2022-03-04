@@ -1,12 +1,10 @@
 package com.mr.mf_pd.application.view.data
 
 import android.os.Bundle
-import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
-import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
