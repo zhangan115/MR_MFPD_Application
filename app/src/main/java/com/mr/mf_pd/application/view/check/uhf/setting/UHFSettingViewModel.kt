@@ -119,7 +119,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             noiseLimitStr.postValue(settingBean.noiseLimit.toString())
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
             .sendData(readSettingCommand)
     }
@@ -132,7 +132,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     private fun dealSettingValue(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
-        if (valueList.size >= 10) {
+        if (valueList.size >= checkType.settingLength) {
             jjLimitValueStr.postValue(valueList[0].toInt().toString())
             overLimitValueStr.postValue(valueList[1].toInt().toString())
             alarmLimitValueStr.postValue(valueList[2].toInt().toString())
@@ -207,7 +207,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         saveDataToList(limitValueStr.value?.toFloatOrNull())
         saveDataToList(bandDetectionInt.value?.toFloat())
         saveDataToList(phaseModelInt.value?.toFloat())
-        if (values.size == 10) {
+        if (values.size == checkType.settingLength) {
             writeValue()
         }
     }

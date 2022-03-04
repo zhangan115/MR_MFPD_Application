@@ -4,14 +4,50 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.repository.impl.DataRepository
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
+import com.mr.mf_pd.application.utils.ByteUtil
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     lateinit var checkType: CheckType
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+
+    //警戒门限
+    var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //过高门限
+    var overLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //告警门限
+    var alarmLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //最大幅值与平均值最小差值
+    var maxAverageValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //1秒放电周期最小值
+    var secondCycleMinValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //1秒最小放电次数
+    var secondDischargeMinCountStr: MutableLiveData<String> = MutableLiveData()
+
+    //噪声宽度门限
+    var noiseLimitStr: MutableLiveData<String> = MutableLiveData()
+
+    //通道门限值
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
+    //触发门限值
+    var cfLimitValueStr: MutableLiveData<String> = MutableLiveData()
+    //低通滤波器
+    var lowPassFilteringStr: MutableLiveData<String> = MutableLiveData()
+    //高通滤波器
+    var highPassFilteringStr: MutableLiveData<String> = MutableLiveData()
 
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
@@ -58,7 +94,9 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
-        phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
+        if (settingBean.xwTb<Constants.PHASE_MODEL_LIST.size){
+            phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
+        }
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
@@ -71,26 +109,164 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         isFdUnit.postValue(settingBean.fdlUnit == 1)
         jzXsStr.postValue(settingBean.jzRatio.toString())
         jzQShuChu.postValue(settingBean.jzOutValue.toString())
+
+        if (settingBean.limitValue != null) {
+            limitValueStr.postValue(settingBean.limitValue.toString())
+        }
+        if (settingBean.jjLimitValue != null) {
+            jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
+        }
+        if (settingBean.overLimitValue != null) {
+            overLimitValueStr.postValue(settingBean.overLimitValue.toString())
+        }
+        if (settingBean.alarmLimitValue!=null) {
+            alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
+        }
+        if (settingBean.maxAverageValue != null) {
+            maxAverageValueStr.postValue(settingBean.maxAverageValue.toString())
+        }
+        if (settingBean.secondCycleMinValue != null) {
+            secondCycleMinValueStr.postValue(settingBean.secondCycleMinValue.toString())
+        }
+        if (settingBean.secondDischargeMinCount != null) {
+            secondDischargeMinCountStr.postValue(settingBean.secondDischargeMinCount.toString())
+        }
+        if (settingBean.noiseLimit != null) {
+            noiseLimitStr.postValue(settingBean.noiseLimit.toString())
+        }
+        if (settingBean.cfLimitValue != null) {
+            cfLimitValueStr.postValue(settingBean.cfLimitValue.toString())
+        }
+        if (settingBean.lowPassFiltering != null) {
+            lowPassFilteringStr.postValue(settingBean.lowPassFiltering.toString())
+        }
+        if (settingBean.highPassFiltering != null) {
+            highPassFilteringStr.postValue(settingBean.highPassFiltering.toString())
+        }
+
+        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
+        SocketManager.get()
+            .sendData(readSettingCommand)
+    }
+
+    private val readSettingDataCallback = object : ReadSettingDataCallback {
+        override fun onData(source: ByteArray) {
+            dealSettingValue(source)
+        }
+    }
+
+    private fun dealSettingValue(bytes: ByteArray) {
+        val valueList = splitBytesToValue(bytes)
+        if (valueList.size >= checkType.settingLength) {
+            jjLimitValueStr.postValue(valueList[0].toInt().toString())
+            overLimitValueStr.postValue(valueList[1].toInt().toString())
+            alarmLimitValueStr.postValue(valueList[2].toInt().toString())
+            maxAverageValueStr.postValue(valueList[3].toInt().toString())
+            secondCycleMinValueStr.postValue(valueList[4].toInt().toString())
+            secondDischargeMinCountStr.postValue(valueList[5].toInt().toString())
+            noiseLimitStr.postValue(valueList[6].toInt().toString())
+            limitValueStr.postValue(valueList[7].toInt().toString())
+            cfLimitValueStr.postValue(valueList[8].toInt().toString())
+            lowPassFilteringStr.postValue(valueList[9].toInt().toString())
+            highPassFilteringStr.postValue(valueList[10].toInt().toString())
+            bandDetectionInt.postValue(valueList[11].toInt())
+            bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[11].toInt()])
+        }
     }
 
 
-    fun toSave(){
-        val settingBean = checkType.settingBean
-        settingBean.xwTb = phaseModelInt.value!!
-        settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
-        settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
-        settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-        settingBean.nTbPl = internalSyncStr.value!!.toFloat()
-        settingBean.xwPy = phaseOffsetStr.value!!.toInt()
-        settingBean.ljTime = totalTimeStr.value!!.toInt()
-        settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
-        settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+    private fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {
+        val valueList = ArrayList<Float>()
+        if (bytes.size > 2) {
+            val length = bytes[2].toInt()
+            val source = ByteArray(length * 4)
 
-        settingBean.fdlUnit = if (isFdUnit.value!!) 1 else 0
-        settingBean.jzRatio = jzXsStr.value!!.toFloat()
-        settingBean.jzOutValue = jzQShuChu.value!!.toFloat()
+            System.arraycopy(bytes, 3, source, 0, bytes.size - 5)
+            for (i in 0 until (source.size / 4)) {
+                val value = ByteArray(4)
+                System.arraycopy(source, 4 * i, value, 0, 4)
+                val f = ByteUtil.getFloat(value)
+                valueList.add(f)
+            }
+        }
+        return valueList
+    }
 
-        setting.toSaveSettingData(checkType)
+
+    fun toSave() {
+        GlobalScope.launch {
+            toWriteSettingValue()
+            val settingBean = checkType.settingBean
+            settingBean.xwTb = phaseModelInt.value!!
+            settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
+            settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
+            settingBean.nTbPl = internalSyncStr.value!!.toFloat()
+            settingBean.xwPy = phaseOffsetStr.value!!.toInt()
+            settingBean.ljTime = totalTimeStr.value!!.toInt()
+            settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
+            settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
+            settingBean.limitValue = limitValueStr.value?.toInt()
+            settingBean.jjLimitValue = jjLimitValueStr.value?.toInt()
+            settingBean.overLimitValue = overLimitValueStr.value?.toInt()
+            settingBean.alarmLimitValue = alarmLimitValueStr.value?.toInt()
+            settingBean.maxAverageValue = maxAverageValueStr.value?.toInt()
+            settingBean.secondCycleMinValue = secondCycleMinValueStr.value?.toInt()
+            settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value?.toInt()
+            settingBean.noiseLimit = noiseLimitStr.value?.toInt()
+
+            if (cfLimitValueStr.value != null) {
+                settingBean.cfLimitValue = cfLimitValueStr.value?.toInt()
+            }
+            if (lowPassFilteringStr.value != null) {
+                settingBean.lowPassFiltering = lowPassFilteringStr.value?.toFloat()
+            }
+            if (highPassFilteringStr.value != null) {
+                settingBean.highPassFiltering = highPassFilteringStr.value?.toFloat()
+            }
+            DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
+            DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
+            setting.toSaveSettingData(checkType)
+        }
+    }
+
+    val values = ArrayList<Float>()
+
+    private fun toWriteSettingValue() {
+        values.clear()
+        saveDataToList(jjLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(overLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(alarmLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(maxAverageValueStr.value?.toFloatOrNull())
+        saveDataToList(secondCycleMinValueStr.value?.toFloatOrNull())
+        saveDataToList(secondDischargeMinCountStr.value?.toFloatOrNull())
+        saveDataToList(noiseLimitStr.value?.toFloatOrNull())
+        saveDataToList(limitValueStr.value?.toFloatOrNull())
+        saveDataToList(cfLimitValueStr.value?.toFloatOrNull())
+        saveDataToList(lowPassFilteringStr.value?.toFloatOrNull())
+        saveDataToList(highPassFilteringStr.value?.toFloatOrNull())
+        saveDataToList(phaseModelInt.value?.toFloat())
+        if (values.size == checkType.settingLength) {
+            writeValue()
+        }
+    }
+
+    private fun saveDataToList(float: Float?) {
+        if (float == null) {
+            values.add(0f)
+        } else {
+            values.add(float)
+        }
+    }
+
+    private fun writeValue() {
+        val writeCommand = CommandHelp.writeSettingValue(checkType.passageway, values)
+        SocketManager.get().sendData(writeCommand)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
     }
 
 }

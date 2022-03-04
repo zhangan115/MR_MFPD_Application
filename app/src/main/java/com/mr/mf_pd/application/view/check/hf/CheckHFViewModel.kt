@@ -48,7 +48,7 @@ class CheckHFViewModel(val dataRepository: DataRepository,val settingRepository:
         SocketManager.get().openPassageway = object : BaseDataCallback {
             override fun onData(source: ByteArray) {
                 if (source.contentEquals(command)) {
-                    readUHFValue()
+                    readHFValue()
                 }
             }
         }
@@ -68,7 +68,7 @@ class CheckHFViewModel(val dataRepository: DataRepository,val settingRepository:
         }
     }
 
-    private fun readUHFValue() {
+    private fun readHFValue() {
         SocketManager.get().ycDataCallback = object : YcDataCallback {
             override fun onData(source: ByteArray) {
                 dealYcValue(source)
@@ -77,7 +77,7 @@ class CheckHFViewModel(val dataRepository: DataRepository,val settingRepository:
         updateCallback()
     }
 
-    fun updateCallback() {
+    private fun updateCallback() {
         val command = CommandHelp.readSettingValue(mCheckType.passageway, mCheckType.settingLength)
         disposableList.add(SocketManager.get().sendData(command))
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
@@ -108,9 +108,12 @@ class CheckHFViewModel(val dataRepository: DataRepository,val settingRepository:
             settingValues.clear()
             settingValues.addAll(valueList)
             settingBean?.limitValue = valueList[7].toInt()
-            checkParamsBean?.value?.frequencyBandAttr =
-                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
-            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+//            checkParamsBean?.value?.frequencyBandAttr =
+//                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+            val position  = valueList[11].toInt()
+            if (position < Constants.PHASE_MODEL_LIST.size) {
+                checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+            }
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
         updateSettingValue(mCheckType)

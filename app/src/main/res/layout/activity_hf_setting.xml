@@ -65,7 +65,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
                     android:background="@drawable/shape_content_bg"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -192,7 +193,8 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
                     android:background="@drawable/shape_content_bg"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -283,7 +285,8 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
-                    android:background="@drawable/shape_content_bg">
+                    android:background="@drawable/shape_content_bg"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -314,7 +317,8 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
-                    android:background="@drawable/shape_content_bg">
+                    android:background="@drawable/shape_content_bg"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -349,7 +353,8 @@
                     android:background="@drawable/shape_button_common_r"
                     android:text="校准"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -447,6 +452,360 @@
                             tools:text="-30" />
 
                     </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="警戒门限"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="numberSigned"
+                        android:padding="15dp"
+                        android:text="@={vm.jjLimitValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="过高门限"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="numberSigned"
+                        android:padding="15dp"
+                        android:text="@={vm.overLimitValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="告警门限"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="numberSigned"
+                        android:padding="15dp"
+                        android:text="@={vm.alarmLimitValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="最大幅值与平均值最小差值"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.maxAverageValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="1秒放电周期最小值"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.secondCycleMinValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="1秒最小放电次数"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.secondDischargeMinCountStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="噪声宽度门限"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.noiseLimitStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="通道门限值"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.limitValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="触发门限值"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="number"
+                        android:padding="15dp"
+                        android:text="@={vm.cfLimitValueStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="低通滤波"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="numberDecimal"
+                        android:padding="15dp"
+                        android:text="@={vm.lowPassFilteringStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="高通滤波"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="end"
+                        android:inputType="numberDecimal"
+                        android:padding="15dp"
+                        android:text="@={vm.highPassFilteringStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="20" />
 
                 </LinearLayout>
             </LinearLayout>

@@ -7,18 +7,20 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.CheckTEVDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
+import com.mr.mf_pd.application.view.callback.CheckActionListener
 import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingActivity
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
 import kotlinx.android.synthetic.main.activity_check_tev.*
 
-class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
+class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() , CheckActionListener {
 
 
     private val viewModel by viewModels<CheckTEVViewModel> { getViewModelFactory() }
@@ -66,6 +68,55 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() {
                 RealModelFragment.create(mDeviceBean)
             }
         }
+    }
+
+    override fun getSettingValues(): List<Float> {
+        return viewModel.settingValues
+    }
+
+    override fun writeSettingValue() {
+        viewModel.writeSetting = true
+        viewModel.writeValue()
+    }
+
+    override fun getLimitPosition(): Int {
+        return 7
+    }
+
+    override fun getBandDetectionPosition(): Int {
+        return -1
+    }
+
+    override fun addLimitValue() {
+        if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
+            val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
+            var newValue = currentValue + ConstantInt.LIMIT_VALUE_STEP
+            if (newValue > 8192) {
+                newValue = 8192
+            }
+            viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
+            writeSettingValue()
+        }
+    }
+
+    override fun downLimitValue() {
+        if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
+            val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
+            var newValue = currentValue - ConstantInt.LIMIT_VALUE_STEP
+            if (newValue < 0) {
+                newValue = 0
+            }
+            viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
+            writeSettingValue()
+        }
+    }
+
+    override fun changeBandDetectionModel() {
+
+    }
+
+    override fun getYcByteArray(): ByteArray? {
+        return viewModel.ycByteArray
     }
 
 }

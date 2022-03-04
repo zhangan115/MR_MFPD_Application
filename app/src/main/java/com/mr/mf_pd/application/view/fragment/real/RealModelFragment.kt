@@ -1,9 +1,11 @@
 package com.mr.mf_pd.application.view.fragment.real
 
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
@@ -100,7 +102,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-
+        if (viewModel.checkType == CheckType.UHF){
+            image5.visibility = View.VISIBLE
+        }else{
+            image5.visibility = View.GONE
+        }
         rendererSet = true
     }
 

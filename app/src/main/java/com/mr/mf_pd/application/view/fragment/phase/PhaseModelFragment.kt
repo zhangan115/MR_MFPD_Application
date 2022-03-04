@@ -1,9 +1,11 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
@@ -85,6 +87,9 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         }
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
+        }
+        if (viewModel.checkType == CheckType.HF || viewModel.checkType == CheckType.TEV){
+            image5.visibility = View.GONE
         }
         rendererSet = true
     }

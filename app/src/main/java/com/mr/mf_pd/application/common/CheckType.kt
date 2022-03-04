@@ -33,7 +33,7 @@ enum class CheckType(
         ".check_tev",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_TEV),
-        10,
+        9,
         MutableLiveData(CheckParamsBean(1))
     ),
     AE(
@@ -43,7 +43,7 @@ enum class CheckType(
         ".check_ae",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_AC),
-        10,
+        12,
         MutableLiveData(CheckParamsBean(2))
     ),
     HF(
@@ -53,7 +53,7 @@ enum class CheckType(
         ".check_hf",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_HF),
-        10,
+        12,
         MutableLiveData(CheckParamsBean(3))
     );
 }

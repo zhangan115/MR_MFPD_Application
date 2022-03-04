@@ -18,20 +18,6 @@ class ACSettingActivity : BaseSettingActivity<ACSettingDataBinding>() {
 
     private val viewModel by viewModels<ACSettingViewModel> { getViewModelFactory() }
 
-    override fun initView(savedInstanceState: Bundle?) {
-        fzUnitLayout.setOnClickListener {
-            //检测频带
-            MaterialDialog(this)
-                .show {
-                    listItems(R.array.fz_unit_list) { _, index, text ->
-                        viewModel.fzUnitStr.postValue(text.toString())
-                        viewModel.checkType.settingBean.fzUnit = index
-                    }
-                    lifecycleOwner(this@ACSettingActivity)
-                }
-        }
-    }
-
     override fun initData(savedInstanceState: Bundle?) {
         super.initData(savedInstanceState)
         dataBinding.vm = viewModel

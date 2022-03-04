@@ -40,4 +40,10 @@ data class SettingBean(
     var secondDischargeMinCount: Int? = null,
     //噪声宽度门限
     var noiseLimit: Int? = null,
+    //触发门限值
+    var cfLimitValue: Int? = null,
+    //低通滤波器
+    var lowPassFiltering: Float? = null,
+    //高通滤波器
+    var highPassFiltering: Float? = null,
 )

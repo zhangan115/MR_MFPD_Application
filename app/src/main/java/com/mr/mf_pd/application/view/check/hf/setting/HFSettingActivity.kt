@@ -8,18 +8,18 @@ import com.mr.mf_pd.application.databinding.HFSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseSettingActivity
 import kotlinx.android.synthetic.main.activity_hf_setting.*
-import kotlinx.android.synthetic.main.activity_uhf_setting.*
-import kotlinx.android.synthetic.main.activity_uhf_setting.phaseModelLayout
 
 class HFSettingActivity : BaseSettingActivity<HFSettingDataBinding>() {
 
     private val viewModel by viewModels<HFSettingViewModel> { getViewModelFactory() }
 
     override fun initView(savedInstanceState: Bundle?) {
+        super.initView(savedInstanceState)
         calibrationButton.setOnClickListener {
 
         }
     }
+
 
     override fun initData(savedInstanceState: Bundle?) {
         super.initData(savedInstanceState)

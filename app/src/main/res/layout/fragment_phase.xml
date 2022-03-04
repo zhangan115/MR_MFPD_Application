@@ -34,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:id="@+id/phaseActionLayout"
             android:layout_marginBottom="10dp"
             android:gravity="end">
 
@@ -62,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="12dp"
                 android:background="@mipmap/uhf_icon_reset" />
 
             <ImageView
