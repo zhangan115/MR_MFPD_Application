@@ -4,6 +4,7 @@ import android.webkit.MimeTypeMap;
 
 
 import com.mr.mf_pd.application.R;
+import com.mr.mf_pd.application.common.CheckType;
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel;
 
 import java.io.File;
@@ -11,18 +12,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 public class FileTypeUtils {
 
-    public enum CheckType {
-        ALL, UHF, AC, TEV, HF
-    }
 
-    public static String getCheckTypeStr(FileType fileType) {
-        if (fileType == FileType.AC) {
-            return ".check_ac";
+    public static String getCheckTypeStr(@Nullable FileType fileType) {
+        if (fileType == FileType.AE) {
+            return ".check_ae";
         } else if (fileType == FileType.HF) {
             return ".check_hf";
         } else if (fileType == FileType.UHF) {
@@ -35,8 +34,8 @@ public class FileTypeUtils {
 
     @Nullable
     public static FileType getCheckTypeFromFile(File file) {
-        if (file.getName().startsWith(".check_ac")) {
-            return FileType.AC;
+        if (file.getName().startsWith(".check_ae")) {
+            return FileType.AE;
         }
         if (file.getName().startsWith(".check_hf")) {
             return FileType.HF;
@@ -50,6 +49,22 @@ public class FileTypeUtils {
         return null;
     }
 
+    @Nullable
+    public static CheckType getCheckType(FileType fileType){
+        switch (fileType){
+            case UHF:
+                return CheckType.UHF;
+            case HF:
+                return CheckType.HF;
+            case AE:
+                return CheckType.AE;
+            case TEV:
+                return CheckType.TEV;
+            default:
+                return null;
+        }
+    }
+
     public static FileType getFileType(int type) {
         return FileType.values()[type];
     }
@@ -57,7 +72,7 @@ public class FileTypeUtils {
     public enum FileType {
         DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
         UHF(R.mipmap.detect_icon_uhf, R.string.type_uhf),
-        AC(R.mipmap.detect_icon_ac, R.string.type_ac),
+        AE(R.mipmap.detect_icon_ac, R.string.type_ac),
         TEV(R.mipmap.detect_icon_tev, R.string.type_tev),
         HF(R.mipmap.detect_icon_hf, R.string.type_hf);
 
@@ -95,8 +110,8 @@ public class FileTypeUtils {
     }
 
     public static FileType getFileType(CheckDataFileModel file) {
-        if (file.getFile().getName().startsWith(".check_ac")) {
-            return FileType.AC;
+        if (Objects.requireNonNull(file.getFile()).getName().startsWith(".check_ae")) {
+            return FileType.AE;
         }
         if (file.getFile().getName().startsWith(".check_hf")) {
             return FileType.HF;

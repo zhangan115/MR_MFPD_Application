@@ -34,6 +34,7 @@ import com.mr.mf_pd.application.view.check.tev.CheckTEVViewModel
 import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingViewModel
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFViewModel
 import com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingViewModel
+import com.mr.mf_pd.application.view.data.FileDataViewModel
 import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelViewModel
 import com.mr.mf_pd.application.view.fragment.phase.PhaseModelViewModel
 import com.mr.mf_pd.application.view.fragment.real.RealModelViewModel
@@ -95,6 +96,9 @@ class ViewModelFactory constructor(
                 ContinuityModelViewModel(dataRepository)
             isAssignableFrom(SettingViewModel::class.java) ->
                 SettingViewModel(settingRepository)
+
+            isAssignableFrom(FileDataViewModel::class.java) ->
+                FileDataViewModel(dataRepository,settingRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

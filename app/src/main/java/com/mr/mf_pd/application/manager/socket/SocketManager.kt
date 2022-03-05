@@ -146,25 +146,30 @@ class SocketManager private constructor() {
                 CommandType.values().firstOrNull { it.funCode == byteList[1] }) {
                 CommandType.SendTime -> {
                     if (byteList.size >= commandType.length) {
-                        byteList.removeAll(handOut(byteList, commandType.length))
+                        handOut(byteList, commandType.length)
+                        dealByteList = byteList.subList(commandType.length, byteList.size)
                     }
                 }
                 CommandType.SwitchPassageway -> {
                     if (byteList.size >= commandType.length) {
-                        byteList.removeAll(handOut(byteList, commandType.length))
+                        handOut(byteList, commandType.length)
+                        dealByteList = byteList.subList(commandType.length, byteList.size)
                     }
                 }
                 CommandType.ReadYcData -> {
                     val length = byteList[2].toInt() * 4 + 5
-                    byteList.removeAll(handOut(byteList, length))
+                    handOut(byteList, length)
+                    dealByteList = byteList.subList(length, byteList.size)
                 }
                 CommandType.ReadSettingValue -> {
                     val length = byteList[2].toInt() * 4 + 5
-                    byteList.removeAll(handOut(byteList, length))
+                    handOut(byteList, length)
+                    dealByteList = byteList.subList(length, byteList.size)
                 }
                 CommandType.WriteValue -> {
                     val length = byteList[2].toInt() + 5
-                    byteList.removeAll(handOut(byteList, length))
+                    handOut(byteList, length)
+                    dealByteList = byteList.subList(length, byteList.size)
                 }
                 CommandType.FdData -> {
 //                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
@@ -191,9 +196,8 @@ class SocketManager private constructor() {
         }
     }
 
-    private fun handOut(byteList: List<Byte>, length: Int): List<Byte> {
-        val list = byteList.subList(0, length)
-        val source = Bytes.toArray(list)
+    private fun handOut(byteList: List<Byte>, length: Int) {
+        val source = Bytes.toArray(byteList.subList(0, length))
         when (CommandType.values().firstOrNull { it.funCode == source[1] }) {
             CommandType.SendTime -> {
                 sendTimeCallback?.onData(source)
@@ -227,7 +231,6 @@ class SocketManager private constructor() {
 
             }
         }
-        return list
     }
 
     /**
@@ -334,7 +337,7 @@ class SocketManager private constructor() {
             } finally {
                 emitter.onComplete()
             }
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe()
+        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
     }
 
     @Synchronized

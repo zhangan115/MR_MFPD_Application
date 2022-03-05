@@ -125,7 +125,7 @@ class CheckTEVViewModel(val dataRepository: DataRepository,val settingRepository
             settingBean?.limitValue = valueList[7].toInt()
             checkParamsBean?.value?.frequencyBandAttr =
                 Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
-            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+//            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
             toastStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
