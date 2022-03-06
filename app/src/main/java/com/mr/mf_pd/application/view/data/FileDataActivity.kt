@@ -114,7 +114,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
         }
         initFragmentView()
         checkType?.let {
-            viewModel.start(it)
+            viewModel.start(it,currentFile)
         }
     }
     

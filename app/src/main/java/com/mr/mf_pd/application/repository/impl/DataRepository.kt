@@ -72,5 +72,14 @@ interface DataRepository {
      */
     fun readYcValue(): Disposable
 
+    /**
+     * 从文件中获取数据
+     */
+    fun readDataFromFile(file: File)
+
+    /**
+     * 从文件中读取实时数据
+     */
+    fun readRalDataFromFile(file: File)
 
 }

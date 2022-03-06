@@ -3,8 +3,10 @@ package com.mr.mf_pd.application.utils;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.common.primitives.Bytes;
 import com.google.gson.Gson;
 import com.mr.mf_pd.application.common.ConstantStr;
 import com.mr.mf_pd.application.view.file.model.CheckConfigModel;
@@ -164,6 +166,21 @@ public class FileUtils {
         }
         fis.close();
         return sb.toString();
+    }
+    @NonNull
+    public static List<Byte> readBytesFromFile(File file) throws IOException {
+        if (!file.exists()) {
+            return null;
+        }
+        FileInputStream fis = new FileInputStream(file);
+        int size;
+        List<Byte> bytesList = new ArrayList<>();
+        byte[] bytes = new byte[1024];
+        while ((size = fis.read(bytes)) != -1) {
+            bytesList.addAll(Bytes.asList(bytes).subList(0,size));
+        }
+        fis.close();
+        return bytesList;
     }
 
     /**

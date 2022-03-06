@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import io.reactivex.disposables.Disposable
+import java.io.File
 
 class FileDataViewModel(val dataRepository: DataRepository, val settingRepository: SettingRepository):ViewModel() {
 
@@ -22,9 +23,10 @@ class FileDataViewModel(val dataRepository: DataRepository, val settingRepositor
     lateinit var mCheckType: CheckType
     var ycByteArray: ByteArray? = null
 
-    fun start(checkType: CheckType) {
+    fun start(checkType: CheckType,file:File) {
         mCheckType = checkType
-        dataRepository.setCheckType(checkType)
         checkParamsBean = checkType.checkParams
+        dataRepository.setCheckType(checkType)
+        dataRepository.readDataFromFile(file)
     }
 }

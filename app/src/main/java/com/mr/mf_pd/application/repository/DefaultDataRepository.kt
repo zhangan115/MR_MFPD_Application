@@ -2,20 +2,29 @@ package com.mr.mf_pd.application.repository
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.common.primitives.Bytes
+import com.google.gson.Gson
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.callback.ReadDataFromFileCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 import org.greenrobot.eventbus.Logger
 import java.io.File
+import java.io.FileInputStream
+import java.io.FilenameFilter
 import java.text.DecimalFormat
 import java.util.*
 import java.util.logging.Level
@@ -49,6 +58,8 @@ class DefaultDataRepository : DataRepository {
     var realData: ArrayList<PrPsCubeList> = ArrayList()
 
     private var realDataCallbacks: ArrayList<RealDataCallback> = ArrayList()
+
+    var realDataFromFileCallback: ReadDataFromFileCallback? = null
 
     override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
         val list = ArrayList<HashMap<Int, Float>>()
@@ -131,6 +142,53 @@ class DefaultDataRepository : DataRepository {
         return SocketManager.get().sendData(CommandHelp.readYcValue(getCheckType().passageway))
     }
 
+    override fun readDataFromFile(file: File) {
+        var ycFile: File? = null
+        var settingFile: File? = null
+        val files = file.listFiles()
+        files?.forEach {
+            if (it.name.equals(ConstantStr.CHECK_YC_FILE_NAME)) {
+                ycFile = it
+            }
+            if (it.name.equals(ConstantStr.CHECK_FILE_SETTING)) {
+                settingFile = it
+            }
+        }
+        if (ycFile != null && ycFile!!.exists()) {
+            val bytes = FileUtils.readBytesFromFile(ycFile)
+            realDataFromFileCallback?.onYcData(Bytes.toArray(bytes))
+        }
+        if (settingFile != null && settingFile!!.exists()) {
+            val str = FileUtils.readStrFromFile(settingFile)
+            val settingBean = Gson().fromJson(str, SettingBean::class.java)
+            realDataFromFileCallback?.onSettingData(settingBean)
+        }
+    }
+
+    var readDataSize = 0
+
+    override fun readRalDataFromFile(file: File) {
+        val realFiles = file.listFiles(FilenameFilter { _, name ->
+            if (name.equals(ConstantStr.CHECK_REAL_DATA)) {
+                return@FilenameFilter true
+            }
+            return@FilenameFilter false
+        })
+        if (realFiles != null && realFiles.isNotEmpty()) {
+            val readFile = realFiles[0]
+            val fos = FileInputStream(readFile)
+            val buf = ByteArray(1024)
+            val size = fos.read(buf, readDataSize, buf.size)
+            if (size != -1) {
+                val lengthBytes = byteArrayOf(0x00, 0x00, buf[3], buf[4])
+                val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
+                val source = Bytes.toArray(Bytes.asList(*buf).subList(0, length))
+                readDataSize += length
+//                realDataListener.onData(source)
+            }
+        }
+    }
+
     private val realDataListener = object : ReadListener {
         override fun onData(source: ByteArray) {
             realDataCallbacks.forEach {
@@ -183,7 +241,7 @@ class DefaultDataRepository : DataRepository {
                         if (maxValue != realDataMaxValue.value!!) {
                             realDataMaxValue.postValue(maxValue)
                         }
-                    }else {
+                    } else {
                         realDataMaxValue.postValue(setting.maxValue)
                     }
                     if (realDataMinValue.value != null) {
