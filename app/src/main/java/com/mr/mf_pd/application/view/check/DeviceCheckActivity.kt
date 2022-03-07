@@ -34,25 +34,21 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         uhfDataLayout.setOnClickListener {
             val intent = Intent(this, CheckUHFActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.UHF)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         aeTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckACActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AE)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         tevDataLayout.setOnClickListener {
             val intent = Intent(this, CheckTEVActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.TEV)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         hfTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckHFActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT_1, mDeviceBean)
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {
