@@ -16,7 +16,6 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
     var isSaveData: MutableLiveData<Boolean>? = null
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
-    var ycByteArray: ByteArray? = null
 
     fun start() {
         this.checkType = dataRepository.getCheckType()
@@ -63,7 +62,7 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
     }
 
     fun createACheckFile(){
-        filesRepository.toCreateCheckFile(checkType,ycByteArray)
+        filesRepository.toCreateCheckFile(checkType)
     }
 
 

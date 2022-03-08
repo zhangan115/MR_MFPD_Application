@@ -188,5 +188,4 @@ class ReadFileManager {
         fdDataIStream = null
     }
 
-
 }

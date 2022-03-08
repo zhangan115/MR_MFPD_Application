@@ -139,7 +139,13 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun onYcDataChange(bytes: ByteArray) {
-
+        val valueList = splitBytesToValue(bytes)
+        if (valueList.size >= 2) {
+            view?.let {
+                viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
+                viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
+            }
+        }
     }
 
     override fun isSaving(): Boolean {

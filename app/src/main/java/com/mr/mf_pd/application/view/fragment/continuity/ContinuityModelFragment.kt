@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.fragment.continuity
 
 import android.os.Bundle
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_continuity.image2
 import kotlinx.android.synthetic.main.fragment_continuity.image3
 import kotlinx.android.synthetic.main.fragment_continuity.image4
 import kotlinx.android.synthetic.main.fragment_phase.*
+import java.text.DecimalFormat
 
 /**
  * 连续模式
@@ -36,11 +38,11 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun lazyLoad() {
-
+        viewModel.start()
     }
 
 
-    override fun setCheckFile(str:String) {
+    override fun setCheckFile(str: String) {
         viewModel.setCheckFile(str)
     }
 
@@ -57,6 +59,15 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         LineChartUtils.initNoAxisChart(lineChart2)
         LineChartUtils.initNoAxisChart(lineChart3)
         LineChartUtils.initNoAxisChart(lineChart4)
+        viewModel.isSaveData?.observe(this, {
+            if (it) {
+                val animation =
+                    AnimationUtils.loadAnimation(requireContext(), R.anim.twinkle_anim)
+                image1.startAnimation(animation)
+            } else {
+                image1.clearAnimation()
+            }
+        })
         image1.setOnClickListener {
             if (image1.animation == null) {
                 viewModel.startSaveData()
@@ -77,7 +88,37 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun onYcDataChange(bytes: ByteArray) {
+        val valueList = splitBytesToValue(bytes)
+        if (valueList.size >= 4) {
+            view?.let {
+                val fzValue = valueList[2]
+                viewModel.fzValueList.add(fzValue)
+                val df1 = DecimalFormat("0.00")
+                viewModel.fzValue.postValue(df1.format(fzValue))
+                val yxValue = valueList[3]
+                viewModel.yxValueList.add(yxValue)
+                viewModel.yxValue.postValue(df1.format(yxValue))
+                val f1Hz = valueList[4]
+                viewModel.f1ValueList.add(f1Hz)
+                viewModel.f1Value.postValue(df1.format(f1Hz))
+                val f2Hz = valueList[5]
+                viewModel.f2ValueList.add(f2Hz)
+                viewModel.f2Value.postValue(df1.format(f2Hz))
 
+                if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime) {
+                    viewModel.fzValueList.removeFirst()
+                }
+                if (viewModel.yxValueList.size > viewModel.checkType.settingBean.ljTime) {
+                    viewModel.yxValueList.removeFirst()
+                }
+                if (viewModel.f1ValueList.size > viewModel.checkType.settingBean.ljTime) {
+                    viewModel.f1ValueList.removeFirst()
+                }
+                if (viewModel.f2ValueList.size > viewModel.checkType.settingBean.ljTime) {
+                    viewModel.f2ValueList.removeFirst()
+                }
+            }
+        }
     }
 
     override fun setViewModel(dataBinding: ContinuityDataBinding?) {

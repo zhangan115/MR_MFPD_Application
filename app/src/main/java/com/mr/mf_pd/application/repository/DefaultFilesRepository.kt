@@ -95,7 +95,7 @@ class DefaultFilesRepository : FilesRepository {
         checkFile = file
     }
 
-    override fun toCreateCheckFile(checkType: CheckType, ycData: ByteArray?) {
+    override fun toCreateCheckFile(checkType: CheckType) {
         if (ycTempFile != null && realDataTempFile != null && checkFile != null) {
             GlobalScope.runCatching {
                 try {

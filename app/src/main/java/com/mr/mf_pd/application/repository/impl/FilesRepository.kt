@@ -26,7 +26,7 @@ interface FilesRepository {
     /**
      * 生成一条监测数据
      */
-    fun toCreateCheckFile(checkType: CheckType, ycData: ByteArray?)
+    fun toCreateCheckFile(checkType: CheckType)
 
     /**
      * 当前项目地址

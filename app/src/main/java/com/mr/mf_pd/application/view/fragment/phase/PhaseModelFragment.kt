@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
+import java.text.DecimalFormat
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
@@ -149,9 +150,12 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
-            //频率
             view?.let {
                 viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
+                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE) && valueList.size >= 6) {
+                    val df1 = DecimalFormat("0.00")
+                    viewModel.checkType.checkParams.value?.effectiveValueAttr = df1.format(valueList[3])
+                }
                 viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
             }
         }

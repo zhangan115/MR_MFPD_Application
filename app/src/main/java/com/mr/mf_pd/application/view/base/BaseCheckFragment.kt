@@ -23,6 +23,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     var checkActionListener: CheckActionListener? = null
     var location: String? = null
     private val requestChooseDirCode = 200
+    var isOpenFromFile = false
 
     open fun showSaveFileDialog() {
         activity?.let {

@@ -113,10 +113,33 @@ class CheckDataViewModel(
         if (valueList.size == mCheckType.settingLength) {
             settingValues.clear()
             settingValues.addAll(valueList)
-            settingBean?.limitValue = valueList[7].toInt()
-            checkParamsBean?.value?.frequencyBandAttr =
-                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
-            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+            when (mCheckType) {
+                CheckType.AE -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                }
+                CheckType.TEV -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.frequencyBandAttr =
+                        Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+                }
+                CheckType.HF -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    val position = valueList[11].toInt()
+                    if (position < Constants.PHASE_MODEL_LIST.size) {
+                        checkParamsBean?.value?.phaseAttr =
+                            Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                    }
+                }
+                CheckType.UHF -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.frequencyBandAttr =
+                        Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+                }
+            }
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
         updateSettingValue(mCheckType)
@@ -128,11 +151,35 @@ class CheckDataViewModel(
         if (valueList.size == mCheckType.settingLength) {
             settingValues.clear()
             settingValues.addAll(valueList)
-            settingBean?.limitValue = valueList[7].toInt()
-            checkParamsBean?.value?.frequencyBandAttr =
-                Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
-            checkParamsBean?.value?.phaseAttr = Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
-            toastStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
+            when (mCheckType) {
+                CheckType.AE -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                }
+                CheckType.TEV -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.frequencyBandAttr =
+                        Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+                    toastStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
+                }
+                CheckType.HF -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    val position = valueList[11].toInt()
+                    if (position < Constants.PHASE_MODEL_LIST.size) {
+                        checkParamsBean?.value?.phaseAttr =
+                            Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                    }
+                }
+                CheckType.UHF -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.frequencyBandAttr =
+                        Constants.BAND_DETECTION_LIST[valueList[8].toInt()]
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[9].toInt()]
+                    toastStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
+                }
+            }
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
         updateSettingValue(mCheckType)
@@ -188,6 +235,7 @@ class CheckDataViewModel(
             }
         }
         disposableList.clear()
+        disposable?.dispose()
         disposable = null
         SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
         SocketManager.get().openPassageway = null

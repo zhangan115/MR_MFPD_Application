@@ -19,6 +19,20 @@ class ContinuityModelViewModel(
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var isSaveData: MutableLiveData<Boolean>? = null
 
+    var fzValueList:ArrayList<Float> = ArrayList()
+    var yxValueList:ArrayList<Float> = ArrayList()
+    var f1ValueList:ArrayList<Float> = ArrayList()
+    var f2ValueList:ArrayList<Float> = ArrayList()
+
+    var fzMinValue:MutableLiveData<String> = MutableLiveData()
+    var fzValue:MutableLiveData<String> = MutableLiveData()
+    var yxMinValue:MutableLiveData<String> = MutableLiveData()
+    var yxValue:MutableLiveData<String> = MutableLiveData()
+    var f1MinValue:MutableLiveData<String> = MutableLiveData()
+    var f1Value:MutableLiveData<String> = MutableLiveData()
+    var f2MinValue:MutableLiveData<String> = MutableLiveData()
+    var f2Value:MutableLiveData<String> = MutableLiveData()
+
     lateinit var checkType: CheckType
 
     fun start() {
@@ -34,7 +48,6 @@ class ContinuityModelViewModel(
         })
         dataRepository.addYcDataCallback(object :BaseDataCallback{
             override fun onData(source: ByteArray) {
-                Log.d("zhangan",source.toString())
                 if (filesRepository.isSaveData()?.value == true) {
                     filesRepository.toSaveYCData2File(source)
                 }
@@ -50,7 +63,7 @@ class ContinuityModelViewModel(
     }
 
     fun createACheckFile() {
-
+        filesRepository.toCreateCheckFile(checkType)
     }
 
     fun startSaveData() {

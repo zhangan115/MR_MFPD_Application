@@ -139,7 +139,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingStart="3dp"
-                                android:text="-7.8"
+                                android:text="@{vm.yxValue}"
                                 android:textColor="@color/text_title"
                                 android:textSize="13sp" />
 
@@ -216,7 +216,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingStart="3dp"
-                                android:text="-7.8"
+                                android:text="@{vm.fzValue}"
                                 android:textColor="@color/text_title"
                                 android:textSize="13sp" />
 
@@ -293,7 +293,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingStart="3dp"
-                                android:text="-7.8"
+                                android:text="@{vm.f1Value}"
                                 android:textColor="@color/text_title"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -375,7 +375,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:paddingStart="3dp"
-                                android:text="-7.8"
+                                android:text="@{vm.f2Value}"
                                 android:textColor="@color/text_title"
                                 android:textSize="13sp" />
                         </LinearLayout>

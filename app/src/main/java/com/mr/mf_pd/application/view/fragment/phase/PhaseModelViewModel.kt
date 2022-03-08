@@ -12,14 +12,12 @@ import java.io.File
 class PhaseModelViewModel(
     val dataRepository: DataRepository,
     val filesRepository: FilesRepository,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     lateinit var checkType: CheckType
     lateinit var gainValues: MutableLiveData<ArrayList<Float>>
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
-    var ycByteArray: ByteArray? = null
 
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
@@ -53,7 +51,7 @@ class PhaseModelViewModel(
     }
 
     fun createACheckFile(){
-        filesRepository.toCreateCheckFile(checkType,ycByteArray)
+        filesRepository.toCreateCheckFile(checkType)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
