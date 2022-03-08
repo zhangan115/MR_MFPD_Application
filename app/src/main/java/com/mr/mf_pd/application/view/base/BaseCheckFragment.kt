@@ -8,7 +8,9 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.CheckActionListener
+import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 
 /**
@@ -16,7 +18,7 @@ import com.mr.mf_pd.application.view.file.FilePickerActivity
  * @author zhangan
  * @since 2021-11-28
  */
-abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
+abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
 
     var checkActionListener: CheckActionListener? = null
     var location: String? = null
@@ -55,7 +57,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
         this.location = location
     }
 
-    open fun setCheckFile(str:String) {
+    open fun setCheckFile(str: String) {
 
     }
 
@@ -134,5 +136,21 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>() {
 
     fun downLimitValue() {
         checkActionListener?.downLimitValue()
+    }
+
+    fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {
+        val valueList = ArrayList<Float>()
+        if (bytes.size > 2) {
+            val length = bytes[2].toInt()
+            val source = ByteArray(length * 4)
+            System.arraycopy(bytes, 3, source, 0, bytes.size - 5)
+            for (i in 0 until (source.size / 4)) {
+                val value = ByteArray(4)
+                System.arraycopy(source, 4 * i, value, 0, 4)
+                val f = ByteUtil.getFloat(value)
+                valueList.add(f)
+            }
+        }
+        return valueList
     }
 }

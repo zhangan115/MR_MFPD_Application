@@ -12,6 +12,11 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_continuity.*
+import kotlinx.android.synthetic.main.fragment_continuity.image1
+import kotlinx.android.synthetic.main.fragment_continuity.image2
+import kotlinx.android.synthetic.main.fragment_continuity.image3
+import kotlinx.android.synthetic.main.fragment_continuity.image4
+import kotlinx.android.synthetic.main.fragment_phase.*
 
 /**
  * 连续模式
@@ -22,10 +27,9 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ContinuityModelFragment {
+        fun create(): ContinuityModelFragment {
             val fragment = ContinuityModelFragment()
             val bundle = Bundle()
-            bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
             return fragment
         }
@@ -33,6 +37,11 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun lazyLoad() {
 
+    }
+
+
+    override fun setCheckFile(str:String) {
+        viewModel.setCheckFile(str)
     }
 
     override fun getContentView(): Int {
@@ -49,17 +58,26 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         LineChartUtils.initNoAxisChart(lineChart3)
         LineChartUtils.initNoAxisChart(lineChart4)
         image1.setOnClickListener {
-
+            if (image1.animation == null) {
+                viewModel.startSaveData()
+            } else {
+                viewModel.stopSaveData()
+                showSaveFileDialog()
+            }
         }
         image2.setOnClickListener {
-
+            checkActionListener?.downLimitValue()
         }
         image3.setOnClickListener {
-
+            checkActionListener?.addLimitValue()
         }
         image4.setOnClickListener {
-
+            viewModel.cleanCurrentData()
         }
+    }
+
+    override fun onYcDataChange(bytes: ByteArray) {
+
     }
 
     override fun setViewModel(dataBinding: ContinuityDataBinding?) {
@@ -71,7 +89,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun cancelSaveData() {
-
+        viewModel.isSaveData?.postValue(false)
     }
 
 

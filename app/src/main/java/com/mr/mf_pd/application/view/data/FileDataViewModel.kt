@@ -6,11 +6,12 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
-import com.mr.mf_pd.application.repository.impl.SettingRepository
+import com.mr.mf_pd.application.repository.impl.FilesRepository
 import io.reactivex.disposables.Disposable
 import java.io.File
 
-class FileDataViewModel(val dataRepository: DataRepository, val settingRepository: SettingRepository):ViewModel() {
+class FileDataViewModel(var dataRepository: DataRepository, val fileRepository: FilesRepository) :
+    ViewModel() {
 
     var writeSetting = false
     var writeSettingCommand: ByteArray? = null
@@ -19,14 +20,13 @@ class FileDataViewModel(val dataRepository: DataRepository, val settingRepositor
     var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     val settingValues: ArrayList<Float> = ArrayList()
-    private var disposable: Disposable? = null
     lateinit var mCheckType: CheckType
     var ycByteArray: ByteArray? = null
 
-    fun start(checkType: CheckType,file:File) {
+    fun start(checkType: CheckType, file: File) {
         mCheckType = checkType
-        checkParamsBean = checkType.checkParams
         dataRepository.setCheckType(checkType)
-        dataRepository.readDataFromFile(file)
+        checkParamsBean = checkType.checkParams
+        fileRepository.setCurrentChickFile(file)
     }
 }

@@ -3,12 +3,13 @@ package com.mr.mf_pd.application.view.fragment.real
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import java.io.File
 
-class RealModelViewModel(val repository: DataRepository,private val filesRepository: FilesRepository) : ViewModel() {
+class RealModelViewModel(val dataRepository: DataRepository, private val filesRepository: FilesRepository) : ViewModel() {
 
     lateinit var checkType: CheckType
     lateinit var gainValues:MutableLiveData<ArrayList<Float>>
@@ -18,25 +19,32 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
     var ycByteArray: ByteArray? = null
 
     fun start() {
-        this.checkType = repository.getCheckType()
-        this.gainValues = repository.getGainValueList()
+        this.checkType = dataRepository.getCheckType()
+        this.gainValues = dataRepository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
-        repository.realDataListener()
-        repository.addRealDataCallback(object : RealDataCallback {
+        dataRepository.addDataListener()
+        dataRepository.addRealDataCallback(object : RealDataCallback {
             override fun onRealDataChanged(source: ByteArray) {
                 if (filesRepository.isSaveData()?.value == true) {
-                    filesRepository.toSaveData2File(source)
+                    filesRepository.toSaveRealData2File(source)
+                }
+            }
+        })
+        dataRepository.addYcDataCallback(object : BaseDataCallback {
+            override fun onData(source: ByteArray) {
+                if (filesRepository.isSaveData()?.value == true) {
+                    filesRepository.toSaveYCData2File(source)
                 }
             }
         })
     }
 
     fun addHUfData(callback: DataRepository.DataCallback) {
-        repository.addHufData(callback)
+        dataRepository.addHufData(callback)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        return repository.getPhaseData(1)
+        return dataRepository.getPhaseData(1)
     }
 
     fun startSaveData(){
@@ -60,12 +68,12 @@ class RealModelViewModel(val repository: DataRepository,private val filesReposit
 
 
     fun cleanCurrentData(){
-        repository.getGainValueList().postValue(ArrayList())
-        repository.cleanData()
+        dataRepository.getGainValueList().postValue(ArrayList())
+        dataRepository.cleanData()
     }
 
     override fun onCleared() {
         super.onCleared()
-        repository.removeRealDataListener()
+        dataRepository.removeRealDataListener()
     }
 }

@@ -31,7 +31,6 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() , CheckActionLis
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        fragmentCount = 2
         super.initData(savedInstanceState)
         viewModel.start(checkType)
     }
@@ -56,9 +55,9 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() , CheckActionLis
 
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return if (position == 0) {
-            PhaseModelFragment.create(mDeviceBean)
+            PhaseModelFragment.create()
         } else {
-            RealModelFragment.create(mDeviceBean)
+            RealModelFragment.create()
         }
     }
 
@@ -109,10 +108,6 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() , CheckActionLis
             viewModel.settingValues[getBandDetectionPosition()] = newModel.toFloat()
             writeSettingValue()
         }
-    }
-
-    override fun getYcByteArray(): ByteArray? {
-        return viewModel.ycByteArray
     }
 
     override fun writeSettingValue() {

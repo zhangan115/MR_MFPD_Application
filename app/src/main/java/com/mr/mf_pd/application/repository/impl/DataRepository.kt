@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.repository.impl
 
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
@@ -15,9 +16,9 @@ interface DataRepository {
     fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
 
     /**
-     * 实时数据监测
+     * 数据监测
      */
-    fun realDataListener()
+    fun addDataListener()
 
     /**
      * 移除实时数据回调
@@ -29,6 +30,16 @@ interface DataRepository {
      * @param callback 回调
      */
     fun addRealDataCallback(callback: RealDataCallback)
+
+    /**
+     * 增加遥测数据的回调
+     */
+    fun addYcDataCallback(callback: BaseDataCallback)
+
+    /**
+     * 移除遥测数据回调
+     */
+    fun removeYcDataCallback(callback: BaseDataCallback)
 
     /**
      * 切换实时数据监测通道
@@ -73,13 +84,8 @@ interface DataRepository {
     fun readYcValue(): Disposable
 
     /**
-     * 从文件中获取数据
+     * 一秒读取一次遥测数据
      */
-    fun readDataFromFile(file: File)
-
-    /**
-     * 从文件中读取实时数据
-     */
-    fun readRalDataFromFile(file: File)
+    fun readRepeatData(): Disposable
 
 }

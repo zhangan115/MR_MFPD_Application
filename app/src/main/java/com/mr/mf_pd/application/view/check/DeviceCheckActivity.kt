@@ -17,6 +17,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.ac.CheckACActivity
+import com.mr.mf_pd.application.view.check.activity.CheckDataActivity
 import com.mr.mf_pd.application.view.check.hf.CheckHFActivity
 import com.mr.mf_pd.application.view.check.tev.CheckTEVActivity
 import com.mr.mf_pd.application.view.check.uhf.CheckUHFActivity
@@ -32,22 +33,22 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
     override fun initView(savedInstanceState: Bundle?) {
         uhfDataLayout.setOnClickListener {
-            val intent = Intent(this, CheckUHFActivity::class.java)
+            val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.UHF)
             startActivity(intent)
         }
         aeTaskLayout.setOnClickListener {
-            val intent = Intent(this, CheckACActivity::class.java)
+            val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AE)
             startActivity(intent)
         }
         tevDataLayout.setOnClickListener {
-            val intent = Intent(this, CheckTEVActivity::class.java)
+            val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.TEV)
             startActivity(intent)
         }
         hfTaskLayout.setOnClickListener {
-            val intent = Intent(this, CheckHFActivity::class.java)
+            val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
             startActivity(intent)
         }

@@ -22,7 +22,6 @@ import java.util.Set;
  */
 public class PrpsPoint2DList {
 
-
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
     public static float minValue = -80.0f;

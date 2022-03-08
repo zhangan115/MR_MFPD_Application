@@ -40,10 +40,5 @@ interface CheckActionListener {
      * 修改频带检测类型
      */
     fun changeBandDetectionModel()
-
-    /**
-     * 获取遥测数据
-     */
-    fun getYcByteArray(): ByteArray?
 }
 

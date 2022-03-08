@@ -19,7 +19,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -31,13 +30,14 @@ class SocketManager private constructor() {
             : InputStream? = null
     private var outputStream //输出流
             : OutputStream? = null
-    private var readListener: ReadListener? = null
+
     private val mPulseDataListener: PulseDataListener? = null
     private var linkStateListeners: MutableList<LinkStateListener>? = null
 
     private val writeSettingCallbacks: ArrayList<WriteSettingDataCallback> = ArrayList()
     private val readSettingCallbacks: ArrayList<ReadSettingDataCallback> = ArrayList()
 
+    private var readDataCallback: ReadListener? = null
     var ycDataCallback: YcDataCallback? = null
     var sendTimeCallback: BaseDataCallback? = null
     var openPassageway: BaseDataCallback? = null
@@ -225,7 +225,7 @@ class SocketManager private constructor() {
                 mPulseDataListener?.onRead(source)
             }
             CommandType.RealData -> {
-                readListener?.onData(source)
+                readDataCallback?.onData(source)
             }
             else -> {
 
@@ -364,7 +364,7 @@ class SocketManager private constructor() {
             }
         }.subscribeOn(Schedulers.io()).repeatWhen { objectObservable: Observable<Any?> ->
             objectObservable.delay(time, unit)
-        }.observeOn(AndroidSchedulers.mainThread()).subscribe()
+        }.observeOn(Schedulers.io()).subscribe()
     }
 
     /**
@@ -382,14 +382,14 @@ class SocketManager private constructor() {
      * @param listener 读取监控
      */
     fun setReadListener(listener: ReadListener?) {
-        readListener = listener
+        readDataCallback = listener
     }
 
     /**
      * 移除读取回调
      */
     fun removeReadListener() {
-        readListener = null
+        readDataCallback = null
     }
 
 }

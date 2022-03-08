@@ -39,7 +39,6 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
 
     private val viewModel by viewModels<FileDataViewModel> { getViewModelFactory() }
 
-    var mDeviceBean: DeviceBean? = null
     lateinit var currentFile: File
     var checkType: CheckType? = null
     private var toolbarTitleStr = ""
@@ -79,22 +78,22 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
             CheckType.UHF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式","0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式","1"))
-                fragments.add(PhaseModelFragment.create(mDeviceBean))
-                fragments.add(RealModelFragment.create(mDeviceBean))
+                fragments.add(PhaseModelFragment.create())
+                fragments.add(RealModelFragment.create())
             }
             CheckType.HF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式","0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式","1"))
-                fragments.add(PhaseModelFragment.create(mDeviceBean))
-                fragments.add(RealModelFragment.create(mDeviceBean))
+                fragments.add(PhaseModelFragment.create())
+                fragments.add(RealModelFragment.create())
             }
             CheckType.TEV -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式","0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式","1"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式","2"))
-                fragments.add(ContinuityModelFragment.create(mDeviceBean))
-                fragments.add(PhaseModelFragment.create(mDeviceBean))
-                fragments.add(RealModelFragment.create(mDeviceBean))
+                fragments.add(ContinuityModelFragment.create())
+                fragments.add(PhaseModelFragment.create())
+                fragments.add(RealModelFragment.create())
             }
             CheckType.AE -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式","0"))
@@ -102,11 +101,11 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 checkFragmentLayout.addView(createTitleTextView("飞行模式","2"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式","3"))
                 checkFragmentLayout.addView(createTitleTextView("脉冲波形","4"))
-                fragments.add(ContinuityModelFragment.create(mDeviceBean))
-                fragments.add(PhaseModelFragment.create(mDeviceBean))
-                fragments.add(ACFlightModelFragment.create(mDeviceBean))
-                fragments.add(RealModelFragment.create(mDeviceBean))
-                fragments.add(ACPulseModelFragment.create(mDeviceBean))
+                fragments.add(ContinuityModelFragment.create())
+                fragments.add(PhaseModelFragment.create())
+                fragments.add(ACFlightModelFragment.create())
+                fragments.add(RealModelFragment.create())
+                fragments.add(ACPulseModelFragment.create())
             }
             else -> {
                 throw RuntimeException("文件不合法，请检查文件类型")

@@ -43,7 +43,12 @@ interface FilesRepository {
     /**
      * 保存数据到文件中
      */
-    fun toSaveData2File(source: ByteArray)
+    fun toSaveRealData2File(source: ByteArray)
+
+    /**
+     * 保存遥测数据到文件中
+     */
+    fun toSaveYCData2File(source: ByteArray)
 
     /**
      * 数据保存状态
@@ -51,5 +56,15 @@ interface FilesRepository {
     fun isSaveData(): MutableLiveData<Boolean>?
 
     fun openCheckFile()
+
+    /**
+     * 从文件中获取数据
+     */
+    fun readDataFromFile(file: File)
+
+    /**
+     * 从文件中读取实时数据
+     */
+    fun readRalDataFromFile(file: File)
 
 }

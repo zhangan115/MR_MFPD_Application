@@ -83,7 +83,6 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() , CheckActionLis
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        fragmentCount = 5
         super.initData(savedInstanceState)
         viewModel.start(checkType)
     }
@@ -118,19 +117,19 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() , CheckActionLis
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return when (position) {
             0 -> {
-                ContinuityModelFragment.create(mDeviceBean)
+                ContinuityModelFragment.create()
             }
             1 -> {
-                PhaseModelFragment.create(mDeviceBean)
+                PhaseModelFragment.create()
             }
             2 -> {
-                ACFlightModelFragment.create(mDeviceBean)
+                ACFlightModelFragment.create()
             }
             3 -> {
-                RealModelFragment.create(mDeviceBean)
+                RealModelFragment.create()
             }
             else -> {
-                ACPulseModelFragment.create(mDeviceBean)
+                ACPulseModelFragment.create()
             }
         }
     }
@@ -174,10 +173,6 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() , CheckActionLis
 
     override fun changeBandDetectionModel() {
 
-    }
-
-    override fun getYcByteArray(): ByteArray? {
-        return viewModel.ycByteArray
     }
 
     override fun writeSettingValue() {

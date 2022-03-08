@@ -33,7 +33,6 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() , CheckActionL
     }
 
     override fun initData(savedInstanceState: Bundle?) {
-        fragmentCount = 3
         super.initData(savedInstanceState)
         viewModel.start(checkType)
     }
@@ -59,13 +58,13 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() , CheckActionL
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return when (position) {
             0 -> {
-                ContinuityModelFragment.create(mDeviceBean)
+                ContinuityModelFragment.create()
             }
             1 -> {
-                PhaseModelFragment.create(mDeviceBean)
+                PhaseModelFragment.create()
             }
             else -> {
-                RealModelFragment.create(mDeviceBean)
+                RealModelFragment.create()
             }
         }
     }
@@ -113,10 +112,6 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() , CheckActionL
 
     override fun changeBandDetectionModel() {
 
-    }
-
-    override fun getYcByteArray(): ByteArray? {
-        return viewModel.ycByteArray
     }
 
 }

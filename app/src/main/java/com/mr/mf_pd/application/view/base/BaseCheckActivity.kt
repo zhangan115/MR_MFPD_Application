@@ -21,17 +21,15 @@ import com.sito.tool.library.utils.DisplayUtil
 
 abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), View.OnClickListener{
 
-    open var mDeviceBean: DeviceBean? = null
     open var width: Int? = null
     open lateinit var checkType: CheckType
-    open var fragmentCount = 2
     open var currentIndex = 0
     open var titleList: ArrayList<TextView> = ArrayList()
     open var fragments: ArrayList<BaseCheckFragment<*>> = ArrayList()
 
     override fun initView(savedInstanceState: Bundle?) {
         width =
-            ((resources.displayMetrics.widthPixels - DisplayUtil.dip2px(this, 24f)) / fragmentCount)
+            ((resources.displayMetrics.widthPixels - DisplayUtil.dip2px(this, 24f)) / fragments.size)
         if (width != null) {
             titleList.forEach {
                 it.layoutParams =
@@ -73,20 +71,17 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
         })
         getViewPager().adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                val fragment = createCheckFragment(position)
-                fragments.add(fragment)
-                return fragment
+                return fragments[position]
             }
 
             override fun getItemCount(): Int {
-                return fragmentCount
+                return fragments.size
             }
         }
     }
 
     override fun initData(savedInstanceState: Bundle?) {
         checkType = intent.getSerializableExtra(ConstantStr.KEY_BUNDLE_OBJECT) as CheckType
-        mDeviceBean = intent.getParcelableExtra(ConstantStr.KEY_BUNDLE_OBJECT_1)
     }
 
     override fun getToolBarTitle(): String {

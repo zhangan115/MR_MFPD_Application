@@ -21,10 +21,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACFlightModelFragment {
+        fun create(): ACFlightModelFragment {
             val fragment = ACFlightModelFragment()
             val bundle = Bundle()
-            bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
             return fragment
         }
@@ -46,6 +45,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         activity?.let {
             LineChartUtils.initChart(lineChart, it.applicationContext)
         }
+    }
+
+    override fun onYcDataChange(bytes: ByteArray) {
+
     }
 
     override fun setViewModel(dataBinding: ACFlightDataBinding?) {

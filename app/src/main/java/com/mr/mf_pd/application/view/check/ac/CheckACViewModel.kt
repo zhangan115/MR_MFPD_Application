@@ -86,8 +86,8 @@ class CheckACViewModel(val dataRepository: DataRepository,val settingRepository:
     private val readSettingDataCallback = object : ReadSettingDataCallback {
         override fun onData(source: ByteArray) {
             dealSettingValue(source)
-            if (disposable == null || disposable!!.isDisposed) {
-                disposableList.add(dataRepository.readYcValue())
+            if (disposable == null) {
+                disposable = dataRepository.readRepeatData()
             }
         }
     }
@@ -191,6 +191,7 @@ class CheckACViewModel(val dataRepository: DataRepository,val settingRepository:
             }
         }
         disposableList.clear()
+        disposable?.dispose()
         disposable = null
         SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
         SocketManager.get().openPassageway = null

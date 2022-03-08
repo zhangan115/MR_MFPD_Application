@@ -24,10 +24,9 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): PhaseModelFragment {
+        fun create(): PhaseModelFragment {
             val fragment = PhaseModelFragment()
             val bundle = Bundle()
-            bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
             return fragment
         }
@@ -88,14 +87,13 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-        if (viewModel.checkType == CheckType.HF || viewModel.checkType == CheckType.TEV){
+        if (viewModel.checkType == CheckType.HF || viewModel.checkType == CheckType.TEV) {
             image5.visibility = View.GONE
         }
         rendererSet = true
     }
 
-    override fun setCheckFile(str:String) {
-        viewModel.ycByteArray = checkActionListener?.getYcByteArray()
+    override fun setCheckFile(str: String) {
         viewModel.setCheckFile(str)
     }
 
@@ -113,7 +111,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 val str = viewModel.checkType.settingBean.minValue + step * i
                 yList.add(str.toString())
             }
-        }else{
+        } else {
             if (DefaultDataRepository.realDataMaxValue.value != null && DefaultDataRepository.realDataMinValue.value != null) {
                 val value =
                     DefaultDataRepository.realDataMaxValue.value!! - DefaultDataRepository.realDataMinValue.value!!
@@ -145,6 +143,17 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         super.onPause()
         if (rendererSet) {
             surfaceView1.onPause()
+        }
+    }
+
+    override fun onYcDataChange(bytes: ByteArray) {
+        val valueList = splitBytesToValue(bytes)
+        if (valueList.size >= 2) {
+            //频率
+            view?.let {
+                viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
+                viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
+            }
         }
     }
 

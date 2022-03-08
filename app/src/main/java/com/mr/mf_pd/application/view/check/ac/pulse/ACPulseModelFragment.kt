@@ -22,10 +22,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): ACPulseModelFragment {
+        fun create(): ACPulseModelFragment {
             val fragment = ACPulseModelFragment()
             val bundle = Bundle()
-            bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
             return fragment
         }
@@ -71,5 +70,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         super.onPause()
         Log.d("zhangan", "onPause")
         viewModel.closePulseData()
+    }
+
+    override fun onYcDataChange(bytes: ByteArray) {
+
     }
 }

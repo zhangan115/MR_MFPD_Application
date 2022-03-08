@@ -28,6 +28,7 @@ import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
 import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelViewModel
 import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelViewModel
 import com.mr.mf_pd.application.view.check.ac.setting.ACSettingViewModel
+import com.mr.mf_pd.application.view.check.activity.CheckDataViewModel
 import com.mr.mf_pd.application.view.check.hf.CheckHFViewModel
 import com.mr.mf_pd.application.view.check.hf.setting.HFSettingViewModel
 import com.mr.mf_pd.application.view.check.tev.CheckTEVViewModel
@@ -93,12 +94,13 @@ class ViewModelFactory constructor(
             isAssignableFrom(TEVSettingViewModel::class.java) ->
                 TEVSettingViewModel(settingRepository)
             isAssignableFrom(ContinuityModelViewModel::class.java) ->
-                ContinuityModelViewModel(dataRepository)
+                ContinuityModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(SettingViewModel::class.java) ->
                 SettingViewModel(settingRepository)
-
+            isAssignableFrom(CheckDataViewModel::class.java) ->
+                CheckDataViewModel(dataRepository,settingRepository)
             isAssignableFrom(FileDataViewModel::class.java) ->
-                FileDataViewModel(dataRepository,settingRepository)
+                FileDataViewModel(dataRepository,filesRepository)
             else ->
                 throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

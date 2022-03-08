@@ -31,10 +31,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     companion object {
 
-        fun create(deviceBean: DeviceBean?): RealModelFragment {
+        fun create(): RealModelFragment {
             val fragment = RealModelFragment()
             val bundle = Bundle()
-            bundle.putParcelable(ConstantStr.KEY_BUNDLE_OBJECT, deviceBean)
             fragment.arguments = bundle
             return fragment
         }
@@ -116,7 +115,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
 
     override fun setCheckFile(str:String) {
-        viewModel.ycByteArray = checkActionListener?.getYcByteArray()
         viewModel.setCheckFile(str)
     }
 
@@ -138,6 +136,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
+    }
+
+    override fun onYcDataChange(bytes: ByteArray) {
+
     }
 
     override fun isSaving(): Boolean {
