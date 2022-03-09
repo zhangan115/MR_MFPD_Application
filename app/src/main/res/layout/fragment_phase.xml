@@ -78,6 +78,7 @@
             android:id="@+id/gainChartView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:gain_minValue="@{vm.gainMinValue}"
             app:gain_value="@{vm.gainValues}" />
 
         <TextView

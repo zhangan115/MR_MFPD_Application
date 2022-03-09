@@ -38,7 +38,7 @@ class GainChartView : LinearLayout {
         LineChartUtils.initNoAxisChart(lineChart)
     }
 
-    private fun getLineData(chartDataList: List<Float>): LineData {
+    private fun getLineData(chartDataList: List<Float>,minValue:Float?): LineData {
         val dataSets: MutableList<ILineDataSet> =
             ArrayList()
         val entries: MutableList<Entry> =
@@ -47,7 +47,11 @@ class GainChartView : LinearLayout {
             var max = chartDataList.first()
             var min = chartDataList.first()
             for (i in chartDataList.indices) {
-                entries.add(Entry(i.toFloat(), -1 * chartDataList[i]))
+                if (minValue != null) {
+                    entries.add(Entry(i.toFloat(), chartDataList[i] - minValue))
+                } else {
+                    entries.add(Entry(i.toFloat(), chartDataList[i]))
+                }
                 min = min(min, chartDataList[i])
                 max = max(max, chartDataList[i])
             }
@@ -75,9 +79,9 @@ class GainChartView : LinearLayout {
         dataSet.highLightColor = context.getColor(R.color.colorTransparent)
     }
 
-    fun updateData(list: ArrayList<Float>) {
-        list.reverse()
-        lineChart.data = getLineData(list)
+    fun updateData(list: ArrayList<Float>,minValue:Float?) {
+//        list.reverse()
+        lineChart.data = getLineData(list,minValue)
         lineChart.invalidate()
     }
 

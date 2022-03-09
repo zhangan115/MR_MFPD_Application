@@ -58,9 +58,9 @@ class CheckUHFActivity : BaseCheckActivity<CheckUHFDataBinding>(), CheckActionLi
 
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return if (position == 0) {
-            PhaseModelFragment.create()
+            PhaseModelFragment.create(false)
         } else {
-            RealModelFragment.create()
+            RealModelFragment.create(false)
         }
     }
 

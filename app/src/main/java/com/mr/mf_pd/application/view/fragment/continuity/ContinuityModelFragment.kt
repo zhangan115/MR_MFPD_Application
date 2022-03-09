@@ -2,23 +2,18 @@ package com.mr.mf_pd.application.view.fragment.continuity
 
 import android.os.Bundle
 import android.view.animation.AnimationUtils
+import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
-import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
-
-import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_continuity.*
-import kotlinx.android.synthetic.main.fragment_continuity.image1
-import kotlinx.android.synthetic.main.fragment_continuity.image2
-import kotlinx.android.synthetic.main.fragment_continuity.image3
-import kotlinx.android.synthetic.main.fragment_continuity.image4
-import kotlinx.android.synthetic.main.fragment_phase.*
 import java.text.DecimalFormat
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 连续模式
@@ -29,9 +24,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     companion object {
 
-        fun create(): ContinuityModelFragment {
+        fun create(isFile: Boolean): ContinuityModelFragment {
             val fragment = ContinuityModelFragment()
             val bundle = Bundle()
+            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN, isFile)
             fragment.arguments = bundle
             return fragment
         }
@@ -41,6 +37,9 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         viewModel.start()
     }
 
+    override fun createCheckFile() {
+        viewModel.createACheckFile()
+    }
 
     override fun setCheckFile(str: String) {
         viewModel.setCheckFile(str)
@@ -51,7 +50,8 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun initData() {
-
+        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
+        viewModel.isFile.postValue(isFile)
     }
 
     override fun initView() {
@@ -84,26 +84,74 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         }
         image4.setOnClickListener {
             viewModel.cleanCurrentData()
+            LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
+            LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
+            LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
+            LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
         }
     }
+
+    var maxValue: Float? = null
+    var minValue: Float? = null
 
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 4) {
             view?.let {
-                val fzValue = valueList[2]
-                viewModel.fzValueList.add(fzValue)
+                var fzValue = valueList[2]
+                var yxValue = valueList[3]
+                var f1Hz = valueList[4]
+                var f2Hz = valueList[5]
+                val settingBean = viewModel.checkType.settingBean
+                maxValue = settingBean.maxValue.toFloat()
+                minValue = settingBean.minValue.toFloat()
+
+                if (settingBean.gdCd == 0) {
+                    valueList.forEach {
+                        if (maxValue!! < it) {
+                            maxValue = it
+                        }
+                        if (minValue!! > it) {
+                            minValue = it
+                        }
+                    }
+                } else {
+                    fzValue = min(maxValue!!, fzValue)
+                    fzValue = max(minValue!!, fzValue)
+
+                    yxValue = min(maxValue!!, yxValue)
+                    yxValue = max(minValue!!, yxValue)
+
+                    f1Hz = min(maxValue!!, f1Hz)
+                    f1Hz = max(minValue!!, f1Hz)
+
+                    f2Hz = min(maxValue!!, f2Hz)
+                    f2Hz = max(minValue!!, f2Hz)
+                }
+
                 val df1 = DecimalFormat("0.00")
+
+                viewModel.fzValueList.add(fzValue - minValue!!)
                 viewModel.fzValue.postValue(df1.format(fzValue))
-                val yxValue = valueList[3]
-                viewModel.yxValueList.add(yxValue)
+
+                viewModel.yxValueList.add(yxValue - minValue!!)
                 viewModel.yxValue.postValue(df1.format(yxValue))
-                val f1Hz = valueList[4]
-                viewModel.f1ValueList.add(f1Hz)
+
+                viewModel.f1ValueList.add(f1Hz - minValue!!)
                 viewModel.f1Value.postValue(df1.format(f1Hz))
-                val f2Hz = valueList[5]
-                viewModel.f2ValueList.add(f2Hz)
+
+                viewModel.f2ValueList.add(f2Hz - minValue!!)
                 viewModel.f2Value.postValue(df1.format(f2Hz))
+
+                calculationProgress(progressBar1, yxValue)
+                calculationProgress(progressBar2, fzValue)
+                calculationProgress(progressBar3, f1Hz)
+                calculationProgress(progressBar4, f2Hz)
+
+                viewModel.yxMinValue.postValue(minValue?.toString())
+                viewModel.fzMinValue.postValue(minValue?.toString())
+                viewModel.f1MinValue.postValue(minValue?.toString())
+                viewModel.f2MinValue.postValue(minValue?.toString())
 
                 if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime) {
                     viewModel.fzValueList.removeFirst()
@@ -117,7 +165,21 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 if (viewModel.f2ValueList.size > viewModel.checkType.settingBean.ljTime) {
                     viewModel.f2ValueList.removeFirst()
                 }
+
+                LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
+                LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
+                LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
+                LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
             }
+        }
+    }
+
+    private fun calculationProgress(progressBar: ProgressBar, value: Float) {
+        val progress = ((value - minValue!!) / (maxValue!! - minValue!!) * 100).toInt()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            progressBar.setProgress(progress, true)
+        } else {
+            progressBar.progress = progress
         }
     }
 
@@ -126,12 +188,11 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun isSaving(): Boolean {
-        return false
+        return if (viewModel.isSaveData == null) false else viewModel.isSaveData!!.value!!
     }
 
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
     }
-
 
 }

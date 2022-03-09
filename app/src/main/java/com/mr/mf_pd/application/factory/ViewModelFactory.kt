@@ -81,9 +81,9 @@ class ViewModelFactory constructor(
             isAssignableFrom(ACSettingViewModel::class.java) ->
                 ACSettingViewModel(settingRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
-                ACFlightModelViewModel(dataRepository)
+                ACFlightModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->
-                ACPulseModelViewModel(dataRepository)
+                ACPulseModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(HFSettingViewModel::class.java) ->
                 HFSettingViewModel(settingRepository)
             isAssignableFrom(CheckHFViewModel::class.java) ->

@@ -121,7 +121,7 @@
                                     style="@style/Progress1"
                                     android:layout_width="match_parent"
                                     android:layout_height="36dp"
-                                    android:progress="40" />
+                                    android:progress="4" />
 
                                 <View
                                     android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                             android:layout_height="wrap_content"
                             android:layout_above="@+id/layout1"
                             android:layout_marginBottom="3dp"
-                            android:text="-10"
+                            android:text="@{vm.yxMinValue}"
                             android:textSize="12sp" />
 
                     </RelativeLayout>
@@ -227,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:layout_above="@+id/layout2"
                             android:layout_marginBottom="3dp"
-                            android:text="-10"
+                            android:text="@{vm.fzMinValue}"
                             android:textSize="12sp" />
 
                     </RelativeLayout>
@@ -303,7 +303,7 @@
                             android:layout_height="wrap_content"
                             android:layout_above="@+id/layout3"
                             android:layout_marginBottom="3dp"
-                            android:text="-10"
+                            android:text="@{vm.f1MinValue}"
                             android:textSize="12sp" />
 
                     </RelativeLayout>
@@ -336,7 +336,7 @@
                             android:layout_height="wrap_content"
                             android:layout_above="@+id/layout4"
                             android:layout_marginBottom="3dp"
-                            android:text="-10"
+                            android:text="@{vm.f2MinValue}"
                             android:textSize="12sp" />
 
                         <LinearLayout
@@ -353,6 +353,7 @@
                                 android:orientation="vertical">
 
                                 <ProgressBar
+
                                     android:id="@+id/progressBar4"
                                     style="@style/Progress4"
                                     android:layout_width="match_parent"
@@ -390,6 +391,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}"
                 android:layout_marginBottom="10dp"
                 android:gravity="end">
 

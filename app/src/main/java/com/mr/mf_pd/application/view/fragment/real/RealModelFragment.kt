@@ -9,6 +9,8 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -31,9 +33,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     companion object {
 
-        fun create(): RealModelFragment {
+        fun create(isFile:Boolean): RealModelFragment {
             val fragment = RealModelFragment()
             val bundle = Bundle()
+            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN,isFile)
             fragment.arguments = bundle
             return fragment
         }
@@ -48,7 +51,15 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun initData() {
-
+        if (viewModel.checkType.settingBean.gdCd == 1){
+            viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
+        }else{
+            if (viewModel.isFile.value!!) {
+                viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
+            } else {
+                viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
+            }
+        }
     }
 
     override fun initView() {

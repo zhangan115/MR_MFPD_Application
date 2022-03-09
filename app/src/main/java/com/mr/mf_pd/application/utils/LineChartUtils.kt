@@ -2,8 +2,14 @@ package com.mr.mf_pd.application.utils
 
 import android.content.Context
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.app.MRApplication
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 图标帮助类型
@@ -70,6 +76,27 @@ object LineChartUtils {
         dataSet.setDrawCircles(false)
         dataSet.mode = LineDataSet.Mode.LINEAR
         dataSet.highLightColor = highColor
+    }
+
+    fun updateData(lineChart: LineChart,list: ArrayList<Float>) {
+        lineChart.data = getLineData(list)
+        lineChart.invalidate()
+    }
+
+    private fun getLineData(chartDataList: List<Float>): LineData {
+        val dataSets: MutableList<ILineDataSet> =
+            ArrayList()
+        val entries: MutableList<Entry> =
+            ArrayList()
+        if (chartDataList.isNotEmpty()) {
+            for (i in chartDataList.indices) {
+                entries.add(Entry(i.toFloat(), chartDataList[i]))
+            }
+            val dataSet = LineDataSet(entries, "")
+            initDataSet(dataSet,MRApplication.instance.getColor(R.color.blueColor),MRApplication.instance.getColor(R.color.blueColor))
+            dataSets.add(dataSet)
+        }
+        return LineData(dataSets)
     }
 
 

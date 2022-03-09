@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.repository.impl
 
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import java.io.File
 
@@ -21,7 +22,7 @@ interface FilesRepository {
      * 设置当前文件地址
      * @param file 文件
      */
-    fun setCurrentChickFile(file: File)
+    fun setCurrentClickFile(file: File)
 
     /**
      * 生成一条监测数据
@@ -55,16 +56,39 @@ interface FilesRepository {
      */
     fun isSaveData(): MutableLiveData<Boolean>?
 
-    fun openCheckFile()
+    /**
+     * 设置检测文件
+     */
+    fun openCheckFile(file:File)
 
     /**
-     * 从文件中获取数据
+     * 获取检测类型
      */
-    fun readDataFromFile(file: File)
+    fun getCheckType(): CheckType
 
     /**
-     * 从文件中读取实时数据
+     * 数据监测
      */
-    fun readRalDataFromFile(file: File)
+    fun addDataListener()
+
+    /**
+     * 增加遥测数据的回调
+     */
+    fun addYcDataCallback(callback: BaseDataCallback)
+
+    /**
+     * 移除遥测数据回调
+     */
+    fun removeYcDataCallback(callback: BaseDataCallback)
+
+    /**
+     * 获取线性图表数据
+     */
+    fun getGainValueList(): MutableLiveData<ArrayList<Float>>
+
+    /**
+     * 释放读取文件的操作
+     */
+    fun releaseReadFile()
 
 }

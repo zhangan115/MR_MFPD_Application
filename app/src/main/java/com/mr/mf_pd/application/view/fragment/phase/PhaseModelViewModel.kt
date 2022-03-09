@@ -16,36 +16,44 @@ class PhaseModelViewModel(
 
     lateinit var checkType: CheckType
     lateinit var gainValues: MutableLiveData<ArrayList<Float>>
+    var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
+
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
+
+    var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
     fun start() {
-        this.checkType = dataRepository.getCheckType()
-        this.gainValues = dataRepository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
-
-        dataRepository.addDataListener()
-        dataRepository.addRealDataCallback(object : RealDataCallback {
-            override fun onRealDataChanged(source: ByteArray) {
-                if (filesRepository.isSaveData()?.value == true) {
-                    filesRepository.toSaveRealData2File(source)
+        if (isFile.value!!) {
+            this.checkType = filesRepository.getCheckType()
+            filesRepository.addDataListener()
+        }else{
+            this.gainValues = dataRepository.getGainValueList()
+            this.checkType = dataRepository.getCheckType()
+            dataRepository.addDataListener()
+            dataRepository.addRealDataCallback(object : RealDataCallback {
+                override fun onRealDataChanged(source: ByteArray) {
+                    if (filesRepository.isSaveData()?.value == true) {
+                        filesRepository.toSaveRealData2File(source)
+                    }
                 }
-            }
-        })
-        dataRepository.addYcDataCallback(object :BaseDataCallback{
-            override fun onData(source: ByteArray) {
-                if (filesRepository.isSaveData()?.value == true) {
-                    filesRepository.toSaveYCData2File(source)
+            })
+            dataRepository.addYcDataCallback(object : BaseDataCallback {
+                override fun onData(source: ByteArray) {
+                    if (filesRepository.isSaveData()?.value == true) {
+                        filesRepository.toSaveYCData2File(source)
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     fun setCheckFile(filePath: String) {
         val file = File(filePath)
-        filesRepository.setCurrentChickFile(file)
+        filesRepository.setCurrentClickFile(file)
         location.postValue(filesRepository.getCurrentCheckName())
         createACheckFile()
     }

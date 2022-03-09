@@ -46,8 +46,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             CheckType.UHF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                fragments.add(PhaseModelFragment.create(false))
+                fragments.add(RealModelFragment.create(false))
                 clickClass = UHFSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = 8
@@ -55,8 +55,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             CheckType.HF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                fragments.add(PhaseModelFragment.create(false))
+                fragments.add(RealModelFragment.create(false))
                 clickClass = HFSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = 8
@@ -65,9 +65,9 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "2"))
-                fragments.add(ContinuityModelFragment.create())
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                fragments.add(ContinuityModelFragment.create(false))
+                fragments.add(PhaseModelFragment.create(false))
+                fragments.add(RealModelFragment.create(false))
                 clickClass = TEVSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
@@ -78,10 +78,10 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
                 checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
-                fragments.add(ContinuityModelFragment.create())
-                fragments.add(PhaseModelFragment.create())
+                fragments.add(ContinuityModelFragment.create(false))
+                fragments.add(PhaseModelFragment.create(false))
                 fragments.add(ACFlightModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                fragments.add(RealModelFragment.create(false))
                 fragments.add(ACPulseModelFragment.create())
                 clickClass = ACSettingActivity::class.java
                 limitPosition = 7

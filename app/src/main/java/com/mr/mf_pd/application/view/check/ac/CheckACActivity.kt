@@ -117,16 +117,16 @@ class CheckACActivity : BaseCheckActivity<CheckACDataBinding>() , CheckActionLis
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return when (position) {
             0 -> {
-                ContinuityModelFragment.create()
+                ContinuityModelFragment.create(false)
             }
             1 -> {
-                PhaseModelFragment.create()
+                PhaseModelFragment.create(false)
             }
             2 -> {
                 ACFlightModelFragment.create()
             }
             3 -> {
-                RealModelFragment.create()
+                RealModelFragment.create(false)
             }
             else -> {
                 ACPulseModelFragment.create()

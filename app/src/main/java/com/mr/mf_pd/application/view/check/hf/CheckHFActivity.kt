@@ -55,9 +55,9 @@ class CheckHFActivity : BaseCheckActivity<CheckHFDataBinding>() , CheckActionLis
 
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return if (position == 0) {
-            PhaseModelFragment.create()
+            PhaseModelFragment.create(false)
         } else {
-            RealModelFragment.create()
+            RealModelFragment.create(false)
         }
     }
 

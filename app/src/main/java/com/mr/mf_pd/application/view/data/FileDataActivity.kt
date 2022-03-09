@@ -16,11 +16,13 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
+import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
 import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelFragment
@@ -40,12 +42,14 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     private val viewModel by viewModels<FileDataViewModel> { getViewModelFactory() }
 
     lateinit var currentFile: File
-    var checkType: CheckType? = null
+    lateinit var checkType: CheckType
     private var toolbarTitleStr = ""
     var currentIndex = 0
     var titleList: ArrayList<TextView> = ArrayList()
     var fragments: ArrayList<BaseCheckFragment<*>> = ArrayList()
     var width: Int? = null
+
+    private var fragmentDataListener: ArrayList<FragmentDataListener> = ArrayList()
 
     override fun initView(savedInstanceState: Bundle?) {
 
@@ -73,65 +77,72 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
         val titleName =
             currentFile.name.substring(fileTypeNameStr.length, currentFile.name.length)
         setTitleValue(titleName + findString(checkDataFileModel.fileType!!.description))
-        checkType = FileTypeUtils.getCheckType(checkDataFileModel.fileType)
+        checkType = FileTypeUtils.getCheckType(checkDataFileModel.fileType)!!
         when (checkType) {
             CheckType.UHF -> {
-                checkFragmentLayout.addView(createTitleTextView("相位模式","0"))
-                checkFragmentLayout.addView(createTitleTextView("实时模式","1"))
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
+                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(RealModelFragment.create(true))
             }
             CheckType.HF -> {
-                checkFragmentLayout.addView(createTitleTextView("相位模式","0"))
-                checkFragmentLayout.addView(createTitleTextView("实时模式","1"))
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
+                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(RealModelFragment.create(true))
             }
             CheckType.TEV -> {
-                checkFragmentLayout.addView(createTitleTextView("连续模式","0"))
-                checkFragmentLayout.addView(createTitleTextView("相位模式","1"))
-                checkFragmentLayout.addView(createTitleTextView("实时模式","2"))
-                fragments.add(ContinuityModelFragment.create())
-                fragments.add(PhaseModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
+                checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "2"))
+                fragments.add(ContinuityModelFragment.create(true))
+                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(RealModelFragment.create(true))
             }
             CheckType.AE -> {
-                checkFragmentLayout.addView(createTitleTextView("连续模式","0"))
-                checkFragmentLayout.addView(createTitleTextView("相位模式","1"))
-                checkFragmentLayout.addView(createTitleTextView("飞行模式","2"))
-                checkFragmentLayout.addView(createTitleTextView("实时模式","3"))
-                checkFragmentLayout.addView(createTitleTextView("脉冲波形","4"))
-                fragments.add(ContinuityModelFragment.create())
-                fragments.add(PhaseModelFragment.create())
+                checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
+                checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
+                checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
+                checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
+                fragments.add(ContinuityModelFragment.create(true))
+                fragments.add(PhaseModelFragment.create(true))
                 fragments.add(ACFlightModelFragment.create())
-                fragments.add(RealModelFragment.create())
+                fragments.add(RealModelFragment.create(true))
                 fragments.add(ACPulseModelFragment.create())
             }
-            else -> {
-                throw RuntimeException("文件不合法，请检查文件类型")
-            }
+        }
+        fragments.forEach {
+            fragmentDataListener.add(it)
         }
         initFragmentView()
-        checkType?.let {
-            viewModel.start(it,currentFile)
-        }
+        viewModel.start(checkType, currentFile)
+        viewModel.toYcDataEvent.observe(this, EventObserver {
+            runOnUiThread{
+                fragmentDataListener.forEach { listener ->
+                    listener.onYcDataChange(it)
+                }
+            }
+        })
     }
-    
-    private fun createTitleTextView(title:String,tag:String):TextView{
+
+    private fun createTitleTextView(title: String, tag: String): TextView {
         val textView = TextView(this)
         textView.text = title
         textView.setTextColor(findColor(R.color.text_title))
         textView.textSize = 15f
         textView.tag = tag
-        textView.gravity =Gravity.CENTER
-        textView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)
+        textView.gravity = Gravity.CENTER
+        textView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
         titleList.add(textView)
-        return  textView
+        return textView
     }
 
     private fun initFragmentView() {
         width =
-            ((resources.displayMetrics.widthPixels - DisplayUtil.dip2px(this, 24f)) / fragments.size)
+            ((resources.displayMetrics.widthPixels - DisplayUtil.dip2px(this,
+                24f)) / fragments.size)
         if (width != null) {
             titleList.forEach {
                 it.layoutParams =

@@ -58,13 +58,13 @@ class CheckTEVActivity : BaseCheckActivity<CheckTEVDataBinding>() , CheckActionL
     override fun createCheckFragment(position: Int): BaseCheckFragment<*> {
         return when (position) {
             0 -> {
-                ContinuityModelFragment.create()
+                ContinuityModelFragment.create(false)
             }
             1 -> {
-                PhaseModelFragment.create()
+                PhaseModelFragment.create(false)
             }
             else -> {
-                RealModelFragment.create()
+                RealModelFragment.create(false)
             }
         }
     }

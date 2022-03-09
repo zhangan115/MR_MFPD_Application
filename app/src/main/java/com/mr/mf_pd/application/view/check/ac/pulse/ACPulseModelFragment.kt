@@ -7,6 +7,8 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 
@@ -39,7 +41,15 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun initData() {
-
+        if (viewModel.checkType.settingBean.gdCd == 1){
+            viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
+        }else{
+            if (viewModel.isFile.value!!) {
+                viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
+            } else {
+                viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
+            }
+        }
     }
 
     override fun initView() {

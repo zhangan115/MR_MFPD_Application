@@ -7,12 +7,13 @@ object GainChartAdapter {
 
     @JvmStatic
     @BindingAdapter(
-        "app:gain_value"
+        "app:gain_value","app:gain_minValue"
     )
     fun bindGainValue(
         view: GainChartView,
-        values: ArrayList<Float>
+        values: ArrayList<Float>,
+        minValue:Float?
     ) {
-        view.updateData(values)
+        view.updateData(values,minValue)
     }
 }

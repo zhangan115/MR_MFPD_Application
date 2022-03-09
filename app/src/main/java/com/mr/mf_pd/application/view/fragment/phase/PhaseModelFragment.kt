@@ -8,8 +8,8 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
-import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
@@ -25,9 +25,10 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     companion object {
 
-        fun create(): PhaseModelFragment {
+        fun create(isFile: Boolean): PhaseModelFragment {
             val fragment = PhaseModelFragment()
             val bundle = Bundle()
+            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN, isFile)
             fragment.arguments = bundle
             return fragment
         }
@@ -112,16 +113,32 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 val str = viewModel.checkType.settingBean.minValue + step * i
                 yList.add(str.toString())
             }
+            viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
-            if (DefaultDataRepository.realDataMaxValue.value != null && DefaultDataRepository.realDataMinValue.value != null) {
-                val value =
-                    DefaultDataRepository.realDataMaxValue.value!! - DefaultDataRepository.realDataMinValue.value!!
-                val step = value / 4
-                for (i in 0..4) {
-                    val str = DefaultDataRepository.realDataMinValue.value!! + step * i
-                    yList.add(str.toString())
+            if (viewModel.isFile.value!!) {
+                if (DefaultFilesRepository.realDataMaxValue.value != null && DefaultFilesRepository.realDataMinValue.value != null) {
+                    val value =
+                        DefaultFilesRepository.realDataMaxValue.value!! - DefaultFilesRepository.realDataMinValue.value!!
+                    val step = value / 4
+                    for (i in 0..4) {
+                        val str = DefaultFilesRepository.realDataMinValue.value!! + step * i
+                        yList.add(str.toString())
+                    }
                 }
+                viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
+            } else {
+                if (DefaultDataRepository.realDataMaxValue.value != null && DefaultDataRepository.realDataMinValue.value != null) {
+                    val value =
+                        DefaultDataRepository.realDataMaxValue.value!! - DefaultDataRepository.realDataMinValue.value!!
+                    val step = value / 4
+                    for (i in 0..4) {
+                        val str = DefaultDataRepository.realDataMinValue.value!! + step * i
+                        yList.add(str.toString())
+                    }
+                }
+                viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
+
         }
         yList.reverse()
         return yList
@@ -154,7 +171,8 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
                 if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE) && valueList.size >= 6) {
                     val df1 = DecimalFormat("0.00")
-                    viewModel.checkType.checkParams.value?.effectiveValueAttr = df1.format(valueList[3])
+                    viewModel.checkType.checkParams.value?.effectiveValueAttr =
+                        df1.format(valueList[3])
                 }
                 viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
             }

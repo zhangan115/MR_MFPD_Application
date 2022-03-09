@@ -1,12 +1,10 @@
 package com.mr.mf_pd.application.manager.file
 
-import androidx.annotation.Nullable
 import com.google.common.primitives.Bytes
 import com.google.gson.Gson
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.socket.callback.PulseDataListener
 import com.mr.mf_pd.application.manager.socket.callback.ReadListener
-import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.ReadDataFromFileCallback
@@ -19,6 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
+import java.io.FileInputStream
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
@@ -41,13 +40,15 @@ class ReadFileManager {
     var readYcDataSize = 0
     var readFdDataSize = 0
 
+    private var ycByteList = ArrayList<Byte>()
+
     private var readListener: ReadListener? = null
     private val mPulseDataListener: PulseDataListener? = null
 
     var realDataFromFileCallback: ReadDataFromFileCallback? = null
-    var readSettingCallbacks: ReadSettingDataCallback? = null
     var ycDataCallback: YcDataCallback? = null
 
+    private var readDataCallback: ReadListener? = null
 
     companion object {
 
@@ -88,17 +89,6 @@ class ReadFileManager {
     }
 
     /**
-     * 读取设置参数
-     */
-    @Nullable
-    fun readSettingData(): ByteArray? {
-        if (settingFile != null && settingFile!!.exists()) {
-            return Bytes.toArray(FileUtils.readBytesFromFile(settingFile!!))
-        }
-        return null
-    }
-
-    /**
      * 开始读取数据
      */
     fun startReadReadData() {
@@ -106,7 +96,10 @@ class ReadFileManager {
             throw RuntimeException("请配置好读取文件")
         }
         releaseReadFile()
-        readRealFile()
+        ycFile?.let {
+            ycDataIStream = FileInputStream(it)
+        }
+//        readRealFile()
         readYcFile()
     }
 
@@ -143,31 +136,36 @@ class ReadFileManager {
     }
 
     private fun readYcFile() {
+        ycByteList.clear()
         ycDisposable =
             Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<ByteArray> ->
                 try {
                     if (ycDataIStream != null) {
                         val buf = ByteArray(1024)
-                        val size = ycDataIStream!!.read(buf, readYcDataSize, buf.size)
+                        val size = ycDataIStream!!.read(buf, 0, buf.size)
                         if (size != -1) {
-                            val lengthBytes = byteArrayOf(0x00, 0x00, buf[3], buf[4])
-                            val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
+                            val length = buf[2].toInt() * 4 + 5
+                            ycByteList.addAll(Bytes.asList(*buf).subList(0, size))
                             val source = Bytes.toArray(Bytes.asList(*buf).subList(0, length))
                             readYcDataSize += length
                             emitter.onNext(source)
                         }
-                    } else {
-                        emitter.onComplete()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     emitter.onError(e)
+                }finally {
+                    emitter.onComplete()
                 }
-            } as ObservableOnSubscribe<ByteArray>)
-                .timeout(1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bytes: ByteArray? -> realDataFromFileCallback?.onYcData(bytes) }) { obj: Throwable -> obj.printStackTrace() }
+            } as ObservableOnSubscribe<ByteArray>).repeatWhen { objectObservable: Observable<Any?> ->
+                objectObservable.delay(1, TimeUnit.SECONDS)
+            }.subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe({ bytes: ByteArray? ->
+                    if (ycDataCallback != null) {
+                        ycDataCallback?.onData(bytes!!)
+                    }
+                }) { obj: Throwable -> obj.printStackTrace() }
     }
 
     fun releaseReadFile() {
@@ -186,6 +184,15 @@ class ReadFileManager {
         ycDataIStream = null
         realDataIStream = null
         fdDataIStream = null
+    }
+
+    /**
+     * 增加读取监控
+     *
+     * @param listener 读取监控
+     */
+    fun setReadListener(listener: ReadListener?) {
+        readDataCallback = listener
     }
 
 }
