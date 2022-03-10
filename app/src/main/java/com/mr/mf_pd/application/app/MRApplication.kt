@@ -2,8 +2,11 @@ package com.mr.mf_pd.application.app
 
 import android.app.Activity
 import android.app.Application
+import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
+import com.mr.mf_pd.annotation.MyClass
+import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.repository.RepositoryService
@@ -15,8 +18,10 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import com.sito.tool.library.utils.SPHelper
+import com.umeng.commonsdk.UMConfigure
 import java.io.File
 
+@MyClass
 class MRApplication : Application() {
 
     companion object {
@@ -81,6 +86,7 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
+        UMConfigure.preInit(this,BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL)
     }
 
     /**

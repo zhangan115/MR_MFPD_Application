@@ -3,12 +3,14 @@ package com.mr.mf_pd.application.view.splash
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.SplashDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.ext.bindLifeCycle
 import com.mr.mf_pd.application.view.main.MainActivity
+import com.umeng.commonsdk.UMConfigure
 
 class SplashActivity : AbsBaseActivity<SplashDataBinding>() {
 
@@ -20,6 +22,7 @@ class SplashActivity : AbsBaseActivity<SplashDataBinding>() {
 
     override fun initData(savedInstanceState: Bundle?) {
         dataBinding.vm = viewModel
+        UMConfigure.setLogEnabled(BuildConfig.DEBUG)
     }
 
     override fun getContentView(): Int {

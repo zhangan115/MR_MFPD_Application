@@ -41,6 +41,8 @@ android {
             applicationId "com.mr.mf_pd.application"
             dimension "default"
             resValue "string", "app_name", "MR Smart-PD"
+            buildConfigField "String", "UMENG_CHANNEL", '"defaultChannel"'
+            buildConfigField "String", "UMENG_APP_KEY", '"6229fb9c317aa877608ff261"'
             manifestPlaceholders = [
                     TASK_AFFINITY_VALUE: "android.task.mr.mf_pd",
                     PACKAGE_NAME       : applicationId,
@@ -153,4 +155,9 @@ dependencies {
     //文件选择器
     implementation 'com.leon:lfilepickerlibrary:1.8.0'
     implementation("com.google.guava:guava:31.0.1-android")
+    //友盟统计
+    implementation 'com.umeng.umsdk:common:9.4.4'
+
+    kapt project(":compiler")
+    implementation project(":annotation")
 }
