@@ -5,8 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)//保留
-@Target({ElementType.TYPE})//作用目标
-public @interface Lance {
-
+/**
+ * 处理单次点击事件的注解
+ *
+ * @author zhangan
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface OnLongClick {
+    int value();
+    boolean isEnable();
 }

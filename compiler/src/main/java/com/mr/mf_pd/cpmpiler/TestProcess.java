@@ -13,7 +13,12 @@ public class TestProcess extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         //JAVAC
-        System.out.println("====");
+        System.out.println("=====process====");
+        if (set.isEmpty()){
+            System.out.println("set.isEmpty -----process----");
+        }else {
+            System.out.println("set.isNotEmpty-----process----");
+        }
         return false;
     }
 }
