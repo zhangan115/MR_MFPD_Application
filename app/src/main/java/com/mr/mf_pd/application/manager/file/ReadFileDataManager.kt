@@ -2,27 +2,15 @@ package com.mr.mf_pd.application.manager.file
 
 import android.util.Log
 import com.google.common.primitives.Bytes
-import com.google.gson.Gson
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.socket.callback.PulseDataListener
 import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
-import com.mr.mf_pd.application.model.SettingBean
-import com.mr.mf_pd.application.repository.callback.ReadDataFromFileCallback
-import com.mr.mf_pd.application.utils.FileUtils
 import com.sito.tool.library.utils.ByteLibUtil
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
-import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class ReadFileDataManager {
 

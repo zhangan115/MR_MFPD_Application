@@ -77,4 +77,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     override fun cancelSaveData() {
 
     }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }

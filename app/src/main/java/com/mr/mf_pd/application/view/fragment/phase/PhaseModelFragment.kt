@@ -190,4 +190,9 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
     }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }

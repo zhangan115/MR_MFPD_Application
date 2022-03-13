@@ -178,6 +178,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
     }
 
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
     private fun calculationProgress(progressBar: ProgressBar, value: Float) {
         val progress = ((value - minValue!!) / (maxValue!! - minValue!!) * 100).toInt()
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {

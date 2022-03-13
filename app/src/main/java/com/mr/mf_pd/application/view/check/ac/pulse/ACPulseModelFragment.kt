@@ -89,4 +89,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override fun cleanCurrentData() {
 
     }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }

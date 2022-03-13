@@ -36,7 +36,8 @@ class FileDataViewModel(
     private var ycDisposable: Disposable? = null
     private var realDisposable: Disposable? = null
 
-    private var isStartReadYcData :MutableLiveData<Boolean> = MutableLiveData(false)
+    @Volatile
+    private var isStartReadYcData = false
 
     fun start(checkType: CheckType, file: File) {
         mCheckType = checkType
@@ -68,16 +69,18 @@ class FileDataViewModel(
 
     private val ycCallback = object : BaseDataCallback {
         override fun onData(source: ByteArray) {
+            Log.e("zhangan","ycCallback " + Thread.currentThread().name + source.toMutableList().toString())
             if (source.isEmpty()) {
                 _toCleanDataEvent.postValue(Event(Unit))
                 ycDisposable?.dispose()
                 realDisposable?.dispose()
-                isStartReadYcData.postValue(false)
+                isStartReadYcData = false
                 ReadFileDataManager.get().startReadData()
             } else {
                 _toYcDataEvent.postValue(Event(source))
             }
-            if (isStartReadYcData.value == false) {
+            if (!isStartReadYcData) {
+                Log.e("zhangan","ycCallback " + Thread.currentThread().name)
                 ycDisposable = startReadYcData()
 //                realDisposable = startReadRealData()
             }
@@ -90,9 +93,9 @@ class FileDataViewModel(
     ): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
-                Log.e("zhangan",Thread.currentThread().name)
+                Log.e("zhangan","startReadYcData"+Thread.currentThread().name)
                 ReadFileDataManager.get().readYcDataFromFile()
-                isStartReadYcData.postValue(true)
+                isStartReadYcData = true
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)
@@ -112,7 +115,7 @@ class FileDataViewModel(
             try {
                 Log.d("zhangan",Thread.currentThread().name)
                 ReadFileDataManager.get().readRealDataFromFile()
-                isStartReadYcData.postValue(true)
+                isStartReadYcData = true
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)

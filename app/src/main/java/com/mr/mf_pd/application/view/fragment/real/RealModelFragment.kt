@@ -170,4 +170,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
     }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }
