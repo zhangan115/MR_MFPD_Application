@@ -106,8 +106,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
             checkActionListener?.addLimitValue()
         }
         image4.setOnClickListener {
-            viewModel.cleanCurrentData()
-            prPsChartsRenderer?.cleanData()
+            cleanCurrentData()
         }
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
@@ -157,6 +156,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
             }
         }
+    }
+
+    override fun cleanCurrentData() {
+        viewModel.cleanCurrentData()
+        prPsChartsRenderer?.cleanData()
     }
 
     override fun isSaving(): Boolean {

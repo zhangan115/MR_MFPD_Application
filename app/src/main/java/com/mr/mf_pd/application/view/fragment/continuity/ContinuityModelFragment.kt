@@ -83,11 +83,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
             checkActionListener?.addLimitValue()
         }
         image4.setOnClickListener {
-            viewModel.cleanCurrentData()
-            LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
-            LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
-            LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
-            LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
+            cleanCurrentData()
         }
     }
 
@@ -172,6 +168,14 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
             }
         }
+    }
+
+    override fun cleanCurrentData() {
+        viewModel.cleanCurrentData()
+        LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
+        LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
+        LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
+        LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
     }
 
     private fun calculationProgress(progressBar: ProgressBar, value: Float) {

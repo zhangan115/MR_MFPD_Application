@@ -61,6 +61,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     }
 
+    override fun cleanCurrentData() {
+
+    }
+
     override fun setViewModel(dataBinding: ACFlightDataBinding?) {
         dataBinding?.vm = viewModel
     }

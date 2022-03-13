@@ -124,6 +124,13 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 }
             }
         })
+        viewModel.toCleanDataEvent.observe(this, EventObserver {
+            runOnUiThread{
+                fragmentDataListener.forEach { listener ->
+                    listener.cleanCurrentData()
+                }
+            }
+        })
     }
 
     private fun createTitleTextView(title: String, tag: String): TextView {

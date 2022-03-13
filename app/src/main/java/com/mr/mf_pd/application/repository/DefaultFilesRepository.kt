@@ -7,11 +7,13 @@ import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.file.ReadFileManager
+import com.mr.mf_pd.application.manager.file.ReadFileDataManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -21,6 +23,9 @@ import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
 import java.io.File
@@ -186,25 +191,37 @@ class DefaultFilesRepository : FilesRepository {
         return isSaving
     }
 
+
     override fun addDataListener() {
-        ReadFileManager.get().setReadListener(realDataListener)
-        ReadFileManager.get().ycDataCallback = ycDataCallback
+        ReadFileDataManager.get().setReadListener(realDataListener)
+        ReadFileDataManager.get().ycDataCallback = ycDataCallback
     }
 
     private val ycDataCallback = object : YcDataCallback {
         override fun onData(source: ByteArray) {
+            Log.d("zhangan","ycDataCallbacks" + ycDataCallbacks.size)
             ycDataCallbacks.forEach {
                 it.onData(source)
             }
         }
     }
 
-    override fun openCheckFile(file:File) {
-        ReadFileManager.get().setFile(file)
-    }
-
     override fun getGainValueList(): MutableLiveData<ArrayList<Float>> {
         return gainValue
+    }
+
+    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
+        val list = ArrayList<HashMap<Int, Float>>()
+        if (chartType == 0) {
+            if (phaseData.isNotEmpty()) {
+                list.add(phaseData.removeFirst())
+            }
+        } else if (chartType == 1) {
+            if (realPointData.isNotEmpty()) {
+                list.add(realPointData.removeFirst())
+            }
+        }
+        return list
     }
 
     override fun getCheckType(): CheckType {
@@ -213,116 +230,119 @@ class DefaultFilesRepository : FilesRepository {
 
     private val realDataListener = object : ReadListener {
         override fun onData(source: ByteArray) {
-            realDataCallbacks.forEach {
-                it.onRealDataChanged(source)
-            }
-            val bytes = ByteArray(source.size - 7)
-            System.arraycopy(source, 5, bytes, 0, source.size - 7)
+            if (source.isNotEmpty() && source.size > 7) {
+                realDataCallbacks.forEach {
+                    it.onRealDataChanged(source)
+                }
+                val bytes = ByteArray(source.size - 7)
+                System.arraycopy(source, 5, bytes, 0, source.size - 7)
 
-            val newValueList: ArrayList<Float?> = ArrayList()
-            for (j in 0 until Constants.PRPS_COLUMN) {
-                newValueList.add(null)
-            }
-            val newPointList = HashMap<Int, Float>()
-            for (i in 0 until (bytes.size / 6)) {
-                val values = ByteArray(6)
-                System.arraycopy(bytes, 6 * i, values, 0, 6)
-                val row = values[0].toInt()//周期，暂不使用
-                val column = values[1].toInt()
-                val height = ByteArray(4)
-                System.arraycopy(values, 2, height, 0, 4)
-                val f = ByteUtil.getFloat(height)
-                var value = f
-                maxValue = if (maxValue == null) {
-                    f
-                } else {
-                    max(f, maxValue!!)
+                val newValueList: ArrayList<Float?> = ArrayList()
+                for (j in 0 until Constants.PRPS_COLUMN) {
+                    newValueList.add(null)
                 }
-                maxGainValue = if (maxGainValue == null) {
-                    f
-                } else {
-                    max(f, maxGainValue!!)
-                }
-                minValue = if (minValue == null) {
-                    f
-                } else {
-                    min(f, minValue!!)
-                }
-                //根据设置处理数据
-                val setting = getCheckType().settingBean
-                //处理固定尺度
-                if (setting.gdCd == 1) {
-                    if (f > setting.maxValue) {
-                        value = setting.maxValue.toFloat()
-                    } else if (f < setting.minValue) {
-                        value = setting.minValue.toFloat()
+                val newPointList = HashMap<Int, Float>()
+                for (i in 0 until (bytes.size / 6)) {
+                    val values = ByteArray(6)
+                    System.arraycopy(bytes, 6 * i, values, 0, 6)
+                    val row = values[0].toInt()//周期，暂不使用
+                    val column = values[1].toInt()
+                    val height = ByteArray(4)
+                    System.arraycopy(values, 2, height, 0, 4)
+                    val f = ByteUtil.getFloat(height)
+                    var value = f
+                    maxValue = if (maxValue == null) {
+                        f
+                    } else {
+                        max(f, maxValue!!)
                     }
-                } else {
-                    if (realDataMaxValue.value != null) {
-                        val maxValue = max(realDataMaxValue.value!!, f.toInt())
-                        if (maxValue != realDataMaxValue.value!!) {
-                            realDataMaxValue.postValue(maxValue)
+                    maxGainValue = if (maxGainValue == null) {
+                        f
+                    } else {
+                        max(f, maxGainValue!!)
+                    }
+                    minValue = if (minValue == null) {
+                        f
+                    } else {
+                        min(f, minValue!!)
+                    }
+                    //根据设置处理数据
+                    val setting = getCheckType().settingBean
+                    //处理固定尺度
+                    if (setting.gdCd == 1) {
+                        if (f > setting.maxValue) {
+                            value = setting.maxValue.toFloat()
+                        } else if (f < setting.minValue) {
+                            value = setting.minValue.toFloat()
                         }
                     } else {
-                        realDataMaxValue.postValue(setting.maxValue)
+                        if (realDataMaxValue.value != null) {
+                            val maxValue = max(realDataMaxValue.value!!, f.toInt())
+                            if (maxValue != realDataMaxValue.value!!) {
+                                realDataMaxValue.postValue(maxValue)
+                            }
+                        } else {
+                            realDataMaxValue.postValue(setting.maxValue)
+                        }
+                        if (realDataMinValue.value != null) {
+                            val minValue = min(realDataMinValue.value!!, f.toInt())
+                            if (minValue != realDataMinValue.value!!) {
+                                realDataMinValue.postValue(minValue)
+                            }
+                        } else {
+                            realDataMinValue.postValue(setting.minValue)
+                        }
                     }
-                    if (realDataMinValue.value != null) {
-                        val minValue = min(realDataMinValue.value!!, f.toInt())
-                        if (minValue != realDataMinValue.value!!) {
-                            realDataMinValue.postValue(minValue)
+                    //处理偏移量
+                    val py = setting.xwPy
+                    val off: Int = if (py in 1..359) {
+                        val pyValue = (py / 3.6f).toInt()
+                        if (column + pyValue > 99) {
+                            column + pyValue - 100
+                        } else {
+                            column + pyValue
                         }
                     } else {
-                        realDataMinValue.postValue(setting.minValue)
+                        column
                     }
-                }
-                //处理偏移量
-                val py = setting.xwPy
-                val off: Int = if (py in 1..359) {
-                    val pyValue = (py / 3.6f).toInt()
-                    if (column + pyValue > 99) {
-                        column + pyValue - 100
+                    if (off < Constants.PRPS_COLUMN && off >= 0) {
+                        newValueList[off] = value
+                        newPointList[off] = value
                     } else {
-                        column + pyValue
+                        Log.d("zhangan", "数据相位异常：$column")
                     }
+                    mcCount++
+                }
+                phaseData.add(newPointList)
+                realPointData.add(newPointList)
+                if (realData.size == Constants.PRPS_ROW) {
+                    realData.removeFirst()
+                }
+                realData.add(PrPsCubeList(newValueList))
+                if (receiverCount % 5 == 0) {
+                    if (maxGainValue != null) {
+                        gainFloatList.add(maxGainValue!!)
+                    }
+                    if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
+                        gainFloatList.removeFirst()
+                    }
+                    gainValue.postValue(gainFloatList)
+                    maxGainValue = null
+                }
+                if (receiverCount == 50) { //一秒钟刷新一次数据
+                    if (maxValue != null) {
+                        val df1 = DecimalFormat("0.00")
+                        Log.d("zhangan",maxValue.toString())
+                        checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
+                    }
+                    checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
+                    mCheckType.checkParams.postValue(checkParamsBean)
+                    receiverCount = 0
+                    mcCount = 0
+                    maxValue = null
                 } else {
-                    column
+                    ++receiverCount
                 }
-                if (off < Constants.PRPS_COLUMN && off >= 0) {
-                    newValueList[off] = value
-                    newPointList[off] = value
-                } else {
-                    Log.d("zhangan", "数据相位异常：$column")
-                }
-                mcCount++
-            }
-            phaseData.add(newPointList)
-            realPointData.add(newPointList)
-            if (realData.size == Constants.PRPS_ROW) {
-                realData.removeFirst()
-            }
-            realData.add(PrPsCubeList(newValueList))
-            if (receiverCount % 5 == 0) {
-                if (maxGainValue != null) {
-                    gainFloatList.add(maxGainValue!!)
-                }
-                if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
-                    gainFloatList.removeFirst()
-                }
-                gainValue.postValue(gainFloatList)
-                maxGainValue = null
-            }
-            if (receiverCount == 50) { //一秒钟刷新一次数据
-                if (maxValue != null) {
-                    val df1 = DecimalFormat("0.00")
-                    checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
-                }
-                checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
-                mCheckType.checkParams.postValue(checkParamsBean)
-                receiverCount = 0
-                mcCount = 0
-                maxValue = null
-            } else {
-                ++receiverCount
             }
         }
     }
@@ -330,12 +350,49 @@ class DefaultFilesRepository : FilesRepository {
     override fun addYcDataCallback(callback: BaseDataCallback) {
         ycDataCallbacks.add(callback)
     }
+
     override fun removeYcDataCallback(callback: BaseDataCallback) {
         ycDataCallbacks.remove(callback)
     }
 
-    override fun releaseReadFile(){
-        ReadFileManager.get().releaseReadFile()
+    override fun releaseReadFile() {
+        ReadFileDataManager.get().releaseReadFile()
     }
 
+    override fun cleanData() {
+        receiverCount = 0
+        mcCount = 0
+        gainFloatList.clear()
+        phaseData.clear()
+        realData.clear()
+    }
+
+    override fun openCheckFile(
+        checkType: CheckType,
+        file: File,
+        callback: ReadSettingCallback?,
+    ): Disposable {
+        mCheckType = checkType
+        checkParamsBean = mCheckType.checkParams.value
+        realDataMaxValue.postValue(mCheckType.settingBean.maxValue)
+        realDataMinValue.postValue(mCheckType.settingBean.minValue)
+        checkType.checkParams.postValue(checkParamsBean)
+        ReadFileDataManager.get().setFile(file)
+        return Observable.create { emitter: ObservableEmitter<SettingBean?> ->
+            try {
+                val str = FileUtils.readStrFromFile(ReadFileDataManager.get().settingFile)
+                val settingBean = Gson().fromJson(str, SettingBean::class.java)
+                emitter.onNext(settingBean)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emitter.onError(e)
+            } finally {
+                emitter.onComplete()
+            }
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
+            it?.let {
+                callback?.onSettingBean(it)
+            }
+        }
+    }
 }
