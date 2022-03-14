@@ -79,6 +79,8 @@ class FileDataViewModel(
                 _toYcDataEvent.postValue(Event(source))
             }
             if (!isStartReadYcData) {
+                ycDisposable?.dispose()
+                realDisposable?.dispose()
                 ycDisposable = startReadYcData()
                 realDisposable = startReadRealData()
                 isStartReadYcData = true
@@ -119,9 +121,9 @@ class FileDataViewModel(
             } finally {
                 emitter.onComplete()
             }
-        }.subscribeOn(Schedulers.io()).repeatWhen { objectObservable: Observable<Any?> ->
+        }.repeatWhen { objectObservable: Observable<Any?> ->
             objectObservable.delay(time, unit)
-        }.observeOn(Schedulers.io()).subscribe()
+        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
     }
 
 

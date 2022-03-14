@@ -41,6 +41,8 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun initData() {
+        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
+        viewModel.isFile.postValue(isFile)
         if (viewModel.checkType.settingBean.gdCd == 1){
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         }else{

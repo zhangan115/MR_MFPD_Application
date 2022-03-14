@@ -330,9 +330,10 @@ class DefaultFilesRepository : FilesRepository {
                     if (maxGainValue != null) {
                         gainFloatList.add(maxGainValue!!)
                     }
-                    if (gainFloatList.size >= getCheckType().settingBean.ljTime * 10) {
+                    if (gainFloatList.size >= getCheckType().settingBean.ljTime) {
                         gainFloatList.removeFirst()
                     }
+                    Log.d("zhangan",gainFloatList.size.toString())
                     gainValue.postValue(gainFloatList)
                     maxGainValue = null
 

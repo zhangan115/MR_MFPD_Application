@@ -38,6 +38,7 @@ class PhaseModelViewModel(
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            this.gainValues = filesRepository.getGainValueList()
             filesRepository.addDataListener()
         }else{
             this.gainValues = dataRepository.getGainValueList()

@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -43,7 +44,8 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun initData() {
-
+        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
+        viewModel.isFile.postValue(isFile)
     }
 
     override fun initView() {
