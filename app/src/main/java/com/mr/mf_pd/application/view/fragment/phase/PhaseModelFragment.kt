@@ -83,8 +83,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
             checkActionListener?.addLimitValue()
         }
         image4.setOnClickListener {
-            viewModel.cleanCurrentData()
-            pointChartsRenderer?.cleanData()
+            cleanCurrentData()
         }
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
@@ -179,6 +178,11 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         }
     }
 
+    override fun cleanCurrentData() {
+        viewModel.cleanCurrentData()
+        pointChartsRenderer?.cleanData()
+    }
+
     override fun isSaving(): Boolean {
         return if (viewModel.isSaveData == null) false else viewModel.isSaveData!!.value!!
     }
@@ -186,4 +190,9 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
     }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }

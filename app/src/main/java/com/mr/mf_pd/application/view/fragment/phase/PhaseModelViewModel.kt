@@ -3,11 +3,17 @@ package com.mr.mf_pd.application.view.fragment.phase
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.file.ReadFileDataManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class PhaseModelViewModel(
     val dataRepository: DataRepository,
@@ -63,6 +69,9 @@ class PhaseModelViewModel(
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+        if (isFile.value == true){
+            return filesRepository.getPhaseData(0)
+        }
         return dataRepository.getPhaseData(0)
     }
 
@@ -75,14 +84,17 @@ class PhaseModelViewModel(
     }
 
     fun cleanCurrentData() {
-        dataRepository.cleanData()
-        dataRepository.getGainValueList().postValue(ArrayList())
+        if (isFile.value == true){
+            filesRepository.cleanData()
+            filesRepository.getGainValueList().postValue(ArrayList())
+        }else{
+            dataRepository.cleanData()
+            dataRepository.getGainValueList().postValue(ArrayList())
+        }
     }
-
 
     override fun onCleared() {
         super.onCleared()
         dataRepository.removeRealDataListener()
     }
-
 }

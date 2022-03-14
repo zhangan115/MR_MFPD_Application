@@ -34,6 +34,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
             android:gravity="end">

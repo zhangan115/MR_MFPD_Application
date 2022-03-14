@@ -72,6 +72,22 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     }
 
     private fun initViewData(checkDataFileModel: CheckDataFileModel) {
+        viewModel.toYcDataEvent.observe(this, EventObserver {
+            runOnUiThread {
+                fragmentDataListener.forEach { listener ->
+                    if (listener.isAdd())
+                        listener.onYcDataChange(it)
+                }
+            }
+        })
+        viewModel.toCleanDataEvent.observe(this, EventObserver {
+            runOnUiThread {
+                fragmentDataListener.forEach { listener ->
+                    if (listener.isAdd())
+                        listener.cleanCurrentData()
+                }
+            }
+        })
         val fileTypeNameStr =
             FileTypeUtils.getCheckTypeStr(checkDataFileModel.fileType)
         val titleName =
@@ -117,13 +133,6 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
         }
         initFragmentView()
         viewModel.start(checkType, currentFile)
-        viewModel.toYcDataEvent.observe(this, EventObserver {
-            runOnUiThread{
-                fragmentDataListener.forEach { listener ->
-                    listener.onYcDataChange(it)
-                }
-            }
-        })
     }
 
     private fun createTitleTextView(title: String, tag: String): TextView {

@@ -85,4 +85,13 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override fun onYcDataChange(bytes: ByteArray) {
 
     }
+
+    override fun cleanCurrentData() {
+
+    }
+
+    override fun isAdd(): Boolean {
+        return isAdded
+    }
+
 }

@@ -129,7 +129,7 @@ class DefaultDataRepository : DataRepository {
         checkParamsBean = mCheckType.checkParams.value
         realDataMaxValue.postValue(mCheckType.settingBean.maxValue)
         realDataMinValue.postValue(mCheckType.settingBean.minValue)
-        checkType.checkParams.value
+        checkType.checkParams.postValue(checkParamsBean)
     }
 
     override fun getCheckType(): CheckType {

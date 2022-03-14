@@ -3,7 +3,9 @@ package com.mr.mf_pd.application.repository.impl
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.utils.FileTypeUtils
+import io.reactivex.disposables.Disposable
 import java.io.File
 
 interface FilesRepository {
@@ -59,7 +61,7 @@ interface FilesRepository {
     /**
      * 设置检测文件
      */
-    fun openCheckFile(file:File)
+    fun openCheckFile(checkType: CheckType,file: File,callback: ReadSettingCallback?): Disposable
 
     /**
      * 获取检测类型
@@ -87,8 +89,19 @@ interface FilesRepository {
     fun getGainValueList(): MutableLiveData<ArrayList<Float>>
 
     /**
+     * 获取图表数据
+     */
+    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
+
+    /**
      * 释放读取文件的操作
      */
     fun releaseReadFile()
+
+
+    /**
+     * 清理数据
+     */
+    fun cleanData()
 
 }

@@ -35,6 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:id="@+id/phaseActionLayout"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}"
             android:layout_marginBottom="10dp"
             android:gravity="end">
 
