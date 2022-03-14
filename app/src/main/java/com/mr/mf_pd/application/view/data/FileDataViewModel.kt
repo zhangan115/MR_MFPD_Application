@@ -69,7 +69,6 @@ class FileDataViewModel(
 
     private val ycCallback = object : BaseDataCallback {
         override fun onData(source: ByteArray) {
-            Log.e("zhangan","ycCallback " + Thread.currentThread().name + source.toMutableList().toString())
             if (source.isEmpty()) {
                 _toCleanDataEvent.postValue(Event(Unit))
                 ycDisposable?.dispose()
@@ -80,9 +79,9 @@ class FileDataViewModel(
                 _toYcDataEvent.postValue(Event(source))
             }
             if (!isStartReadYcData) {
-                Log.e("zhangan","ycCallback " + Thread.currentThread().name)
                 ycDisposable = startReadYcData()
-//                realDisposable = startReadRealData()
+                realDisposable = startReadRealData()
+                isStartReadYcData = true
             }
         }
     }
@@ -91,11 +90,10 @@ class FileDataViewModel(
         time: Long = 1,
         unit: TimeUnit = TimeUnit.SECONDS,
     ): Disposable {
-        return Observable.create { emitter: ObservableEmitter<Boolean?> ->
+        return Observable.create { emitter: ObservableEmitter<Boolean> ->
             try {
-                Log.e("zhangan","startReadYcData"+Thread.currentThread().name)
                 ReadFileDataManager.get().readYcDataFromFile()
-                isStartReadYcData = true
+                emitter.onNext(true)
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)
@@ -111,11 +109,10 @@ class FileDataViewModel(
         time: Long = 20,
         unit: TimeUnit = TimeUnit.MILLISECONDS,
     ): Disposable {
-        return Observable.create { emitter: ObservableEmitter<Boolean?> ->
+        return Observable.create { emitter: ObservableEmitter<Boolean> ->
             try {
-                Log.d("zhangan",Thread.currentThread().name)
                 ReadFileDataManager.get().readRealDataFromFile()
-                isStartReadYcData = true
+                emitter.onNext(true)
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)

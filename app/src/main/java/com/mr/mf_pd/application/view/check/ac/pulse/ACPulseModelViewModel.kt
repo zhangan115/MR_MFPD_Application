@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import java.util.*
 
 class ACPulseModelViewModel(val dataRepository: DataRepository, val filesRepository: FilesRepository) : ViewModel() {
 
@@ -23,7 +24,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
 
     lateinit var checkType: CheckType
 
-    lateinit var gainValues: MutableLiveData<ArrayList<Float>>
+    lateinit var gainValues: MutableLiveData<Vector<Float>>
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
 

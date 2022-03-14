@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.adapter
 
 import androidx.databinding.BindingAdapter
 import com.mr.mf_pd.application.widget.GainChartView
+import java.util.*
 
 object GainChartAdapter {
 
@@ -11,7 +12,7 @@ object GainChartAdapter {
     )
     fun bindGainValue(
         view: GainChartView,
-        values: ArrayList<Float>,
+        values: Vector<Float>,
         minValue:Float?
     ) {
         view.updateData(values,minValue)

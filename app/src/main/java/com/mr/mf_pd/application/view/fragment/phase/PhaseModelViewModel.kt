@@ -13,7 +13,10 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PhaseModelViewModel(
     val dataRepository: DataRepository,
@@ -21,7 +24,7 @@ class PhaseModelViewModel(
 ) : ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues: MutableLiveData<ArrayList<Float>>
+    lateinit var gainValues: MutableLiveData<Vector<Float>>
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
@@ -86,10 +89,10 @@ class PhaseModelViewModel(
     fun cleanCurrentData() {
         if (isFile.value == true){
             filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(ArrayList())
+            filesRepository.getGainValueList().postValue(Vector())
         }else{
             dataRepository.cleanData()
-            dataRepository.getGainValueList().postValue(ArrayList())
+            dataRepository.getGainValueList().postValue(Vector())
         }
     }
 

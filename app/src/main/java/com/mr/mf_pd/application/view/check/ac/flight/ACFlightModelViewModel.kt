@@ -7,6 +7,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import java.util.*
 
 class ACFlightModelViewModel(
     val dataRepository: DataRepository,
@@ -19,7 +20,7 @@ class ACFlightModelViewModel(
     var synchronizationModel: MutableLiveData<String> = MutableLiveData("内同步，50kHz-300kHz")
     var gainLevelStr: MutableLiveData<String> = MutableLiveData("20dB")
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
-    lateinit var gainValues: MutableLiveData<ArrayList<Float>>
+    lateinit var gainValues: MutableLiveData<Vector<Float>>
     lateinit var checkType: CheckType
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 

@@ -7,6 +7,9 @@ import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 interface DataRepository {
 
@@ -76,7 +79,7 @@ interface DataRepository {
     /**
      * 获取线性图表数据
      */
-    fun getGainValueList(): MutableLiveData<ArrayList<Float>>
+    fun getGainValueList(): MutableLiveData<Vector<Float>>
 
     /**
      * 读取遥测信息

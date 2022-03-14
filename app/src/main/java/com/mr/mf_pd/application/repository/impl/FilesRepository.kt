@@ -7,6 +7,9 @@ import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import io.reactivex.disposables.Disposable
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 interface FilesRepository {
 
@@ -86,7 +89,7 @@ interface FilesRepository {
     /**
      * 获取线性图表数据
      */
-    fun getGainValueList(): MutableLiveData<ArrayList<Float>>
+    fun getGainValueList(): MutableLiveData<Vector<Float>>
 
     /**
      * 获取图表数据

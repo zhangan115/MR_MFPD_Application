@@ -8,11 +8,14 @@ import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class RealModelViewModel(val dataRepository: DataRepository, private val filesRepository: FilesRepository) : ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues:MutableLiveData<ArrayList<Float>>
+    lateinit var gainValues:MutableLiveData<Vector<Float>>
     var isSaveData: MutableLiveData<Boolean>? = null
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var toastStr: MutableLiveData<String> = MutableLiveData()
@@ -74,7 +77,7 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
 
 
     fun cleanCurrentData(){
-        dataRepository.getGainValueList().postValue(ArrayList())
+        dataRepository.getGainValueList().postValue(Vector())
         dataRepository.cleanData()
     }
 

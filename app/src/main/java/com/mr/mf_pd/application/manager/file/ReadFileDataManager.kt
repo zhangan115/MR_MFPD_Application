@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.manager.file
 
-import android.util.Log
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.socket.callback.PulseDataListener
@@ -11,6 +10,8 @@ import io.reactivex.disposables.Disposable
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ReadFileDataManager {
 
@@ -30,8 +31,8 @@ class ReadFileDataManager {
     private val mPulseDataListener: PulseDataListener? = null
 
     private var realBytePosition = 0
-    private val readRealData = ArrayList<ArrayList<Byte>>() //读取出来的遥测数据
-    private val surplusRealData = ArrayList<Byte>() //读取处理的未处理的不完整遥测数据
+    private val readRealData = Vector<Vector<Byte>>() //读取出来的遥测数据
+    private val surplusRealData = Vector<Byte>() //读取处理的未处理的不完整遥测数据
 
     private var ycBytePosition = 0
     private val readYcData = ArrayList<ArrayList<Byte>>() //读取出来的遥测数据
@@ -179,15 +180,17 @@ class ReadFileDataManager {
                 var length: Int
                 while (currentPosition < currentBytes.size) {
                     if (currentBytes[currentPosition].toInt() == 1 && currentBytes.size > currentPosition + 7 && currentBytes[currentPosition + 1].toInt() == 8) {
-                        val lengthBytes = byteArrayOf(0x00, 0x00, currentBytes[3 +currentPosition ], currentBytes[4 + currentPosition])
+                        val lengthBytes = byteArrayOf(0x00,
+                            0x00,
+                            currentBytes[3 + currentPosition],
+                            currentBytes[4 + currentPosition])
                         length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
                         if (currentBytes.size < currentPosition + length) {
                             surplusRealData.addAll(currentBytes)
                             break
                         } else {
-                            val list =
-                                ArrayList<Byte>(currentBytes.subList(currentPosition,
-                                    currentPosition + length))
+                            val list = Vector(currentBytes.subList(currentPosition,
+                                currentPosition + length))
                             readRealData.add(list)
                             currentPosition += length
                         }
@@ -219,8 +222,6 @@ class ReadFileDataManager {
         ycDataIStream = null
         realDataIStream = null
         fdDataIStream = null
-
-        Log.d("zhangan","==========")
     }
 
     /**

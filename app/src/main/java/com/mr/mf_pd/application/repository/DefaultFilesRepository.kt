@@ -20,6 +20,7 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.view.opengl.utils.Geometry
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -32,6 +33,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.DecimalFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -62,9 +66,10 @@ class DefaultFilesRepository : FilesRepository {
     var maxValue: Float? = null
     var maxGainValue: Float? = null
     var minValue: Float? = null
-    var gainFloatList = ArrayList<Float>()
+    @Volatile
+    var gainFloatList = Vector<Float>()
 
-    var gainValue: MutableLiveData<ArrayList<Float>> = MutableLiveData(ArrayList())
+    var gainValue: MutableLiveData<Vector<Float>> = MutableLiveData(Vector())
 
     private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
 
@@ -199,14 +204,13 @@ class DefaultFilesRepository : FilesRepository {
 
     private val ycDataCallback = object : YcDataCallback {
         override fun onData(source: ByteArray) {
-            Log.d("zhangan","ycDataCallbacks" + ycDataCallbacks.size)
             ycDataCallbacks.forEach {
                 it.onData(source)
             }
         }
     }
 
-    override fun getGainValueList(): MutableLiveData<ArrayList<Float>> {
+    override fun getGainValueList(): MutableLiveData<Vector<Float>> {
         return gainValue
     }
 
@@ -320,6 +324,9 @@ class DefaultFilesRepository : FilesRepository {
                 }
                 realData.add(PrPsCubeList(newValueList))
                 if (receiverCount % 5 == 0) {
+
+                }
+                if (receiverCount == 50) { //一秒钟刷新一次数据
                     if (maxGainValue != null) {
                         gainFloatList.add(maxGainValue!!)
                     }
@@ -328,11 +335,9 @@ class DefaultFilesRepository : FilesRepository {
                     }
                     gainValue.postValue(gainFloatList)
                     maxGainValue = null
-                }
-                if (receiverCount == 50) { //一秒钟刷新一次数据
+
                     if (maxValue != null) {
                         val df1 = DecimalFormat("0.00")
-                        Log.d("zhangan",maxValue.toString())
                         checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
                     }
                     checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
