@@ -47,9 +47,12 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    //相位同步
+    //同步方式
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
+    //内同步的同步频率
+    var phaseValueStr: MutableLiveData<String> = MutableLiveData()
+
 
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
@@ -145,6 +148,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
             phaseModelInt.postValue(valueList[9].toInt())
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[9].toInt()])
+            phaseValueStr.postValue(valueList[10].toString())
         }
     }
 
@@ -187,6 +191,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
             settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
+            settingBean.phaseValue = phaseValueStr.value!!.toFloat()
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)
@@ -207,6 +212,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         saveDataToList(limitValueStr.value?.toFloatOrNull())
         saveDataToList(bandDetectionInt.value?.toFloat())
         saveDataToList(phaseModelInt.value?.toFloat())
+        saveDataToList(phaseValueStr.value?.toFloatOrNull())
         if (values.size == checkType.settingLength) {
             writeValue()
         }

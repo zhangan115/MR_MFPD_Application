@@ -50,7 +50,26 @@ public class CommandHelp {
     public static byte[] switchPassageway(int passageway) {
         byte b = (byte) passageway;
         byte[] bytes = new byte[]{
-                0x01, 0x07, 0x00, 0x00, 0x00, b
+                0x01, 0x07, 0x00, b, 0x00, b
+        };
+        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
+        byte[] data = new byte[crcByte.length + bytes.length];
+        System.arraycopy(bytes, 0, data, 0, bytes.length);
+        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        return data;
+    }
+
+    /**
+     * 切换通道
+     *
+     * @param passageway 通道
+     * @param funCode    命令
+     * @return 切换通道命令
+     */
+    public static byte[] switchPassageway(int passageway, int funCode) {
+        byte b = (byte) passageway;
+        byte[] bytes = new byte[]{
+                0x01, 0x07, 0x00, b, 0x00, (byte) funCode
         };
         byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
         byte[] data = new byte[crcByte.length + bytes.length];
@@ -65,14 +84,7 @@ public class CommandHelp {
      * @return 命令
      */
     public static byte[] closePassageway() {
-        byte[] bytes = new byte[]{
-                0x01, 0x07, 0x00, 0x00, 0x00, (byte) 0xff
-        };
-        byte[] crcByte = ByteUtil.hexStr2bytes(ByteUtil.getCRC(bytes));
-        byte[] data = new byte[crcByte.length + bytes.length];
-        System.arraycopy(bytes, 0, data, 0, bytes.length);
-        System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
-        return data;
+        return switchPassageway(0, 0);
     }
 
     /**

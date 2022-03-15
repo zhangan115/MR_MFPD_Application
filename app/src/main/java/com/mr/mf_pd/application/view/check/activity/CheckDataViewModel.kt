@@ -48,7 +48,7 @@ class CheckDataViewModel(
     }
 
     private fun openPassageway() {
-        val command = CommandHelp.switchPassageway(mCheckType.passageway)
+        val command = CommandHelp.switchPassageway(mCheckType.passageway,mCheckType.commandType)
         dataRepository.switchPassageway(mCheckType.passageway)
         SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
         SocketManager.get().openPassageway = object : BaseDataCallback {

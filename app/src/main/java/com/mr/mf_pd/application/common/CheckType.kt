@@ -14,6 +14,7 @@ enum class CheckType(
     val icon: Int,//图标
     var settingBean: SettingBean,//设置
     var settingLength: Int,//设置数据长度
+    var commandType:Int,//命令码
     val checkParams: MutableLiveData<CheckParamsBean>,//检测数据
 ) {
     UHF(
@@ -23,7 +24,8 @@ enum class CheckType(
         ".check_uhf",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_UHF),
-        10,
+        11,
+        1,
         MutableLiveData(CheckParamsBean(0))
     ),
     TEV(
@@ -33,7 +35,8 @@ enum class CheckType(
         ".check_tev",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_TEV),
-        9,
+        10,
+        1,
         MutableLiveData(CheckParamsBean(1))
     ),
     AE(
@@ -43,7 +46,8 @@ enum class CheckType(
         ".check_ae",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_AC),
-        12,
+        13,
+        1,
         MutableLiveData(CheckParamsBean(2))
     ),
     HF(
@@ -53,7 +57,8 @@ enum class CheckType(
         ".check_hf",
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_HF),
-        12,
+        13,
+        1,
         MutableLiveData(CheckParamsBean(3))
     );
 }
