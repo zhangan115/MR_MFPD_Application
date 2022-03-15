@@ -325,19 +325,16 @@ class DefaultFilesRepository : FilesRepository {
                 }
                 realData.add(PrPsCubeList(newValueList))
                 if (receiverCount % 5 == 0) {
-
-                }
-                if (receiverCount == 50) { //一秒钟刷新一次数据
                     if (maxGainValue != null) {
                         gainFloatList.add(maxGainValue!!)
                     }
-                    if (gainFloatList.size > getCheckType().settingBean.ljTime) {
+                    if (gainFloatList.size > getCheckType().settingBean.ljTime * 10) {
                         gainFloatList.removeFirst()
                     }
-                    Log.d("zhangan",gainFloatList.size.toString() + gainFloatList.toString())
                     gainValue.postValue(gainFloatList)
                     maxGainValue = null
-
+                }
+                if (receiverCount == 50) { //一秒钟刷新一次数据
                     if (maxValue != null) {
                         val df1 = DecimalFormat("0.00")
                         checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
