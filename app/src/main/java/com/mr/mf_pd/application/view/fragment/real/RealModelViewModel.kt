@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -24,12 +25,14 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
     fun start() {
-        this.checkType = dataRepository.getCheckType()
-        this.gainValues = dataRepository.getGainValueList()
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
+            this.gainValues = filesRepository.getGainValueList()
+            this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
         }else{
+            this.gainValues = dataRepository.getGainValueList()
+            this.checkType = dataRepository.getCheckType()
             dataRepository.addDataListener()
             dataRepository.addRealDataCallback(object : RealDataCallback {
                 override fun onRealDataChanged(source: ByteArray) {
@@ -48,11 +51,18 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
         }
     }
 
-    fun addHUfData(callback: DataRepository.DataCallback) {
-        dataRepository.addHufData(callback)
+    fun addHUfData(callback: DataCallback) {
+        if (isFile.value == true){
+            filesRepository.addHufData(callback)
+        }else{
+            dataRepository.addHufData(callback)
+        }
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+        if (isFile.value == true){
+            return filesRepository.getPhaseData(1)
+        }
         return dataRepository.getPhaseData(1)
     }
 

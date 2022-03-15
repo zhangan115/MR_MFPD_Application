@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.fragment.phase
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -37,8 +38,8 @@ class PhaseModelViewModel(
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
-            this.checkType = filesRepository.getCheckType()
             this.gainValues = filesRepository.getGainValueList()
+            this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
         }else{
             this.gainValues = dataRepository.getGainValueList()

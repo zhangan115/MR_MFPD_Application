@@ -50,8 +50,11 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun initData() {
-        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
-        viewModel.isFile.postValue(isFile)
+
+    }
+
+    override fun setIsFileValue(isFile: Boolean?) {
+        viewModel.isFile.value = isFile
     }
 
     override fun initView() {

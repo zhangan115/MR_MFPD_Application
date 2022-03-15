@@ -10,6 +10,7 @@ import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -93,7 +94,7 @@ class DefaultDataRepository : DataRepository {
         ycDataCallbacks.remove(callback)
     }
 
-    override fun addHufData(callback: DataRepository.DataCallback) {
+    override fun addHufData(callback: DataCallback) {
         var prPsCube: PrPsCubeList? = null
         if (realData.isNotEmpty()) {
             prPsCube = realData.lastOrNull()
@@ -249,7 +250,7 @@ class DefaultDataRepository : DataRepository {
                 if (maxGainValue != null) {
                     gainFloatList.add(maxGainValue!!)
                 }
-                if (gainFloatList.size >= getCheckType().settingBean.ljTime) {
+                if (gainFloatList.size > getCheckType().settingBean.ljTime) {
                     gainFloatList.removeFirst()
                 }
                 gainValue.postValue(gainFloatList)

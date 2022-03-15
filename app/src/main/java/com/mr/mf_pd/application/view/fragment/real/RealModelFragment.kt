@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -51,8 +52,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun initData() {
-        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
-        viewModel.isFile.postValue(isFile)
         if (viewModel.checkType.settingBean.gdCd == 1){
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         }else{
@@ -74,7 +73,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                     viewModel.getPhaseData().forEach {
                         prPsChartsRenderer?.addPrpsData(it)
                     }
-                    viewModel.addHUfData(object : DataRepository.DataCallback {
+                    viewModel.addHUfData(object : DataCallback {
 
                         override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
                             prPsChartsRenderer?.addPrpsData(prPsCube)
@@ -175,6 +174,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun isAdd(): Boolean {
         return isAdded
+    }
+
+    override fun setIsFileValue(isFile: Boolean?) {
+        viewModel.isFile.value = isFile
     }
 
 }

@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.repository.impl
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import io.reactivex.disposables.Disposable
@@ -106,5 +107,7 @@ interface FilesRepository {
      * 清理数据
      */
     fun cleanData()
+
+    fun addHufData(callback: DataCallback)
 
 }

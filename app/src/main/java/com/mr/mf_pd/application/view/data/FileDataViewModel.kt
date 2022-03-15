@@ -36,7 +36,6 @@ class FileDataViewModel(
     private var ycDisposable: Disposable? = null
     private var realDisposable: Disposable? = null
 
-    @Volatile
     private var isStartReadYcData = false
 
     fun start(checkType: CheckType, file: File) {

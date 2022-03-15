@@ -25,6 +25,14 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     private val requestChooseDirCode = 200
     var isOpenFromFile = false
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
+        setIsFileValue(isFile)
+    }
+
+    abstract fun setIsFileValue(isFile:Boolean?)
+
     open fun showSaveFileDialog() {
         activity?.let {
             MaterialDialog(it).show {

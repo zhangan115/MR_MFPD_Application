@@ -86,7 +86,6 @@ class GainChartView : LinearLayout {
     }
 
     fun updateData(list: Vector<Float>, minValue: Float?) {
-//        list.reverse()
         lineChart.data = getLineData(list, minValue)
         lineChart.invalidate()
     }

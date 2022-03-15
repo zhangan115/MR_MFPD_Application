@@ -13,6 +13,7 @@ import com.mr.mf_pd.application.manager.socket.callback.ReadListener
 import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -330,10 +331,10 @@ class DefaultFilesRepository : FilesRepository {
                     if (maxGainValue != null) {
                         gainFloatList.add(maxGainValue!!)
                     }
-                    if (gainFloatList.size >= getCheckType().settingBean.ljTime) {
+                    if (gainFloatList.size > getCheckType().settingBean.ljTime) {
                         gainFloatList.removeFirst()
                     }
-                    Log.d("zhangan",gainFloatList.size.toString())
+                    Log.d("zhangan",gainFloatList.size.toString() + gainFloatList.toString())
                     gainValue.postValue(gainFloatList)
                     maxGainValue = null
 
@@ -401,4 +402,22 @@ class DefaultFilesRepository : FilesRepository {
             }
         }
     }
+
+    override fun addHufData(callback: DataCallback) {
+        var prPsCube: PrPsCubeList? = null
+        if (realData.isNotEmpty()) {
+            prPsCube = realData.lastOrNull()
+        }
+        var map: HashMap<Int, Float>? = null
+        if (phaseData.isNotEmpty()) {
+            map = phaseData.lastOrNull()
+        }
+        if (prPsCube != null && map != null) {
+            callback.addData(map, prPsCube)
+            if (realData.isNotEmpty()) {
+                realData.removeLast()
+            }
+        }
+    }
+
 }

@@ -44,8 +44,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun initData() {
-        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
-        viewModel.isFile.postValue(isFile)
+
     }
 
     override fun initView() {
@@ -195,6 +194,10 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun isAdd(): Boolean {
         return isAdded
+    }
+
+    override fun setIsFileValue(isFile: Boolean?) {
+        viewModel.isFile.value = isFile
     }
 
 }

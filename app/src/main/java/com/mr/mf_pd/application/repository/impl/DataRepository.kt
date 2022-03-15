@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.repository.impl
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
@@ -49,12 +50,8 @@ interface DataRepository {
      */
     fun switchPassageway(passageway: Int)
 
+
     fun addHufData(callback: DataCallback)
-
-    interface DataCallback {
-
-        fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList)
-    }
 
     /**
      * 清理数据

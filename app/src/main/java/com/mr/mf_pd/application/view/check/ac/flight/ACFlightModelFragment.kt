@@ -40,8 +40,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun initData() {
-        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
-        viewModel.isFile.postValue(isFile)
         if (viewModel.checkType.settingBean.gdCd == 1){
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         }else{
@@ -51,6 +49,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
+    }
+
+    override fun setIsFileValue(isFile: Boolean?) {
+        viewModel.isFile.value = isFile
     }
 
     override fun initView() {
