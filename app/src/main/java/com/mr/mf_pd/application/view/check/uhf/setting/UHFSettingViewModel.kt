@@ -13,6 +13,7 @@ import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -120,7 +121,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             noiseLimitStr.postValue(settingBean.noiseLimit.toString())
         }
         if (settingBean.phaseValue != null) {
-            phaseValueStr.postValue(settingBean.phaseValue.toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
@@ -149,7 +151,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
             phaseModelInt.postValue(valueList[9].toInt())
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[9].toInt()])
-            phaseValueStr.postValue(valueList[10].toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(valueList[10]))
         }
     }
 

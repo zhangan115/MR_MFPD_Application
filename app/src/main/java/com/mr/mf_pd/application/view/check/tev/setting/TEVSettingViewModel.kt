@@ -12,6 +12,7 @@ import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -110,7 +111,8 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             noiseLimitStr.postValue(settingBean.noiseLimit.toString())
         }
         if (settingBean.phaseValue != null) {
-            phaseValueStr.postValue(settingBean.phaseValue.toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
@@ -137,7 +139,8 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             limitValueStr.postValue(valueList[7].toInt().toString())
             phaseModelInt.postValue(valueList[8].toInt())
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[8].toInt()])
-            phaseValueStr.postValue(valueList[9].toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(valueList[9]))
         }
     }
 

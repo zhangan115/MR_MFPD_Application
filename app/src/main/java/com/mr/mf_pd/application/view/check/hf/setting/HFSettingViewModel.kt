@@ -12,6 +12,7 @@ import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -145,7 +146,8 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             highPassFilteringStr.postValue(settingBean.highPassFiltering.toString())
         }
         if (settingBean.phaseValue != null) {
-            phaseValueStr.postValue(settingBean.phaseValue.toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
@@ -175,7 +177,8 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             highPassFilteringStr.postValue(valueList[10].toInt().toString())
             bandDetectionInt.postValue(valueList[11].toInt())
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[11].toInt()])
-            phaseValueStr.postValue(valueList[12].toString())
+            val df1 = DecimalFormat("0.00")
+            phaseValueStr.postValue(df1.format(valueList[12]))
         }
     }
 
