@@ -22,7 +22,8 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
-
+    //内同步的同步频率
+    var phaseValueStr: MutableLiveData<String> = MutableLiveData()
     //警戒门限
     var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
 
@@ -80,7 +81,6 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
-        internalSyncStr.postValue(settingBean.nTbPl.toString())
         phaseOffsetStr.postValue(settingBean.xwPy.toString())
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
@@ -109,6 +109,9 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.noiseLimit != null) {
             noiseLimitStr.postValue(settingBean.noiseLimit.toString())
         }
+        if (settingBean.phaseValue != null) {
+            phaseValueStr.postValue(settingBean.phaseValue.toString())
+        }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
@@ -134,6 +137,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             limitValueStr.postValue(valueList[7].toInt().toString())
             phaseModelInt.postValue(valueList[8].toInt())
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[8].toInt()])
+            phaseValueStr.postValue(valueList[9].toString())
         }
     }
 
@@ -162,7 +166,6 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
             settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
             settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-            settingBean.nTbPl = internalSyncStr.value!!.toFloat()
             settingBean.xwPy = phaseOffsetStr.value!!.toInt()
             settingBean.ljTime = totalTimeStr.value!!.toInt()
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
@@ -175,6 +178,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondCycleMinValue = secondCycleMinValueStr.value!!.toInt()
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value!!.toInt()
             settingBean.noiseLimit = noiseLimitStr.value!!.toInt()
+            settingBean.phaseValue = phaseValueStr.value!!.toFloat()
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)
@@ -194,6 +198,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         saveDataToList(noiseLimitStr.value?.toFloatOrNull())
         saveDataToList(limitValueStr.value?.toFloatOrNull())
         saveDataToList(phaseModelInt.value?.toFloat())
+        saveDataToList(phaseValueStr.value?.toFloatOrNull())
         if (values.size == checkType.settingLength) {
             writeValue()
         }

@@ -9,7 +9,6 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.WriteSettingDataCallback
-import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
@@ -44,12 +43,13 @@ class CheckDataViewModel(
         dataRepository.setCheckType(checkType)
         updateSettingValue(checkType)
         checkParamsBean = checkType.checkParams
+        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         openPassageway()
     }
 
     private fun openPassageway() {
         val command = CommandHelp.switchPassageway(mCheckType.passageway,mCheckType.commandType)
-        dataRepository.switchPassageway(mCheckType.passageway)
+        dataRepository.switchPassageway(mCheckType.passageway,mCheckType.commandType)
         SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
         SocketManager.get().openPassageway = object : BaseDataCallback {
             override fun onData(source: ByteArray) {
@@ -83,13 +83,11 @@ class CheckDataViewModel(
         if (disposable == null) {
             disposable = dataRepository.readRepeatData()
         }
-        updateCallback()
     }
 
     fun updateCallback() {
         val command = CommandHelp.readSettingValue(mCheckType.passageway, mCheckType.settingLength)
         disposableList.add(SocketManager.get().sendData(command))
-        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
     }
 
     private val readSettingDataCallback = object : ReadSettingDataCallback {

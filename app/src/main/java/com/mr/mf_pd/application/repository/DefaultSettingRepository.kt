@@ -37,7 +37,7 @@ class DefaultSettingRepository : SettingRepository {
             settingBean.gdCd = cacheSettingBean.gdCd
             settingBean.maxValue = cacheSettingBean.maxValue
             settingBean.minValue = cacheSettingBean.minValue
-            settingBean.nTbPl = cacheSettingBean.nTbPl
+
             settingBean.fzUnit = cacheSettingBean.fzUnit
             settingBean.outVoice = cacheSettingBean.outVoice
             settingBean.pdDown = cacheSettingBean.pdDown

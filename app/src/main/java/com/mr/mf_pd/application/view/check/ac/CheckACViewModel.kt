@@ -42,8 +42,8 @@ class CheckACViewModel(val dataRepository: DataRepository,val settingRepository:
     }
 
     private fun openPassageway() {
-        val command = CommandHelp.switchPassageway(mCheckType.passageway)
-        dataRepository.switchPassageway(mCheckType.passageway)
+        val command = CommandHelp.switchPassageway(mCheckType.passageway,mCheckType.commandType)
+        dataRepository.switchPassageway(mCheckType.passageway,mCheckType.commandType)
         SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
         SocketManager.get().openPassageway = object : BaseDataCallback {
             override fun onData(source: ByteArray) {

@@ -48,4 +48,4 @@ data class SettingBean(
     var highPassFiltering: Float? = null,
     //内同步的同步频率
     var phaseValue: Float? = null,
-    )
+)

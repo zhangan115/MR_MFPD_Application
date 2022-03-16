@@ -52,7 +52,8 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
-
+    //内同步的同步频率
+    var phaseValueStr: MutableLiveData<String> = MutableLiveData()
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
     var bandDetectionInt: MutableLiveData<Int> = MutableLiveData()
@@ -100,7 +101,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
-        internalSyncStr.postValue(settingBean.nTbPl.toString())
+
         phaseOffsetStr.postValue(settingBean.xwPy.toString())
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
@@ -143,7 +144,9 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.highPassFiltering != null) {
             highPassFilteringStr.postValue(settingBean.highPassFiltering.toString())
         }
-
+        if (settingBean.phaseValue != null) {
+            phaseValueStr.postValue(settingBean.phaseValue.toString())
+        }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
         SocketManager.get()
@@ -172,6 +175,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             highPassFilteringStr.postValue(valueList[10].toInt().toString())
             bandDetectionInt.postValue(valueList[11].toInt())
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[11].toInt()])
+            phaseValueStr.postValue(valueList[12].toString())
         }
     }
 
@@ -201,7 +205,6 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.xwTb = phaseModelInt.value!!
             settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
             settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-            settingBean.nTbPl = internalSyncStr.value!!.toFloat()
             settingBean.xwPy = phaseOffsetStr.value!!.toInt()
             settingBean.ljTime = totalTimeStr.value!!.toInt()
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
@@ -214,7 +217,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondCycleMinValue = secondCycleMinValueStr.value?.toInt()
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value?.toInt()
             settingBean.noiseLimit = noiseLimitStr.value?.toInt()
-
+            settingBean.phaseValue = phaseValueStr.value!!.toFloat()
             if (cfLimitValueStr.value != null) {
                 settingBean.cfLimitValue = cfLimitValueStr.value?.toInt()
             }
@@ -246,6 +249,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         saveDataToList(lowPassFilteringStr.value?.toFloatOrNull())
         saveDataToList(highPassFilteringStr.value?.toFloatOrNull())
         saveDataToList(phaseModelInt.value?.toFloat())
+        saveDataToList(phaseValueStr.value?.toFloatOrNull())
         if (values.size == checkType.settingLength) {
             writeValue()
         }

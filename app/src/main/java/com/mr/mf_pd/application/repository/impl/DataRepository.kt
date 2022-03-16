@@ -48,7 +48,7 @@ interface DataRepository {
     /**
      * 切换实时数据监测通道
      */
-    fun switchPassageway(passageway: Int)
+    fun switchPassageway(passageway: Int,commandType: Int)
 
 
     fun addHufData(callback: DataCallback)

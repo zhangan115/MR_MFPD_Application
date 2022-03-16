@@ -25,7 +25,12 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
             MaterialDialog(this)
                 .show {
                     listItems(R.array.choose_phase_model) { _, index, text ->
-                        onPhaseModelChange(text.toString(),index)
+                        //单独处理
+                        if (index != 0) {
+                            onPhaseModelChange(text.toString(), 2)
+                        } else {
+                            onPhaseModelChange(text.toString(), index)
+                        }
                     }
                     lifecycleOwner(this@BaseSettingActivity)
                 }
@@ -35,7 +40,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
             MaterialDialog(this)
                 .show {
                     listItems(R.array.choose_band_detection) { _, index, text ->
-                        onBandDetectionChange(text.toString(),index)
+                        onBandDetectionChange(text.toString(), index)
                     }
                     lifecycleOwner(this@BaseSettingActivity)
                 }
@@ -70,8 +75,8 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
 
     abstract fun getBandDetectionLayout(): LinearLayout?
 
-    abstract fun onPhaseModelChange(text:String,index:Int)
+    abstract fun onPhaseModelChange(text: String, index: Int)
 
-    abstract fun onBandDetectionChange(text:String,index:Int)
+    abstract fun onBandDetectionChange(text: String, index: Int)
 
 }

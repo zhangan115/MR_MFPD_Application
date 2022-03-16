@@ -119,9 +119,9 @@ class DefaultDataRepository : DataRepository {
         realData.clear()
     }
 
-    override fun switchPassageway(passageway: Int) {
+    override fun switchPassageway(passageway: Int,commandType: Int) {
         cleanData()
-        SocketManager.get().sendData(CommandHelp.switchPassageway(passageway))
+        SocketManager.get().sendData(CommandHelp.switchPassageway(passageway,commandType))
     }
 
     override fun closePassageway() {

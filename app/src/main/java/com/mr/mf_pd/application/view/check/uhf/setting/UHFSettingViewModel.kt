@@ -53,7 +53,6 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //内同步的同步频率
     var phaseValueStr: MutableLiveData<String> = MutableLiveData()
 
-
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
     var bandDetectionInt: MutableLiveData<Int> = MutableLiveData()
@@ -92,7 +91,6 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
-        internalSyncStr.postValue(settingBean.nTbPl.toString())
         phaseOffsetStr.postValue(settingBean.xwPy.toString())
         totalTimeStr.postValue(settingBean.ljTime.toString())
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
@@ -120,6 +118,9 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         }
         if (settingBean.noiseLimit != null) {
             noiseLimitStr.postValue(settingBean.noiseLimit.toString())
+        }
+        if (settingBean.phaseValue != null) {
+            phaseValueStr.postValue(settingBean.phaseValue.toString())
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
@@ -178,7 +179,6 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.autoTb = if (isAutoSync.value!!) 1 else 0
             settingBean.lyXc = if (isNoiseFiltering.value!!) 1 else 0
             settingBean.gdCd = if (isFixedScale.value!!) 1 else 0
-            settingBean.nTbPl = internalSyncStr.value!!.toFloat()
             settingBean.xwPy = phaseOffsetStr.value!!.toInt()
             settingBean.ljTime = totalTimeStr.value!!.toInt()
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
