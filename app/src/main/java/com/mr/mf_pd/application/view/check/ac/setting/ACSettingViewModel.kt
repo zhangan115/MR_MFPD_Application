@@ -256,7 +256,7 @@ class ACSettingViewModel(val setting: SettingRepository) : ViewModel() {
             if (highPassFilteringStr.value != null) {
                 settingBean.highPassFiltering = highPassFilteringStr.value?.toFloat()
             }
-            settingBean.phaseValue = phaseValueStr.value!!.toFloat()
+            settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)
