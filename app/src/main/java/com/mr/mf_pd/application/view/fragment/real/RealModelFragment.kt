@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_real.image3
 import kotlinx.android.synthetic.main.fragment_real.image4
 import kotlinx.android.synthetic.main.fragment_real.image5
 import kotlinx.android.synthetic.main.fragment_real.surfaceView1
+import java.text.DecimalFormat
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
@@ -153,7 +154,8 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
             view?.let {
-                viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
+                val df1 = DecimalFormat("0.00")
+                viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
                 viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
             }
         }

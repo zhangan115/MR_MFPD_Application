@@ -220,7 +220,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondCycleMinValue = secondCycleMinValueStr.value?.toInt()
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value?.toInt()
             settingBean.noiseLimit = noiseLimitStr.value?.toInt()
-            settingBean.phaseValue = phaseValueStr.value!!.toFloat()
+            settingBean.phaseValue = phaseValueStr.value?.toFloat()
             if (cfLimitValueStr.value != null) {
                 settingBean.cfLimitValue = cfLimitValueStr.value?.toInt()
             }

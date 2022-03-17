@@ -168,9 +168,9 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
             view?.let {
-                viewModel.checkType.checkParams.value?.hzAttr = valueList[1].toString()
+                val df1 = DecimalFormat("0.00")
+                viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
                 if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE) && valueList.size >= 6) {
-                    val df1 = DecimalFormat("0.00")
                     viewModel.checkType.checkParams.value?.effectiveValueAttr =
                         df1.format(valueList[3])
                 }
