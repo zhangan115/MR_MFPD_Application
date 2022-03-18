@@ -9,14 +9,13 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.*
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
+class PrPsChartsRendererText(var context: Context) : GLSurfaceView.Renderer {
 
     var getPrpsValueCallback: GetPrpsValueCallback? = null
 
@@ -29,9 +28,9 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     @Volatile
     private var textMaps = HashMap<String, ArrayList<String>>()
     private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
-    private val yTextList = listOf("0", "10", "20", "30", "40", "50")
-    private val zTextList = listOf("-80", "-60", "-40", "-20")
-    private val textHelp = TextGlPrpsHelp()
+    private val yTextList = listOf("0","12","25","37","50")
+    private val zTextList = listOf("-80","-60","-40","-20")
+    private val textHelp = TextGlHelp()
 
     interface GetPrpsValueCallback {
         fun getData()
@@ -47,7 +46,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     @Volatile
     private var prpsCubeList: ArrayList<PrPsCubeList>? = ArrayList()
 
-    private lateinit var textureProgram: TextureShader3DProgram
+    private lateinit var textureProgram: TextureShaderProgram
     private lateinit var colorProgram: ColorShaderProgram
     private lateinit var colorPointProgram: PrPsColorPointShaderProgram
     private var texture: Int = 0
@@ -66,12 +65,12 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         prPsPoints = PrpsPointList()
 
-        textureProgram = TextureShader3DProgram(context)
+        textureProgram = TextureShaderProgram(context)
         colorProgram = ColorShaderProgram(context)
         colorPointProgram = PrPsColorPointShaderProgram(context)
 
-        prPs3DXYLines = PrPsXYLines(5, 5, 180)
-        prPs3DXZLines = PrPsXZLines(6, 5, 180)
+        prPs3DXYLines = PrPsXYLines(4, 7, 180)
+        prPs3DXZLines = PrPsXZLines(4, 7, 180)
 
     }
 
@@ -110,14 +109,11 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         position()
 
-        textureProgram.useProgram()
-        textureProgram.setUniforms(modelViewProjectionMatrix, texture)
-
-        textHelp.bindData(textureProgram)
-        textHelp.draw()
-
-        textHelp.bindXZData(textureProgram)
-        textHelp.draw()
+//        textureProgram.useProgram()
+//        textureProgram.setUniforms(modelViewProjectionMatrix,texture)
+//
+//        textHelp.bindData(textureProgram)
+//        textHelp.draw()
 
         colorPointProgram.useProgram()
         colorPointProgram.setUniforms(modelViewProjectionMatrix)
@@ -139,7 +135,7 @@ class PrPsChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         prPsPoints?.draw()
 
         val timeEnd = System.currentTimeMillis()
-        Log.d("za", "cost time ${timeEnd - timeStart}")
+//        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()
     }
 

@@ -8,17 +8,14 @@ import java.util.List;
 /**
  * 3D 展示PrPs的线
  */
-public class PrPsXZLines {
+public class PrPsText {
     /**
      * 设置边界
      */
-    public static float offsetXPointValueStart = 0.15f;
-    public static float offsetXPointValueEnd = 0.15f;
-    public static float offsetYPointValueTop = 0.15f;
-    public static float offsetYPointValueBottom = 0.15f;
-
-    public static float offsetZPointValueTop = 0.15f;
-    public static float offsetZPointValueBottom = 0.15f;
+    public static float offsetXPointValueStart = 0f;
+    public static float offsetXPointValueEnd = 0f;
+    public static float offsetYPointValueTop = 0f;
+    public static float offsetYPointValueBottom = 0f;
 
     private static final int POSITION_COMPONENT_COUNT = 3;
     public final int column, row;
@@ -26,11 +23,11 @@ public class PrPsXZLines {
     private final VertexArray vertexArray;
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public PrPsXZLines(int row, int column, int sinCount) {
+    public PrPsText(int row, int column, int sinCount) {
         this.column = column;
         this.row = row;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsXZLines(row, column, sinCount);
+                .createPrPsXYLines(row, column, sinCount);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }

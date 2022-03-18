@@ -13,10 +13,10 @@ public class PrPsXYLines {
     /**
      * 设置边界
      */
-    public static float offsetXPointValueStart = 0f;
-    public static float offsetXPointValueEnd = 0f;
-    public static float offsetYPointValueTop = 0f;
-    public static float offsetYPointValueBottom = 0f;
+    public static float offsetXPointValueStart = 0.15f;
+    public static float offsetXPointValueEnd = 0.15f;
+    public static float offsetYPointValueTop = 0.15f;
+    public static float offsetYPointValueBottom = 0.15f;
 
     private static final int POSITION_COMPONENT_COUNT = 3;
     public final int column, row;
