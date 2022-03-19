@@ -31,8 +31,8 @@ public class PrpsPoint2DList {
     private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();
     private Point2DColorPointShaderProgram colorProgram;
 
-    public static final float stepX = (1 - PointChartsRenderer.Companion.getOffsetXPointValueStart()
-            + 1 - PointChartsRenderer.Companion.getOffsetXPointValueEnd()) / Constants.PRPS_COLUMN;
+    public static final float stepX = (1 - Constants.PRPS_SPACE
+            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
     private short[] indices;
 
     private final List<Float> color1 = new ArrayList<>();
@@ -79,14 +79,14 @@ public class PrpsPoint2DList {
         List<Short> indicesList = new ArrayList<>();
         Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
         short count = 0;
-        float h = 1 - PointChartsRenderer.Companion.getOffsetYPointValueTop() + 1 - PointChartsRenderer.Companion.getOffsetYPointValueBottom();
-        float startY = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart();
+        float h = 1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE;
+        float startY = -1 + Constants.PRPS_SPACE;
         for (Map.Entry<Integer, Map<Float, Integer>> entry1 : entrySet1) {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
                 float zY = startY + (entry2.getKey() - minValue) / (maxValue - minValue) * h;
-                float startX = -1 + PointChartsRenderer.Companion.getOffsetXPointValueStart() + stepX * entry1.getKey();
+                float startX = -1 + Constants.PRPS_SPACE + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(zY);
                 vertexPointList.add(0f);

@@ -24,10 +24,10 @@ open class TextGlPrpsHelp {
 
         private val VERTEX_DATA_XZ = floatArrayOf(
             //X Y Z S T
-            -1f, 1f, 0f, 0f, 1.0f,
-            1f, 1f, 0f, 1.0f, 1.0f,
-            -1f, 1f, 2f, 0f, 0f,
-            1f, 1f, 2f, 1.0f, 0f,
+            -1f, 0.85f, 0f, 0f, 1.0f,
+            1f, 0.85f, 0f, 1.0f, 1.0f,
+            -1f, 0.85f, 1.7f, 0f, 0f,
+            1f, 0.85f, 1.7f, 1.0f, 0f,
         )
     }
 

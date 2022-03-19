@@ -78,23 +78,16 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
-            android:name=".view.check.activity.CheckDataActivity"
+            android:name=".view.check.CheckDataActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
+
         <activity
-            android:name=".view.check.uhf.CheckUHFActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity
-            android:name=".view.check.uhf.setting.UHFSettingActivity"
+            android:name=".view.setting.uhf.UHFSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"
@@ -103,7 +96,7 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <activity
-            android:name=".view.check.ac.CheckACActivity"
+            android:name=".view.setting.ae.AESettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"
@@ -112,7 +105,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <activity
-            android:name=".view.check.ac.setting.ACSettingActivity"
+            android:name=".view.setting.hf.HFSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"
@@ -121,34 +114,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <activity
-            android:name=".view.check.hf.CheckHFActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-
-        <activity
-            android:name=".view.check.hf.setting.HFSettingActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-
-        <activity
-            android:name=".view.check.tev.CheckTEVActivity"
-            android:allowTaskReparenting="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
-            android:taskAffinity="${TASK_AFFINITY_VALUE}"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
-
-        <activity
-            android:name=".view.check.tev.setting.TEVSettingActivity"
+            android:name=".view.setting.tev.TEVSettingActivity"
             android:allowTaskReparenting="true"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTop"

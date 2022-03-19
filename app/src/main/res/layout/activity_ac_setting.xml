@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.check.ac.setting.ACSettingViewModel" />
+            type="com.mr.mf_pd.application.view.setting.ae.AESettingViewModel" />
     </data>
 
     <LinearLayout

@@ -4,10 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.MutableLiveData
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.CheckActionListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
@@ -31,7 +35,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         setIsFileValue(isFile)
     }
 
-    abstract fun setIsFileValue(isFile:Boolean?)
+    abstract fun setIsFileValue(isFile: Boolean?)
 
     open fun showSaveFileDialog() {
         activity?.let {
@@ -123,6 +127,41 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             checkActionListener = activity as CheckActionListener
         }
     }
+
+    fun getYAxisValue(
+        isFile: Boolean,
+        settingBean: SettingBean,
+        gainMinValue: MutableLiveData<Float?>,
+    ): ArrayList<String> {
+        val yList = ArrayList<String>()
+        val minValue: Float?
+        val maxValue: Float?
+        if (settingBean.gdCd != 1) {
+            if (isFile) {
+                minValue = DefaultFilesRepository.realDataMinValue.value?.toFloat()
+                maxValue = DefaultFilesRepository.realDataMaxValue.value?.toFloat()
+            } else {
+                minValue = DefaultDataRepository.realDataMinValue.value?.toFloat()
+                maxValue = DefaultDataRepository.realDataMaxValue.value?.toFloat()
+            }
+        } else {
+            minValue = settingBean.minValue.toFloat()
+            maxValue = settingBean.maxValue.toFloat()
+        }
+        if (minValue != null && maxValue != null) {
+            val value =
+                maxValue - minValue
+            val step = value / 4.00f
+            for (i in 0..4) {
+                val str = minValue + step * i
+                yList.add(str.toString())
+            }
+            gainMinValue.postValue(minValue)
+        }
+        yList.reverse()
+        return yList
+    }
+
 
     /**
      * 数据是否正在保存

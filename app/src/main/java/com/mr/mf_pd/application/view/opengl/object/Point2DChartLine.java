@@ -9,16 +9,6 @@ import java.util.List;
  * 2D 图展示数据的XY线
  */
 public class Point2DChartLine {
-    /**
-     * 设置边界
-     */
-    public static float offsetXPointValueStart = 0.15f;
-    public static float offsetXPointValueEnd = 0.15f;
-    public static float offsetYPointValueTop = 0.15f;
-    public static float offsetYPointValueBottom = 0.15f;
-
-    public static float offsetTop = 0.2f;
-    public static float offsetRight = 0.1f;
 
     private static final int POSITION_COMPONENT_COUNT = 3;
     public final int column, row;

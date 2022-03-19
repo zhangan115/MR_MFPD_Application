@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
+import android.opengl.GLES20.*
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.os.Handler
@@ -22,13 +23,6 @@ import javax.microedition.khronos.opengles.GL10
 class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     GLSurfaceView.Renderer {
     var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
-
-    companion object {
-        var offsetXPointValueStart = 0.15f
-        var offsetXPointValueEnd = 0.15f
-        var offsetYPointValueTop = 0.15f
-        var offsetYPointValueBottom = 0.15f
-    }
 
     private lateinit var chartsLines: Point2DChartLine
     private val textHelp = TextGlHelp()
@@ -89,12 +83,10 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     override fun onDrawFrame(gl: GL10?) {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
-        textureProgram.useProgram()
-        textureProgram.setUniforms(texture)
+        GLES30.glEnable(GL_BLEND)
+        GLES30.glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
 
-        textHelp.bindData(textureProgram)
-        textHelp.draw()
-
+        GLES30.glDepthMask(true)
         colorProgram.useProgram()
         colorProgram.setUniforms(0.4f, 0.4f, 0.4f)
         chartsLines.bindData(colorProgram)
@@ -103,6 +95,14 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         colorPointProgram.useProgram()
         prPsPoints?.bindData(colorPointProgram)
         prPsPoints?.draw()
+
+        GLES30.glDepthMask(false)
+
+        textureProgram.useProgram()
+        textureProgram.setUniforms(texture)
+
+        textHelp.bindData(textureProgram)
+        textHelp.draw()
 
         getPrpsValueCallback?.getData()
     }

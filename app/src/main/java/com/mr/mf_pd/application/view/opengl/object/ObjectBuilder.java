@@ -186,13 +186,12 @@ public class ObjectBuilder {
     private void appPoint2DLines(int row, int column, int sinCount) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
-        float yStep = (1 - Point2DChartLine.offsetYPointValueBottom
-                + 1 - Point2DChartLine.offsetYPointValueTop -
-                Point2DChartLine.offsetTop) / row;
+        float yStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / row;
 
-        float startX = -1 + Point2DChartLine.offsetXPointValueStart;
-        float endX = 1 - Point2DChartLine.offsetXPointValueEnd;
-        float yPosition = -1 + Point2DChartLine.offsetYPointValueBottom;
+        float startX = -1 + Constants.PRPS_SPACE;
+        float endX = 1 - Constants.PRPS_SPACE;
+        float yPosition = -1 + Constants.PRPS_SPACE;
         for (int i = 0; i <= row; i++) {
             //startPoint
             vertexData[offset++] = startX;
@@ -206,12 +205,11 @@ public class ObjectBuilder {
             yPosition = yPosition + yStep;
         }
 
-        float xStep = (1 - Point2DChartLine.offsetXPointValueStart
-                + 1 - Point2DChartLine.offsetXPointValueEnd
-                - Point2DChartLine.offsetRight) / column;
-        float startY = -1 + Point2DChartLine.offsetYPointValueBottom;
-        float endY = 1 - Point2DChartLine.offsetYPointValueTop;
-        float xPosition = -1 + Point2DChartLine.offsetXPointValueStart;
+        float xStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / column;
+        float startY = -1 + Constants.PRPS_SPACE;
+        float endY = 1 - Constants.PRPS_SPACE;
+        float xPosition = -1 + Constants.PRPS_SPACE;
 
         for (int i = 0; i <= column; i++) {
             //startPoint
@@ -229,12 +227,11 @@ public class ObjectBuilder {
 
         final int sinLineStartVertex = offset / FLOATS_PER_VERTEX;
 
-        float sinXStep = (1 - Point2DChartLine.offsetXPointValueStart
-                + 1 - Point2DChartLine.offsetXPointValueEnd
-                - Point2DChartLine.offsetRight) / sinCount;
-        float sinStartX = -1 + Point2DChartLine.offsetXPointValueStart;
-        float height = (1 - Point2DChartLine.offsetYPointValueBottom
-                + 1 - Point2DChartLine.offsetYPointValueTop) / 2.0f;
+        float sinXStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / sinCount;
+        float sinStartX = -1 + Constants.PRPS_SPACE;
+        float height = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / 2.0f;
         float sinStartY;
         for (int i = 0; i <= sinCount; i++) {
             double radians = Math.toRadians((double) i / (double) sinCount * 360.0);
@@ -250,12 +247,12 @@ public class ObjectBuilder {
     private void appPoint2DPoint(float[] values) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPint2DChartPoint(values);
-        float xStep = (1 - Point2DChartLine.offsetXPointValueStart
-                + 1 - Point2DChartLine.offsetXPointValueEnd
-                - Point2DChartLine.offsetRight) / (values.length - 1);
-        float startX = -1 + Point2DChartLine.offsetXPointValueStart;
-        float height = (1 - Point2DChartLine.offsetYPointValueBottom
-                + 1 - Point2DChartLine.offsetYPointValueTop) / 2.0f;
+        float xStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE
+                - Constants.PRPS_SPACE) / (values.length - 1);
+        float startX = -1 + Constants.PRPS_SPACE;
+        float height = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / 2.0f;
         for (float value : values) {
             //设置点点位置
             vertexData[offset++] = startX;
@@ -278,16 +275,16 @@ public class ObjectBuilder {
     private void appPrPsPoint(float[] values) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPint2DChartPoint(values);
-        float xStep = (1 - PrPsXZLines.offsetXPointValueStart
-                + 1 - PrPsXZLines.offsetXPointValueEnd) / (values.length - 1);
-        float startX = -1 + PrPsXZLines.offsetXPointValueStart;
-        float height = (1 - PrPsXZLines.offsetYPointValueBottom
-                + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+        float xStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / (values.length - 1);
+        float startX = -1 + Constants.PRPS_SPACE;
+        float height = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / 2.0f;
         for (float value : values) {
             //设置点点位置
             vertexData[offset++] = startX;
             vertexData[offset++] = 1;
-            vertexData[offset++] = height * value + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+            vertexData[offset++] = height * value + (1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE) / 2;
             //设置颜色
             if (value > 0) {
                 vertexData[offset++] = 1.0f;
@@ -304,15 +301,15 @@ public class ObjectBuilder {
     }
 
     private void appPrPsCube(int row, int column, float height, short[] indices) {
-        float stepX = (1 - PrPsXZLines.offsetXPointValueStart
-                + 1 - PrPsXZLines.offsetXPointValueEnd) / PrPsCube.COLUMN_COUNT;
-        float stepY = (1 - PrPsXZLines.offsetYPointValueBottom
-                + 1 - PrPsXZLines.offsetYPointValueTop) / PrPsCube.ROW_COUNT;
-        float h = (1 - PrPsXZLines.offsetYPointValueBottom
-                + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
-        float zTopPosition = height * h + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
-        float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * column;
-        float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
+        float stepX = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / PrPsCube.COLUMN_COUNT;
+        float stepY = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / PrPsCube.ROW_COUNT;
+        float h = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / 2.0f;
+        float zTopPosition = height * h + (1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE) / 2;
+        float startX = -1 + Constants.PRPS_SPACE + stepX * column;
+        float startY = -1 + Constants.PRPS_SPACE + stepY * row;
         float[] vertexPoints = new float[]{
                 //正面矩形
                 startX, startY, 0f, //V0
@@ -376,12 +373,12 @@ public class ObjectBuilder {
     private void appPrPs3DXYLines(int row, int column, int sinCount) {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPrPsChartLinesInVertices(row, column);
-        float yStep = (1 - PrPsXYLines.offsetYPointValueBottom
-                + 1 - PrPsXYLines.offsetYPointValueTop) / row;
+        float yStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / row;
 
-        float startX = -1 + PrPsXYLines.offsetXPointValueStart;
-        float endX = 1 - PrPsXYLines.offsetXPointValueEnd;
-        float yPosition = -1 + PrPsXYLines.offsetYPointValueBottom;
+        float startX = -1 + Constants.PRPS_SPACE;
+        float endX = 1 - Constants.PRPS_SPACE;
+        float yPosition = -1 + Constants.PRPS_SPACE;
         for (int i = 0; i <= row; i++) {
             //startPoint
             vertexData[offset++] = startX;
@@ -395,11 +392,11 @@ public class ObjectBuilder {
             yPosition = yPosition + yStep;
         }
 
-        float xStep = (1 - PrPsXYLines.offsetXPointValueStart
-                + 1 - PrPsXYLines.offsetXPointValueEnd) / column;
-        float startY = -1 + PrPsXYLines.offsetYPointValueBottom;
-        float endY = 1 - PrPsXYLines.offsetYPointValueTop;
-        float xPosition = -1 + PrPsXYLines.offsetXPointValueStart;
+        float xStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / column;
+        float startY = -1 + Constants.PRPS_SPACE;
+        float endY = 1 - Constants.PRPS_SPACE;
+        float xPosition = -1 + Constants.PRPS_SPACE;
 
         for (int i = 0; i <= column; i++) {
             //startPoint
@@ -420,38 +417,38 @@ public class ObjectBuilder {
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPrPsChartLinesInVertices(row, column);
 
-        float zStep = (1 - PrPsXZLines.offsetYPointValueBottom
-                + 1 - PrPsXZLines.offsetYPointValueTop) / row;
-        float startX = -1 + PrPsXZLines.offsetXPointValueStart;
-        float endX = 1 - PrPsXZLines.offsetXPointValueEnd;
+        float zStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / row;
+        float startX = -1 + Constants.PRPS_SPACE;
+        float endX = 1 - Constants.PRPS_SPACE;
         float zPosition = 0;
         for (int i = 0; i <= row; i++) {
             //startPoint
             vertexData[offset++] = startX;
-            vertexData[offset++] = 1 - PrPsXZLines.offsetYPointValueTop;
+            vertexData[offset++] = 1 - Constants.PRPS_SPACE;
             vertexData[offset++] = zPosition;
             //endPoint
             vertexData[offset++] = endX;
-            vertexData[offset++] = 1 - PrPsXZLines.offsetYPointValueBottom;
+            vertexData[offset++] = 1 - Constants.PRPS_SPACE;
             vertexData[offset++] = zPosition;
 
             zPosition = zPosition + zStep;
         }
 
-        float xStep = (1 - PrPsXZLines.offsetXPointValueStart
-                + 1 - PrPsXZLines.offsetXPointValueEnd) / column;
+        float xStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / column;
         float startZ = 0;
-        float endZ = 1 - PrPsXZLines.offsetYPointValueTop + 1 - PrPsXZLines.offsetYPointValueBottom;
-        float xPosition = -1 + PrPsXZLines.offsetXPointValueStart;
+        float endZ = 1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE;
+        float xPosition = -1 + Constants.PRPS_SPACE;
 
         for (int i = 0; i <= column; i++) {
             //startPoint
             vertexData[offset++] = xPosition;
-            vertexData[offset++] = 1 - PrPsXZLines.offsetYPointValueTop;
+            vertexData[offset++] = 1 - Constants.PRPS_SPACE;
             vertexData[offset++] = startZ;
             //endPoint
             vertexData[offset++] = xPosition;
-            vertexData[offset++] = 1 - PrPsXZLines.offsetYPointValueBottom;
+            vertexData[offset++] = 1 - Constants.PRPS_SPACE;
             vertexData[offset++] = endZ;
 
             xPosition = xPosition + xStep;
@@ -461,18 +458,18 @@ public class ObjectBuilder {
 
         final int sinLineStartVertex = offset / FLOATS_PER_VERTEX;
 
-        float sinXStep = (1 - PrPsXZLines.offsetXPointValueStart
-                + 1 - PrPsXZLines.offsetXPointValueEnd) / sinCount;
-        float sinStartX = -1 + PrPsXZLines.offsetXPointValueStart;
-        float height = (1 - PrPsXZLines.offsetZPointValueTop
-                + 1 - PrPsXZLines.offsetZPointValueBottom) / 2.0f;
+        float sinXStep = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / sinCount;
+        float sinStartX = -1 + Constants.PRPS_SPACE;
+        float height = (1 - Constants.PRPS_SPACE
+                + 1 - Constants.PRPS_SPACE) / 2.0f;
         float sinStartZ;
         for (int i = 0; i <= sinCount; i++) {
             double radians = Math.toRadians((double) i / (double) sinCount * 360.0);
             sinStartZ = (float) (Math.sin(radians) * height)
-                    + (1 - PrPsXZLines.offsetZPointValueTop + 1 - PrPsXZLines.offsetZPointValueBottom) / 2;
+                    + (1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE) / 2;
             vertexData[offset++] = sinStartX;
-            vertexData[offset++] = 1 - PrPsXZLines.offsetYPointValueBottom;
+            vertexData[offset++] = 1 - Constants.PRPS_SPACE;
             vertexData[offset++] = sinStartZ;
             sinStartX = sinStartX + sinXStep;
         }

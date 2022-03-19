@@ -29,6 +29,16 @@
         <item name="exitAnim">@anim/slide_out_left</item>
         <item name="enterAnim">@anim/slide_in_right</item>
     </style>
+    <style name="AppTheme.NoActionBar.Translucent">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:background">@color/colorTransparent</item>
+        <item name="popEnterAnim">@anim/slide_in_left</item>
+        <item name="popExitAnim">@anim/slide_out_right</item>
+        <item name="exitAnim">@anim/slide_out_left</item>
+        <item name="enterAnim">@anim/slide_in_right</item>
+    </style>
 
     <style name="AppTheme.NoActionBar.Gray">
         <item name="windowActionBar">false</item>

@@ -24,21 +24,17 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
-import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
-import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelViewModel
-import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelViewModel
-import com.mr.mf_pd.application.view.check.ac.setting.ACSettingViewModel
-import com.mr.mf_pd.application.view.check.activity.CheckDataViewModel
-import com.mr.mf_pd.application.view.check.hf.CheckHFViewModel
-import com.mr.mf_pd.application.view.check.hf.setting.HFSettingViewModel
-import com.mr.mf_pd.application.view.check.tev.CheckTEVViewModel
-import com.mr.mf_pd.application.view.check.tev.setting.TEVSettingViewModel
-import com.mr.mf_pd.application.view.check.uhf.CheckUHFViewModel
-import com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingViewModel
+import com.mr.mf_pd.application.view.check.flight.ACFlightModelViewModel
+import com.mr.mf_pd.application.view.check.pulse.ACPulseModelViewModel
+import com.mr.mf_pd.application.view.setting.ae.AESettingViewModel
+import com.mr.mf_pd.application.view.check.CheckDataViewModel
+import com.mr.mf_pd.application.view.setting.hf.HFSettingViewModel
+import com.mr.mf_pd.application.view.setting.tev.TEVSettingViewModel
+import com.mr.mf_pd.application.view.setting.uhf.UHFSettingViewModel
 import com.mr.mf_pd.application.view.data.FileDataViewModel
-import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelViewModel
-import com.mr.mf_pd.application.view.fragment.phase.PhaseModelViewModel
-import com.mr.mf_pd.application.view.fragment.real.RealModelViewModel
+import com.mr.mf_pd.application.view.check.continuity.ContinuityModelViewModel
+import com.mr.mf_pd.application.view.check.phase.PhaseModelViewModel
+import com.mr.mf_pd.application.view.check.real.RealModelViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.setting.SettingViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
@@ -67,30 +63,23 @@ class ViewModelFactory constructor(
                 MainViewModel(userRepository)
             isAssignableFrom(SplashViewModel::class.java) ->
                 SplashViewModel(userRepository)
-            isAssignableFrom(CheckUHFViewModel::class.java) ->
-                CheckUHFViewModel(dataRepository,settingRepository)
             isAssignableFrom(RealModelViewModel::class.java) ->
                 RealModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(PhaseModelViewModel::class.java) ->
                 PhaseModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(UHFSettingViewModel::class.java) ->
                 UHFSettingViewModel(settingRepository)
-            isAssignableFrom(CheckACViewModel::class.java) ->
-                CheckACViewModel(dataRepository,settingRepository)
 
-            isAssignableFrom(ACSettingViewModel::class.java) ->
-                ACSettingViewModel(settingRepository)
+
+            isAssignableFrom(AESettingViewModel::class.java) ->
+                AESettingViewModel(settingRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
                 ACFlightModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->
                 ACPulseModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(HFSettingViewModel::class.java) ->
                 HFSettingViewModel(settingRepository)
-            isAssignableFrom(CheckHFViewModel::class.java) ->
-                CheckHFViewModel(dataRepository,settingRepository)
 
-            isAssignableFrom(CheckTEVViewModel::class.java) ->
-                CheckTEVViewModel(dataRepository,settingRepository)
             isAssignableFrom(TEVSettingViewModel::class.java) ->
                 TEVSettingViewModel(settingRepository)
             isAssignableFrom(ContinuityModelViewModel::class.java) ->

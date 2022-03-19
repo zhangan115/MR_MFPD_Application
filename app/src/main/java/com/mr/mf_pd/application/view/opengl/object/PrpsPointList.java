@@ -29,10 +29,8 @@ public class PrpsPointList {
     private Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
 
-    public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
-            + 1 - PrPsXZLines.offsetXPointValueEnd) / Constants.PRPS_COLUMN;
-    public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+    public static final float stepX = (1 - Constants.PRPS_SPACE
+            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
     private short[] indices;
 
     private final List<Float> color1 = new ArrayList<>();
@@ -83,11 +81,10 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-//                float zTopPosition = 1 - (entry2.getKey() / (bottomValue / 2));
-                float  zTopPosition = 0+ (entry2.getKey() - minValue) / (maxValue - minValue) * 2;
-                float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * entry1.getKey();
+                float  zTopPosition = 0+ (entry2.getKey() - minValue) / (maxValue - minValue) * 1.7f;
+                float startX = -1 + Constants.PRPS_SPACE + stepX * entry1.getKey();
                 vertexPointList.add(startX);
-                vertexPointList.add(1f);
+                vertexPointList.add(1- Constants.PRPS_SPACE);
                 vertexPointList.add(zTopPosition);
                 if (entry2.getValue() < 10) {
                     colorList.addAll(color3);

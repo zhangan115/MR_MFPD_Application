@@ -7,6 +7,8 @@ object Constants {
     const val LINK_FAIL = -1
     const val LINK_SUCCESS = 1
 
+    const val PRPS_SPACE = 0.15f
+
     var indices = shortArrayOf(
         0, 3, 2, 0, 2, 1,
         0, 1, 5, 0, 5, 4,

@@ -15,7 +15,6 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
-import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
@@ -23,13 +22,12 @@ import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
-import com.mr.mf_pd.application.view.check.ac.CheckACViewModel
-import com.mr.mf_pd.application.view.check.ac.flight.ACFlightModelFragment
-import com.mr.mf_pd.application.view.check.ac.pulse.ACPulseModelFragment
+import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
+import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
-import com.mr.mf_pd.application.view.fragment.continuity.ContinuityModelFragment
-import com.mr.mf_pd.application.view.fragment.phase.PhaseModelFragment
-import com.mr.mf_pd.application.view.fragment.real.RealModelFragment
+import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
+import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
+import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.sito.tool.library.utils.DisplayUtil
 import kotlinx.android.synthetic.main.activity_file_data.*
 import kotlinx.coroutines.Dispatchers

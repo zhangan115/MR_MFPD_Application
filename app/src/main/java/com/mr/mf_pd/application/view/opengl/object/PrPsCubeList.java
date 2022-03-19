@@ -25,12 +25,12 @@ public class PrPsCubeList {
     private ArrayList<Float> values;
     private PrPsColorPointShaderProgram colorProgram;
 
-    public static final float stepX = (1 - PrPsXZLines.offsetXPointValueStart
-            + 1 - PrPsXZLines.offsetXPointValueEnd) / Constants.PRPS_COLUMN;
-    public static final float stepY = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / Constants.PRPS_ROW;
-    public static final float h = (1 - PrPsXZLines.offsetYPointValueBottom
-            + 1 - PrPsXZLines.offsetYPointValueTop) / 2.0f;
+    public static final float stepX = (1 - Constants.PRPS_SPACE
+            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
+    public static final float stepY = (1 - Constants.PRPS_SPACE
+            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_ROW;
+    public static final float h = (1 - Constants.PRPS_SPACE
+            + 1 - Constants.PRPS_SPACE) / 2.0f;
 
     //默认数据
 
@@ -43,11 +43,11 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition= 0 + (values.get(i)- minValue) / (maxValue - minValue) * 2;
+                zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * 1.7f;
 //                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
-            float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
-            float startY = -1 + PrPsXZLines.offsetYPointValueBottom + stepY * row;
+            float startX = -1 + Constants.PRPS_SPACE + stepX * i;
+            float startY = -1 + Constants.PRPS_SPACE + stepY * row;
             float[] vertexPoint = new float[]{
                     //正面矩形
                     startX, startY, 0f,
@@ -79,11 +79,11 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition= 0 + (values.get(i)- minValue) / (maxValue - minValue) * 2;
+                zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * 1.7f;
 //                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
             }
-            float startX = -1 + PrPsXZLines.offsetXPointValueStart + stepX * i;
-            float startY = -1f;
+            float startX = -1 + Constants.PRPS_SPACE + stepX * i;
+            float startY = -1 + Constants.PRPS_SPACE;
             float[] vertexPoint = new float[]{
                     //正面矩形
                     startX, startY, 0f,

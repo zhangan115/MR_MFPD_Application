@@ -2,13 +2,10 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.annotation.ClickAnnotationRealize
-import com.mr.mf_pd.application.annotation.OnClick
-import com.mr.mf_pd.application.annotation.OnLongClick
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
@@ -18,7 +15,6 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
-import com.mr.mf_pd.application.view.check.activity.CheckDataActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_device_check.*

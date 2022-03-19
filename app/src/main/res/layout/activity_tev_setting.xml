@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.check.tev.setting.TEVSettingViewModel" />
+            type="com.mr.mf_pd.application.view.setting.tev.TEVSettingViewModel" />
     </data>
 
     <LinearLayout

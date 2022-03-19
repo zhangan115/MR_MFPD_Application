@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.mr.mf_pd.application.view.check.uhf.setting.UHFSettingViewModel" />
+            type="com.mr.mf_pd.application.view.setting.uhf.UHFSettingViewModel" />
     </data>
 
     <LinearLayout
