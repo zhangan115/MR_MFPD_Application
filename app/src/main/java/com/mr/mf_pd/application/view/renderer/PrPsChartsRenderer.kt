@@ -16,7 +16,8 @@ import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GLSurfaceView.Renderer {
+class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
+    GLSurfaceView.Renderer {
 
     var getPrpsValueCallback: GetPrpsValueCallback? = null
 
@@ -28,6 +29,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
 
     @Volatile
     private var textMaps = HashMap<String, ArrayList<String>>()
+
     @Volatile
     private var textXZMaps = HashMap<String, ArrayList<String>>()
 
@@ -50,6 +52,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
 
     @Volatile
     private var prpsCubeList: ArrayList<PrPsCubeList>? = ArrayList()
+
     @Volatile
     var cleanPrpsList = false
 
@@ -97,6 +100,18 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
         TextureUtils.width = width
         texture = TextureUtils.loadTextureWithText(context, textMaps)
         textureXZ = TextureUtils.loadTextureWithText(context, textXZMaps)
+
+        MatrixUtils.perspectiveM(
+            projectionMatrix, 45f, width.toFloat()
+                    / height.toFloat(), 1f, 8f
+        )
+        Matrix.setLookAtM(
+            viewMatrix, 0,
+            0f, 1.6f, 1.6f,
+            0f, 0f, 0f,
+            0f, 1f, 0f
+        )
+
     }
 
     fun addPrpsData(pointValue: HashMap<Int, Float>) {
@@ -178,7 +193,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
         textXZHelp.bindXZData(textureProgram)
         textXZHelp.draw()
         val timeEnd = System.currentTimeMillis()
-        Log.d("za", "cost time ${timeEnd - timeStart}")
+//        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()
     }
 
@@ -188,7 +203,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
 
         Matrix.rotateM(modelMatrix, 0, angleX, 1f, 0f, 0f)
 
-        Matrix.rotateM(modelMatrix, 0, angleY, 0f, 1f, 0f)
+        Matrix.rotateM(modelMatrix, 0, angleY, 0f, 0f, 1f)
 
         Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
 
