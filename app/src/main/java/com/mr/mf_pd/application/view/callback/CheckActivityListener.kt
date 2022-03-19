@@ -5,7 +5,7 @@ package com.mr.mf_pd.application.view.callback
  * @author zhangan
  * @since 2022-02-20
  */
-interface CheckActionListener {
+interface CheckActivityListener {
     /**
      * 增加通道门限值
      */

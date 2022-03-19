@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.setting.uhf
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType

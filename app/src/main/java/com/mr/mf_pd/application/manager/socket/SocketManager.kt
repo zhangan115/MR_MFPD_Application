@@ -337,7 +337,7 @@ class SocketManager private constructor() {
             } finally {
                 emitter.onComplete()
             }
-        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
+        }.subscribeOn(Schedulers.io()).subscribe()
     }
 
     @Synchronized
@@ -362,9 +362,9 @@ class SocketManager private constructor() {
             } finally {
                 emitter.onComplete()
             }
-        }.subscribeOn(Schedulers.io()).repeatWhen { objectObservable: Observable<Any?> ->
+        }.repeatWhen { objectObservable: Observable<Any?> ->
             objectObservable.delay(time, unit)
-        }.observeOn(Schedulers.io()).subscribe()
+        }.subscribeOn(Schedulers.io()).subscribe()
     }
 
     /**

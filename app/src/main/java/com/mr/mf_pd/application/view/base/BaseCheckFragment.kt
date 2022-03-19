@@ -13,7 +13,7 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.view.callback.CheckActionListener
+import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 
@@ -24,7 +24,7 @@ import com.mr.mf_pd.application.view.file.FilePickerActivity
  */
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
 
-    var checkActionListener: CheckActionListener? = null
+    var checkActionListener: CheckActivityListener? = null
     var location: String? = null
     private val requestChooseDirCode = 200
     var isOpenFromFile = false
@@ -123,8 +123,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (activity is BaseCheckActivity<*> && activity is CheckActionListener) {
-            checkActionListener = activity as CheckActionListener
+        if (activity is BaseCheckActivity<*> && activity is CheckActivityListener) {
+            checkActionListener = activity as CheckActivityListener
         }
     }
 

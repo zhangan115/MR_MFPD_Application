@@ -15,8 +15,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.view.callback.CheckActionListener
 import com.sito.tool.library.utils.DisplayUtil
 
 abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), View.OnClickListener{

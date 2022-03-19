@@ -126,6 +126,8 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
 
     override fun onDrawFrame(gl: GL10?) {
 
+        val timeStart = System.currentTimeMillis()
+
         GLES30.glEnable(GLES20.GL_BLEND)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
@@ -175,7 +177,8 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) : GL
 
         textXZHelp.bindXZData(textureProgram)
         textXZHelp.draw()
-
+        val timeEnd = System.currentTimeMillis()
+        Log.d("za", "cost time ${timeEnd - timeStart}")
         getPrpsValueCallback?.getData()
     }
 

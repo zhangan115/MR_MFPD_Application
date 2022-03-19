@@ -57,6 +57,7 @@ class DefaultSettingRepository : SettingRepository {
             settingBean.secondDischargeMinCount = cacheSettingBean.secondDischargeMinCount
             settingBean.noiseLimit = cacheSettingBean.noiseLimit
 
+            settingBean.phaseValue = cacheSettingBean.phaseValue
         }
         return settingBean
     }
@@ -86,8 +87,8 @@ class DefaultSettingRepository : SettingRepository {
         ).toString()
     }
 
-    override fun saveLinkPort(port: String?) {
-        val portIntValue = port?.toIntOrNull()
+    override fun saveLinkPort(ip: String?) {
+        val portIntValue = ip?.toIntOrNull()
         portIntValue?.let {
             SPHelper.write(
                 MRApplication.instance, ConstantStr.USER_INFO,

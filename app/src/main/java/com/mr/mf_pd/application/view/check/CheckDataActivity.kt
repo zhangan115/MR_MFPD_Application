@@ -17,7 +17,7 @@ import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
-import com.mr.mf_pd.application.view.callback.CheckActionListener
+import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
@@ -31,7 +31,7 @@ import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import kotlinx.android.synthetic.main.activity_file_data.*
 
 class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClickListener,
-    CheckActionListener {
+    CheckActivityListener {
 
     private val viewModel by viewModels<CheckDataViewModel> { getViewModelFactory() }
 
