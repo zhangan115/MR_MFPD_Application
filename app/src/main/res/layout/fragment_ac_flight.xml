@@ -80,6 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="增益水平："
+                android:visibility="gone"
                 android:textColor="@color/text_content_third_color"
                 android:textSize="14sp" />
 
@@ -89,6 +90,7 @@
                 android:layout_weight="1"
                 android:text="@{vm.gainLevelStr}"
                 android:textColor="@color/text_title"
+                android:visibility="gone"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 tools:text="20dB" />

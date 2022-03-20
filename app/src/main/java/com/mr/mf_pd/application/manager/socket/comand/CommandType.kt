@@ -13,5 +13,5 @@ enum class CommandType(
     FdData(0x09, "上送局部放电数据", -1),
     WriteValue(0x10, "写定值", -2),
     SendPulse(0x12, "上送原始脉冲数据", -1),
-    ReadPulse(0x13, "读取原始脉冲数据", 8);
+    FlightValue(0x0a,"飞行数据",-1);
 }

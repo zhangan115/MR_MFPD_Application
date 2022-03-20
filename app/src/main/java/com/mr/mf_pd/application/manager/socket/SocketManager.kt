@@ -19,7 +19,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -32,6 +31,8 @@ class SocketManager private constructor() {
     private var outputStream //输出流
             : OutputStream? = null
 
+    private val mDataByteList: MutableList<Byte> = ArrayList()
+
     private val mPulseDataListener: PulseDataListener? = null
     private var linkStateListeners: MutableList<LinkStateListener>? = null
 
@@ -42,6 +43,7 @@ class SocketManager private constructor() {
     var ycDataCallback: YcDataCallback? = null
     var sendTimeCallback: BaseDataCallback? = null
     var openPassageway: BaseDataCallback? = null
+    var flightValueCallback: BaseDataCallback? = null
 
     private var socket: Socket? = null
 
@@ -87,8 +89,8 @@ class SocketManager private constructor() {
         try {
             val address = InetSocketAddress(appHost(), port())
             socket = Socket()
-            socket!!.connect(address, 2000)
-            socket!!.keepAlive = true
+            socket?.connect(address, 2000)
+            socket?.keepAlive = true
             isConnected = socket!!.isConnected
             inputStream = socket!!.getInputStream()
             outputStream = socket!!.getOutputStream()
@@ -96,19 +98,19 @@ class SocketManager private constructor() {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
             val buf = ByteArray(1024 * 4)
-            val byteList: MutableList<Byte> = ArrayList()
             var size: Int
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
-                    if (size < buf.size) {
-                        byteList.clear()
-                    }
+                    val startTime = System.currentTimeMillis()
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
-                    byteList.addAll(Bytes.asList(*sources))
-                    dealStickyBytes(byteList)
+                    mDataByteList.addAll(Bytes.asList(*sources))
+//                    Log.d("zhangan", mDataByteList.toString())
+                    dealStickyBytes()
+//                    Log.d("zhangan", "cost time is ${System.currentTimeMillis() - startTime}")
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    mDataByteList.clear()
                 }
             }
         } catch (e: IOException) {
@@ -116,6 +118,7 @@ class SocketManager private constructor() {
             socket = null
         } finally {
             try {
+                mDataByteList.clear()
                 isConnected = false
                 if (inputStream != null) {
                     inputStream!!.close()
@@ -135,70 +138,76 @@ class SocketManager private constructor() {
         }
     }
 
-    /***
-     * 处理连包
-     * @param byteList 字节集合
-     */
-    private fun dealStickyBytes(byteList: MutableList<Byte>) {
-        var dealByteList: MutableList<Byte> = ArrayList()
-        if (byteList.size > 3 && byteList[0].toInt() == DEVICE_NO) {
+    private fun dealStickyBytes() {
+        if (mDataByteList[0].toInt() == DEVICE_NO) {
             //对定长的数据进行单独处理
             when (val commandType =
-                CommandType.values().firstOrNull { it.funCode == byteList[1] }) {
+                CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }) {
                 CommandType.SendTime -> {
-                    if (byteList.size >= commandType.length) {
-                        handOut(byteList, commandType.length)
-                        dealByteList = byteList.subList(commandType.length, byteList.size)
+                    if (mDataByteList.size >= commandType.length) {
+                        val list = mDataByteList.subList(0, commandType.length)
+                        handOut(Bytes.toArray(list))
+                        mDataByteList.removeAll(list)
                     }
                 }
                 CommandType.SwitchPassageway -> {
-                    if (byteList.size >= commandType.length) {
-                        handOut(byteList, commandType.length)
-                        dealByteList = byteList.subList(commandType.length, byteList.size)
+                    if (mDataByteList.size >= commandType.length) {
+                        val list = mDataByteList.subList(0, commandType.length)
+                        handOut(Bytes.toArray(list))
+                        mDataByteList.removeAll(list)
                     }
                 }
                 CommandType.ReadYcData -> {
-                    val length = byteList[2].toInt() * 4 + 5
-                    handOut(byteList, length)
-                    dealByteList = byteList.subList(length, byteList.size)
+                    val length = mDataByteList[2].toInt() * 4 + 5
+                    val list = mDataByteList.subList(0, length)
+                    handOut(Bytes.toArray(list))
+                    mDataByteList.removeAll(list)
                 }
                 CommandType.ReadSettingValue -> {
-                    val length = byteList[2].toInt() * 4 + 5
-                    handOut(byteList, length)
-                    dealByteList = byteList.subList(length, byteList.size)
+                    val length = mDataByteList[2].toInt() * 4 + 5
+                    val list = mDataByteList.subList(0, length)
+                    handOut(Bytes.toArray(list))
+                    mDataByteList.removeAll(list)
                 }
                 CommandType.WriteValue -> {
-                    val length = byteList[2].toInt() + 5
-                    handOut(byteList, length)
-                    dealByteList = byteList.subList(length, byteList.size)
+                    val length = mDataByteList[2].toInt() + 5
+                    val list = mDataByteList.subList(0, length)
+                    handOut(Bytes.toArray(list))
+                    mDataByteList.removeAll(list)
                 }
                 CommandType.FdData -> {
+                    mDataByteList.clear()
 //                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
 //                    val length = ByteLibUtil.getInt(lengthBytes) + 2
 //                    byteList.removeAll(handOut(byteList, length))
                 }
                 CommandType.RealData -> {
-                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[3], byteList[4])
+                    val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
                     val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                    handOut(byteList, length)
-                    dealByteList = byteList.subList(length, byteList.size)
+                    val list = mDataByteList.subList(0, length)
+                    handOut(Bytes.toArray(list))
+                    mDataByteList.removeAll(list)
+                }
+                CommandType.FlightValue -> {
+                    val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
+                    val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
+                    val list = mDataByteList.subList(0, length)
+                    handOut(Bytes.toArray(list))
+                    mDataByteList.removeAll(list)
                 }
                 else -> {
-                    byteList.clear()
+                    Log.d("zhangan", "不支持的命令参数")
                 }
             }
         } else {
-            byteList.clear()
+            mDataByteList.clear()
         }
-        if (dealByteList.size > 0) {
-            dealStickyBytes(dealByteList)
-        } else {
-            byteList.clear()
+        if (mDataByteList.size > 0) {
+            dealStickyBytes()
         }
     }
 
-    private fun handOut(byteList: List<Byte>, length: Int) {
-        val source = Bytes.toArray(byteList.subList(0, length))
+    private fun handOut(source: ByteArray) {
         when (CommandType.values().firstOrNull { it.funCode == source[1] }) {
             CommandType.SendTime -> {
                 sendTimeCallback?.onData(source)
@@ -227,6 +236,9 @@ class SocketManager private constructor() {
             }
             CommandType.RealData -> {
                 readDataCallback?.onData(source)
+            }
+            CommandType.FlightValue -> {
+                flightValueCallback?.onData(source)
             }
             else -> {
 
@@ -287,34 +299,6 @@ class SocketManager private constructor() {
     }
 
     /**
-     * 发送数据
-     *
-     * @param data     数据
-     * @param cmdType  命令类型
-     * @param callback 回调
-     */
-    @Synchronized
-    fun sendData(data: ByteArray?, cmdType: CommandType, callback: ReceiverCallback?): Disposable {
-        return Observable.create(ObservableOnSubscribe { emitter: ObservableEmitter<ByteArray> ->
-            try {
-                if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
-                    outputStream!!.write(data)
-                    outputStream!!.flush()
-                } else {
-                    emitter.onComplete()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emitter.onError(e)
-            }
-        } as ObservableOnSubscribe<ByteArray>)
-            .timeout(5, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ bytes: ByteArray? -> callback?.onReceiver(bytes) }) { obj: Throwable -> obj.printStackTrace() }
-    }
-
-    /**
      * 无需返回的发送数据
      *
      * @param data 数据
@@ -322,14 +306,13 @@ class SocketManager private constructor() {
      */
     @Synchronized
     fun sendData(data: ByteArray?): Disposable {
-        Log.d("zhangan","sendData "+ByteLibUtil.bytes2HexStr(data))
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
-                Log.d("zhangan", "send data thread name is  ${Thread.currentThread().name}")
                 if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
+                    Log.d("zhangan","send data " + Bytes.asList(*data).toString())
                 } else {
                     Log.d("zhangan", "发送失败")
                     emitter.onNext(false)
