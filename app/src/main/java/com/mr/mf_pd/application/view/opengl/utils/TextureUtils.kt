@@ -94,7 +94,6 @@ object TextureUtils {
         if (textMaps.containsKey(Constants.KEY_Z_TEXT)){
             val value = textMaps[Constants.KEY_Z_TEXT]
             if (value != null) {
-                Log.d("zhangan", "value $value")
                 for (i in 0 until value.size) {
                     val rect = Rect()
                     p.getTextBounds(value[i], 0, value[i].length, rect)

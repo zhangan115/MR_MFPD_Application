@@ -16,6 +16,7 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
+import java.text.DecimalFormat
 
 /**
  * 检测类型页面的基类
@@ -149,12 +150,11 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             maxValue = settingBean.maxValue.toFloat()
         }
         if (minValue != null && maxValue != null) {
-            val value =
-                maxValue - minValue
-            val step = value / 4.00f
+            val df1 = DecimalFormat("0.0")
+            val value = maxValue - minValue
+            val step = value / 4.0f
             for (i in 0..4) {
-                val str = minValue + step * i
-                yList.add(str.toString())
+                yList.add(df1.format(minValue + step * i))
             }
             gainMinValue.postValue(minValue)
         }

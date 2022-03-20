@@ -4,11 +4,6 @@ import android.content.Context
 import android.opengl.GLES20.*
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
-import android.util.Log
-import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
@@ -17,12 +12,13 @@ import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProg
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
+import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
     GLSurfaceView.Renderer {
-    var getPrpsValueCallback: PrPsChartsRenderer.GetPrpsValueCallback? = null
+    var getPrpsValueCallback: GetPrpsValueCallback? = null
 
     private lateinit var chartsLines: Point2DChartLine
     private val textHelp = TextGlHelp()

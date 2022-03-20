@@ -13,6 +13,7 @@ import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
+import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -38,10 +39,6 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     private val textXYHelp = TextGlPrpsHelp()
     private val textXZHelp = TextGlPrpsHelp()
-
-    interface GetPrpsValueCallback {
-        fun getData()
-    }
 
     private val projectionMatrix = FloatArray(16)
     private val modelMatrix = FloatArray(16)
@@ -92,10 +89,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES30.glViewport(0, 0, width, height)
-        MatrixUtils.perspectiveM(
-            projectionMatrix, 45f, width.toFloat()
-                    / height.toFloat(), 1f, 8f
-        )
+
         TextureUtils.height = height
         TextureUtils.width = width
         texture = TextureUtils.loadTextureWithText(context, textMaps)
@@ -132,27 +126,25 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     fun updateYAxis(textList: List<String>) {
         if (textList.isEmpty()) {
-            textXZMaps[Constants.KEY_Y_TEXT]?.clear()
+            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
         } else {
-            textXZMaps[Constants.KEY_Y_TEXT]?.clear()
-            textXZMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
+            textXZMaps[Constants.KEY_Z_TEXT]?.addAll(textList.toList() as ArrayList<String>)
         }
     }
 
     override fun onDrawFrame(gl: GL10?) {
-
         val timeStart = System.currentTimeMillis()
 
         GLES30.glEnable(GLES20.GL_BLEND)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
 
-
         GLES30.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
 
-        GLES30.glDepthMask(true)
-
         position()
+
+        GLES30.glDepthMask(true)
 
         colorPointProgram.useProgram()
         colorPointProgram.setUniforms(modelViewProjectionMatrix)
@@ -199,13 +191,13 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     private fun position() {
         Matrix.setIdentityM(modelMatrix, 0)
-        Matrix.translateM(modelMatrix, 0, 0f, -0.6f, -5f)
+        Matrix.translateM(modelMatrix, 0, 0f, -0.6f, -4.5f)
 
         Matrix.rotateM(modelMatrix, 0, angleX, 1f, 0f, 0f)
 
         Matrix.rotateM(modelMatrix, 0, angleY, 0f, 0f, 1f)
 
-        Matrix.rotateM(modelMatrix, 0, 50f, 0f, 0f, 1f)
+        Matrix.rotateM(modelMatrix, 0, 45f, 0f, 0f, 1f)
 
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
     }

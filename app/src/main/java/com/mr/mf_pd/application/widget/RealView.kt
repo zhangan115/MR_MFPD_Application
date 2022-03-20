@@ -1,10 +1,11 @@
-package com.mr.mf_pd.application.view.renderer
+package com.mr.mf_pd.application.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.MotionEvent
+import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 
 open class RealView : GLSurfaceView {
 
@@ -36,7 +37,7 @@ open class RealView : GLSurfaceView {
                     }
                     renderer?.let {
                         it.angleX += (dy) * TOUCH_SCALE_FACTOR
-                        it.angleY += (dx) * TOUCH_SCALE_FACTOR
+                        it.angleY += (dx) * TOUCH_SCALE_FACTOR * -1f
                     }
                     requestRender()
                 }

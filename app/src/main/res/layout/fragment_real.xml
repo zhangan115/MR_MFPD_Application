@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             app:check_params="@{vm.checkType.checkParams}" />
 
-        <com.mr.mf_pd.application.view.renderer.RealView
+        <com.mr.mf_pd.application.widget.RealView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -12,6 +12,7 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import kotlinx.android.synthetic.main.fragment_phase.*
 import java.text.DecimalFormat
 
@@ -52,7 +53,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(pointChartsRenderer)
         pointChartsRenderer?.getPrpsValueCallback =
-            object : PrPsChartsRenderer.GetPrpsValueCallback {
+            object : GetPrpsValueCallback {
                 override fun getData() {
                     pointChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
                         viewModel.checkType.settingBean,
@@ -114,8 +115,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.cleanCurrentData()
-        pointChartsRenderer?.cleanData()
+        cleanCurrentData()
     }
 
     override fun onPause() {

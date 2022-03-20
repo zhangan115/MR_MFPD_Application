@@ -19,6 +19,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -321,8 +322,10 @@ class SocketManager private constructor() {
      */
     @Synchronized
     fun sendData(data: ByteArray?): Disposable {
+        Log.d("zhangan","sendData "+ByteLibUtil.bytes2HexStr(data))
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
+                Log.d("zhangan", "send data thread name is  ${Thread.currentThread().name}")
                 if (outputStream != null && socket != null && !socket!!.isClosed && data != null) {
                     outputStream!!.write(data)
                     outputStream!!.flush()

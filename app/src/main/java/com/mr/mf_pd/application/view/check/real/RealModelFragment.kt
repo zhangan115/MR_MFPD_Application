@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import kotlinx.android.synthetic.main.fragment_real.image1
 import kotlinx.android.synthetic.main.fragment_real.image2
 import kotlinx.android.synthetic.main.fragment_real.image3
@@ -67,7 +68,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
             viewModel.gainMinValue))
         surfaceView1.setRenderer(prPsChartsRenderer)
         prPsChartsRenderer?.getPrpsValueCallback =
-            object : PrPsChartsRenderer.GetPrpsValueCallback {
+            object : GetPrpsValueCallback {
                 override fun getData() {
                     prPsChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
                         viewModel.checkType.settingBean,
@@ -126,7 +127,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         dataBinding?.vm = viewModel
     }
 
-
     override fun setCheckFile(str:String) {
         viewModel.setCheckFile(str)
     }
@@ -140,8 +140,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.cleanCurrentData()
-        prPsChartsRenderer?.cleanData()
+        cleanCurrentData()
     }
 
     override fun onPause() {
