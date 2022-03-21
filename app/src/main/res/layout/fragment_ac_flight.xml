@@ -90,7 +90,7 @@
                 android:layout_weight="1"
                 android:text="@{vm.gainLevelStr}"
                 android:textColor="@color/text_title"
-                android:visibility="gone"
+                android:visibility="invisible"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 tools:text="20dB" />

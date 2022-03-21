@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.manager.socket
 
 import android.util.Log
+import android.util.SparseArray
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
@@ -19,10 +20,8 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
+import java.util.*
+import java.util.concurrent.*
 import kotlin.collections.ArrayList
 
 class SocketManager private constructor() {
@@ -31,7 +30,7 @@ class SocketManager private constructor() {
     private var outputStream //输出流
             : OutputStream? = null
 
-    private val mDataByteList: MutableList<Byte> = ArrayList()
+    private var mDataByteList: LinkedList<Byte> = LinkedList()
 
     private val mPulseDataListener: PulseDataListener? = null
     private var linkStateListeners: MutableList<LinkStateListener>? = null
@@ -99,15 +98,16 @@ class SocketManager private constructor() {
             }
             val buf = ByteArray(1024 * 4)
             var size: Int
+            mDataByteList.clear()
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
-                    val startTime = System.currentTimeMillis()
+                    if (mDataByteList.isNotEmpty()) {
+                        Log.d("zhangan", mDataByteList.toString())
+                    }
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
-//                    Log.d("zhangan", mDataByteList.toString())
                     dealStickyBytes()
-//                    Log.d("zhangan", "cost time is ${System.currentTimeMillis() - startTime}")
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mDataByteList.clear()
@@ -139,41 +139,29 @@ class SocketManager private constructor() {
     }
 
     private fun dealStickyBytes() {
+        var length = -1
         if (mDataByteList[0].toInt() == DEVICE_NO) {
             //对定长的数据进行单独处理
             when (val commandType =
                 CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }) {
                 CommandType.SendTime -> {
                     if (mDataByteList.size >= commandType.length) {
-                        val list = mDataByteList.subList(0, commandType.length)
-                        handOut(Bytes.toArray(list))
-                        mDataByteList.removeAll(list)
+                        length = commandType.length
                     }
                 }
                 CommandType.SwitchPassageway -> {
                     if (mDataByteList.size >= commandType.length) {
-                        val list = mDataByteList.subList(0, commandType.length)
-                        handOut(Bytes.toArray(list))
-                        mDataByteList.removeAll(list)
+                        length = commandType.length
                     }
                 }
                 CommandType.ReadYcData -> {
-                    val length = mDataByteList[2].toInt() * 4 + 5
-                    val list = mDataByteList.subList(0, length)
-                    handOut(Bytes.toArray(list))
-                    mDataByteList.removeAll(list)
+                    length = mDataByteList[2].toInt() * 4 + 5
                 }
                 CommandType.ReadSettingValue -> {
-                    val length = mDataByteList[2].toInt() * 4 + 5
-                    val list = mDataByteList.subList(0, length)
-                    handOut(Bytes.toArray(list))
-                    mDataByteList.removeAll(list)
+                    length = mDataByteList[2].toInt() * 4 + 5
                 }
                 CommandType.WriteValue -> {
-                    val length = mDataByteList[2].toInt() + 5
-                    val list = mDataByteList.subList(0, length)
-                    handOut(Bytes.toArray(list))
-                    mDataByteList.removeAll(list)
+                    length = mDataByteList[2].toInt() + 5
                 }
                 CommandType.FdData -> {
                     mDataByteList.clear()
@@ -183,27 +171,29 @@ class SocketManager private constructor() {
                 }
                 CommandType.RealData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
-                    val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                    val list = mDataByteList.subList(0, length)
-                    handOut(Bytes.toArray(list))
-                    mDataByteList.removeAll(list)
+                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
                 }
                 CommandType.FlightValue -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
-                    val length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                    val list = mDataByteList.subList(0, length)
-                    handOut(Bytes.toArray(list))
-                    mDataByteList.removeAll(list)
+                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
                 }
                 else -> {
+                    mDataByteList.clear()
                     Log.d("zhangan", "不支持的命令参数")
                 }
             }
-        } else {
-            mDataByteList.clear()
         }
-        if (mDataByteList.size > 0) {
-            dealStickyBytes()
+        if (length <= mDataByteList.size) {
+            val list = mDataByteList.subList(0, length)
+            handOut(Bytes.toArray(list))
+            val newList = LinkedList<Byte>()
+            for (i in length until mDataByteList.size) {
+                newList.add(mDataByteList[i])
+            }
+            mDataByteList = newList
+            if (mDataByteList.size > 0) {
+                dealStickyBytes()
+            }
         }
     }
 
@@ -312,7 +302,7 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
-                    Log.d("zhangan","send data " + Bytes.asList(*data).toString())
+                    Log.d("zhangan", "send data " + Bytes.asList(*data).toString())
                 } else {
                     Log.d("zhangan", "发送失败")
                     emitter.onNext(false)

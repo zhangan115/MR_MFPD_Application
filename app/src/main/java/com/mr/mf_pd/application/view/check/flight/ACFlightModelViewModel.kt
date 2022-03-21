@@ -24,7 +24,7 @@ class ACFlightModelViewModel(
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
-    var timeStr: MutableLiveData<String> = MutableLiveData("12:09:23")
+    var timeStr: MutableLiveData<String> = MutableLiveData()
     var synchronizationModel: MutableLiveData<String> = MutableLiveData("内同步，50kHz-300kHz")
     var gainLevelStr: MutableLiveData<String> = MutableLiveData("20dB")
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
@@ -79,8 +79,7 @@ class ACFlightModelViewModel(
                     newValueList.add(f)
                 }
             }
-            Log.d("zhangan", xValueList.size.toString())
-            Log.d("zhangan", newValueList.size.toString())
+
         }
     }
 
