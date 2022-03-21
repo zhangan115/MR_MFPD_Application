@@ -27,8 +27,6 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
     lateinit var gainValues: MutableLiveData<Vector<Float>>
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
-
-
     fun start() {
         this.gainValues = dataRepository.getGainValueList()
         this.gainValues = dataRepository.getGainValueList()
@@ -53,25 +51,8 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
                     }
                 }
             })
+
         }
-    }
-
-    fun openPulseData() {
-        val cmd = CommandHelp.readPulseData(2)
-//        SocketManager.get().sendData(cmd, CommandType.SendPulse) { bytes ->
-//            if (cmd.contentEquals(bytes)) {
-//                Log.d("zhangan", "请求打开读取原始脉冲数据")
-//            }
-//        }
-    }
-
-    fun closePulseData() {
-        val cmd = CommandHelp.stopReadPulseData(2)
-//        SocketManager.get().sendData(cmd, CommandType.SendPulse) { bytes ->
-//            if (cmd.contentEquals(bytes)) {
-//                Log.d("zhangan", "请求关闭读取原始脉冲数据")
-//            }
-//        }
     }
 
 }

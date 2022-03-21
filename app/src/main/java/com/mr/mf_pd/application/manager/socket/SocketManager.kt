@@ -102,7 +102,7 @@ class SocketManager private constructor() {
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
                     if (mDataByteList.isNotEmpty()) {
-                        Log.d("zhangan", mDataByteList.toString())
+//                        Log.d("zhangan", mDataByteList.toString())
                     }
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
@@ -140,7 +140,7 @@ class SocketManager private constructor() {
 
     private fun dealStickyBytes() {
         var length = -1
-        if (mDataByteList[0].toInt() == DEVICE_NO) {
+        if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
             //对定长的数据进行单独处理
             when (val commandType =
                 CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }) {
@@ -183,7 +183,7 @@ class SocketManager private constructor() {
                 }
             }
         }
-        if (length <= mDataByteList.size) {
+        if (length > 0 && length <= mDataByteList.size) {
             val list = mDataByteList.subList(0, length)
             handOut(Bytes.toArray(list))
             val newList = LinkedList<Byte>()

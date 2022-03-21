@@ -34,7 +34,7 @@ class PhaseModelViewModel(
             this.gainValues = filesRepository.getGainValueList()
             this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
-        }else{
+        } else {
             this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
             dataRepository.addDataListener()
@@ -62,12 +62,12 @@ class PhaseModelViewModel(
         createACheckFile()
     }
 
-    fun createACheckFile(){
+    fun createACheckFile() {
         filesRepository.toCreateCheckFile(checkType)
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        if (isFile.value == true){
+        if (isFile.value == true) {
             return filesRepository.getPhaseData(0)
         }
         return dataRepository.getPhaseData(0)
@@ -82,12 +82,15 @@ class PhaseModelViewModel(
     }
 
     fun cleanCurrentData() {
-        if (isFile.value == true){
+        val list = Vector<Float>()
+        if (isFile.value == true) {
+            this.gainValues.postValue(list)
             filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(Vector())
-        }else{
+            filesRepository.getGainValueList().postValue(list)
+        } else {
+            this.gainValues.postValue(list)
             dataRepository.cleanData()
-            dataRepository.getGainValueList().postValue(Vector())
+            dataRepository.getGainValueList().postValue(list)
         }
     }
 

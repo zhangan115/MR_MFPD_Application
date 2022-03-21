@@ -13,10 +13,13 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class RealModelViewModel(val dataRepository: DataRepository, private val filesRepository: FilesRepository) : ViewModel() {
+class RealModelViewModel(
+    val dataRepository: DataRepository,
+    private val filesRepository: FilesRepository,
+) : ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues:MutableLiveData<Vector<Float>>
+    lateinit var gainValues: MutableLiveData<Vector<Float>>
     var isSaveData: MutableLiveData<Boolean>? = null
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var toastStr: MutableLiveData<String> = MutableLiveData()
@@ -30,7 +33,7 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
             this.gainValues = filesRepository.getGainValueList()
             this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
-        }else{
+        } else {
             this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
             dataRepository.addDataListener()
@@ -52,25 +55,25 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
     }
 
     fun addHUfData(callback: DataCallback) {
-        if (isFile.value == true){
+        if (isFile.value == true) {
             filesRepository.addHufData(callback)
-        }else{
+        } else {
             dataRepository.addHufData(callback)
         }
     }
 
     fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        if (isFile.value == true){
+        if (isFile.value == true) {
             return filesRepository.getPhaseData(1)
         }
         return dataRepository.getPhaseData(1)
     }
 
-    fun startSaveData(){
+    fun startSaveData() {
         filesRepository.startSaveData()
     }
 
-    fun stopSaveData(){
+    fun stopSaveData() {
         filesRepository.stopSaveData()
     }
 
@@ -81,12 +84,12 @@ class RealModelViewModel(val dataRepository: DataRepository, private val filesRe
         createACheckFile()
     }
 
-    fun createACheckFile(){
+    fun createACheckFile() {
         filesRepository.toCreateCheckFile(checkType)
     }
 
 
-    fun cleanCurrentData(){
+    fun cleanCurrentData() {
         dataRepository.getGainValueList().postValue(Vector())
         dataRepository.cleanData()
     }

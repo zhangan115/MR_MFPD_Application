@@ -74,14 +74,12 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("zhangan", "onResume")
-        viewModel.openPulseData()
+
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("zhangan", "onPause")
-        viewModel.closePulseData()
+
     }
 
     override fun onYcDataChange(bytes: ByteArray) {

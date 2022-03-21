@@ -74,6 +74,14 @@ public class PrpsPoint2DList {
                 values.put(entry.getKey(), newMap);
             }
         }
+        createVertexBuffer(this.values);
+    }
+
+    public void setValue(Map<Integer, Map<Float, Integer>> map) {
+        createVertexBuffer(map);
+    }
+
+    private void createVertexBuffer(Map<Integer, Map<Float, Integer>> values) {
         List<Float> vertexPointList = new ArrayList<>();
         List<Float> colorList = new ArrayList<>();
         List<Short> indicesList = new ArrayList<>();

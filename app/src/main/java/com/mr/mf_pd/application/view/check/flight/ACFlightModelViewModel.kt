@@ -1,21 +1,21 @@
 package com.mr.mf_pd.application.view.check.flight
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
-import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
 import com.sito.tool.library.utils.ByteLibUtil
+import java.io.File
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.collections.HashMap
 
 class ACFlightModelViewModel(
     val dataRepository: DataRepository,
@@ -32,6 +32,12 @@ class ACFlightModelViewModel(
     lateinit var checkType: CheckType
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    var isSaveData: MutableLiveData<Boolean>? = null
+
+    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+
+    private val _toFlightDataEvent = MutableLiveData<Event<HashMap<Int, HashMap<Float, Int>>>>()
+    val toFlightDataEvent: LiveData<Event<HashMap<Int, HashMap<Float, Int>>>> = _toFlightDataEvent
 
     fun start() {
         this.gainValues = dataRepository.getGainValueList()
@@ -65,27 +71,77 @@ class ACFlightModelViewModel(
         override fun onData(source: ByteArray) {
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
-            val newValueList: ArrayList<Float?> = ArrayList()
-            val xValueList: ArrayList<Int?> = ArrayList()
             if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
                     val lengthBytes = byteArrayOf(0x00, 0x00, values[0], values[1])
-                    xValueList.add(ByteLibUtil.getInt(lengthBytes))
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    val f = ByteUtil.getFloat(height)
-                    newValueList.add(f)
+                    val value = ByteUtil.getFloat(height)
+                    val key = ByteLibUtil.getInt(lengthBytes)
+                    if (dataMaps.containsKey(key)) {
+                        val map = dataMaps[key]
+                        if (map != null && map.containsKey(value)) {
+                            val value1 = map[value]
+                            if (value1 != null) {
+                                map[value] = value1 + 1
+                            }
+                        } else {
+                            map?.set(value, 1)
+                        }
+                    } else {
+                        val newMap: HashMap<Float, Int> = HashMap()
+                        newMap[value] = 1
+                        dataMaps[key] = newMap
+                    }
                 }
             }
-
+            _toFlightDataEvent.postValue(Event(dataMaps))
         }
     }
 
+    fun setCheckFile(filePath: String) {
+        val file = File(filePath)
+        filesRepository.setCurrentClickFile(file)
+        location.postValue(filesRepository.getCurrentCheckName())
+        createACheckFile()
+    }
+
+    fun createACheckFile() {
+        filesRepository.toCreateCheckFile(checkType)
+    }
+
+    fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+        if (isFile.value == true) {
+            return filesRepository.getPhaseData(0)
+        }
+        return dataRepository.getPhaseData(0)
+    }
+
+    fun startSaveData() {
+        filesRepository.startSaveData()
+    }
+
+    fun stopSaveData() {
+        filesRepository.stopSaveData()
+    }
+
+    fun cleanCurrentData() {
+        val list = Vector<Float>()
+        if (isFile.value == true) {
+            this.gainValues.postValue(list)
+            filesRepository.cleanData()
+            filesRepository.getGainValueList().postValue(list)
+        } else {
+            this.gainValues.postValue(list)
+            dataRepository.cleanData()
+            dataRepository.getGainValueList().postValue(list)
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
-
+        dataRepository.removeRealDataListener()
     }
 }

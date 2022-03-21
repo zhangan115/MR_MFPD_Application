@@ -13,6 +13,7 @@ import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.utils.PhotoCompressUtils
 import java.io.File
@@ -40,7 +41,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
                 setViewModel(this)
             }
         }
-        isInit = true;
+        isInit = true
         /**初始化的时候去加载数据**/
         isCanLoadData()
         return root
@@ -59,7 +60,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
      */
     private fun isCanLoadData() {
         if (!isInit) {
-            return;
+            return
         }
         if (userVisibleHint) {
             lazyLoad()

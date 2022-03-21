@@ -56,7 +56,7 @@ class DefaultDataRepository : DataRepository {
         val list = ArrayList<HashMap<Int, Float>>()
         if (chartType == 0) {
             if (phaseData.isNotEmpty()) {
-                list.add(phaseData.removeFirst())
+                phaseData.removeFirstOrNull()?.let { list.add(it) }
             }
         } else if (chartType == 1) {
             if (realPointData.isNotEmpty()) {

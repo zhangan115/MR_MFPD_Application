@@ -11,7 +11,6 @@ import com.mr.mf_pd.application.databinding.PhaseDataBinding
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
-import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import kotlinx.android.synthetic.main.fragment_phase.*
 import java.text.DecimalFormat
@@ -141,8 +140,8 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun cleanCurrentData() {
-        viewModel.cleanCurrentData()
         pointChartsRenderer?.cleanData()
+        viewModel.cleanCurrentData()
     }
 
     override fun isSaving(): Boolean {

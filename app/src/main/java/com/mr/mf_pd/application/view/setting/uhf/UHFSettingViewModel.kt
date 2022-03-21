@@ -86,9 +86,13 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
-        phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
+        if (settingBean.xwTb<Constants.PHASE_MODEL_LIST.size){
+            phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
+        }
         bandDetectionInt.postValue(settingBean.pdJc)
-        bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[settingBean.pdJc])
+        if (settingBean.pdJc < Constants.BAND_DETECTION_LIST.size) {
+            bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[settingBean.pdJc])
+        }
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)

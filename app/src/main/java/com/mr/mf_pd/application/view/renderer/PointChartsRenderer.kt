@@ -16,7 +16,7 @@ import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
+class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>) :
     GLSurfaceView.Renderer {
     var getPrpsValueCallback: GetPrpsValueCallback? = null
 
@@ -42,11 +42,7 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         unit.add("dBm")
         textMaps[Constants.KEY_UNIT] = unit
         textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
-        if (yTextList.isEmpty()) {
-            textMaps[Constants.KEY_Y_TEXT] = ArrayList()
-        } else {
-            textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
-        }
+        textMaps[Constants.KEY_Y_TEXT] = yTextList
         prPsPoints = PrpsPoint2DList()
 
         textureProgram = TextureShaderProgram(context)
@@ -60,12 +56,26 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         prPsPoints?.addValue(pointValue)
     }
 
+    fun setFlightData(values: Map<Int, Map<Float, Int>>) {
+        prPsPoints?.setValue(values)
+    }
+
     fun updateYAxis(textList: List<String>) {
         if (textList.isEmpty()) {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
         } else {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
             textMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+        }
+    }
+
+    fun updateXAxis(textList: List<String>) {
+        textMaps.remove(Constants.KEY_UNIT)
+        if (textList.isEmpty()) {
+            textMaps[Constants.KEY_X_TEXT]?.clear()
+        } else {
+            textMaps[Constants.KEY_X_TEXT]?.clear()
+            textMaps[Constants.KEY_X_TEXT]?.addAll(textList.toList() as ArrayList<String>)
         }
     }
 
@@ -80,7 +90,7 @@ class PointChartsRenderer(var context: Context, var yTextList: List<String>) :
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
         GLES30.glEnable(GL_BLEND)
-        GLES30.glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
+        GLES30.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         GLES30.glDepthMask(true)
         colorProgram.useProgram()
