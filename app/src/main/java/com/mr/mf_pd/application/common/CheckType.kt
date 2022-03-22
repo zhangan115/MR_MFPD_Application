@@ -47,7 +47,7 @@ enum class CheckType(
         R.mipmap.img_check_icon,
         SettingBean(cacheKey = ConstantStr.SETTING_AC),
         13,
-        1,
+        3,
         MutableLiveData(CheckParamsBean(2))
     ),
     HF(

@@ -2,26 +2,17 @@ package com.mr.mf_pd.application.view.check.flight
 
 import android.opengl.GLSurfaceView
 import android.os.Bundle
-import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
-import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
-
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
+import com.mr.mf_pd.application.view.callback.FlightDataCallback
+import com.mr.mf_pd.application.view.renderer.FlightChartsRenderer
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
-import kotlinx.android.synthetic.main.fragment_ac_flight.image1
-import kotlinx.android.synthetic.main.fragment_ac_flight.image2
-import kotlinx.android.synthetic.main.fragment_ac_flight.image3
-import kotlinx.android.synthetic.main.fragment_ac_flight.image4
-import kotlinx.android.synthetic.main.fragment_ac_flight.surfaceView1
-import kotlinx.android.synthetic.main.fragment_phase.*
 
 /**
  * AC 飞行模式
@@ -29,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_phase.*
 class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     private val viewModel by viewModels<ACFlightModelViewModel> { getViewModelFactory() }
-    var pointChartsRenderer: PointChartsRenderer? = null
+    var flightChartsRenderer: FlightChartsRenderer? = null
     private var rendererSet = false
 
     companion object {
@@ -60,12 +51,14 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
-        viewModel.toFlightDataEvent.observe(this, EventObserver {
-            pointChartsRenderer?.setFlightData(it)
-            pointChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-                viewModel.checkType.settingBean,
-                viewModel.gainMinValue))
-            surfaceView1.requestRender()
+        viewModel.setFlightCallback(object : FlightDataCallback {
+            override fun flightData(data: HashMap<Int, HashMap<Float, Int>>) {
+                flightChartsRenderer?.setFlightData(data)
+                flightChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
+                    viewModel.checkType.settingBean,
+                    viewModel.gainMinValue))
+                surfaceView1.requestRender()
+            }
         })
     }
 
@@ -75,11 +68,11 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        pointChartsRenderer = PointChartsRenderer(this.requireContext(),
+        flightChartsRenderer = FlightChartsRenderer(this.requireContext(),
             getYAxisValue(viewModel.isFile.value!!,
                 viewModel.checkType.settingBean,
                 viewModel.gainMinValue))
-        surfaceView1.setRenderer(pointChartsRenderer)
+        surfaceView1.setRenderer(flightChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {
@@ -110,19 +103,27 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         rendererSet = true
     }
 
+    override fun setCheckFile(str: String) {
+        super.setCheckFile(str)
+        viewModel.setCheckFile(str)
+    }
+
+    override fun createCheckFile() {
+        viewModel.createACheckFile()
+    }
+
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
     }
 
     override fun cleanCurrentData() {
-        pointChartsRenderer?.cleanData()
+        flightChartsRenderer?.cleanData()
         viewModel.cleanCurrentData()
     }
 
     override fun setViewModel(dataBinding: ACFlightDataBinding?) {
         dataBinding?.vm = viewModel
     }
-
 
     override fun onResume() {
         super.onResume()

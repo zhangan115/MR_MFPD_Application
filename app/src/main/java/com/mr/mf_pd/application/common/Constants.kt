@@ -88,6 +88,7 @@ object Constants {
 
     const val PRPS_ROW = 50
     const val PRPS_COLUMN = 100
+    const val FLIGHT_COLUMN = 20000
 
     const val KEY_UNIT = "key_unit"
     const val KEY_X_TEXT = "key_x_text"

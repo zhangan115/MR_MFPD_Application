@@ -113,11 +113,11 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
             fragments[currentIndex].showToSaveDialog {
                 currentIndex = tag
-                viewPager.setCurrentItem(tag, true)
+                viewPager.setCurrentItem(tag, false)
             }
         } else {
             currentIndex = tag
-            viewPager.setCurrentItem(tag, true)
+            viewPager.setCurrentItem(tag, false)
         }
     }
 

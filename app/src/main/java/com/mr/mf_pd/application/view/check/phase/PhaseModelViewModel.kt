@@ -7,6 +7,8 @@ import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import com.mr.mf_pd.application.view.callback.FlightDataCallback
+import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -53,6 +55,12 @@ class PhaseModelViewModel(
                 }
             })
         }
+    }
+
+    private var prpsCallback : PrPsDataCallback? = null
+
+    fun setPrpsCallback(callback: PrPsDataCallback){
+        prpsCallback = callback
     }
 
     fun setCheckFile(filePath: String) {

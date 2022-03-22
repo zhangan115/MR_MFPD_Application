@@ -1,21 +1,20 @@
 package com.mr.mf_pd.application.view.check.flight
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
-import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
 import java.io.File
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.max
 
 class ACFlightModelViewModel(
     val dataRepository: DataRepository,
@@ -36,8 +35,7 @@ class ACFlightModelViewModel(
 
     private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
-    private val _toFlightDataEvent = MutableLiveData<Event<HashMap<Int, HashMap<Float, Int>>>>()
-    val toFlightDataEvent: LiveData<Event<HashMap<Int, HashMap<Float, Int>>>> = _toFlightDataEvent
+    var receiverCount = 0
 
     fun start() {
         this.gainValues = dataRepository.getGainValueList()
@@ -45,9 +43,8 @@ class ACFlightModelViewModel(
             this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
         } else {
-            this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
-            dataRepository.switchPassageway(checkType.passageway, 2)
+            dataRepository.switchPassageway(checkType.passageway, checkType.commandType)
             dataRepository.addDataListener()
             dataRepository.addRealDataCallback(object : RealDataCallback {
                 override fun onRealDataChanged(source: ByteArray) {
@@ -67,6 +64,14 @@ class ACFlightModelViewModel(
         }
     }
 
+    private var flightCallback: FlightDataCallback? = null
+
+    fun setFlightCallback(callback: FlightDataCallback) {
+        flightCallback = callback
+    }
+
+    private var maxGainValue: Float? = null
+
     private val flightValueCallBack = object : BaseDataCallback {
         override fun onData(source: ByteArray) {
             val bytes = ByteArray(source.size - 7)
@@ -80,6 +85,11 @@ class ACFlightModelViewModel(
                     System.arraycopy(values, 2, height, 0, 4)
                     val value = ByteUtil.getFloat(height)
                     val key = ByteLibUtil.getInt(lengthBytes)
+                    maxGainValue = if (maxGainValue == null) {
+                        value
+                    } else {
+                        max(value, maxGainValue!!)
+                    }
                     if (dataMaps.containsKey(key)) {
                         val map = dataMaps[key]
                         if (map != null && map.containsKey(value)) {
@@ -97,9 +107,23 @@ class ACFlightModelViewModel(
                     }
                 }
             }
-            _toFlightDataEvent.postValue(Event(dataMaps))
+            if (receiverCount % 5 == 0) {
+                if (maxGainValue != null) {
+                    gainValues.value?.add(maxGainValue!!)
+                }
+                if (gainValues.value != null) {
+                    if (gainValues.value!!.size > checkType.settingBean.ljTime * 10) {
+                        gainValues.value?.removeFirstOrNull()
+                    }
+                }
+                gainValues.postValue(gainValues.value)
+                maxGainValue = null
+            }
+            receiverCount++
+            flightCallback?.flightData(dataMaps)
         }
     }
+
 
     fun setCheckFile(filePath: String) {
         val file = File(filePath)
@@ -112,13 +136,6 @@ class ACFlightModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
-    fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
-        if (isFile.value == true) {
-            return filesRepository.getPhaseData(0)
-        }
-        return dataRepository.getPhaseData(0)
-    }
-
     fun startSaveData() {
         filesRepository.startSaveData()
     }
@@ -128,6 +145,7 @@ class ACFlightModelViewModel(
     }
 
     fun cleanCurrentData() {
+        receiverCount = 0
         val list = Vector<Float>()
         if (isFile.value == true) {
             this.gainValues.postValue(list)
@@ -142,6 +160,7 @@ class ACFlightModelViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        flightCallback = null
         dataRepository.removeRealDataListener()
     }
 }

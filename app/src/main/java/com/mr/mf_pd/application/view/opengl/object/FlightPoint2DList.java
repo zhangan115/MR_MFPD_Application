@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 展示PrPs在平面的数据
+ * 展示飞行数据
  */
-public class PrpsPoint2DList {
+public class FlightPoint2DList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
@@ -30,14 +30,14 @@ public class PrpsPoint2DList {
     private Point2DColorPointShaderProgram colorProgram;
 
     public static final float stepX = (1 - Constants.PRPS_SPACE
-            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
+            + 1 - Constants.PRPS_SPACE) / Constants.FLIGHT_COLUMN;
     private short[] indices;
 
     private final List<Float> color1 = new ArrayList<>();
     private final List<Float> color2 = new ArrayList<>();
     private final List<Float> color3 = new ArrayList<>();
 
-    public PrpsPoint2DList() {
+    public FlightPoint2DList() {
         color1.add(1f);
         color1.add(0f);
         color1.add(0f);
@@ -51,35 +51,7 @@ public class PrpsPoint2DList {
         color3.add(1f);
     }
 
-    /**
-     * 增加数据
-     *
-     * @param map 增加的数据
-     */
-    public void addValue(Map<Integer, Float> map) {
-        Set<Map.Entry<Integer, Float>> entrySet = map.entrySet();
-        for (Map.Entry<Integer, Float> entry : entrySet) {
-            if (values.containsKey(entry.getKey())) {
-                if (values.get(entry.getKey()).containsKey(entry.getValue())) {
-                    int count = values.get(entry.getKey()).get(entry.getValue());
-                    values.get(entry.getKey()).put(entry.getValue(), count + 1);
-                } else {
-                    values.get(entry.getKey()).put(entry.getValue(), 1);
-                }
-            } else {
-                Map<Float, Integer> newMap = new HashMap<>();
-                newMap.put(entry.getValue(), 1);
-                values.put(entry.getKey(), newMap);
-            }
-        }
-        createVertexBuffer(this.values);
-    }
-
-    public void setValue(Map<Integer, Map<Float, Integer>> map) {
-        createVertexBuffer(map);
-    }
-
-    private void createVertexBuffer(Map<Integer, Map<Float, Integer>> values) {
+    public void setValue(Map<Integer, Map<Float, Integer>> values) {
         List<Float> vertexPointList = new ArrayList<>();
         List<Float> colorList = new ArrayList<>();
         List<Short> indicesList = new ArrayList<>();

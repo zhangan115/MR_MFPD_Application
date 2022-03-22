@@ -16,6 +16,7 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.view.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPointList
@@ -48,8 +49,8 @@ class CheckDataViewModel(
     }
 
     private fun openPassageway() {
-        val command = CommandHelp.switchPassageway(mCheckType.passageway,mCheckType.commandType)
-        dataRepository.switchPassageway(mCheckType.passageway,mCheckType.commandType)
+        val command = CommandHelp.switchPassageway(mCheckType.passageway, mCheckType.commandType)
+        dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
         SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
         SocketManager.get().openPassageway = object : BaseDataCallback {
             override fun onData(source: ByteArray) {
@@ -71,6 +72,9 @@ class CheckDataViewModel(
 
             PrPsCubeList.maxValue = it.maxValue.toFloat()
             PrPsCubeList.minValue = it.minValue.toFloat()
+
+            FlightPoint2DList.maxValue = it.maxValue.toFloat()
+            FlightPoint2DList.minValue = it.minValue.toFloat()
         }
     }
 
