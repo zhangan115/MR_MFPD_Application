@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.setting.ae
 
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -133,7 +134,7 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
         isFdUnit.postValue(settingBean.fdlUnit == 1)
         jzXsStr.postValue(settingBean.jzRatio.toString())
         jzQShuChu.postValue(settingBean.jzOutValue.toString())
-
+        fzUnitStr.postValue(settingBean.fzUnit)
         if (settingBean.limitValue != null) {
             limitValueStr.postValue(settingBean.limitValue.toString())
         }
@@ -170,6 +171,12 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.phaseValue != null) {
             val df1 = DecimalFormat("0.00")
             phaseValueStr.postValue(df1.format(settingBean.phaseValue))
+        }
+        val fzUnit = settingBean.fzUnit
+        if (!TextUtils.isEmpty(fzUnit)){
+            fzUnitStr.postValue(fzUnit)
+        }else{
+            fzUnitStr.postValue(checkType.defaultUnit)
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
@@ -257,6 +264,12 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
                 settingBean.highPassFiltering = highPassFilteringStr.value?.toFloat()
             }
             settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
+            val fzUnit = fzUnitStr.value
+            if (!TextUtils.isEmpty(fzUnit)){
+                settingBean.fzUnit = fzUnit!!
+            }else{
+                settingBean.fzUnit = checkType.defaultUnit
+            }
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)

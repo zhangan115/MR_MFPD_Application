@@ -1,7 +1,7 @@
 package com.mr.mf_pd.application.manager.socket
 
 import android.util.Log
-import android.util.SparseArray
+import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
@@ -11,8 +11,6 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
@@ -21,8 +19,12 @@ import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
     private var inputStream //输入流
@@ -32,17 +34,10 @@ class SocketManager private constructor() {
 
     private var mDataByteList: LinkedList<Byte> = LinkedList()
 
-    private val mPulseDataListener: PulseDataListener? = null
     private var linkStateListeners: MutableList<LinkStateListener>? = null
 
-    private val writeSettingCallbacks: ArrayList<WriteSettingDataCallback> = ArrayList()
-    private val readSettingCallbacks: ArrayList<ReadSettingDataCallback> = ArrayList()
-
-    private var readDataCallback: ReadListener? = null
-    var ycDataCallback: YcDataCallback? = null
-    var sendTimeCallback: BaseDataCallback? = null
-    var openPassageway: BaseDataCallback? = null
-    var flightValueCallback: BaseDataCallback? = null
+    private val bytesCallbackMap: LinkedHashMap<CommandType, LinkedList<BytesDataCallback>> =
+        LinkedHashMap()
 
     private var socket: Socket? = null
 
@@ -64,22 +59,6 @@ class SocketManager private constructor() {
         }
     }
 
-    fun addWriteSettingCallback(callback: WriteSettingDataCallback) {
-        writeSettingCallbacks.add(callback)
-    }
-
-    fun removeWriteSettingCallback(callback: WriteSettingDataCallback) {
-        writeSettingCallbacks.remove(callback)
-    }
-
-    fun addReadSettingCallback(callback: ReadSettingDataCallback) {
-        readSettingCallbacks.add(callback)
-    }
-
-    fun removeReadSettingCallback(callback: ReadSettingDataCallback) {
-        readSettingCallbacks.remove(callback)
-    }
-
     //执行请求任务的线程池
     private var mRequestExecutor: ExecutorService? = null
     private var future: Future<*>? = null
@@ -96,13 +75,14 @@ class SocketManager private constructor() {
             for (i in linkStateListeners!!.indices) {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
+            bytesCallbackMap.clear()
             val buf = ByteArray(1024 * 4)
             var size: Int
             mDataByteList.clear()
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
                     if (mDataByteList.isNotEmpty()) {
-//                        Log.d("zhangan", mDataByteList.toString())
+                        Log.d("zhangan", mDataByteList.size.toString())
                     }
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
@@ -118,6 +98,7 @@ class SocketManager private constructor() {
             socket = null
         } finally {
             try {
+                mDataByteList.clear()
                 mDataByteList.clear()
                 isConnected = false
                 if (inputStream != null) {
@@ -140,10 +121,11 @@ class SocketManager private constructor() {
 
     private fun dealStickyBytes() {
         var length = -1
+        var commandType: CommandType? = null
         if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
-            //对定长的数据进行单独处理
-            when (val commandType =
-                CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }) {
+            //根据数据获取命令类型
+            commandType = CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }
+            when (commandType) {
                 CommandType.SendTime -> {
                     if (mDataByteList.size >= commandType.length) {
                         length = commandType.length
@@ -185,7 +167,7 @@ class SocketManager private constructor() {
         }
         if (length > 0 && length <= mDataByteList.size) {
             val list = mDataByteList.subList(0, length)
-            handOut(Bytes.toArray(list))
+            handOut(commandType, Bytes.toArray(list))
             val newList = LinkedList<Byte>()
             for (i in length until mDataByteList.size) {
                 newList.add(mDataByteList[i])
@@ -197,42 +179,13 @@ class SocketManager private constructor() {
         }
     }
 
-    private fun handOut(source: ByteArray) {
-        when (CommandType.values().firstOrNull { it.funCode == source[1] }) {
-            CommandType.SendTime -> {
-                sendTimeCallback?.onData(source)
+    private fun handOut(commandType: CommandType?, source: ByteArray) {
+        if (commandType != null) {
+            bytesCallbackMap[commandType]?.forEach {
+                it.onData(source)
             }
-            CommandType.SwitchPassageway -> {
-                openPassageway?.onData(source)
-            }
-            CommandType.ReadYcData -> {
-                ycDataCallback?.onData(source)
-            }
-            CommandType.ReadSettingValue -> {
-                readSettingCallbacks.forEach {
-                    it.onData(source)
-                }
-            }
-            CommandType.WriteValue -> {
-                writeSettingCallbacks.forEach {
-                    it.onData(source)
-                }
-            }
-            CommandType.FdData -> {
-
-            }
-            CommandType.SendPulse -> {
-                mPulseDataListener?.onRead(source)
-            }
-            CommandType.RealData -> {
-                readDataCallback?.onData(source)
-            }
-            CommandType.FlightValue -> {
-                flightValueCallback?.onData(source)
-            }
-            else -> {
-
-            }
+        } else {
+            Log.i("zhangan", "commandType is null ")
         }
     }
 
@@ -265,6 +218,41 @@ class SocketManager private constructor() {
         if (mRequestExecutor != null && !mRequestExecutor!!.isShutdown) {
             mRequestExecutor!!.shutdownNow()
             mRequestExecutor = null
+        }
+    }
+
+    @MainThread
+    @Synchronized
+    fun addCallBack(commandType: CommandType, callback: BytesDataCallback) {
+        if (bytesCallbackMap.containsKey(commandType)) {
+            if (bytesCallbackMap[commandType] == null) {
+                bytesCallbackMap[commandType] = LinkedList()
+            }
+            bytesCallbackMap[commandType]!!.add(callback)
+        } else {
+            val linkedList = LinkedList<BytesDataCallback>()
+            linkedList.add(callback)
+            bytesCallbackMap[commandType] = linkedList
+        }
+    }
+
+    @MainThread
+    @Synchronized
+    fun removeCallBack(commandType: CommandType, callback: BytesDataCallback) {
+        if (bytesCallbackMap.containsKey(commandType)) {
+            if (bytesCallbackMap[commandType] != null
+                && bytesCallbackMap[commandType]!!.contains(callback)
+            ) {
+                bytesCallbackMap[commandType]!!.remove(callback)
+            }
+        }
+    }
+
+    @MainThread
+    @Synchronized
+    fun removeCallBack(commandType: CommandType) {
+        if (bytesCallbackMap.containsKey(commandType)) {
+            bytesCallbackMap.remove(commandType)
         }
     }
 
@@ -341,31 +329,6 @@ class SocketManager private constructor() {
         }.repeatWhen { objectObservable: Observable<Any?> ->
             objectObservable.delay(time, unit)
         }.subscribeOn(Schedulers.io()).subscribe()
-    }
-
-    /**
-     * 移除状态监控
-     *
-     * @param listener 状态监控
-     */
-    fun removeLinkStateListener(listener: LinkStateListener?) {
-        linkStateListeners?.remove(listener)
-    }
-
-    /**
-     * 增加读取监控
-     *
-     * @param listener 读取监控
-     */
-    fun setReadListener(listener: ReadListener?) {
-        readDataCallback = listener
-    }
-
-    /**
-     * 移除读取回调
-     */
-    fun removeReadListener() {
-        readDataCallback = null
     }
 
 }

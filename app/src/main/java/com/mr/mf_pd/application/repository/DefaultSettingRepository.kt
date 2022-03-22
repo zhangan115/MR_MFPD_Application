@@ -15,7 +15,7 @@ class DefaultSettingRepository : SettingRepository {
         SPHelper.write(
             MRApplication.instance,
             ConstantStr.SETTING_DATA,
-            settingBean.cacheKey,
+            checkType.cacheKey,
             Gson().toJson(settingBean)
         )
     }
@@ -25,7 +25,7 @@ class DefaultSettingRepository : SettingRepository {
         val result = SPHelper.readString(
             MRApplication.instance,
             ConstantStr.SETTING_DATA,
-            settingBean.cacheKey
+            checkType.cacheKey
         )
         val cacheSettingBean = Gson().fromJson(result, SettingBean::class.java)
         if (cacheSettingBean != null) {

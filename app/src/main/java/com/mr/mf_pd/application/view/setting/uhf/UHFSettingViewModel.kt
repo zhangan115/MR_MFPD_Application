@@ -1,6 +1,6 @@
 package com.mr.mf_pd.application.view.setting.uhf
 
-import android.util.Log
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -51,8 +51,12 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //同步方式
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
+
     //内同步的同步频率
     var phaseValueStr: MutableLiveData<String> = MutableLiveData()
+
+    //幅值单位
+    var fzUnitStr: MutableLiveData<String> = MutableLiveData("mV")
 
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
@@ -86,13 +90,14 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
-        if (settingBean.xwTb<Constants.PHASE_MODEL_LIST.size){
+        if (settingBean.xwTb < Constants.PHASE_MODEL_LIST.size) {
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
         }
         bandDetectionInt.postValue(settingBean.pdJc)
         if (settingBean.pdJc < Constants.BAND_DETECTION_LIST.size) {
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[settingBean.pdJc])
         }
+        fzUnitStr.postValue(settingBean.fzUnit)
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
@@ -109,7 +114,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.overLimitValue != null) {
             overLimitValueStr.postValue(settingBean.overLimitValue.toString())
         }
-        if (settingBean.alarmLimitValue!=null) {
+        if (settingBean.alarmLimitValue != null) {
             alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
         }
         if (settingBean.maxAverageValue != null) {
@@ -128,10 +133,16 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             val df1 = DecimalFormat("0.00")
             phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
+        val fzUnit = settingBean.fzUnit
+        if (!TextUtils.isEmpty(fzUnit)) {
+            fzUnitStr.postValue(fzUnit)
+        } else {
+            fzUnitStr.postValue(checkType.defaultUnit)
+        }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
-        SocketManager.get()
-            .sendData(readSettingCommand)
+        val readSettingCommand =
+            CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
+        SocketManager.get().sendData(readSettingCommand)
     }
 
     private val readSettingDataCallback = object : ReadSettingDataCallback {
@@ -199,6 +210,12 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value?.toIntOrNull()
             settingBean.noiseLimit = noiseLimitStr.value?.toIntOrNull()
             settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
+            val fzUnit = fzUnitStr.value
+            if (!TextUtils.isEmpty(fzUnit)) {
+                settingBean.fzUnit = fzUnit!!
+            } else {
+                settingBean.fzUnit = checkType.defaultUnit
+            }
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)

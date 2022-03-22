@@ -80,7 +80,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                     }
                     viewModel.addHUfData(object : DataCallback {
 
-                        override fun addData(map: HashMap<Int, Float>, prPsCube: PrPsCubeList) {
+                        override fun addData(map: HashMap<Int, Float?>, prPsCube: PrPsCubeList) {
                             prPsChartsRenderer?.addPrpsData(prPsCube)
                         }
                     })

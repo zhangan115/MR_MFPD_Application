@@ -52,7 +52,7 @@ class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>
         chartsLines = Point2DChartLine(4, 4, 90)
     }
 
-    fun addPrpsData(pointValue: HashMap<Int, Float>) {
+    fun addPrpsData(pointValue: HashMap<Int, Float?>) {
         prPsPoints?.addValue(pointValue)
     }
 

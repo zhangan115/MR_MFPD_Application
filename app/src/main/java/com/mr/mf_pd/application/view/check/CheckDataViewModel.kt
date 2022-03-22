@@ -6,9 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
-import com.mr.mf_pd.application.manager.socket.callback.WriteSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
@@ -23,8 +22,8 @@ import com.mr.mf_pd.application.view.opengl.`object`.PrpsPointList
 import io.reactivex.disposables.Disposable
 
 class CheckDataViewModel(
-    val dataRepository: DataRepository,
-    val settingRepository: SettingRepository,
+    private val dataRepository: DataRepository,
+    private val settingRepository: SettingRepository,
 ) : ViewModel() {
     var writeSetting = false
     var writeSettingCommand: ByteArray? = null
@@ -41,10 +40,16 @@ class CheckDataViewModel(
 
     fun start(checkType: CheckType) {
         mCheckType = checkType
+        settingBean = settingRepository.getSettingData(checkType)
         dataRepository.setCheckType(checkType)
-        updateSettingValue(checkType)
         checkParamsBean = checkType.checkParams
+        updateSettingValue()
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
+        SocketManager.get().ycDataCallback = object : BytesDataCallback {
+            override fun onData(source: ByteArray) {
+                _toYcDataEvent.postValue(Event(source))
+            }
+        }
         openPassageway()
     }
 
@@ -52,7 +57,7 @@ class CheckDataViewModel(
         val command = CommandHelp.switchPassageway(mCheckType.passageway, mCheckType.commandType)
         dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
         SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
-        SocketManager.get().openPassageway = object : BaseDataCallback {
+        SocketManager.get().openPassageway = object : BytesDataCallback {
             override fun onData(source: ByteArray) {
                 if (source.contentEquals(command)) {
                     readYcValue()
@@ -61,8 +66,7 @@ class CheckDataViewModel(
         }
     }
 
-    private fun updateSettingValue(checkType: CheckType) {
-        settingBean = settingRepository.getSettingData(checkType)
+    private fun updateSettingValue() {
         settingBean?.let {
             PrpsPoint2DList.maxValue = it.maxValue.toFloat()
             PrpsPoint2DList.minValue = it.minValue.toFloat()
@@ -79,11 +83,6 @@ class CheckDataViewModel(
     }
 
     private fun readYcValue() {
-        dataRepository.addYcDataCallback(object : BaseDataCallback {
-            override fun onData(source: ByteArray) {
-                _toYcDataEvent.postValue(Event(source))
-            }
-        })
         if (disposable == null) {
             disposable = dataRepository.readRepeatData()
         }
@@ -100,7 +99,7 @@ class CheckDataViewModel(
         }
     }
 
-    private val writeSettingDataCallback = object : WriteSettingDataCallback {
+    private val writeSettingDataCallback = object : BytesDataCallback {
 
         override fun onData(source: ByteArray) {
             writeSetting = false
@@ -148,7 +147,7 @@ class CheckDataViewModel(
             }
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
-        updateSettingValue(mCheckType)
+        updateSettingValue()
     }
 
 
@@ -188,7 +187,7 @@ class CheckDataViewModel(
             }
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
-        updateSettingValue(mCheckType)
+        updateSettingValue()
     }
 
 

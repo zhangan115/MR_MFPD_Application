@@ -8,9 +8,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.file.ReadFileDataManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
-import com.mr.mf_pd.application.manager.socket.callback.ReadListener
-import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.DataCallback
@@ -21,13 +19,11 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.FileUtils
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.utils.Geometry
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
 import java.io.File
@@ -80,7 +76,7 @@ class DefaultFilesRepository : FilesRepository {
 
     private var realDataCallbacks: ArrayList<RealDataCallback> = ArrayList()
 
-    private var ycDataCallbacks: ArrayList<BaseDataCallback> = ArrayList()
+    private var ycDataCallbacks: ArrayList<BytesDataCallback> = ArrayList()
 
     override fun startSaveData() {
         isSaving.postValue(true)
@@ -203,7 +199,7 @@ class DefaultFilesRepository : FilesRepository {
         ReadFileDataManager.get().ycDataCallback = ycDataCallback
     }
 
-    private val ycDataCallback = object : YcDataCallback {
+    private val ycDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             ycDataCallbacks.forEach {
                 it.onData(source)
@@ -233,7 +229,7 @@ class DefaultFilesRepository : FilesRepository {
         return mCheckType
     }
 
-    private val realDataListener = object : ReadListener {
+    private val realDataListener = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             if (source.isNotEmpty() && source.size > 7) {
                 realDataCallbacks.forEach {
@@ -351,11 +347,11 @@ class DefaultFilesRepository : FilesRepository {
         }
     }
 
-    override fun addYcDataCallback(callback: BaseDataCallback) {
+    override fun addYcDataCallback(callback: BytesDataCallback) {
         ycDataCallbacks.add(callback)
     }
 
-    override fun removeYcDataCallback(callback: BaseDataCallback) {
+    override fun removeYcDataCallback(callback: BytesDataCallback) {
         ycDataCallbacks.remove(callback)
     }
 

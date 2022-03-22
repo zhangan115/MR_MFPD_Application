@@ -160,5 +160,4 @@ dependencies {
 
     kapt project(":compiler")
     implementation project(":annotation")
-    implementation project(":tcpManagerLib")
 }

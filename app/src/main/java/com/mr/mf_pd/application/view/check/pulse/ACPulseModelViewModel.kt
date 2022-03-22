@@ -1,13 +1,9 @@
 package com.mr.mf_pd.application.view.check.pulse
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
-import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -36,7 +32,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
         } else {
             this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
-            dataRepository.addDataListener()
+
             dataRepository.addRealDataCallback(object : RealDataCallback {
                 override fun onRealDataChanged(source: ByteArray) {
                     if (filesRepository.isSaveData()?.value == true) {
@@ -44,7 +40,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
                     }
                 }
             })
-            dataRepository.addYcDataCallback(object : BaseDataCallback {
+            dataRepository.addYcDataCallback(object : BytesDataCallback {
                 override fun onData(source: ByteArray) {
                     if (filesRepository.isSaveData()?.value == true) {
                         filesRepository.toSaveYCData2File(source)

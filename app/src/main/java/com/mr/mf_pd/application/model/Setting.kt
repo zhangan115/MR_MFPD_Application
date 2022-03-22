@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.model
 
 data class SettingBean(
-    val cacheKey: String,//缓存的Key
     var xwTb: Int = 0,//相位同步
     var autoTb: Int = 0,//自动同步
     var pdJc: Int = 0,//频带检测
@@ -13,7 +12,7 @@ data class SettingBean(
     var minValue: Int = -80,//最小幅值
 
     var nTbPl: Float = 0f,//内同步频率
-    var fzUnit: Int = 0,//幅值单位
+    var fzUnit: String = "",//幅值单位
     var outVoice: Int = 0, //声音输出
     var autoZy: Int = 0, //自定增益
     var pdDown: Int = 50, //频带下限

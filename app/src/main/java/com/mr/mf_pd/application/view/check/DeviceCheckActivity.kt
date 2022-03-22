@@ -12,7 +12,7 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -59,19 +59,6 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     var disposable: Disposable? = null
     var isShowTips = false
 
-//    @OnClick(R.id.aeTaskLayout)
-//    fun aeClick(view: View) {
-//        Log.d("zhangan", "ae task layout click by annotation method")
-//        val intent = Intent(this, CheckDataActivity::class.java)
-//        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AE)
-//        startActivity(intent)
-//    }
-
-//    @OnLongClick(value = R.id.aeTaskLayout, isEnable = true)
-//    fun aeOnLongClick(view: View) {
-//        Log.d("zhangan", "ae task layout OnLongClick by annotation method")
-//    }
-
     private fun linkToDevice() {
         SocketManager.get().releaseRequest()
         SocketManager.get().initLink()
@@ -86,7 +73,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
                 SocketManager.get().releaseRequest()
             }
         }
-        SocketManager.get().sendTimeCallback = object : BaseDataCallback {
+        SocketManager.get().sendTimeCallback = object : BytesDataCallback {
             override fun onData(source: ByteArray) {
                 if (isShowTips) {
                     return

@@ -119,6 +119,35 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/fzUnitLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="15dp"
+                        android:text="幅值单位"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        android:text="@{vm.fzUnitStr}"
+                        android:textColor="#ff333333"
+                        android:textSize="14sp"
+                        tools:text="mV" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/bandDetectionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

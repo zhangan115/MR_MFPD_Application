@@ -1,4 +1,3 @@
-include ':tcpManagerLib'
 include ':compiler'
 include ':annotation'
 include ':tool_library'

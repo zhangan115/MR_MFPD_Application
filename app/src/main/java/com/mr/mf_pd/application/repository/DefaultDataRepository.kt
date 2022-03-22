@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
-import com.mr.mf_pd.application.manager.socket.callback.ReadListener
-import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.callback.DataCallback
@@ -48,7 +46,7 @@ class DefaultDataRepository : DataRepository {
 
     private var realDataCallbacks: ArrayList<RealDataCallback> = ArrayList()
 
-    private var ycDataCallbacks: ArrayList<BaseDataCallback> = ArrayList()
+    private var ycDataCallbacks: ArrayList<BytesDataCallback> = ArrayList()
 
     override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>> {
         val list = ArrayList<HashMap<Int, Float?>>()
@@ -64,31 +62,14 @@ class DefaultDataRepository : DataRepository {
         return list
     }
 
-    override fun addDataListener() {
-        SocketManager.get().setReadListener(realDataListener)
-        SocketManager.get().ycDataCallback = ycDataCallback
-    }
-
-   private val ycDataCallback = object :YcDataCallback {
-        override fun onData(source: ByteArray) {
-            ycDataCallbacks.forEach {
-                it.onData(source)
-            }
-        }
-    }
-
-    override fun removeRealDataListener() {
-        SocketManager.get().removeReadListener()
-    }
-
     override fun addRealDataCallback(callback: RealDataCallback) {
         realDataCallbacks.add(callback)
     }
 
-    override fun addYcDataCallback(callback: BaseDataCallback) {
+    override fun addYcDataCallback(callback: BytesDataCallback) {
         ycDataCallbacks.add(callback)
     }
-    override fun removeYcDataCallback(callback: BaseDataCallback) {
+    override fun removeYcDataCallback(callback: BytesDataCallback) {
         ycDataCallbacks.remove(callback)
     }
 
@@ -151,7 +132,7 @@ class DefaultDataRepository : DataRepository {
         return SocketManager.get().sendRepeatData(CommandHelp.readYcValue(getCheckType().passageway),1)
     }
 
-    private val realDataListener = object : ReadListener {
+    private val realDataListener = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             realDataCallbacks.forEach {
                 it.onRealDataChanged(source)

@@ -3,7 +3,9 @@ package com.mr.mf_pd.application.view.check.real
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
@@ -19,7 +21,7 @@ class RealModelViewModel(
 ) : ViewModel() {
 
     lateinit var checkType: CheckType
-    lateinit var gainValues: MutableLiveData<Vector<Float>>
+    var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var toastStr: MutableLiveData<String> = MutableLiveData()
@@ -34,24 +36,31 @@ class RealModelViewModel(
             this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
         } else {
-            this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
-            dataRepository.addDataListener()
-            dataRepository.addRealDataCallback(object : RealDataCallback {
-                override fun onRealDataChanged(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveRealData2File(source)
-                    }
-                }
-            })
-            dataRepository.addYcDataCallback(object : BaseDataCallback {
-                override fun onData(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveYCData2File(source)
-                    }
-                }
-            })
+            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
+    }
+
+    private val ycBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveYCData2File(source)
+            }
+        }
+    }
+
+    private val realBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            dealRealData(source)
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveRealData2File(source)
+            }
+        }
+    }
+
+    private fun dealRealData(source: ByteArray) {
+
     }
 
     fun addHUfData(callback: DataCallback) {
@@ -96,6 +105,7 @@ class RealModelViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        dataRepository.removeRealDataListener()
+        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
     }
 }

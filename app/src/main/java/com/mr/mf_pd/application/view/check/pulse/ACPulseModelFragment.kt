@@ -76,7 +76,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun onResume() {
         super.onResume()
-
+        cleanCurrentData()
     }
 
     override fun onPause() {

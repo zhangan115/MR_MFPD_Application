@@ -3,7 +3,9 @@ package com.mr.mf_pd.application.view.check.continuity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -43,21 +45,24 @@ class ContinuityModelViewModel(
         }else{
             this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
-            dataRepository.addDataListener()
-            dataRepository.addRealDataCallback(object : RealDataCallback {
-                override fun onRealDataChanged(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveRealData2File(source)
-                    }
-                }
-            })
-            dataRepository.addYcDataCallback(object : BaseDataCallback {
-                override fun onData(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveYCData2File(source)
-                    }
-                }
-            })
+            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+        }
+    }
+
+    private val ycBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveYCData2File(source)
+            }
+        }
+    }
+
+    private val realBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveRealData2File(source)
+            }
         }
     }
 
@@ -86,6 +91,9 @@ class ContinuityModelViewModel(
         yxValueList.clear()
         f1ValueList.clear()
         f2ValueList.clear()
+
+        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
     }
 
 }

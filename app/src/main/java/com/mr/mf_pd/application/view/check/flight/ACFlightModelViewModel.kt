@@ -4,7 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -45,22 +46,25 @@ class ACFlightModelViewModel(
         } else {
             this.checkType = dataRepository.getCheckType()
             dataRepository.switchPassageway(checkType.passageway, checkType.commandType)
-            dataRepository.addDataListener()
-            dataRepository.addRealDataCallback(object : RealDataCallback {
-                override fun onRealDataChanged(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveRealData2File(source)
-                    }
-                }
-            })
-            dataRepository.addYcDataCallback(object : BaseDataCallback {
-                override fun onData(source: ByteArray) {
-                    if (filesRepository.isSaveData()?.value == true) {
-                        filesRepository.toSaveYCData2File(source)
-                    }
-                }
-            })
-            SocketManager.get().flightValueCallback = flightValueCallBack
+            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+        }
+    }
+
+    private val ycBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveYCData2File(source)
+            }
+        }
+    }
+
+    private val realBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (filesRepository.isSaveData()?.value == true) {
+                filesRepository.toSaveRealData2File(source)
+            }
         }
     }
 
@@ -72,7 +76,7 @@ class ACFlightModelViewModel(
 
     private var maxGainValue: Float? = null
 
-    private val flightValueCallBack = object : BaseDataCallback {
+    private val flightValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
@@ -161,6 +165,8 @@ class ACFlightModelViewModel(
     override fun onCleared() {
         super.onCleared()
         flightCallback = null
-        dataRepository.removeRealDataListener()
+        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
     }
 }

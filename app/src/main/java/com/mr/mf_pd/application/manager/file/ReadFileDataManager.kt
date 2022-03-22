@@ -1,11 +1,8 @@
 package com.mr.mf_pd.application.manager.file
 
-import android.util.Log
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.manager.socket.callback.PulseDataListener
-import com.mr.mf_pd.application.manager.socket.callback.ReadListener
-import com.mr.mf_pd.application.manager.socket.callback.YcDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 import java.io.File
@@ -29,8 +26,6 @@ class ReadFileDataManager {
     private var ycDisposable: Disposable? = null
     private var fdDisposable: Disposable? = null
 
-    private val mPulseDataListener: PulseDataListener? = null
-
     private var realBytePosition = 0
     private val readRealData = Vector<Vector<Byte>>() //读取出来的遥测数据
     private val surplusRealData = Vector<Byte>() //读取处理的未处理的不完整遥测数据
@@ -39,9 +34,9 @@ class ReadFileDataManager {
     private val readYcData = ArrayList<ArrayList<Byte>>() //读取出来的遥测数据
     private val surplusYcData = ArrayList<Byte>() //读取处理的未处理的不完整遥测数据
 
-    var ycDataCallback: YcDataCallback? = null
+    var ycDataCallback: BytesDataCallback? = null
 
-    private var readDataCallback: ReadListener? = null
+    private var readDataCallback: BytesDataCallback? = null
 
     companion object {
 
@@ -230,7 +225,7 @@ class ReadFileDataManager {
      *
      * @param listener 读取监控
      */
-    fun setReadListener(listener: ReadListener?) {
+    fun setReadListener(listener: BytesDataCallback?) {
         readDataCallback = listener
     }
 

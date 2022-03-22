@@ -15,6 +15,8 @@ enum class CheckType(
     var settingBean: SettingBean,//设置
     var settingLength: Int,//设置数据长度
     var commandType:Int,//命令码
+    var defaultUnit:String,//默认单位
+    var cacheKey:String,//设置保存的数据Key
     val checkParams: MutableLiveData<CheckParamsBean>,//检测数据
 ) {
     UHF(
@@ -23,9 +25,11 @@ enum class CheckType(
         R.string.type_uhf,
         ".check_uhf",
         R.mipmap.img_check_icon,
-        SettingBean(cacheKey = ConstantStr.SETTING_UHF),
+        SettingBean(),
         11,
         1,
+        "dBm",
+        ConstantStr.SETTING_UHF,
         MutableLiveData(CheckParamsBean(0))
     ),
     TEV(
@@ -34,9 +38,11 @@ enum class CheckType(
         R.string.type_tev,
         ".check_tev",
         R.mipmap.img_check_icon,
-        SettingBean(cacheKey = ConstantStr.SETTING_TEV),
+        SettingBean(),
         10,
         1,
+        "dBmV",
+        ConstantStr.SETTING_TEV,
         MutableLiveData(CheckParamsBean(1))
     ),
     AE(
@@ -45,9 +51,11 @@ enum class CheckType(
         R.string.type_ac,
         ".check_ae",
         R.mipmap.img_check_icon,
-        SettingBean(cacheKey = ConstantStr.SETTING_AC),
+        SettingBean(),
         13,
         3,
+        "mV",
+        ConstantStr.SETTING_AC,
         MutableLiveData(CheckParamsBean(2))
     ),
     HF(
@@ -56,9 +64,11 @@ enum class CheckType(
         R.string.type_hf,
         ".check_hf",
         R.mipmap.img_check_icon,
-        SettingBean(cacheKey = ConstantStr.SETTING_HF),
+        SettingBean(),
         13,
         1,
+        "mV",
+        ConstantStr.SETTING_HF,
         MutableLiveData(CheckParamsBean(3))
     );
 }

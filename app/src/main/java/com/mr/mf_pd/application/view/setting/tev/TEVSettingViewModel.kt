@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.setting.tev
 
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -25,6 +26,8 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
     //内同步的同步频率
     var phaseValueStr: MutableLiveData<String> = MutableLiveData()
+    //幅值单位
+    var fzUnitStr: MutableLiveData<String> = MutableLiveData("mV")
     //警戒门限
     var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
 
@@ -78,7 +81,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
         phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
-
+        fzUnitStr.postValue(settingBean.fzUnit)
         isAutoSync.postValue(settingBean.autoTb == 1)
         isNoiseFiltering.postValue(settingBean.lyXc == 1)
         isFixedScale.postValue(settingBean.gdCd == 1)
@@ -113,6 +116,12 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.phaseValue != null) {
             val df1 = DecimalFormat("0.00")
             phaseValueStr.postValue(df1.format(settingBean.phaseValue))
+        }
+        val fzUnit = settingBean.fzUnit
+        if (!TextUtils.isEmpty(fzUnit)){
+            fzUnitStr.postValue(fzUnit)
+        }else{
+            fzUnitStr.postValue(checkType.defaultUnit)
         }
         SocketManager.get().addReadSettingCallback(readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
@@ -182,6 +191,12 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.secondDischargeMinCount = secondDischargeMinCountStr.value?.toIntOrNull()
             settingBean.noiseLimit = noiseLimitStr.value?.toIntOrNull()
             settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
+            val fzUnit = fzUnitStr.value
+            if (!TextUtils.isEmpty(fzUnit)){
+                settingBean.fzUnit = fzUnit!!
+            }else{
+                settingBean.fzUnit = checkType.defaultUnit
+            }
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
             setting.toSaveSettingData(checkType)

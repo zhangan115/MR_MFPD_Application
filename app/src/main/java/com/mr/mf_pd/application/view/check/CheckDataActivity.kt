@@ -2,18 +2,22 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
+import com.google.gson.Gson
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.model.EventObserver
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
@@ -28,6 +32,7 @@ import com.mr.mf_pd.application.view.setting.uhf.UHFSettingActivity
 import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
+import com.sito.tool.library.utils.SPHelper
 import kotlinx.android.synthetic.main.activity_file_data.*
 
 class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClickListener,
@@ -97,7 +102,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         super.initData(savedInstanceState)
         viewModel.start(checkType)
         viewModel.toYcDataEvent.observe(this, EventObserver {
-            runOnUiThread{
+            Log.d("zhangan", Thread.currentThread().name)
+            runOnUiThread {
                 fragmentDataListener.forEach { listener ->
                     listener.onYcDataChange(it)
                 }

@@ -1,12 +1,11 @@
 package com.mr.mf_pd.application.view.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.file.ReadFileDataManager
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
@@ -66,7 +65,7 @@ class FileDataViewModel(
         fileRepository.addYcDataCallback(ycCallback)
     }
 
-    private val ycCallback = object : BaseDataCallback {
+    private val ycCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             if (source.isEmpty()) {
                 _toCleanDataEvent.postValue(Event(Unit))

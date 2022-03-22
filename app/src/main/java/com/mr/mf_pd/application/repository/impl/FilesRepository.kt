@@ -2,10 +2,9 @@ package com.mr.mf_pd.application.repository.impl
 
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.callback.BaseDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
-import com.mr.mf_pd.application.utils.FileTypeUtils
 import io.reactivex.disposables.Disposable
 import java.io.File
 import java.util.*
@@ -80,12 +79,12 @@ interface FilesRepository {
     /**
      * 增加遥测数据的回调
      */
-    fun addYcDataCallback(callback: BaseDataCallback)
+    fun addYcDataCallback(callback: BytesDataCallback)
 
     /**
      * 移除遥测数据回调
      */
-    fun removeYcDataCallback(callback: BaseDataCallback)
+    fun removeYcDataCallback(callback: BytesDataCallback)
 
     /**
      * 获取线性图表数据
