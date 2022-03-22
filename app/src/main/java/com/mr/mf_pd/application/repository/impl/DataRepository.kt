@@ -17,7 +17,7 @@ interface DataRepository {
     /**
      * 获取图表数据
      */
-    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
+    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>>
 
     /**
      * 数据监测

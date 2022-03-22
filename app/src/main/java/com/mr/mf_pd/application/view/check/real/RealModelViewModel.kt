@@ -62,7 +62,7 @@ class RealModelViewModel(
         }
     }
 
-    fun getPhaseData(): ArrayList<HashMap<Int, Float>> {
+    fun getPhaseData(): ArrayList<HashMap<Int, Float?>> {
         if (isFile.value == true) {
             return filesRepository.getPhaseData(1)
         }

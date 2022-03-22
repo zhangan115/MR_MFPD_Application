@@ -18,8 +18,6 @@ import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -42,9 +40,9 @@ class DefaultDataRepository : DataRepository {
 
     var gainValue: MutableLiveData<Vector<Float>> = MutableLiveData(Vector())
 
-    private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var phaseData: ArrayList<HashMap<Int, Float?>> = ArrayList()
 
-    private var realPointData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var realPointData: ArrayList<HashMap<Int, Float?>> = ArrayList()
 
     var realData: ArrayList<PrPsCubeList> = ArrayList()
 
@@ -52,8 +50,8 @@ class DefaultDataRepository : DataRepository {
 
     private var ycDataCallbacks: ArrayList<BaseDataCallback> = ArrayList()
 
-    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
-        val list = ArrayList<HashMap<Int, Float>>()
+    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>> {
+        val list = ArrayList<HashMap<Int, Float?>>()
         if (chartType == 0) {
             if (phaseData.isNotEmpty()) {
                 phaseData.removeFirstOrNull()?.let { list.add(it) }
@@ -99,7 +97,7 @@ class DefaultDataRepository : DataRepository {
         if (realData.isNotEmpty()) {
             prPsCube = realData.lastOrNull()
         }
-        var map: HashMap<Int, Float>? = null
+        var map: HashMap<Int, Float?>? = null
         if (phaseData.isNotEmpty()) {
             map = phaseData.lastOrNull()
         }
@@ -165,7 +163,7 @@ class DefaultDataRepository : DataRepository {
             for (j in 0 until Constants.PRPS_COLUMN) {
                 newValueList.add(null)
             }
-            val newPointList = HashMap<Int, Float>()
+            val newPointList = HashMap<Int, Float?>()
             for (i in 0 until (bytes.size / 6)) {
                 val values = ByteArray(6)
                 System.arraycopy(bytes, 6 * i, values, 0, 6)

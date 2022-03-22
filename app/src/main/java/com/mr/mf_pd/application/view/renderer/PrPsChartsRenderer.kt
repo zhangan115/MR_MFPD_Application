@@ -44,7 +44,6 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
     private val modelMatrix = FloatArray(16)
 
     private val viewMatrix = FloatArray(16)
-    private val viewProjectionMatrix = FloatArray(16)
     private val modelViewProjectionMatrix = FloatArray(16)
 
     @Volatile
@@ -108,7 +107,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     }
 
-    fun addPrpsData(pointValue: HashMap<Int, Float>) {
+    fun addPrpsData(pointValue: HashMap<Int, Float?>) {
         prPsPoints?.addValue(pointValue)
     }
 

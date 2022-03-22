@@ -95,7 +95,7 @@ interface FilesRepository {
     /**
      * 获取图表数据
      */
-    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>>
+    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>>
 
     /**
      * 释放读取文件的操作

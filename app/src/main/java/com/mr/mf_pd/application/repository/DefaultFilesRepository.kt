@@ -72,9 +72,9 @@ class DefaultFilesRepository : FilesRepository {
 
     var gainValue: MutableLiveData<Vector<Float>> = MutableLiveData(Vector())
 
-    private var phaseData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var phaseData: ArrayList<HashMap<Int, Float?>> = ArrayList()
 
-    private var realPointData: ArrayList<HashMap<Int, Float>> = ArrayList()
+    private var realPointData: ArrayList<HashMap<Int, Float?>> = ArrayList()
 
     var realData: ArrayList<PrPsCubeList> = ArrayList()
 
@@ -215,8 +215,8 @@ class DefaultFilesRepository : FilesRepository {
         return gainValue
     }
 
-    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float>> {
-        val list = ArrayList<HashMap<Int, Float>>()
+    override fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>> {
+        val list = ArrayList<HashMap<Int, Float?>>()
         if (chartType == 0) {
             if (phaseData.isNotEmpty()) {
                 list.add(phaseData.removeFirst())
@@ -246,7 +246,7 @@ class DefaultFilesRepository : FilesRepository {
                 for (j in 0 until Constants.PRPS_COLUMN) {
                     newValueList.add(null)
                 }
-                val newPointList = HashMap<Int, Float>()
+                val newPointList = HashMap<Int, Float?>()
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -405,7 +405,7 @@ class DefaultFilesRepository : FilesRepository {
         if (realData.isNotEmpty()) {
             prPsCube = realData.lastOrNull()
         }
-        var map: HashMap<Int, Float>? = null
+        var map: HashMap<Int, Float?>? = null
         if (phaseData.isNotEmpty()) {
             map = phaseData.lastOrNull()
         }
