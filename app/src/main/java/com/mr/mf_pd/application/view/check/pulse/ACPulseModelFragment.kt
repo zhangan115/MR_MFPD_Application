@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.fragment_ac_pulse.*
  */
 class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
+    override var TAG = "ACPulseModelFragment"
+
     private val viewModel by viewModels<ACPulseModelViewModel> { getViewModelFactory() }
 
     companion object {

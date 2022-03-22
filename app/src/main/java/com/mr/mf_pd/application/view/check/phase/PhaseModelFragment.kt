@@ -17,6 +17,8 @@ import java.text.DecimalFormat
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
+    override var TAG = "PhaseModelFragment"
+
     private val viewModel by viewModels<PhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
     var pointChartsRenderer: PointChartsRenderer? = null

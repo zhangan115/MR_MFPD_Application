@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.fragment_ac_flight.*
  */
 class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
+    override var TAG = "ACFlightModelFragment"
+
     private val viewModel by viewModels<ACFlightModelViewModel> { getViewModelFactory() }
     var flightChartsRenderer: FlightChartsRenderer? = null
     private var rendererSet = false

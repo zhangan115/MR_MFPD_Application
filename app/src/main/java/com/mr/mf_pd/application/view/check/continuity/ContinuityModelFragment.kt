@@ -20,6 +20,8 @@ import kotlin.math.min
  */
 class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
+    override var TAG = "ContinuityModelFragment"
+
     private val viewModel by viewModels<ContinuityModelViewModel> { getViewModelFactory() }
 
     companion object {

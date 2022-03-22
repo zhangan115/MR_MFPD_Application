@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.base
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import com.afollestad.materialdialogs.MaterialDialog
@@ -24,7 +25,7 @@ import java.text.DecimalFormat
  * @since 2021-11-28
  */
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
-
+    open var TAG = "BaseCheckFragment"
     var checkActionListener: CheckActivityListener? = null
     var location: String? = null
     private val requestChooseDirCode = 200
@@ -34,6 +35,16 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         super.onCreate(savedInstanceState)
         val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
         setIsFileValue(isFile)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("zhangan", "$TAG onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("zhangan", "$TAG onPause")
     }
 
     abstract fun setIsFileValue(isFile: Boolean?)

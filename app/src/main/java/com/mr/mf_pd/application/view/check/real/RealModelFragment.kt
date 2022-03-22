@@ -26,6 +26,8 @@ import java.text.DecimalFormat
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
+    override var TAG = "RealModelFragment"
+
     private val viewModel by viewModels<RealModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
     var prPsChartsRenderer: PrPsChartsRenderer? = null
