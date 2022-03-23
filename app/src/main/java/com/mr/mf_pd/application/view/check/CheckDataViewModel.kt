@@ -56,7 +56,6 @@ class CheckDataViewModel(
         dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
     }
 
-
     private fun updateSettingValue() {
         settingBean?.let {
             PrpsPoint2DList.maxValue = it.maxValue.toFloat()
@@ -236,7 +235,11 @@ class CheckDataViewModel(
 
     override fun onCleared() {
         super.onCleared()
+
+        SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
+        SocketManager.get().removeCallBack(CommandType.WriteValue, writeSettingDataCallback)
         SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.SwitchPassageway, switchBytesDataCallback)
         dataRepository.closePassageway()
         disposableList.forEach { disposable ->
             if (!disposable.isDisposed) {

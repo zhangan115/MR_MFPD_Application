@@ -3,10 +3,10 @@ package com.mr.mf_pd.application.view.check.flight
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -42,7 +42,6 @@ class ACFlightModelViewModel(
         this.gainValues = dataRepository.getGainValueList()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
-            filesRepository.addDataListener()
         } else {
             this.checkType = dataRepository.getCheckType()
             dataRepository.switchPassageway(checkType.passageway, checkType.commandType)
@@ -162,11 +161,33 @@ class ACFlightModelViewModel(
         }
     }
 
+
+    fun onResume() {
+        if (isFile.value!!) {
+            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+            CheckFileReadManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+        } else {
+            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+        }
+    }
+
+    fun onPause() {
+        if (isFile.value!!) {
+            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+            CheckFileReadManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
+        } else {
+            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+            SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         flightCallback = null
-        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-        SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
     }
 }

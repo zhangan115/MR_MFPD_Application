@@ -1,10 +1,7 @@
 package com.mr.mf_pd.application.view.check.pulse
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.viewModels
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -12,9 +9,9 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
-
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_ac_pulse.*
+import kotlinx.android.synthetic.main.fragment_real.*
 
 /**
  * AC 脉冲波形
@@ -24,7 +21,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override var TAG = "ACPulseModelFragment"
 
     private val viewModel by viewModels<ACPulseModelViewModel> { getViewModelFactory() }
-
+    private var rendererSet = false
     companion object {
 
         fun create(): ACPulseModelFragment {
@@ -77,15 +74,6 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        cleanCurrentData()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-    }
 
     override fun onYcDataChange(bytes: ByteArray) {
 
@@ -101,6 +89,23 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (rendererSet) {
+            surfaceView1.onResume()
+        }
+        viewModel.onResume()
+        cleanCurrentData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (rendererSet) {
+            surfaceView1.onPause()
+        }
+        viewModel.onPause()
     }
 
 }

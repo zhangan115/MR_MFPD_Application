@@ -50,7 +50,7 @@
                 tools:text="内同步，50kHz-300kHz" />
         </LinearLayout>
 
-        <android.opengl.GLSurfaceView
+        <com.mr.mf_pd.application.widget.MRSurfaceView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"

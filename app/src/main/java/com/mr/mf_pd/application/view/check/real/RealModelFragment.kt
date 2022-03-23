@@ -1,12 +1,11 @@
 package com.mr.mf_pd.application.view.check.real
 
+import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
@@ -14,14 +13,12 @@ import com.mr.mf_pd.application.databinding.RealDataBinding
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
-import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
-import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import kotlinx.android.synthetic.main.fragment_phase.*
+import kotlinx.android.synthetic.main.fragment_real.*
 import kotlinx.android.synthetic.main.fragment_real.image1
 import kotlinx.android.synthetic.main.fragment_real.image2
 import kotlinx.android.synthetic.main.fragment_real.image3
@@ -90,6 +87,8 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(prPsChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+        surfaceView1.setZOrderOnTop(true)
+        surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -141,21 +140,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         viewModel.createACheckFile()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (rendererSet) {
-            surfaceView1.onResume()
-        }
-        cleanCurrentData()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (rendererSet) {
-            surfaceView1.onPause()
-        }
-    }
-
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
@@ -190,5 +174,22 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (rendererSet) {
+            surfaceView1.onResume()
+        }
+        viewModel.onResume()
+        cleanCurrentData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (rendererSet) {
+            surfaceView1.onPause()
+        }
+        viewModel.onPause()
     }
 }

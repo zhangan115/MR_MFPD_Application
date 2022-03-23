@@ -1,12 +1,11 @@
 package com.mr.mf_pd.application.view.check.phase
 
+import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
@@ -19,12 +18,6 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
-import kotlinx.android.synthetic.main.fragment_phase.image1
-import kotlinx.android.synthetic.main.fragment_phase.image2
-import kotlinx.android.synthetic.main.fragment_phase.image3
-import kotlinx.android.synthetic.main.fragment_phase.image4
-import kotlinx.android.synthetic.main.fragment_phase.surfaceView1
-import org.greenrobot.eventbus.ThreadMode
 import java.text.DecimalFormat
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
@@ -84,6 +77,8 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 viewModel.checkType.settingBean,
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(pointChartsRenderer)
+        surfaceView1.setZOrderOnTop(true)
+        surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {

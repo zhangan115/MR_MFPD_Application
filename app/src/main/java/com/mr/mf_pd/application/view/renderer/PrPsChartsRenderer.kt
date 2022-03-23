@@ -18,10 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
+class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayList<String>) :
     GLSurfaceView.Renderer {
-
-    var getPrpsValueCallback: GetPrpsValueCallback? = null
 
     @Volatile
     var angleX: Float = -60f
@@ -30,10 +28,10 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
     var angleY: Float = 0f
 
     @Volatile
-    private var textMaps = HashMap<String, ArrayList<String>>()
+    private var textMaps = HashMap<String, CopyOnWriteArrayList<String>>()
 
     @Volatile
-    private var textXZMaps = HashMap<String, ArrayList<String>>()
+    private var textXZMaps = HashMap<String, CopyOnWriteArrayList<String>>()
 
     private val xTextList = listOf("0°", "90°", "180°", "270°", "360°")
     private val yTextList = listOf("0", "10", "20", "30", "40", "50")
@@ -66,14 +64,13 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
-
-        textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
-        textMaps[Constants.KEY_Y_TEXT] = yTextList.toList() as ArrayList<String>
+        textMaps[Constants.KEY_X_TEXT] = CopyOnWriteArrayList<String>(xTextList)
+        textMaps[Constants.KEY_Y_TEXT] = CopyOnWriteArrayList<String>(yTextList)
 
         if (zTextList.isEmpty()) {
-            textXZMaps[Constants.KEY_Z_TEXT] = ArrayList()
+            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList()
         } else {
-            textXZMaps[Constants.KEY_Z_TEXT] = zTextList.toList() as ArrayList<String>
+            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList<String>(zTextList)
         }
 
         prPsPoints = PrpsPointList()
@@ -97,7 +94,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
         MatrixUtils.perspectiveM(
             projectionMatrix, 45f, width.toFloat()
-                    / height.toFloat(), 1f, 8f
+                    / height.toFloat(), 1f, 7f
         )
         Matrix.setLookAtM(
             viewMatrix, 0,
@@ -108,11 +105,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
     }
 
-    fun addPrpsData(pointValue: HashMap<Int, Float?>) {
-        prPsPoints?.addValue(pointValue)
-    }
-
-    fun addPrpsData(prPsList: PrPsCubeList?) {
+    private fun addPrpsData(prPsList: PrPsCubeList?) {
         if (prpsCubeList != null && prPsList != null) {
             for (i in 0 until prpsCubeList!!.size) {
                 prpsCubeList!![i].updateRow(i + 1)
@@ -124,27 +117,21 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
         }
     }
 
-    fun setPrpsData(values: Map<Int, Map<Float, Int>>, prPsList: ArrayList<PrPsCubeList>) {
-        this.prPsPoints?.setValue(values)
-        this.prpsCubeList?.clear()
-        this.prpsCubeList?.addAll(prPsList)
-    }
-
     fun updatePrpsData(values: Map<Int, Map<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
         this.prPsPoints?.setValue(values)
         if (floatList.isEmpty()) {
             cleanData()
-        }else{
+        } else {
             addPrpsData(PrPsCubeList(floatList))
         }
     }
 
-    fun updateYAxis(textList: List<String>) {
+    fun updateYAxis(textList: CopyOnWriteArrayList<String>) {
         if (textList.isEmpty()) {
             textXZMaps[Constants.KEY_Z_TEXT]?.clear()
         } else {
             textXZMaps[Constants.KEY_Z_TEXT]?.clear()
-            textXZMaps[Constants.KEY_Z_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+            textXZMaps[Constants.KEY_Z_TEXT]?.addAll(textList)
         }
     }
 
@@ -175,13 +162,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
         if (cleanPrpsList) {
             prPsPoints?.cleanAllData()
-            prpsCubeList?.clear()
-            cleanPrpsList = false
         } else {
-            prpsCubeList?.forEach {
-                it.bindData(colorPointProgram)
-                it.draw()
-            }
             prPsPoints?.bindData(colorPointProgram)
             prPsPoints?.draw()
         }
@@ -199,6 +180,16 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
 
         textXZHelp.bindXZData(textureProgram)
         textXZHelp.draw()
+
+        if (cleanPrpsList) {
+            prpsCubeList?.clear()
+            cleanPrpsList = false
+        } else {
+            prpsCubeList?.forEach {
+                it.bindData(colorPointProgram)
+                it.draw()
+            }
+        }
         val timeEnd = System.currentTimeMillis()
 //        Log.d("za", "cost time ${timeEnd - timeStart}")
 //        getPrpsValueCallback?.getData()

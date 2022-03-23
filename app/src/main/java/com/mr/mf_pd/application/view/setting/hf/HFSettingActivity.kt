@@ -1,10 +1,14 @@
 package com.mr.mf_pd.application.view.setting.hf
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.viewModels
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.common.eventbus.EventBus
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.HFSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseSettingActivity
@@ -54,7 +58,9 @@ class HFSettingActivity : BaseSettingActivity<HFSettingDataBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.toSave()
-        EventBus().post(viewModel.checkType.settingBean)
+        val intent = Intent(Constants.UPDATE_SETTING)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,viewModel.checkType.settingBean)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
 }

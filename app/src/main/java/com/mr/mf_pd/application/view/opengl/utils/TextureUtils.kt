@@ -10,6 +10,7 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.TextBitmap
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.ArrayList
+import java.util.concurrent.CopyOnWriteArrayList
 
 object TextureUtils {
 
@@ -49,7 +50,7 @@ object TextureUtils {
     }
 
     @JvmStatic
-    fun loadTextureWithText(context: Context, texts: Map<String, ArrayList<String>>): Int {
+    fun loadTextureWithText(context: Context, texts: Map<String, CopyOnWriteArrayList<String>>): Int {
         val textureObjectIds = IntArray(1)
         GLES30.glGenTextures(1, textureObjectIds, 0)
         if (textureObjectIds[0] == 0) {
@@ -74,7 +75,7 @@ object TextureUtils {
 
     private fun createBitmap(
         context: Context,
-        textMaps: Map<String, ArrayList<String>>
+        textMaps: Map<String, CopyOnWriteArrayList<String>>
     ): TextBitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)

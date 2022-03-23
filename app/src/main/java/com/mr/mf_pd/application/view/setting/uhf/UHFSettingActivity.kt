@@ -1,10 +1,14 @@
 package com.mr.mf_pd.application.view.setting.uhf
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.viewModels
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.common.eventbus.EventBus
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.UHFSettingDataBinding
 
 import com.mr.mf_pd.application.utils.getViewModelFactory
@@ -48,6 +52,8 @@ class UHFSettingActivity : BaseSettingActivity<UHFSettingDataBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.toSave()
-        EventBus().post(viewModel.checkType.settingBean)
+        val intent = Intent(Constants.UPDATE_SETTING)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,viewModel.checkType.settingBean)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 }

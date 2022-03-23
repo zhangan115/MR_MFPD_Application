@@ -7,7 +7,7 @@ import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.file.ReadFileDataManager
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
@@ -195,16 +195,7 @@ class DefaultFilesRepository : FilesRepository {
 
 
     override fun addDataListener() {
-        ReadFileDataManager.get().setReadListener(realDataListener)
-        ReadFileDataManager.get().ycDataCallback = ycDataCallback
-    }
 
-    private val ycDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-            ycDataCallbacks.forEach {
-                it.onData(source)
-            }
-        }
     }
 
     override fun getGainValueList(): MutableLiveData<Vector<Float>> {
@@ -356,7 +347,7 @@ class DefaultFilesRepository : FilesRepository {
     }
 
     override fun releaseReadFile() {
-        ReadFileDataManager.get().releaseReadFile()
+        CheckFileReadManager.get().releaseReadFile()
     }
 
     override fun cleanData() {
@@ -377,10 +368,10 @@ class DefaultFilesRepository : FilesRepository {
         realDataMaxValue.postValue(mCheckType.settingBean.maxValue)
         realDataMinValue.postValue(mCheckType.settingBean.minValue)
         checkType.checkParams.postValue(checkParamsBean)
-        ReadFileDataManager.get().setFile(file)
+        CheckFileReadManager.get().setFile(file)
         return Observable.create { emitter: ObservableEmitter<SettingBean?> ->
             try {
-                val str = FileUtils.readStrFromFile(ReadFileDataManager.get().settingFile)
+                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
                 val settingBean = Gson().fromJson(str, SettingBean::class.java)
                 emitter.onNext(settingBean)
             } catch (e: Exception) {

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.file.ReadFileDataManager
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
@@ -50,7 +50,7 @@ class FileDataViewModel(
                 }
                 checkParamsBean = checkType.checkParams
                 fileRepository.addDataListener()
-                ReadFileDataManager.get().startReadData()
+                CheckFileReadManager.get().startReadData()
             }
         })
     }
@@ -72,7 +72,7 @@ class FileDataViewModel(
                 ycDisposable?.dispose()
                 realDisposable?.dispose()
                 isStartReadYcData = false
-                ReadFileDataManager.get().startReadData()
+                CheckFileReadManager.get().startReadData()
             } else {
                 _toYcDataEvent.postValue(Event(source))
             }
@@ -92,7 +92,7 @@ class FileDataViewModel(
     ): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean> ->
             try {
-                ReadFileDataManager.get().readYcDataFromFile()
+                CheckFileReadManager.get().readYcDataFromFile()
                 emitter.onNext(true)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -111,7 +111,7 @@ class FileDataViewModel(
     ): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean> ->
             try {
-                ReadFileDataManager.get().readRealDataFromFile()
+                CheckFileReadManager.get().readRealDataFromFile()
                 emitter.onNext(true)
             } catch (e: Exception) {
                 e.printStackTrace()

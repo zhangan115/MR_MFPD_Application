@@ -14,6 +14,11 @@ import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_continuity.*
+import kotlinx.android.synthetic.main.fragment_continuity.image1
+import kotlinx.android.synthetic.main.fragment_continuity.image2
+import kotlinx.android.synthetic.main.fragment_continuity.image3
+import kotlinx.android.synthetic.main.fragment_continuity.image4
+import kotlinx.android.synthetic.main.fragment_real.*
 import java.text.DecimalFormat
 import kotlin.math.max
 import kotlin.math.min
@@ -209,6 +214,17 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+        cleanCurrentData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
     }
 
     override fun updateSettingBean(settingBean: SettingBean) {

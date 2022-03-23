@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 
 open class RealView : GLSurfaceView {
@@ -53,6 +55,10 @@ open class RealView : GLSurfaceView {
         if (renderer is PrPsChartsRenderer) {
             this.renderer = renderer
         }
+    }
+
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(View.VISIBLE)
     }
 
 }

@@ -154,6 +154,29 @@
                             android:textSize="13sp" />
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/checkParams4Layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="9dp"
+                        android:visibility="invisible">
+
+                        <TextView
+                            android:id="@+id/tempText4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_content_third_color"
+                            android:textSize="13sp"
+                            tools:text="检测频带：" />
+
+                        <TextView
+                            android:id="@+id/tempText4Value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_title"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

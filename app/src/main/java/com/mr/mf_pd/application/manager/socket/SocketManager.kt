@@ -79,18 +79,19 @@ class SocketManager private constructor() {
             var size: Int
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
-                    Log.d("zhangan",
-                        "time is ${System.currentTimeMillis()} read size is $size data byte list size is " + mDataByteList.size.toString())
+                    val startTime = System.currentTimeMillis()
                     if (mDataByteList.isNotEmpty()) {
-                        if (mDataByteList.size > 2000) {
+                        if (mDataByteList.size > 3000) {
+                            Log.e("zhangan", "error data byte list ${mDataByteList.size}")
                             mDataByteList.clear()
                         }
                     }
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
-                    Log.d("zhangan",Bytes.asList(*sources).toString())
                     mDataByteList.addAll(Bytes.asList(*sources))
                     dealStickyBytes()
+//                    Log.d("zhangan",
+//                        "2 cost time " + (System.currentTimeMillis() - startTime).toString())
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mDataByteList.clear()
@@ -123,6 +124,8 @@ class SocketManager private constructor() {
     }
 
     private fun dealStickyBytes() {
+        val startTime = System.currentTimeMillis()
+//        Log.d("zhangan", "3 dealStickyBytes")
         var length = -1
         var commandType: CommandType? = null
         if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
@@ -176,6 +179,10 @@ class SocketManager private constructor() {
                 newList.add(mDataByteList[i])
             }
             mDataByteList = newList
+            val totalTime = System.currentTimeMillis() - startTime
+            if (totalTime > 15) {
+                Log.e("zhangan", "total time is ${totalTime}")
+            }
             if (mDataByteList.size > 0) {
                 dealStickyBytes()
             }
@@ -184,11 +191,14 @@ class SocketManager private constructor() {
 
     private fun handOut(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
+            val startTime = System.currentTimeMillis()
             bytesCallbackMap[commandType]?.forEach {
                 it.onData(source)
             }
+//            Log.d("zhangan","4 callback size is ${bytesCallbackMap[commandType]?.size}")
+//            Log.d("zhangan", "5 handOut cost time is ${System.currentTimeMillis() - startTime}")
         } else {
-            Log.i("zhangan", "commandType is null ")
+            Log.i("zhangan", "6 commandType is null ")
         }
     }
 
@@ -207,6 +217,12 @@ class SocketManager private constructor() {
         } finally {
             socket = null
         }
+    }
+
+    @MainThread
+    @Synchronized
+    fun cleanBytesCallbackMap() {
+        bytesCallbackMap.clear()
     }
 
     /**

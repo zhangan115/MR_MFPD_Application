@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.check.flight
 
+import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
@@ -16,6 +17,13 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.mr.mf_pd.application.view.renderer.FlightChartsRenderer
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
+import kotlinx.android.synthetic.main.fragment_ac_flight.image1
+import kotlinx.android.synthetic.main.fragment_ac_flight.image2
+import kotlinx.android.synthetic.main.fragment_ac_flight.image3
+import kotlinx.android.synthetic.main.fragment_ac_flight.image4
+import kotlinx.android.synthetic.main.fragment_ac_flight.surfaceView1
+import kotlinx.android.synthetic.main.fragment_phase.*
+import kotlinx.android.synthetic.main.fragment_real.*
 
 /**
  * AC 飞行模式
@@ -79,6 +87,8 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(flightChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+        surfaceView1.setZOrderOnTop(true)
+        surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -135,6 +145,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
+        viewModel.onResume()
         cleanCurrentData()
     }
 
@@ -143,6 +154,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
+        viewModel.onPause()
     }
 
     override fun isSaving(): Boolean {

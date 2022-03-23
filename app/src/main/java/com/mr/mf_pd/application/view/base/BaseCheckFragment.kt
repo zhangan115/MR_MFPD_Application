@@ -26,6 +26,7 @@ import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import java.text.DecimalFormat
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 检测类型页面的基类
@@ -160,8 +161,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
     }
 
-    fun getUnitValue(settingBean: SettingBean): ArrayList<String> {
-        val unitList = ArrayList<String>()
+    fun getUnitValue(settingBean: SettingBean): CopyOnWriteArrayList<String> {
+        val unitList = CopyOnWriteArrayList<String>()
         if (settingBean.fzUnit != null) {
             unitList.add(settingBean.fzUnit!!)
         }
@@ -172,8 +173,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         isFile: Boolean,
         settingBean: SettingBean,
         gainMinValue: MutableLiveData<Float?>,
-    ): ArrayList<String> {
-        val yList = ArrayList<String>()
+    ): CopyOnWriteArrayList<String> {
+        val yList = CopyOnWriteArrayList<String>()
         val minValue: Float?
         val maxValue: Float?
         if (settingBean.gdCd != 1) {

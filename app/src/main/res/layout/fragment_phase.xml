@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             app:check_params="@{vm.checkType.checkParams}" />
 
-        <android.opengl.GLSurfaceView
+        <com.mr.mf_pd.application.widget.MRSurfaceView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
             android:layout_height="0dp"

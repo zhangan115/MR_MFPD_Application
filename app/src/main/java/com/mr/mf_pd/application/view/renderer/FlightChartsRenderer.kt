@@ -12,17 +12,18 @@ import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProg
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class FlightChartsRenderer(var context: Context, var yTextList: ArrayList<String>) :
+class FlightChartsRenderer(var context: Context, var yTextList: CopyOnWriteArrayList<String>) :
     GLSurfaceView.Renderer {
 
     private lateinit var chartsLines: Point2DChartLine
     private val textHelp = TextGlHelp()
 
     @Volatile
-    private var textMaps = HashMap<String, ArrayList<String>>()
+    private var textMaps = HashMap<String, CopyOnWriteArrayList<String>>()
     private val xTextList = listOf("0", "5", "10", "15", "20")
 
     private lateinit var textureProgram: TextureShaderProgram
@@ -36,7 +37,7 @@ class FlightChartsRenderer(var context: Context, var yTextList: ArrayList<String
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
-        textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
+        textMaps[Constants.KEY_X_TEXT] = CopyOnWriteArrayList<String>(xTextList)
         textMaps[Constants.KEY_Y_TEXT] = yTextList
         prPsPoints = FlightPoint2DList()
 
@@ -51,12 +52,12 @@ class FlightChartsRenderer(var context: Context, var yTextList: ArrayList<String
         prPsPoints?.setValue(values)
     }
 
-    fun updateYAxis(textList: List<String>) {
+    fun updateYAxis(textList: CopyOnWriteArrayList<String>) {
         if (textList.isEmpty()) {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
         } else {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
-            textMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+            textMaps[Constants.KEY_Y_TEXT]?.addAll(CopyOnWriteArrayList(textList))
         }
     }
 

@@ -39,24 +39,30 @@ class CheckParamsView : LinearLayout {
                 tempText2.text = "检测频带："
                 tempText1Value.text = checkParamsBean.mcCountAttr
                 tempText2Value.text = checkParamsBean.frequencyBandAttr
+                checkParams4Layout.visibility = GONE
             }
             1 -> {
                 tempText1.text = "有效值："
                 tempText2.text = "检测频带："
                 tempText1Value.text = checkParamsBean.effectiveValueAttr
                 tempText2Value.text = checkParamsBean.frequencyBandAttr
+                checkParams4Layout.visibility = VISIBLE
+                tempText4.text = "脉冲数："
+                tempText4Value.text = checkParamsBean.mcCountAttr
             }
             2 -> {
                 tempText1.text = "脉冲数："
                 tempText2.text = "有效值："
                 tempText1Value.text = checkParamsBean.mcCountAttr
                 tempText2Value.text = checkParamsBean.effectiveValueAttr
+                checkParams4Layout.visibility = GONE
             }
             3 -> {
                 tempText1.text = "脉冲数："
                 tempText2.text = ""
                 tempText1Value.text = checkParamsBean.mcCountAttr
                 tempText2Value.text = ""
+                checkParams4Layout.visibility = GONE
             }
         }
     }

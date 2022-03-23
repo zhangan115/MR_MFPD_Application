@@ -2,29 +2,23 @@ package com.mr.mf_pd.application.view.check.phase
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
-import com.mr.mf_pd.application.view.callback.PrPsDataCallback
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.sito.tool.library.utils.SPHelper
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
@@ -52,11 +46,8 @@ class PhaseModelViewModel(
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
-            filesRepository.addDataListener()
         } else {
             this.checkType = dataRepository.getCheckType()
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
@@ -106,19 +97,12 @@ class PhaseModelViewModel(
         this.gainValues.postValue(null)
         this.dataMaps.clear()
         this.gainFloatList.clear()
-        if (isFile.value == true) {
-            filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(null)
-        } else {
-
-        }
-        flightCallback?.flightData(dataMaps)
+        this.flightCallback?.flightData(dataMaps)
     }
 
     override fun onCleared() {
         super.onCleared()
-        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+        this.flightCallback = null
     }
 
 
@@ -214,7 +198,6 @@ class PhaseModelViewModel(
             checkType.checkParams.postValue(checkParamsBean)
             receiverCount = 0
             mcCount = 0
-            maxValue = null
         } else {
             ++receiverCount
         }
@@ -254,10 +237,23 @@ class PhaseModelViewModel(
     }
 
     fun onResume() {
-
+        if (isFile.value!!){
+            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+        }else{
+            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+        }
     }
 
     fun onPause() {
+        if (isFile.value!!){
+            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+        }else{
+            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+        }
 
     }
 
