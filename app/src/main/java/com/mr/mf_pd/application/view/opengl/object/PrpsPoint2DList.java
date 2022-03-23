@@ -51,30 +51,6 @@ public class PrpsPoint2DList {
         color3.add(1f);
     }
 
-    /**
-     * 增加数据
-     *
-     * @param map 增加的数据
-     */
-    public void addValue(Map<Integer, Float> map) {
-        Set<Map.Entry<Integer, Float>> entrySet = map.entrySet();
-        for (Map.Entry<Integer, Float> entry : entrySet) {
-            if (values.containsKey(entry.getKey())) {
-                if (values.get(entry.getKey()).containsKey(entry.getValue())) {
-                    int count = values.get(entry.getKey()).get(entry.getValue());
-                    values.get(entry.getKey()).put(entry.getValue(), count + 1);
-                } else {
-                    values.get(entry.getKey()).put(entry.getValue(), 1);
-                }
-            } else {
-                Map<Float, Integer> newMap = new HashMap<>();
-                newMap.put(entry.getValue(), 1);
-                values.put(entry.getKey(), newMap);
-            }
-        }
-        createVertexBuffer(this.values);
-    }
-
     public void setValue(Map<Integer, Map<Float, Integer>> map) {
         createVertexBuffer(map);
     }

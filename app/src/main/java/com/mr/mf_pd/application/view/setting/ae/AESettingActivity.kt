@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.view.setting.ae
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.viewModels
+import com.google.common.eventbus.EventBus
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACSettingDataBinding
 import com.mr.mf_pd.application.utils.getViewModelFactory
@@ -45,5 +46,6 @@ class AESettingActivity : BaseSettingActivity<ACSettingDataBinding>() {
     override fun onPause() {
         super.onPause()
         viewModel.toSave()
+        EventBus().post(viewModel.checkType.settingBean)
     }
 }

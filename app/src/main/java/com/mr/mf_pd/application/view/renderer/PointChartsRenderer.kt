@@ -16,9 +16,12 @@ import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>) :
+class PointChartsRenderer(
+    var context: Context,
+    var unit: ArrayList<String>,
+    var yTextList: ArrayList<String>,
+) :
     GLSurfaceView.Renderer {
-    var getPrpsValueCallback: GetPrpsValueCallback? = null
 
     private lateinit var chartsLines: Point2DChartLine
     private val textHelp = TextGlHelp()
@@ -38,8 +41,6 @@ class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
-        val unit = ArrayList<String>()
-        unit.add("dBm")
         textMaps[Constants.KEY_UNIT] = unit
         textMaps[Constants.KEY_X_TEXT] = xTextList.toList() as ArrayList<String>
         textMaps[Constants.KEY_Y_TEXT] = yTextList
@@ -52,27 +53,23 @@ class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>
         chartsLines = Point2DChartLine(4, 4, 90)
     }
 
-    fun addPrpsData(pointValue: HashMap<Int, Float?>) {
-        prPsPoints?.addValue(pointValue)
-    }
-
-    fun updateYAxis(textList: List<String>) {
+    fun updateYAxis(unit: ArrayList<String>, textList: ArrayList<String>) {
+        if (unit.isEmpty()) {
+            textMaps[Constants.KEY_UNIT]?.clear()
+        } else {
+            textMaps[Constants.KEY_UNIT]?.clear()
+            textMaps[Constants.KEY_UNIT]?.addAll(unit)
+        }
         if (textList.isEmpty()) {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
         } else {
             textMaps[Constants.KEY_Y_TEXT]?.clear()
-            textMaps[Constants.KEY_Y_TEXT]?.addAll(textList.toList() as ArrayList<String>)
+            textMaps[Constants.KEY_Y_TEXT]?.addAll(textList)
         }
     }
 
-    fun updateXAxis(textList: List<String>) {
-        textMaps.remove(Constants.KEY_UNIT)
-        if (textList.isEmpty()) {
-            textMaps[Constants.KEY_X_TEXT]?.clear()
-        } else {
-            textMaps[Constants.KEY_X_TEXT]?.clear()
-            textMaps[Constants.KEY_X_TEXT]?.addAll(textList.toList() as ArrayList<String>)
-        }
+    fun setFlightData(values: Map<Int, Map<Float, Int>>) {
+        prPsPoints?.setValue(values)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -105,12 +102,6 @@ class PointChartsRenderer(var context: Context, var yTextList: ArrayList<String>
 
         textHelp.bindData(textureProgram)
         textHelp.draw()
-
-        getPrpsValueCallback?.getData()
-    }
-
-    fun cleanData() {
-        prPsPoints?.cleanAllData()
     }
 
 }

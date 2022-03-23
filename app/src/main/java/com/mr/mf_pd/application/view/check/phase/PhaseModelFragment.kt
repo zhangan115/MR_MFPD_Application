@@ -1,18 +1,30 @@
 package com.mr.mf_pd.application.view.check.phase
 
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
-import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
 import kotlinx.android.synthetic.main.fragment_phase.*
+import kotlinx.android.synthetic.main.fragment_phase.image1
+import kotlinx.android.synthetic.main.fragment_phase.image2
+import kotlinx.android.synthetic.main.fragment_phase.image3
+import kotlinx.android.synthetic.main.fragment_phase.image4
+import kotlinx.android.synthetic.main.fragment_phase.surfaceView1
+import org.greenrobot.eventbus.ThreadMode
 import java.text.DecimalFormat
 
 class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
@@ -43,27 +55,36 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun initData() {
-
+        if (viewModel.checkType.settingBean.gdCd == 1) {
+            viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
+        } else {
+            if (viewModel.isFile.value!!) {
+                viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
+            } else {
+                viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
+            }
+        }
+        viewModel.setFlightCallback(object : FlightDataCallback {
+            override fun flightData(data: HashMap<Int, HashMap<Float, Int>>) {
+                pointChartsRenderer?.setFlightData(data)
+                pointChartsRenderer?.updateYAxis(getUnitValue(viewModel.checkType.settingBean),
+                    getYAxisValue(viewModel.isFile.value!!,
+                        viewModel.checkType.settingBean,
+                        viewModel.gainMinValue))
+                surfaceView1.requestRender()
+            }
+        })
     }
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         pointChartsRenderer = PointChartsRenderer(this.requireContext(),
+            getUnitValue(viewModel.checkType.settingBean),
             getYAxisValue(viewModel.isFile.value!!,
                 viewModel.checkType.settingBean,
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(pointChartsRenderer)
-        pointChartsRenderer?.getPrpsValueCallback =
-            object : GetPrpsValueCallback {
-                override fun getData() {
-                    pointChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-                        viewModel.checkType.settingBean,
-                        viewModel.gainMinValue))
-                    viewModel.getPhaseData().forEach {
-                        pointChartsRenderer?.addPrpsData(it)
-                    }
-                }
-            }
+        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -116,6 +137,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
+        viewModel.onResume()
         cleanCurrentData()
     }
 
@@ -124,6 +146,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
+        viewModel.onPause()
     }
 
     override fun onYcDataChange(bytes: ByteArray) {
@@ -142,7 +165,6 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun cleanCurrentData() {
-        pointChartsRenderer?.cleanData()
         viewModel.cleanCurrentData()
     }
 
@@ -160,6 +182,10 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun setIsFileValue(isFile: Boolean?) {
         viewModel.isFile.value = isFile
+    }
+
+    override fun updateSettingBean(settingBean: SettingBean) {
+        viewModel.checkType.settingBean = settingBean
     }
 
 }

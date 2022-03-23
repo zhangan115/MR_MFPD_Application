@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -178,7 +179,7 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
         }else{
             fzUnitStr.postValue(checkType.defaultUnit)
         }
-        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
+        SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
         val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
         SocketManager.get()
             .sendData(readSettingCommand)
@@ -313,7 +314,7 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
+        SocketManager.get().removeCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
     }
 
 }

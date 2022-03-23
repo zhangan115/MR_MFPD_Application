@@ -5,6 +5,8 @@ import android.opengl.GLES30;
 import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -81,10 +83,69 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float  zTopPosition = 0 + (entry2.getKey() - minValue) / (maxValue - minValue) * 1.7f;
+                float zTopPosition = 0 + (entry2.getKey() - minValue) / (maxValue - minValue) * 1.7f;
                 float startX = -1 + Constants.PRPS_SPACE + stepX * entry1.getKey();
                 vertexPointList.add(startX);
-                vertexPointList.add(1- Constants.PRPS_SPACE);
+                vertexPointList.add(1 - Constants.PRPS_SPACE);
+                vertexPointList.add(zTopPosition);
+                if (entry2.getValue() < 10) {
+                    colorList.addAll(color3);
+                } else if (entry2.getValue() >= 10 && entry2.getValue() <= 20) {
+                    colorList.addAll(color2);
+                } else {
+                    colorList.addAll(color1);
+                }
+                count++;
+            }
+        }
+        float[] vertexPoints = new float[vertexPointList.size()];
+        float[] colors = new float[vertexPointList.size()];
+        indices = new short[vertexPointList.size() / VERTEX_POSITION_SIZE];
+        for (int i = 0; i < vertexPointList.size(); i++) {
+            vertexPoints[i] = vertexPointList.get(i);
+            colors[i] = colorList.get(i);
+        }
+        for (int i = 0; i < indicesList.size(); i++) {
+            indices[i] = indicesList.get(i);
+        }
+        //分配内存空间,每个浮点型占4字节空间
+        vertexBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        //传入指定的坐标数据
+        vertexBuffer.put(vertexPoints);
+        vertexBuffer.position(0);
+
+        //分配内存空间,每个浮点型占4字节空间
+        colorBuffer = ByteBuffer.allocateDirect(colors.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        //传入指定的数据
+        colorBuffer.put(colors);
+        colorBuffer.position(0);
+    }
+
+
+    /**
+     * 设置数据
+     *
+     * @param map 数据
+     */
+    public void setValue(Map<Integer, Map<Float, Integer>> map) {
+        this.values = map;
+        List<Float> vertexPointList = new ArrayList<>();
+        List<Float> colorList = new ArrayList<>();
+        List<Short> indicesList = new ArrayList<>();
+        Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
+        short count = 0;
+        for (Map.Entry<Integer, Map<Float, Integer>> entry1 : entrySet1) {
+            Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
+            for (Map.Entry<Float, Integer> entry2 : entrySet2) {
+                indicesList.add(count);
+                float zTopPosition = (entry2.getKey() - minValue) / (maxValue - minValue) * (2.0f - 2 * Constants.PRPS_SPACE);
+                float startX = -1 + Constants.PRPS_SPACE + stepX * entry1.getKey();
+                vertexPointList.add(startX);
+                vertexPointList.add(1 - Constants.PRPS_SPACE);
                 vertexPointList.add(zTopPosition);
                 if (entry2.getValue() < 10) {
                     colorList.addAll(color3);

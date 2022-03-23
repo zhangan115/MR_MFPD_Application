@@ -75,17 +75,20 @@ class SocketManager private constructor() {
             for (i in linkStateListeners!!.indices) {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
-            bytesCallbackMap.clear()
-            val buf = ByteArray(1024 * 4)
+            val buf = ByteArray(1024 * 4 * 2)
             var size: Int
-            mDataByteList.clear()
             while (inputStream!!.read(buf).also { size = it } != -1) {
                 try {
+                    Log.d("zhangan",
+                        "time is ${System.currentTimeMillis()} read size is $size data byte list size is " + mDataByteList.size.toString())
                     if (mDataByteList.isNotEmpty()) {
-                        Log.d("zhangan", mDataByteList.size.toString())
+                        if (mDataByteList.size > 2000) {
+                            mDataByteList.clear()
+                        }
                     }
                     val sources = ByteArray(size)
                     System.arraycopy(buf, 0, sources, 0, size)
+                    Log.d("zhangan",Bytes.asList(*sources).toString())
                     mDataByteList.addAll(Bytes.asList(*sources))
                     dealStickyBytes()
                 } catch (e: Exception) {
@@ -198,6 +201,7 @@ class SocketManager private constructor() {
             inputStream?.close()
             outputStream?.close()
             linkStateListeners?.clear()
+            mDataByteList.clear()
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {

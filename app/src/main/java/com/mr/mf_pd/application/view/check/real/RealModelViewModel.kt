@@ -1,19 +1,31 @@
 package com.mr.mf_pd.application.view.check.real
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.view.callback.PrPsDataCallback
+import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import java.io.File
+import java.text.DecimalFormat
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.max
+import kotlin.math.min
 
 class RealModelViewModel(
     val dataRepository: DataRepository,
@@ -27,7 +39,15 @@ class RealModelViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
+    //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
+
+    //点数据
+    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+
+    //圆柱数据
+    var prPsDataCallback: PrPsDataCallback? = null
+
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -59,23 +79,141 @@ class RealModelViewModel(
         }
     }
 
+
+    var receiverCount = 0
+    var mcCount = 0
+    var maxValue: Float? = null
+    var maxGainValue: Float? = null
+    var minValue: Float? = null
+
+    var gainFloatList = Vector<Float>()
+
+
     private fun dealRealData(source: ByteArray) {
-
-    }
-
-    fun addHUfData(callback: DataCallback) {
-        if (isFile.value == true) {
-            filesRepository.addHufData(callback)
+        val bytes = ByteArray(source.size - 7)
+        System.arraycopy(source, 5, bytes, 0, source.size - 7)
+        val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
+        for (j in 0 until Constants.PRPS_COLUMN) {
+            newValueList.add(null)
+        }
+        for (i in 0 until (bytes.size / 6)) {
+            val values = ByteArray(6)
+            System.arraycopy(bytes, 6 * i, values, 0, 6)
+            val row = values[0].toInt()//周期，暂不使用
+            val column = values[1].toInt()
+            val height = ByteArray(4)
+            System.arraycopy(values, 2, height, 0, 4)
+            val f = ByteUtil.getFloat(height)
+            maxValue = if (maxValue == null) {
+                f
+            } else {
+                max(f, maxValue!!)
+            }
+            maxGainValue = if (maxGainValue == null) {
+                f
+            } else {
+                max(f, maxGainValue!!)
+            }
+            minValue = if (minValue == null) {
+                f
+            } else {
+                min(f, minValue!!)
+            }
+            //根据设置处理数据
+            val setting = checkType.settingBean
+            //处理固定尺度
+            val value = dealMaxAndMinValue(setting, f)
+            //处理偏移量
+            val py = setting.xwPy
+            val off: Int = if (py in 1..359) {
+                val pyValue = (py / 3.6f).toInt()
+                if (column + pyValue > 99) {
+                    column + pyValue - 100
+                } else {
+                    column + pyValue
+                }
+            } else {
+                column
+            }
+            if (off < Constants.PRPS_COLUMN && off >= 0) {
+                newValueList[off] = value
+                if (dataMaps.containsKey(column)) {
+                    val map = dataMaps[column]
+                    if (map != null && map.containsKey(value)) {
+                        val value1 = map[value]
+                        if (value1 != null) {
+                            map[value] = value1 + 1
+                        }
+                    } else {
+                        map?.set(value, 1)
+                    }
+                } else {
+                    val newMap: HashMap<Float, Int> = HashMap()
+                    newMap[value] = 1
+                    dataMaps[column] = newMap
+                }
+            } else {
+                Log.d("zhangan", "数据相位异常：$column")
+            }
+            mcCount++
+        }
+        if (receiverCount % 5 == 0) {
+            if (maxGainValue != null) {
+                gainFloatList.add(maxGainValue!!)
+            }
+            if (gainFloatList.size > checkType.settingBean.ljTime * 10) {
+                gainFloatList.removeFirstOrNull()
+            }
+            gainValues.postValue(gainFloatList)
+            maxGainValue = null
+        }
+        if (receiverCount == 50) { //一秒钟刷新一次数据
+            val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
+            if (maxValue != null) {
+                val df1 = DecimalFormat("0.00")
+                checkParamsBean?.fzAttr = df1.format(maxValue) + checkType.settingBean.fzUnit
+            }
+            checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
+            checkType.checkParams.postValue(checkParamsBean)
+            receiverCount = 0
+            mcCount = 0
+            maxValue = null
         } else {
-            dataRepository.addHufData(callback)
+            ++receiverCount
         }
+        prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
     }
 
-    fun getPhaseData(): ArrayList<HashMap<Int, Float?>> {
-        if (isFile.value == true) {
-            return filesRepository.getPhaseData(1)
+    private fun dealMaxAndMinValue(
+        setting: SettingBean,
+        f: Float,
+    ): Float {
+        var value = f
+        if (setting.gdCd == 1) {
+            if (f > setting.maxValue) {
+                value = setting.maxValue.toFloat()
+            } else if (f < setting.minValue) {
+                value = setting.minValue.toFloat()
+            }
+        } else {
+            if (DefaultDataRepository.realDataMaxValue.value != null) {
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
+                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
+                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            }
+            if (DefaultDataRepository.realDataMinValue.value != null) {
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
+                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
+                    DefaultDataRepository.realDataMinValue.postValue(minValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
+            }
         }
-        return dataRepository.getPhaseData(1)
+        return value
     }
 
     fun startSaveData() {
@@ -99,8 +237,16 @@ class RealModelViewModel(
 
 
     fun cleanCurrentData() {
-        dataRepository.getGainValueList().postValue(Vector())
-        dataRepository.cleanData()
+        this.gainValues.postValue(null)
+        this.dataMaps.clear()
+        this.gainFloatList.clear()
+        if (isFile.value == true) {
+            filesRepository.cleanData()
+            filesRepository.getGainValueList().postValue(null)
+        } else {
+
+        }
+        prPsDataCallback?.prpsDataChange(this.dataMaps,CopyOnWriteArrayList())
     }
 
     override fun onCleared() {

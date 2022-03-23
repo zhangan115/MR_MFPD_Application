@@ -2,13 +2,16 @@ package com.mr.mf_pd.application.view.check.phase
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
@@ -17,6 +20,7 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.sito.tool.library.utils.SPHelper
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
@@ -33,7 +37,7 @@ class PhaseModelViewModel(
     lateinit var checkType: CheckType
 
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
-    var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
+    var gainMinValue: MutableLiveData<Float?> = MutableLiveData()//图表的最低值
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
@@ -41,6 +45,8 @@ class PhaseModelViewModel(
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
+
+    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -71,10 +77,10 @@ class PhaseModelViewModel(
         }
     }
 
-    private var prpsCallback: PrPsDataCallback? = null
+    private var flightCallback: FlightDataCallback? = null
 
-    fun setPrpsCallback(callback: PrPsDataCallback) {
-        prpsCallback = callback
+    fun setFlightCallback(callback: FlightDataCallback) {
+        flightCallback = callback
     }
 
     fun setCheckFile(filePath: String) {
@@ -88,13 +94,6 @@ class PhaseModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
-    fun getPhaseData(): ArrayList<HashMap<Int, Float?>> {
-        if (isFile.value == true) {
-            return filesRepository.getPhaseData(0)
-        }
-        return dataRepository.getPhaseData(0)
-    }
-
     fun startSaveData() {
         filesRepository.startSaveData()
     }
@@ -104,16 +103,16 @@ class PhaseModelViewModel(
     }
 
     fun cleanCurrentData() {
-        val list = Vector<Float>()
+        this.gainValues.postValue(null)
+        this.dataMaps.clear()
+        this.gainFloatList.clear()
         if (isFile.value == true) {
-            this.gainValues.postValue(list)
             filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(list)
+            filesRepository.getGainValueList().postValue(null)
         } else {
-            this.gainValues.postValue(list)
-            dataRepository.cleanData()
-            dataRepository.getGainValueList().postValue(list)
+
         }
+        flightCallback?.flightData(dataMaps)
     }
 
     override fun onCleared() {
@@ -122,33 +121,19 @@ class PhaseModelViewModel(
         SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
     }
 
-    var checkParamsBean: CheckParamsBean? = null
+
     var receiverCount = 0
     var mcCount = 0
     var maxValue: Float? = null
     var maxGainValue: Float? = null
     var minValue: Float? = null
 
-    @Volatile
     var gainFloatList = Vector<Float>()
-    var gainValue: MutableLiveData<Vector<Float>> = MutableLiveData(Vector())
-    private var phaseData: ArrayList<java.util.HashMap<Int, Float?>> = ArrayList()
 
-    private var flightCallback: FlightDataCallback? = null
-
-    fun setFlightCallback(callback: FlightDataCallback) {
-        flightCallback = callback
-    }
 
     private fun dealRealData(source: ByteArray) {
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
-
-        val newValueList: java.util.ArrayList<Float?> = java.util.ArrayList()
-        for (j in 0 until Constants.PRPS_COLUMN) {
-            newValueList.add(null)
-        }
-        val newPointList = java.util.HashMap<Int, Float?>()
         for (i in 0 until (bytes.size / 6)) {
             val values = ByteArray(6)
             System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -157,7 +142,6 @@ class PhaseModelViewModel(
             val height = ByteArray(4)
             System.arraycopy(values, 2, height, 0, 4)
             val f = ByteUtil.getFloat(height)
-            var value = f
             maxValue = if (maxValue == null) {
                 f
             } else {
@@ -176,30 +160,7 @@ class PhaseModelViewModel(
             //根据设置处理数据
             val setting = checkType.settingBean
             //处理固定尺度
-            if (setting.gdCd == 1) {
-                if (f > setting.maxValue) {
-                    value = setting.maxValue.toFloat()
-                } else if (f < setting.minValue) {
-                    value = setting.minValue.toFloat()
-                }
-            } else {
-                if (DefaultDataRepository.realDataMaxValue.value != null) {
-                    val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
-                    if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
-                        DefaultDataRepository.realDataMaxValue.postValue(maxValue)
-                    }
-                } else {
-                    DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
-                }
-                if (DefaultDataRepository.realDataMinValue.value != null) {
-                    val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
-                    if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
-                        DefaultDataRepository.realDataMinValue.postValue(minValue)
-                    }
-                } else {
-                    DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
-                }
-            }
+            val value = dealMaxAndMinValue(setting, f)
             //处理偏移量
             val py = setting.xwPy
             val off: Int = if (py in 1..359) {
@@ -213,28 +174,41 @@ class PhaseModelViewModel(
                 column
             }
             if (off < Constants.PRPS_COLUMN && off >= 0) {
-                newValueList[off] = value
-                newPointList[off] = value
+                if (dataMaps.containsKey(column)) {
+                    val map = dataMaps[column]
+                    if (map != null && map.containsKey(value)) {
+                        val value1 = map[value]
+                        if (value1 != null) {
+                            map[value] = value1 + 1
+                        }
+                    } else {
+                        map?.set(value, 1)
+                    }
+                } else {
+                    val newMap: HashMap<Float, Int> = HashMap()
+                    newMap[value] = 1
+                    dataMaps[column] = newMap
+                }
             } else {
                 Log.d("zhangan", "数据相位异常：$column")
             }
             mcCount++
         }
-        phaseData.add(newPointList)
         if (receiverCount % 5 == 0) {
             if (maxGainValue != null) {
                 gainFloatList.add(maxGainValue!!)
             }
             if (gainFloatList.size > checkType.settingBean.ljTime * 10) {
-                gainFloatList.removeFirst()
+                gainFloatList.removeFirstOrNull()
             }
-            gainValue.postValue(gainFloatList)
+            gainValues.postValue(gainFloatList)
             maxGainValue = null
         }
         if (receiverCount == 50) { //一秒钟刷新一次数据
+            val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
             if (maxValue != null) {
                 val df1 = DecimalFormat("0.00")
-                checkParamsBean?.fzAttr = "${df1.format(maxValue)}dBm"
+                checkParamsBean?.fzAttr = df1.format(maxValue) + checkType.settingBean.fzUnit
             }
             checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
             checkType.checkParams.postValue(checkParamsBean)
@@ -244,6 +218,47 @@ class PhaseModelViewModel(
         } else {
             ++receiverCount
         }
+        flightCallback?.flightData(dataMaps)
+    }
+
+    private fun dealMaxAndMinValue(
+        setting: SettingBean,
+        f: Float,
+    ): Float {
+        var value = f
+        if (setting.gdCd == 1) {
+            if (f > setting.maxValue) {
+                value = setting.maxValue.toFloat()
+            } else if (f < setting.minValue) {
+                value = setting.minValue.toFloat()
+            }
+        } else {
+            if (DefaultDataRepository.realDataMaxValue.value != null) {
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
+                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
+                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            }
+            if (DefaultDataRepository.realDataMinValue.value != null) {
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
+                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
+                    DefaultDataRepository.realDataMinValue.postValue(minValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
+            }
+        }
+        return value
+    }
+
+    fun onResume() {
+
+    }
+
+    fun onPause() {
+
     }
 
 }

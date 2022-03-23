@@ -12,7 +12,7 @@ object GainChartAdapter {
     )
     fun bindGainValue(
         view: GainChartView,
-        values: Vector<Float>,
+        values: Vector<Float>?,
         minValue:Float?
     ) {
         view.updateData(values,minValue)

@@ -102,6 +102,10 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
 
     abstract fun setViewModel(dataBinding: T?)
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+    }
+
     /**
      * 查找颜色
      */

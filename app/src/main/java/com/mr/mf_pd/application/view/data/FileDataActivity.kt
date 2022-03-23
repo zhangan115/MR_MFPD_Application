@@ -79,11 +79,9 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
             }
         })
         viewModel.toCleanDataEvent.observe(this, EventObserver {
-            runOnUiThread {
-                fragmentDataListener.forEach { listener ->
-                    if (listener.isAdd())
-                        listener.cleanCurrentData()
-                }
+            fragmentDataListener.forEach { listener ->
+                if (listener.isAdd())
+                    listener.cleanCurrentData()
             }
         })
         val fileTypeNameStr =

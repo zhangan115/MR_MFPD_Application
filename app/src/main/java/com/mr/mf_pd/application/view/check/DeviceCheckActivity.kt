@@ -13,6 +13,7 @@ import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -62,6 +63,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     private fun linkToDevice() {
         SocketManager.get().releaseRequest()
         SocketManager.get().initLink()
+        SocketManager.get().addCallBack(CommandType.SendTime, sendTimeCallback)
         SocketManager.get().addLinkStateListeners {
             if (it == Constants.LINK_SUCCESS) {
                 //一分钟一次的连接对时，保证数据接通
@@ -73,18 +75,19 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
                 SocketManager.get().releaseRequest()
             }
         }
-        SocketManager.get().sendTimeCallback = object : BytesDataCallback {
-            override fun onData(source: ByteArray) {
-                if (isShowTips) {
-                    return
-                }
-                isShowTips = true
-                //解决不断上传的问题，对时成功后先关闭采集通道
-                val close = CommandHelp.closePassageway()
-                SocketManager.get().sendData(close)
-                runOnUiThread {
-                    ToastAdapter.bindToast(uhfDataLayout, "设备连接成功")
-                }
+    }
+
+    private val sendTimeCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (isShowTips) {
+                return
+            }
+            isShowTips = true
+            //解决不断上传的问题，对时成功后先关闭采集通道
+            val close = CommandHelp.closePassageway()
+            SocketManager.get().sendData(close)
+            runOnUiThread {
+                ToastAdapter.bindToast(uhfDataLayout, "设备连接成功")
             }
         }
     }
@@ -104,6 +107,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         disposable?.dispose()
+        SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
         SocketManager.get().releaseRequest()
     }
 }

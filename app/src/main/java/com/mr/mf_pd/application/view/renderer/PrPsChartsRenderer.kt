@@ -14,6 +14,7 @@ import com.mr.mf_pd.application.view.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
+import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -47,7 +48,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
     private val modelViewProjectionMatrix = FloatArray(16)
 
     @Volatile
-    private var prpsCubeList: ArrayList<PrPsCubeList>? = ArrayList()
+    private var prpsCubeList: CopyOnWriteArrayList<PrPsCubeList>? = CopyOnWriteArrayList()
 
     @Volatile
     var cleanPrpsList = false
@@ -123,6 +124,21 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
         }
     }
 
+    fun setPrpsData(values: Map<Int, Map<Float, Int>>, prPsList: ArrayList<PrPsCubeList>) {
+        this.prPsPoints?.setValue(values)
+        this.prpsCubeList?.clear()
+        this.prpsCubeList?.addAll(prPsList)
+    }
+
+    fun updatePrpsData(values: Map<Int, Map<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
+        this.prPsPoints?.setValue(values)
+        if (floatList.isEmpty()) {
+            cleanData()
+        }else{
+            addPrpsData(PrPsCubeList(floatList))
+        }
+    }
+
     fun updateYAxis(textList: List<String>) {
         if (textList.isEmpty()) {
             textXZMaps[Constants.KEY_Z_TEXT]?.clear()
@@ -185,7 +201,7 @@ class PrPsChartsRenderer(var context: Context, var zTextList: List<String>) :
         textXZHelp.draw()
         val timeEnd = System.currentTimeMillis()
 //        Log.d("za", "cost time ${timeEnd - timeStart}")
-        getPrpsValueCallback?.getData()
+//        getPrpsValueCallback?.getData()
     }
 
     private fun position() {

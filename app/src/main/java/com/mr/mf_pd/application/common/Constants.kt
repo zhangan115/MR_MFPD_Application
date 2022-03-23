@@ -9,6 +9,8 @@ object Constants {
 
     const val PRPS_SPACE = 0.15f
 
+    const val UPDATE_SETTING = "update_setting"
+
     var indices = shortArrayOf(
         0, 3, 2, 0, 2, 1,
         0, 1, 5, 0, 5, 4,
@@ -52,14 +54,14 @@ object Constants {
     )
 
     var blueColors = floatArrayOf(
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
-        0f, 0f, 1f, 1f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
+        0f, 0f, 1f, 0.7f,
     )
 
     var redColors = floatArrayOf(
@@ -74,14 +76,14 @@ object Constants {
     )
 
     var greenColors = floatArrayOf(
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
-        0f, 1f, 0f, 1f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
+        0f, 1f, 0f, 0.7f,
     )
 
     var indicesList = shortArrayOf()

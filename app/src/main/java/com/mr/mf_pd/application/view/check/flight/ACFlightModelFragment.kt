@@ -4,8 +4,11 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
@@ -152,6 +155,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     override fun isAdd(): Boolean {
         return isAdded
+    }
+
+    override fun updateSettingBean(settingBean: SettingBean) {
+        viewModel.checkType.settingBean = settingBean
     }
 
 }

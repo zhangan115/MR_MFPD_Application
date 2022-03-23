@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
@@ -25,18 +26,20 @@ class CheckDataViewModel(
     private val dataRepository: DataRepository,
     private val settingRepository: SettingRepository,
 ) : ViewModel() {
+    lateinit var mCheckType: CheckType
     var writeSetting = false
-    var writeSettingCommand: ByteArray? = null
     var toastStr: MutableLiveData<String> = MutableLiveData()
-    private val disposableList = ArrayList<Disposable>()
-    var settingBean: SettingBean? = null
+    private var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     val settingValues: ArrayList<Float> = ArrayList()
-    private var disposable: Disposable? = null
-    lateinit var mCheckType: CheckType
+
+    var switchCommand: ByteArray? = null
+    var writeSettingCommand: ByteArray? = null
 
     private val _toYcDataEvent = MutableLiveData<Event<ByteArray>>()
     val toYcDataEvent: LiveData<Event<ByteArray>> = _toYcDataEvent
+
+    private val disposableList = ArrayList<Disposable>()
 
     fun start(checkType: CheckType) {
         mCheckType = checkType
@@ -44,27 +47,15 @@ class CheckDataViewModel(
         dataRepository.setCheckType(checkType)
         checkParamsBean = checkType.checkParams
         updateSettingValue()
-        SocketManager.get().addReadSettingCallback(readSettingDataCallback)
-        SocketManager.get().ycDataCallback = object : BytesDataCallback {
-            override fun onData(source: ByteArray) {
-                _toYcDataEvent.postValue(Event(source))
-            }
-        }
-        openPassageway()
+        SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
+        SocketManager.get().addCallBack(CommandType.WriteValue, writeSettingDataCallback)
+        SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().addCallBack(CommandType.SwitchPassageway, switchBytesDataCallback)
+
+        switchCommand = CommandHelp.switchPassageway(mCheckType.passageway, mCheckType.commandType)
+        dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
     }
 
-    private fun openPassageway() {
-        val command = CommandHelp.switchPassageway(mCheckType.passageway, mCheckType.commandType)
-        dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
-        SocketManager.get().addWriteSettingCallback(writeSettingDataCallback)
-        SocketManager.get().openPassageway = object : BytesDataCallback {
-            override fun onData(source: ByteArray) {
-                if (source.contentEquals(command)) {
-                    readYcValue()
-                }
-            }
-        }
-    }
 
     private fun updateSettingValue() {
         settingBean?.let {
@@ -83,9 +74,7 @@ class CheckDataViewModel(
     }
 
     private fun readYcValue() {
-        if (disposable == null) {
-            disposable = dataRepository.readRepeatData()
-        }
+        disposableList.add(dataRepository.readRepeatData())
     }
 
     fun updateCallback() {
@@ -231,8 +220,23 @@ class CheckDataViewModel(
         }
     }
 
+    private val ycBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            _toYcDataEvent.postValue(Event(source))
+        }
+    }
+
+    private val switchBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (source.contentEquals(switchCommand)) {
+                readYcValue()
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
+        SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
         dataRepository.closePassageway()
         disposableList.forEach { disposable ->
             if (!disposable.isDisposed) {
@@ -240,9 +244,5 @@ class CheckDataViewModel(
             }
         }
         disposableList.clear()
-        disposable?.dispose()
-        disposable = null
-        SocketManager.get().removeReadSettingCallback(readSettingDataCallback)
-        SocketManager.get().openPassageway = null
     }
 }

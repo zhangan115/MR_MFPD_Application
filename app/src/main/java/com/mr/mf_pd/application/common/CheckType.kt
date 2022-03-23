@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
-import java.io.File
 
 enum class CheckType(
     val passageway: Int,//通道号

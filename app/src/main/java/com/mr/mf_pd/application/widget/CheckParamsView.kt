@@ -29,11 +29,11 @@ class CheckParamsView : LinearLayout {
         inflate(context, R.layout.layout_check_params, this)
     }
 
-    fun setData(checkParamsBean: CheckParamsBean) {
-        fzTextValue.text = checkParamsBean.fzAttr
-        plText.text = checkParamsBean.hzAttr
-        tbStateText.text = checkParamsBean.phaseAttr
-        when (checkParamsBean.passageway) {
+    fun setData(checkParamsBean: CheckParamsBean?) {
+        fzTextValue.text = checkParamsBean?.fzAttr
+        plText.text = checkParamsBean?.hzAttr
+        tbStateText.text = checkParamsBean?.phaseAttr
+        when (checkParamsBean?.passageway) {
             0 -> {
                 tempText1.text = "脉冲数："
                 tempText2.text = "检测频带："

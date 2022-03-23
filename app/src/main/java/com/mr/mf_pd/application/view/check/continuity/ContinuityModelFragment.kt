@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
@@ -206,6 +209,11 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun cancelSaveData() {
         viewModel.isSaveData?.postValue(false)
+    }
+
+    override fun updateSettingBean(settingBean: SettingBean) {
+        viewModel.checkType.settingBean = settingBean
+        viewModel.updateTitle(settingBean)
     }
 
 }

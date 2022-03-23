@@ -11,6 +11,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 3D 展示PrPs一组立方体
@@ -22,19 +23,17 @@ public class PrPsCubeList {
     public static float minValue = -80.0f;
     public static float maxValue = -20.0f;
 
-    private ArrayList<Float> values;
+    private CopyOnWriteArrayList<Float> values;
     private PrPsColorPointShaderProgram colorProgram;
 
     public static final float stepX = (1 - Constants.PRPS_SPACE
             + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
     public static final float stepY = (1 - Constants.PRPS_SPACE
             + 1 - Constants.PRPS_SPACE) / Constants.PRPS_ROW;
-    public static final float h = (1 - Constants.PRPS_SPACE
-            + 1 - Constants.PRPS_SPACE) / 2.0f;
 
     //默认数据
 
-    public PrPsCubeList(ArrayList<Float> height) {
+    public PrPsCubeList(CopyOnWriteArrayList<Float> height) {
         appPrPsCubeList(height);
     }
 
@@ -43,8 +42,7 @@ public class PrPsCubeList {
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * 1.7f;
-//                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
+                zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - Constants.PRPS_SPACE * 2);
             }
             float startX = -1 + Constants.PRPS_SPACE + stepX * i;
             float startY = -1 + Constants.PRPS_SPACE + stepY * row;
@@ -72,15 +70,14 @@ public class PrPsCubeList {
 
     private FloatBuffer vertexBuffer, colorBuffer;
 
-    private void appPrPsCubeList(ArrayList<Float> values) {
+    private void appPrPsCubeList(CopyOnWriteArrayList<Float> values) {
         this.values = values;
         float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
         float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
         for (int i = 0; i < values.size(); i++) {
             float zTopPosition = 0;
             if (values.get(i) != null) {
-                zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * 1.7f;
-//                zTopPosition = 1 - (values.get(i) / (bottomValue / 2));
+                zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - Constants.PRPS_SPACE * 2);
             }
             float startX = -1 + Constants.PRPS_SPACE + stepX * i;
             float startY = -1 + Constants.PRPS_SPACE;

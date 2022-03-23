@@ -6,6 +6,7 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -36,18 +37,31 @@ class ContinuityModelViewModel(
     var f2MinValue: MutableLiveData<String> = MutableLiveData()
     var f2Value: MutableLiveData<String> = MutableLiveData()
 
+    var text1: MutableLiveData<String> = MutableLiveData()
+    var text2: MutableLiveData<String> = MutableLiveData()
+    var text3: MutableLiveData<String> = MutableLiveData()
+    var text4: MutableLiveData<String> = MutableLiveData()
+
     lateinit var checkType: CheckType
 
     fun start() {
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
             filesRepository.addDataListener()
-        }else{
+        } else {
             this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
+        updateTitle(checkType.settingBean)
+    }
+
+    fun updateTitle(settingBean: SettingBean) {
+        text1.postValue("有效值，" + settingBean.fzUnit)
+        text2.postValue("峰值，" + settingBean.fzUnit)
+        text3.postValue("F1(50Hz)，" + settingBean.fzUnit)
+        text4.postValue("F2(100Hz)，" + settingBean.fzUnit)
     }
 
     private val ycBytesDataCallback = object : BytesDataCallback {

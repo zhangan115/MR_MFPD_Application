@@ -13,7 +13,7 @@ object CheckParamsAdapter {
     )
     fun bindCheckParams(
         view: CheckParamsView,
-        type: CheckParamsBean
+        type: CheckParamsBean?
     ) {
         view.setData(type)
     }

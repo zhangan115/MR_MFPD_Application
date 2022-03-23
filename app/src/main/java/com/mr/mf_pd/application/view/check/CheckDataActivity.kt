@@ -102,11 +102,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         super.initData(savedInstanceState)
         viewModel.start(checkType)
         viewModel.toYcDataEvent.observe(this, EventObserver {
-            Log.d("zhangan", Thread.currentThread().name)
-            runOnUiThread {
-                fragmentDataListener.forEach { listener ->
-                    listener.onYcDataChange(it)
-                }
+            fragmentDataListener.forEach { listener ->
+                listener.onYcDataChange(it)
             }
         })
     }

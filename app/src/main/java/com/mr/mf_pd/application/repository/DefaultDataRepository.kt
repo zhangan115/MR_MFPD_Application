@@ -216,12 +216,14 @@ class DefaultDataRepository : DataRepository {
                 }
                 mcCount++
             }
+
+
             phaseData.add(newPointList)
             realPointData.add(newPointList)
             if (realData.size == Constants.PRPS_ROW) {
                 realData.removeFirst()
             }
-            realData.add(PrPsCubeList(newValueList))
+//            realData.add(PrPsCubeList(newValueList))
             if (receiverCount % 5 == 0) {
                 if (maxGainValue != null) {
                     gainFloatList.add(maxGainValue!!)

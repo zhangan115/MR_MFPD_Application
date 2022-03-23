@@ -1,15 +1,23 @@
 package com.mr.mf_pd.application.view.base
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -30,6 +38,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     var location: String? = null
     private val requestChooseDirCode = 200
     var isOpenFromFile = false
+    private var settingBeanBr: SettingChangeBr? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,6 +147,25 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         if (activity is BaseCheckActivity<*> && activity is CheckActivityListener) {
             checkActionListener = activity as CheckActivityListener
         }
+        settingBeanBr = SettingChangeBr()
+        val filler = IntentFilter(Constants.UPDATE_SETTING)
+        LocalBroadcastManager.getInstance(requireActivity())
+            .registerReceiver(settingBeanBr!!, filler)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (settingBeanBr != null) {
+            LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(settingBeanBr!!)
+        }
+    }
+
+    fun getUnitValue(settingBean: SettingBean): ArrayList<String> {
+        val unitList = ArrayList<String>()
+        if (settingBean.fzUnit != null) {
+            unitList.add(settingBean.fzUnit!!)
+        }
+        return unitList
     }
 
     fun getYAxisValue(
@@ -211,5 +239,18 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             }
         }
         return valueList
+    }
+
+    abstract fun updateSettingBean(settingBean: SettingBean)
+
+    private inner class SettingChangeBr : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val settingBean = intent?.getParcelableExtra<SettingBean>(ConstantStr.KEY_BUNDLE_OBJECT)
+            if (settingBean != null) {
+                updateSettingBean(settingBean)
+            }
+        }
+
     }
 }

@@ -3,8 +3,11 @@ package com.mr.mf_pd.application.view.check.pulse
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.viewModels
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.LineChartUtils
@@ -94,6 +97,10 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun isAdd(): Boolean {
         return isAdded
+    }
+
+    override fun updateSettingBean(settingBean: SettingBean) {
+        viewModel.checkType.settingBean = settingBean
     }
 
 }

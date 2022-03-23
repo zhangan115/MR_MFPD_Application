@@ -85,9 +85,16 @@ class GainChartView : LinearLayout {
         dataSet.highLightColor = context.getColor(R.color.colorTransparent)
     }
 
-    fun updateData(list: Vector<Float>, minValue: Float?) {
-        lineChart.data = getLineData(list, minValue)
-        lineChart.invalidate()
+    fun updateData(list: Vector<Float>?, minValue: Float?) {
+        if (list != null) {
+            lineChart.data = getLineData(list, minValue)
+            lineChart.invalidate()
+        } else {
+            num1.text = null
+            num2.text = null
+            num3.text = null
+            lineChart.clear()
+            lineChart.invalidate()
+        }
     }
-
 }

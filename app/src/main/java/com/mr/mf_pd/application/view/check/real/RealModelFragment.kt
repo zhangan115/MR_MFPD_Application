@@ -1,21 +1,27 @@
 package com.mr.mf_pd.application.view.check.real
 
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
+import kotlinx.android.synthetic.main.fragment_phase.*
 import kotlinx.android.synthetic.main.fragment_real.image1
 import kotlinx.android.synthetic.main.fragment_real.image2
 import kotlinx.android.synthetic.main.fragment_real.image3
@@ -23,6 +29,7 @@ import kotlinx.android.synthetic.main.fragment_real.image4
 import kotlinx.android.synthetic.main.fragment_real.image5
 import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 import java.text.DecimalFormat
+import java.util.concurrent.CopyOnWriteArrayList
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
@@ -34,10 +41,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     companion object {
 
-        fun create(isFile:Boolean): RealModelFragment {
+        fun create(isFile: Boolean): RealModelFragment {
             val fragment = RealModelFragment()
             val bundle = Bundle()
-            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN,isFile)
+            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN, isFile)
             fragment.arguments = bundle
             return fragment
         }
@@ -52,40 +59,37 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun initData() {
-        if (viewModel.checkType.settingBean.gdCd == 1){
+        if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
-        }else{
+        } else {
             if (viewModel.isFile.value!!) {
                 viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
             } else {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
+        viewModel.prPsDataCallback = object : PrPsDataCallback {
+            override fun prpsDataChange(
+                data: HashMap<Int, HashMap<Float, Int>>,
+                cubeList: CopyOnWriteArrayList<Float?>,
+            ) {
+                prPsChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
+                    viewModel.checkType.settingBean,
+                    viewModel.gainMinValue))
+                prPsChartsRenderer?.updatePrpsData(data, cubeList)
+                surfaceView1.requestRender()
+            }
+        }
     }
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        prPsChartsRenderer = PrPsChartsRenderer(this.requireContext(), getYAxisValue(viewModel.isFile.value!!,
-            viewModel.checkType.settingBean,
-            viewModel.gainMinValue))
+        prPsChartsRenderer =
+            PrPsChartsRenderer(this.requireContext(), getYAxisValue(viewModel.isFile.value!!,
+                viewModel.checkType.settingBean,
+                viewModel.gainMinValue))
         surfaceView1.setRenderer(prPsChartsRenderer)
-        prPsChartsRenderer?.getPrpsValueCallback =
-            object : GetPrpsValueCallback {
-                override fun getData() {
-                    prPsChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-                        viewModel.checkType.settingBean,
-                        viewModel.gainMinValue))
-                    viewModel.getPhaseData().forEach {
-                        prPsChartsRenderer?.addPrpsData(it)
-                    }
-                    viewModel.addHUfData(object : DataCallback {
-
-                        override fun addData(map: HashMap<Int, Float?>, prPsCube: PrPsCubeList) {
-                            prPsChartsRenderer?.addPrpsData(prPsCube)
-                        }
-                    })
-                }
-            }
+        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -117,9 +121,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-        if (viewModel.checkType == CheckType.UHF){
+        if (viewModel.checkType == CheckType.UHF) {
             image5.visibility = View.VISIBLE
-        }else{
+        } else {
             image5.visibility = View.GONE
         }
         rendererSet = true
@@ -129,7 +133,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         dataBinding?.vm = viewModel
     }
 
-    override fun setCheckFile(str:String) {
+    override fun setCheckFile(str: String) {
         viewModel.setCheckFile(str)
     }
 
@@ -184,4 +188,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         viewModel.isFile.value = isFile
     }
 
+    override fun updateSettingBean(settingBean: SettingBean) {
+        viewModel.checkType.settingBean = settingBean
+    }
 }

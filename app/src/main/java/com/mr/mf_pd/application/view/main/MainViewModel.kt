@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.main
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.Constants
@@ -22,10 +23,9 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
                     list.add(short.toShort())
                 }
             }
-
             Constants.indicesList = list.toShortArray()
+            Log.d("zhangan",Constants.indicesList.size.toString())
         }
-
     }
 
 }

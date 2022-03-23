@@ -88,7 +88,7 @@ object TextureUtils {
         p.isAntiAlias = true
         p.color = context.getColor(R.color.text_title)
         p.typeface = typeface
-        p.textSize = DisplayUtil.sp2px(context, 12f).toFloat()
+        p.textSize = DisplayUtil.sp2px(context, 10f).toFloat()
         DisplayUtil.px2dip(context, height.toFloat())
         //绘制字体 画Z轴数据的时候 只画Z轴的数据
         if (textMaps.containsKey(Constants.KEY_Z_TEXT)){
@@ -106,7 +106,9 @@ object TextureUtils {
             textMaps.entries.forEach {
                 when (it.key) {
                     Constants.KEY_UNIT -> {
-                        canvas.drawText(it.value[0], 10f, 30f, p)
+                        if (it.value.size == 1){
+                            canvas.drawText(it.value.first(), 5f, 30f, p)
+                        }
                     }
                     Constants.KEY_X_TEXT -> {
                         for (i in 0 until it.value.size) {
@@ -117,7 +119,75 @@ object TextureUtils {
                             canvas.drawText(
                                 it.value[i],
                                 (i * step + start),
-                                height - (rect.height()).toFloat(),
+                                height - 2 * rect.height().toFloat(),
+                                p
+                            )
+                        }
+                    }
+                    Constants.KEY_Y_TEXT -> {
+                        for (i in 0 until it.value.size) {
+                            val rect = Rect()
+                            p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
+                            val start = 0.15f * height / 2
+                            val step = height * 17 / 20 / (it.value.size -1)
+                            canvas.drawText(it.value[i], 5f, (step * i + start) + rect.height() / 2, p)
+                        }
+                    }
+                }
+            }
+        }
+        return TextBitmap(bitmap)
+    }
+
+
+    private fun createBitmap1(
+        context: Context,
+        textMaps: Map<String, ArrayList<String>>
+    ): TextBitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        //背景颜色
+        canvas.drawColor(Color.TRANSPARENT)
+        val p = Paint()
+        //字体设置
+        val fontType = "宋体"
+        val typeface = Typeface.create(fontType, Typeface.NORMAL)
+        //消除锯齿
+        p.isAntiAlias = true
+        p.color = context.getColor(R.color.text_title)
+        p.typeface = typeface
+        p.textSize = DisplayUtil.sp2px(context, 10f).toFloat()
+        DisplayUtil.px2dip(context, height.toFloat())
+        //绘制字体 画Z轴数据的时候 只画Z轴的数据
+        if (textMaps.containsKey(Constants.KEY_Z_TEXT)){
+            val value = textMaps[Constants.KEY_Z_TEXT]
+            if (value != null) {
+                for (i in 0 until value.size) {
+                    val rect = Rect()
+                    p.getTextBounds(value[i], 0, value[i].length, rect)
+                    val start = 0f + rect.height()
+                    val step = (height - rect.height()) / (value.size -1)
+                    canvas.drawText(value[i], 0f, (step * i + start) , p)
+                }
+            }
+        }else{
+            textMaps.entries.forEach {
+                when (it.key) {
+                    Constants.KEY_UNIT -> {
+                        if (it.value.size == 1){
+                            canvas.drawText(it.value.first(), 5f, 30f, p)
+                        }
+                    }
+                    Constants.KEY_X_TEXT -> {
+                        for (i in 0 until it.value.size) {
+                            val rect = Rect()
+                            p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
+                            val start = 0.15f * width / 2 - rect.width()/2
+                            val step = width * 17 / 20 / (it.value.size -1)
+                            canvas.drawText(
+                                it.value[i],
+                                (i * step + start),
+                                height - 2 * rect.height().toFloat(),
                                 p
                             )
                         }
