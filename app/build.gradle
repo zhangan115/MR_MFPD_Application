@@ -9,13 +9,13 @@ android {
 
     signingConfigs {
         debug {
-            keyAlias 'sito'
+            keyAlias 'mr'
             keyPassword '123456'
             storeFile file('../sito_check.jks')
             storePassword '123456'
         }
         relealse {
-            keyAlias 'sito'
+            keyAlias 'mr'
             keyPassword '123456'
             storeFile file('../sito_check.jks')
             storePassword '123456'
@@ -40,7 +40,7 @@ android {
         mf_pd_default {
             applicationId "com.mr.mf_pd.application"
             dimension "default"
-            resValue "string", "app_name", "MR Smart-PD"
+            resValue "string", "app_name", "MRs-M4Plus"
             buildConfigField "String", "UMENG_CHANNEL", '"defaultChannel"'
             buildConfigField "String", "UMENG_APP_KEY", '"6229fb9c317aa877608ff261"'
             manifestPlaceholders = [

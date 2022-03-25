@@ -97,7 +97,6 @@ class ContinuityModelViewModel(
     }
 
     fun cleanCurrentData() {
-        dataRepository.cleanData()
         fzValueList.clear()
         yxValueList.clear()
         f1ValueList.clear()

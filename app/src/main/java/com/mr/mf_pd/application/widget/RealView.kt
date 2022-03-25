@@ -57,8 +57,8 @@ open class RealView : GLSurfaceView {
         }
     }
 
-    override fun onWindowVisibilityChanged(visibility: Int) {
-        super.onWindowVisibilityChanged(View.VISIBLE)
-    }
+//    override fun onWindowVisibilityChanged(visibility: Int) {
+//        super.onWindowVisibilityChanged(View.VISIBLE)
+//    }
 
 }

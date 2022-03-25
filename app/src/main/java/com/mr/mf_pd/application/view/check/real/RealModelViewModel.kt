@@ -89,6 +89,7 @@ class RealModelViewModel(
         for (j in 0 until Constants.PRPS_COLUMN) {
             newValueList.add(null)
         }
+        var startTime = System.currentTimeMillis()
         for (i in 0 until (bytes.size / 6)) {
             val values = ByteArray(6)
             System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -150,6 +151,8 @@ class RealModelViewModel(
             }
             mcCount++
         }
+        Log.d("zhangan", "1 deal data time is ${System.currentTimeMillis() - startTime}")
+        startTime = System.currentTimeMillis()
         if (receiverCount % 5 == 0) {
             if (maxGainValue != null) {
                 gainFloatList.add(maxGainValue!!)
@@ -174,6 +177,7 @@ class RealModelViewModel(
         } else {
             ++receiverCount
         }
+        Log.d("zhangan", "2 deal data time is ${System.currentTimeMillis() - startTime}")
         prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
     }
 
@@ -233,13 +237,7 @@ class RealModelViewModel(
         this.gainValues.postValue(null)
         this.dataMaps.clear()
         this.gainFloatList.clear()
-        if (isFile.value == true) {
-            filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(null)
-        } else {
-
-        }
-        prPsDataCallback?.prpsDataChange(this.dataMaps,CopyOnWriteArrayList())
+        prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
     }
 
     override fun onCleared() {
@@ -248,20 +246,20 @@ class RealModelViewModel(
     }
 
     fun onResume() {
-        if (isFile.value!!){
+        if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-        }else{
+        } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
     fun onPause() {
-        if (isFile.value!!){
+        if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-        }else{
+        } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }

@@ -40,7 +40,7 @@ class PhaseModelViewModel(
 
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
-    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+    var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -62,6 +62,7 @@ class PhaseModelViewModel(
     private val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
+            flightCallback?.flightData(dataMaps)
             if (filesRepository.isSaveData()?.value == true) {
                 filesRepository.toSaveRealData2File(source)
             }
@@ -116,6 +117,7 @@ class PhaseModelViewModel(
 
 
     private fun dealRealData(source: ByteArray) {
+        if (source.isEmpty()) return
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         for (i in 0 until (bytes.size / 6)) {
@@ -201,7 +203,6 @@ class PhaseModelViewModel(
         } else {
             ++receiverCount
         }
-        flightCallback?.flightData(dataMaps)
     }
 
     private fun dealMaxAndMinValue(
@@ -237,20 +238,20 @@ class PhaseModelViewModel(
     }
 
     fun onResume() {
-        if (isFile.value!!){
+        if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-        }else{
+        } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
     fun onPause() {
-        if (isFile.value!!){
+        if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-        }else{
+        } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }

@@ -54,6 +54,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="nosensor"
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar.Splash"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

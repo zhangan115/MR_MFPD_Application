@@ -21,6 +21,19 @@
         <item name="background">@color/colorWhite</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.Splash" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/gray</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="background">@color/gray</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="popEnterAnim">@anim/slide_in_left</item>
+        <item name="popExitAnim">@anim/slide_out_right</item>
+        <item name="exitAnim">@anim/slide_out_left</item>
+        <item name="enterAnim">@anim/slide_in_right</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

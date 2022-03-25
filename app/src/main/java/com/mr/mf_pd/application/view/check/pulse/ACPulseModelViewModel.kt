@@ -26,13 +26,9 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun start() {
-        this.gainValues = dataRepository.getGainValueList()
-        this.gainValues = dataRepository.getGainValueList()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
-            filesRepository.addDataListener()
         } else {
-            this.gainValues = dataRepository.getGainValueList()
             this.checkType = dataRepository.getCheckType()
         }
     }

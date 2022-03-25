@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
@@ -40,7 +41,9 @@ class FileDataViewModel(
     fun start(checkType: CheckType, file: File) {
         mCheckType = checkType
         dataRepository.setCheckType(checkType)
-        setReadYcValueListener()
+
+        CheckFileReadManager.get().addCallBack(CommandType.ReadYcData,ycCallback)
+
         fileRepository.openCheckFile(checkType, file, object : ReadSettingCallback {
             override fun onSettingBean(settingBean: SettingBean) {
                 mCheckType.settingBean = settingBean
@@ -49,7 +52,6 @@ class FileDataViewModel(
                     fileRepository.setCurrentClickFile(checkDir)
                 }
                 checkParamsBean = checkType.checkParams
-                fileRepository.addDataListener()
                 CheckFileReadManager.get().startReadData()
             }
         })
@@ -60,10 +62,6 @@ class FileDataViewModel(
 
     private val _toCleanDataEvent = MutableLiveData<Event<Unit>>()
     val toCleanDataEvent: LiveData<Event<Unit>> = _toCleanDataEvent
-
-    private fun setReadYcValueListener() {
-        fileRepository.addYcDataCallback(ycCallback)
-    }
 
     private val ycCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
@@ -112,6 +110,7 @@ class FileDataViewModel(
         return Observable.create { emitter: ObservableEmitter<Boolean> ->
             try {
                 CheckFileReadManager.get().readRealDataFromFile()
+                CheckFileReadManager.get().readFlightDataFromFile()
                 emitter.onNext(true)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -127,7 +126,7 @@ class FileDataViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        fileRepository.removeYcDataCallback(ycCallback)
+        CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData,ycCallback)
         disposable?.dispose()
         disposable = null
         ycDisposable?.dispose()

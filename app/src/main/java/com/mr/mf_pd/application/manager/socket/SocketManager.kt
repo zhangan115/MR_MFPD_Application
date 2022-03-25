@@ -24,6 +24,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
@@ -40,6 +41,9 @@ class SocketManager private constructor() {
         LinkedHashMap()
 
     private var socket: Socket? = null
+
+    //开辟100K的存储空间 用来保存数据
+    private val dataBuffer = ByteArray(1024 * 100)
 
     companion object {
         private const val DEVICE_NO = 1
@@ -75,11 +79,12 @@ class SocketManager private constructor() {
             for (i in linkStateListeners!!.indices) {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
-            val buf = ByteArray(1024 * 4 * 2)
             var size: Int
-            while (inputStream!!.read(buf).also { size = it } != -1) {
+            var startTime = System.currentTimeMillis()
+            while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
                 try {
-                    val startTime = System.currentTimeMillis()
+                    val s = System.currentTimeMillis()
+                    Log.i("zhangan", "read data size is $size")
                     if (mDataByteList.isNotEmpty()) {
                         if (mDataByteList.size > 3000) {
                             Log.e("zhangan", "error data byte list ${mDataByteList.size}")
@@ -87,11 +92,12 @@ class SocketManager private constructor() {
                         }
                     }
                     val sources = ByteArray(size)
-                    System.arraycopy(buf, 0, sources, 0, size)
+                    System.arraycopy(dataBuffer, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
                     dealStickyBytes()
-//                    Log.d("zhangan",
-//                        "2 cost time " + (System.currentTimeMillis() - startTime).toString())
+                    Log.i("zhangan", "cost time is ${System.currentTimeMillis() - s}ms")
+                    Log.i("zhangan", "total time is ${System.currentTimeMillis() - startTime}ms")
+                    startTime = System.currentTimeMillis()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mDataByteList.clear()
@@ -103,20 +109,12 @@ class SocketManager private constructor() {
         } finally {
             try {
                 mDataByteList.clear()
-                mDataByteList.clear()
                 isConnected = false
-                if (inputStream != null) {
-                    inputStream!!.close()
-                }
-                if (outputStream != null) {
-                    outputStream!!.close()
-                }
-                if (socket != null) {
-                    socket!!.close()
-                }
-                for (i in linkStateListeners!!.indices) {
-                    linkStateListeners!![i].onLinkState(Constants.LINK_FAIL)
-                }
+                inputStream?.close()
+                outputStream?.close()
+                socket?.close()
+                linkStateListeners?.forEach { it.onLinkState(Constants.LINK_FAIL) }
+                Log.d("zhangan", "socket close")
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -125,7 +123,6 @@ class SocketManager private constructor() {
 
     private fun dealStickyBytes() {
         val startTime = System.currentTimeMillis()
-//        Log.d("zhangan", "3 dealStickyBytes")
         var length = -1
         var commandType: CommandType? = null
         if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
@@ -172,8 +169,14 @@ class SocketManager private constructor() {
             }
         }
         if (length > 0 && length <= mDataByteList.size) {
+//            val map = HashMap<CommandType, LinkedList<ByteArray>>()
+//            var position = 0
+//            while (position < mDataByteList.size) {
+//                val list = mDataByteList.subList(position, length)
+//
+//            }
             val list = mDataByteList.subList(0, length)
-            handOut(commandType, Bytes.toArray(list))
+            commandCallback(commandType, Bytes.toArray(list))
             val newList = LinkedList<Byte>()
             for (i in length until mDataByteList.size) {
                 newList.add(mDataByteList[i])
@@ -181,7 +184,7 @@ class SocketManager private constructor() {
             mDataByteList = newList
             val totalTime = System.currentTimeMillis() - startTime
             if (totalTime > 15) {
-                Log.e("zhangan", "total time is ${totalTime}")
+                Log.e("zhangan", "total time is $totalTime")
             }
             if (mDataByteList.size > 0) {
                 dealStickyBytes()
@@ -189,16 +192,11 @@ class SocketManager private constructor() {
         }
     }
 
-    private fun handOut(commandType: CommandType?, source: ByteArray) {
+    private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
-            val startTime = System.currentTimeMillis()
             bytesCallbackMap[commandType]?.forEach {
                 it.onData(source)
             }
-//            Log.d("zhangan","4 callback size is ${bytesCallbackMap[commandType]?.size}")
-//            Log.d("zhangan", "5 handOut cost time is ${System.currentTimeMillis() - startTime}")
-        } else {
-            Log.i("zhangan", "6 commandType is null ")
         }
     }
 

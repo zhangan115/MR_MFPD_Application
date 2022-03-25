@@ -2,14 +2,9 @@ package com.mr.mf_pd.application.repository.impl
 
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.repository.callback.DataCallback
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import io.reactivex.disposables.Disposable
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 interface FilesRepository {
 
@@ -72,41 +67,8 @@ interface FilesRepository {
     fun getCheckType(): CheckType
 
     /**
-     * 数据监测
-     */
-    fun addDataListener()
-
-    /**
-     * 增加遥测数据的回调
-     */
-    fun addYcDataCallback(callback: BytesDataCallback)
-
-    /**
-     * 移除遥测数据回调
-     */
-    fun removeYcDataCallback(callback: BytesDataCallback)
-
-    /**
-     * 获取线性图表数据
-     */
-    fun getGainValueList(): MutableLiveData<Vector<Float>>
-
-    /**
-     * 获取图表数据
-     */
-    fun getPhaseData(chartType: Int): ArrayList<HashMap<Int, Float?>>
-
-    /**
      * 释放读取文件的操作
      */
     fun releaseReadFile()
-
-
-    /**
-     * 清理数据
-     */
-    fun cleanData()
-
-    fun addHufData(callback: DataCallback)
 
 }

@@ -85,10 +85,7 @@ class CheckFileReadManager {
     private fun getCallback(commandType: CommandType): LinkedList<BytesDataCallback> {
         val list = LinkedList<BytesDataCallback>()
         if (bytesCallbackMap.containsKey(commandType)) {
-            val bytesDataCallbacks = bytesCallbackMap[commandType]
-            if (bytesDataCallbacks.isNullOrEmpty()) {
-                return bytesDataCallbacks!!
-            }
+            bytesCallbackMap[commandType]?.let { list.addAll(it) }
         }
         return list
     }

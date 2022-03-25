@@ -27,11 +27,10 @@ class ACFlightModelViewModel(
     var timeStr: MutableLiveData<String> = MutableLiveData()
     var synchronizationModel: MutableLiveData<String> = MutableLiveData("内同步，50kHz-300kHz")
     var gainLevelStr: MutableLiveData<String> = MutableLiveData("20dB")
-    var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
-    lateinit var gainValues: MutableLiveData<Vector<Float>>
     lateinit var checkType: CheckType
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
+    var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
 
     private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
@@ -39,7 +38,6 @@ class ACFlightModelViewModel(
     var receiverCount = 0
 
     fun start() {
-        this.gainValues = dataRepository.getGainValueList()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
         } else {
@@ -152,12 +150,8 @@ class ACFlightModelViewModel(
         val list = Vector<Float>()
         if (isFile.value == true) {
             this.gainValues.postValue(list)
-            filesRepository.cleanData()
-            filesRepository.getGainValueList().postValue(list)
         } else {
             this.gainValues.postValue(list)
-            dataRepository.cleanData()
-            dataRepository.getGainValueList().postValue(list)
         }
     }
 
