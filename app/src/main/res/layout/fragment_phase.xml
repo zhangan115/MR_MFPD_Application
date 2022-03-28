@@ -27,17 +27,16 @@
         <com.mr.mf_pd.application.widget.MRSurfaceView
             android:id="@+id/surfaceView1"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="400dp" />
 
         <LinearLayout
+            android:id="@+id/phaseActionLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:id="@+id/phaseActionLayout"
-            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}"
             android:layout_marginBottom="10dp"
-            android:gravity="end">
+            android:gravity="end"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
             <ImageView
                 android:id="@+id/image1"

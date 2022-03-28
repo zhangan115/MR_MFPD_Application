@@ -71,9 +71,9 @@ object TextureUtils {
         )
 
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
-        val bitmap = createBitmap(context, texts).bitmap
-        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
-        bitmap.recycle()
+//        val bitmap = createBitmap(context, texts)
+//        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
+//        bitmap.recycle()
         GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
         return textureObjectIds[0]
@@ -99,9 +99,45 @@ object TextureUtils {
         )
 
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
-        val bitmap = createBitmap(p, textRect, texts).bitmap
-        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
-        bitmap.recycle()
+//        val bitmap = createBitmap(p, textRect, texts).bitmap
+//        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
+//        bitmap.recycle()
+        GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
+        return textureObjectIds[0]
+    }
+
+    @JvmStatic
+    fun loadTextureWithText(
+        p: Paint,
+        textRect: TextRectInOpenGl,
+        texts: ConcurrentHashMap<String, CopyOnWriteArrayList<String>>,
+        textureId: Int,
+        bitmap: Bitmap?,
+    ): Int {
+        val oldTextureObjectIds = IntArray(1)
+        oldTextureObjectIds[0] = textureId
+        GLES30.glDeleteTextures(1, oldTextureObjectIds, 0)
+        val textureObjectIds = IntArray(1)
+        GLES30.glGenTextures(1, textureObjectIds, 0)
+        if (textureObjectIds[0] == 0) {
+            Log.d(TAG, "could not generate a openGl texture object.")
+            return 0
+        }
+        GLES30.glDeleteTextures(1, textureObjectIds, 0)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureObjectIds[0])
+        GLES30.glTexParameteri(
+            GLES30.GL_TEXTURE_2D,
+            GLES30.GL_TEXTURE_MIN_FILTER,
+            GLES30.GL_LINEAR_MIPMAP_LINEAR
+        )
+
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
+        if (bitmap != null) {
+            createBitmap(p, textRect, texts, bitmap)
+            GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
+//            bitmap.recycle()
+        }
         GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
         return textureObjectIds[0]
@@ -110,8 +146,8 @@ object TextureUtils {
     private fun createBitmap(
         context: Context,
         textMaps: Map<String, CopyOnWriteArrayList<String>>,
-    ): TextBitmap {
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap: Bitmap,
+    ) {
         val canvas = Canvas(bitmap)
         //背景颜色
         canvas.drawColor(Color.TRANSPARENT)
@@ -174,7 +210,6 @@ object TextureUtils {
                 }
             }
         }
-        return TextBitmap(bitmap)
     }
 
     /**
@@ -186,10 +221,8 @@ object TextureUtils {
         p: Paint,
         textRect: TextRectInOpenGl,
         textMaps: ConcurrentHashMap<String, CopyOnWriteArrayList<String>>,
-    ): TextBitmap {
-        val bitmap = Bitmap.createBitmap(width,
-            height,
-            Bitmap.Config.ARGB_8888)
+        bitmap: Bitmap,
+    ) {
         val canvas = Canvas(bitmap)
         //背景颜色
         canvas.drawColor(Color.TRANSPARENT)
@@ -206,7 +239,7 @@ object TextureUtils {
                 Constants.KEY_X_TEXT -> {
                     val startX = textRect.textWidthGraphics * 1.5f
                     val step = (textRect.widthGraphics - 2 * startX) / (it.value.size - 1)
-                    val y = textRect.heightGraphics -  textRect.textHeightGraphics / 2
+                    val y = textRect.heightGraphics - textRect.textHeightGraphics / 2
                     for (i in 0 until it.value.size) {
                         p.getTextBounds(it.value[i], 0, it.value[i].length, rect)
                         canvas.drawText(
@@ -230,7 +263,6 @@ object TextureUtils {
                 }
             }
         }
-        return TextBitmap(bitmap)
     }
 
 }

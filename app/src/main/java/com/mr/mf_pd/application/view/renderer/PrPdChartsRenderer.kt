@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.renderer
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
@@ -71,6 +72,8 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var colorPointProgram: Point2DColorPointShaderProgram
     private var texture: Int = 0
 
+    private var bitmap: Bitmap? = null
+
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
@@ -94,6 +97,7 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorPointProgram = Point2DColorPointShaderProgram(context)
 
         chartsLines = PointSinChartLine(4, 4, 90, textRectInOpenGl)
+
     }
 
     fun updateYAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
@@ -101,6 +105,12 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         yList.clear()
         unitList.addAll(unit)
         yList.addAll(textList)
+        measureTextWidth(yList)
+        textRectInOpenGl?.let {
+            measureTextWidth(yList)
+            it.updateData(width, height)
+            texture = TextureUtils.loadTextureWithText(paint, it, textMaps, texture, bitmap)
+        }
     }
 
     fun setValue(values: Map<Int, Map<Float, Int>>) {
@@ -114,9 +124,10 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         TextureUtils.height = height
         TextureUtils.width = width
 
-        textRectInOpenGl?.let {
-            it.updateData(width, height)
-            texture = TextureUtils.loadTextureWithText(paint, it, textMaps)
+        if (bitmap == null) {
+            bitmap = Bitmap.createBitmap(width,
+                height,
+                Bitmap.Config.ARGB_8888)
         }
         GLES30.glViewport(0, 0, width, height)
     }
@@ -131,7 +142,11 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorProgram.useProgram()
         colorProgram.setUniforms(0.4f, 0.4f, 0.4f)
 
-        measureTextWidth(yList)
+        textRectInOpenGl?.let {
+            measureTextWidth(yList)
+            it.updateData(width, height)
+            texture = TextureUtils.loadTextureWithText(paint, it, textMaps, texture, bitmap)
+        }
 
         chartsLines.updateGenerateData()
         chartsLines.bindData(colorProgram)
