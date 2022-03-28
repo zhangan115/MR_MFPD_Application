@@ -6,8 +6,9 @@ import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.view.opengl.`object`.FlightPoint2DList
-import com.mr.mf_pd.application.view.opengl.`object`.Point2DChartLine
+import com.mr.mf_pd.application.view.opengl.`object`.PointSinChartLine
 import com.mr.mf_pd.application.view.opengl.`object`.TextGlHelp
+import com.mr.mf_pd.application.view.opengl.`object`.TextRectInOpenGl
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
@@ -19,7 +20,7 @@ import javax.microedition.khronos.opengles.GL10
 class FlightChartsRenderer(var context: Context, var yTextList: CopyOnWriteArrayList<String>) :
     GLSurfaceView.Renderer {
 
-    private lateinit var chartsLines: Point2DChartLine
+    private lateinit var chartsLines: PointSinChartLine
     private val textHelp = TextGlHelp()
 
     @Volatile
@@ -45,7 +46,10 @@ class FlightChartsRenderer(var context: Context, var yTextList: CopyOnWriteArray
         colorProgram = Point2DColorShaderProgram(context)
         colorPointProgram = Point2DColorPointShaderProgram(context)
 
-        chartsLines = Point2DChartLine(4, 4, 0)
+//        chartsLines =
+//            PointSinChartLine(4,
+//                4,
+//                0, TextRectInOpenGl())
     }
 
     fun setFlightData(values: Map<Int, Map<Float, Int>>) {
@@ -65,7 +69,7 @@ class FlightChartsRenderer(var context: Context, var yTextList: CopyOnWriteArray
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         TextureUtils.height = height
         TextureUtils.width = width
-        texture = TextureUtils.loadTextureWithText(context, textMaps)
+//        texture = TextureUtils.loadTextureWithText(context, textMaps)
         GLES30.glViewport(0, 0, width, height)
     }
 

@@ -106,6 +106,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation files('libs/ant.jar')
     implementation files('libs/commons-codec-1.15.jar')
+    implementation files('libs/Jama-1.0.3.jar')
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     //rx android

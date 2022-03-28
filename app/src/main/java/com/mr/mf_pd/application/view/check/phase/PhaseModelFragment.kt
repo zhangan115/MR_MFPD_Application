@@ -3,7 +3,6 @@ package com.mr.mf_pd.application.view.check.phase
 import android.graphics.PixelFormat
 import android.opengl.GLSurfaceView
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -17,7 +16,7 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
-import com.mr.mf_pd.application.view.renderer.PointChartsRenderer
+import com.mr.mf_pd.application.view.renderer.PrPdChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
 import java.text.DecimalFormat
 
@@ -27,7 +26,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     private val viewModel by viewModels<PhaseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
-    var pointChartsRenderer: PointChartsRenderer? = null
+    var prPdChartsRenderer: PrPdChartsRenderer? = null
 
     companion object {
 
@@ -58,29 +57,23 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
-        viewModel.setFlightCallback(object : FlightDataCallback {
-            override fun flightData(data: HashMap<Int, HashMap<Float, Int>>) {
-                pointChartsRenderer?.setFlightData(data)
-                pointChartsRenderer?.updateYAxis(getUnitValue(viewModel.checkType.settingBean),
-                    getYAxisValue(viewModel.isFile.value!!,
-                        viewModel.checkType.settingBean,
-                        viewModel.gainMinValue))
-                surfaceView1.requestRender()
-            }
-        })
+        viewModel.dataCallback = {
+            prPdChartsRenderer?.updateYAxis(getUnitValue(viewModel.checkType.settingBean),
+                getYAxisValue(viewModel.isFile.value!!,
+                    viewModel.checkType.settingBean,
+                    viewModel.gainMinValue))
+            prPdChartsRenderer?.setValue(it)
+//            surfaceView1.requestRender()
+        }
     }
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        pointChartsRenderer = PointChartsRenderer(this.requireContext(),
-            getUnitValue(viewModel.checkType.settingBean),
-            getYAxisValue(viewModel.isFile.value!!,
-                viewModel.checkType.settingBean,
-                viewModel.gainMinValue))
-        surfaceView1.setRenderer(pointChartsRenderer)
+        prPdChartsRenderer = PrPdChartsRenderer(this.requireContext())
+        surfaceView1.setRenderer(prPdChartsRenderer)
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
-        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =

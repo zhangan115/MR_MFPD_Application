@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.opengl.object;
 
+import android.graphics.Rect;
 import android.opengl.GLES30;
 import android.util.Log;
 
@@ -108,10 +109,10 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    public static GeneratedData createPoint2DChartLines(int row, int column, int sinCount) {
+    public static GeneratedData createPoint2DChartLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
         int size = sizeOfPoint2DChartLinesInVertices(row, column) + sizeOfPoint2DSinLineInVertices(sinCount);
         ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appPoint2DLines(row, column, sinCount);
+        builder.appPoint2DLines(row, column, sinCount, rect);
         return builder.Build();
     }
 
@@ -183,15 +184,16 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    private void appPoint2DLines(int row, int column, int sinCount) {
+    private void appPoint2DLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+        float spaceWidth = 1.5f * rect.getTextWidth();
+        float spaceHeight = 2f * rect.getTextHeight();
         final int startVertex = offset / FLOATS_PER_VERTEX;
         final int numVertices = sizeOfPoint2DChartLinesInVertices(row, column);
-        float yStep = (1 - Constants.PRPS_SPACE
-                + 1 - Constants.PRPS_SPACE) / row;
-
-        float startX = -1 + Constants.PRPS_SPACE;
-        float endX = 1 - Constants.PRPS_SPACE;
-        float yPosition = -1 + Constants.PRPS_SPACE;
+        float yStep = (2 - spaceHeight * 2) / row;
+        //横线
+        float startX = -1 + spaceWidth;
+        float endX = 1 - spaceWidth;
+        float yPosition = -1 + spaceHeight;
         for (int i = 0; i <= row; i++) {
             //startPoint
             vertexData[offset++] = startX;
@@ -204,13 +206,12 @@ public class ObjectBuilder {
 
             yPosition = yPosition + yStep;
         }
-
-        float xStep = (1 - Constants.PRPS_SPACE
-                + 1 - Constants.PRPS_SPACE) / column;
-        float startY = -1 + Constants.PRPS_SPACE;
-        float endY = 1 - Constants.PRPS_SPACE;
-        float xPosition = -1 + Constants.PRPS_SPACE;
-
+        //竖线
+        float xStep = (1 - spaceWidth
+                + 1 - spaceWidth) / column;
+        float startY = -1 + spaceHeight;
+        float endY = 1 - spaceHeight;
+        float xPosition = startX;
         for (int i = 0; i <= column; i++) {
             //startPoint
             vertexData[offset++] = xPosition;
@@ -224,14 +225,14 @@ public class ObjectBuilder {
             xPosition = xPosition + xStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINES, startVertex, numVertices));
-
+        //Sin 线
         final int sinLineStartVertex = offset / FLOATS_PER_VERTEX;
 
-        float sinXStep = (1 - Constants.PRPS_SPACE
-                + 1 - Constants.PRPS_SPACE) / sinCount;
-        float sinStartX = -1 + Constants.PRPS_SPACE;
-        float height = (1 - Constants.PRPS_SPACE
-                + 1 - Constants.PRPS_SPACE) / 2.0f;
+        float sinXStep = (1 - spaceWidth
+                + 1 - spaceWidth) / sinCount;
+        float sinStartX = startX;
+        float height = (1 - spaceHeight
+                + 1 - spaceHeight) / 2.0f;
         float sinStartY;
         for (int i = 0; i <= sinCount; i++) {
             double radians = Math.toRadians((double) i / (double) sinCount * 360.0);

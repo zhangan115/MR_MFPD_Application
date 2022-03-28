@@ -7,7 +7,7 @@ object Constants {
     const val LINK_FAIL = -1
     const val LINK_SUCCESS = 1
 
-    const val PRPS_SPACE = 0.15f
+    const val PRPS_SPACE = 0.07f
 
     const val UPDATE_SETTING = "update_setting"
 

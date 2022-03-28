@@ -62,18 +62,14 @@ class PhaseModelViewModel(
     private val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
-            flightCallback?.flightData(dataMaps)
+            dataCallback?.invoke(dataMaps)
             if (filesRepository.isSaveData()?.value == true) {
                 filesRepository.toSaveRealData2File(source)
             }
         }
     }
 
-    private var flightCallback: FlightDataCallback? = null
-
-    fun setFlightCallback(callback: FlightDataCallback) {
-        flightCallback = callback
-    }
+    var dataCallback: ((data: HashMap<Int, HashMap<Float, Int>>) -> Unit)? = null
 
     fun setCheckFile(filePath: String) {
         val file = File(filePath)
@@ -98,14 +94,13 @@ class PhaseModelViewModel(
         this.gainValues.postValue(null)
         this.dataMaps.clear()
         this.gainFloatList.clear()
-        this.flightCallback?.flightData(dataMaps)
+        this.dataCallback?.invoke(dataMaps)
     }
 
     override fun onCleared() {
         super.onCleared()
-        this.flightCallback = null
+        this.dataCallback = null
     }
-
 
     var receiverCount = 0
     var mcCount = 0

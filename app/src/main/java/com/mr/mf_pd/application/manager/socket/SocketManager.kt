@@ -84,10 +84,10 @@ class SocketManager private constructor() {
             while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
                 try {
                     val s = System.currentTimeMillis()
-                    Log.i("zhangan", "read data size is $size")
+//                    Log.i("zhangan", "read data size is $size")
                     if (mDataByteList.isNotEmpty()) {
                         if (mDataByteList.size > 3000) {
-                            Log.e("zhangan", "error data byte list ${mDataByteList.size}")
+//                            Log.e("zhangan", "error data byte list ${mDataByteList.size}")
                             mDataByteList.clear()
                         }
                     }
@@ -95,8 +95,8 @@ class SocketManager private constructor() {
                     System.arraycopy(dataBuffer, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
                     dealStickyBytes()
-                    Log.i("zhangan", "cost time is ${System.currentTimeMillis() - s}ms")
-                    Log.i("zhangan", "total time is ${System.currentTimeMillis() - startTime}ms")
+//                    Log.i("zhangan", "cost time is ${System.currentTimeMillis() - s}ms")
+//                    Log.i("zhangan", "total time is ${System.currentTimeMillis() - startTime}ms")
                     startTime = System.currentTimeMillis()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -184,7 +184,7 @@ class SocketManager private constructor() {
             mDataByteList = newList
             val totalTime = System.currentTimeMillis() - startTime
             if (totalTime > 15) {
-                Log.e("zhangan", "total time is $totalTime")
+//                Log.e("zhangan", "total time is $totalTime")
             }
             if (mDataByteList.size > 0) {
                 dealStickyBytes()

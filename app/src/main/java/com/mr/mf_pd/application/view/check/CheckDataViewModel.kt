@@ -18,7 +18,7 @@ import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.`object`.PrpsPoint2DList
+import com.mr.mf_pd.application.view.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.view.opengl.`object`.PrpsPointList
 import io.reactivex.disposables.Disposable
 
@@ -58,8 +58,8 @@ class CheckDataViewModel(
 
     private fun updateSettingValue() {
         settingBean?.let {
-            PrpsPoint2DList.maxValue = it.maxValue.toFloat()
-            PrpsPoint2DList.minValue = it.minValue.toFloat()
+            PrPdPoint2DList.maxValue = it.maxValue.toFloat()
+            PrPdPoint2DList.minValue = it.minValue.toFloat()
 
             PrpsPointList.maxValue = it.maxValue.toFloat()
             PrpsPointList.minValue = it.minValue.toFloat()

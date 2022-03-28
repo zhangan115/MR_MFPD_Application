@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.opengl.`object`
 
 import android.opengl.GLES30
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.view.opengl.LabelMaker
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.data.VertexArray
 
@@ -28,21 +29,6 @@ open class TextGlHelp {
 
         vertexArray = VertexArray(VERTEX_DATA)
 
-        vertexArray.setVertexAttributePointer(
-            0,
-            textureProgram.positionAttributeLocation,
-            POSITION_COMPONENT_COUNT, STRIDE
-        )
-        vertexArray.setVertexAttributePointer(
-            POSITION_COMPONENT_COUNT,
-            textureProgram.textureCoordinatesAttributeLocation,
-            TEXTURE_COORDINATES_COUNT,
-            STRIDE
-        )
-    }
-
-    fun bindData(textureProgram: TextureShaderProgram,floatArray:FloatArray){
-        vertexArray = VertexArray(floatArray)
         vertexArray.setVertexAttributePointer(
             0,
             textureProgram.positionAttributeLocation,

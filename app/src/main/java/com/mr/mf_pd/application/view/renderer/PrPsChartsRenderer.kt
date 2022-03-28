@@ -89,8 +89,8 @@ class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayLi
 
         TextureUtils.height = height
         TextureUtils.width = width
-        texture = TextureUtils.loadTextureWithText(context, textMaps)
-        textureXZ = TextureUtils.loadTextureWithText(context, textXZMaps)
+//        texture = TextureUtils.loadTextureWithText(context, textMaps)
+//        textureXZ = TextureUtils.loadTextureWithText(context, textXZMaps)
 
         MatrixUtils.perspectiveM(
             projectionMatrix, 45f, width.toFloat()
@@ -127,12 +127,12 @@ class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayLi
     }
 
     fun updateYAxis(textList: CopyOnWriteArrayList<String>) {
-        if (textList.isEmpty()) {
-            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
-        } else {
-            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
-            textXZMaps[Constants.KEY_Z_TEXT]?.addAll(textList)
-        }
+//        if (textList.isEmpty()) {
+//            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
+//        } else {
+//            textXZMaps[Constants.KEY_Z_TEXT]?.clear()
+//            textXZMaps[Constants.KEY_Z_TEXT]?.addAll(textList)
+//        }
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -169,17 +169,17 @@ class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayLi
 
         GLES30.glDepthMask(false)
 
-        textureProgram.useProgram()
-        textureProgram.setUniforms(modelViewProjectionMatrix, texture)
-
-        textXYHelp.bindData(textureProgram)
-        textXYHelp.draw()
-
-        textureProgram.useProgram()
-        textureProgram.setUniforms(modelViewProjectionMatrix, textureXZ)
-
-        textXZHelp.bindXZData(textureProgram)
-        textXZHelp.draw()
+//        textureProgram.useProgram()
+//        textureProgram.setUniforms(modelViewProjectionMatrix, texture)
+//
+//        textXYHelp.bindData(textureProgram)
+//        textXYHelp.draw()
+//
+//        textureProgram.useProgram()
+//        textureProgram.setUniforms(modelViewProjectionMatrix, textureXZ)
+//
+//        textXZHelp.bindXZData(textureProgram)
+//        textXZHelp.draw()
 
         if (cleanPrpsList) {
             prpsCubeList?.clear()
