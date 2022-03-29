@@ -1,4 +1,4 @@
-package com.mr.mf_pd.application.view.renderer
+package com.mr.mf_pd.application.view.check.flight
 
 import android.content.Context
 import android.opengl.GLES20.*

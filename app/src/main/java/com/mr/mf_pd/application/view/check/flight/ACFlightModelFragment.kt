@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.view.check.flight
 
 import android.graphics.PixelFormat
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -13,7 +12,6 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
-import com.mr.mf_pd.application.view.renderer.FlightChartsRenderer
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
 
 /**
@@ -61,7 +59,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 flightChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
                     viewModel.checkType.settingBean,
                     viewModel.gainMinValue))
-                surfaceView1.requestRender()
+
             }
         })
     }
@@ -77,7 +75,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 viewModel.checkType.settingBean,
                 viewModel.gainMinValue))
         surfaceView1.setRenderer(flightChartsRenderer)
-        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {

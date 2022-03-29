@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.view.check.real
 
 import android.graphics.PixelFormat
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -10,13 +9,13 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
-import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
 import kotlinx.android.synthetic.main.fragment_real.*
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
@@ -67,19 +66,19 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                     viewModel.checkType.settingBean,
                     viewModel.gainMinValue))
                 prPsChartsRenderer?.updatePrpsData(data, cubeList)
-                surfaceView1.requestRender()
             }
         }
+
     }
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer =
-            PrPsChartsRenderer(this.requireContext(), getYAxisValue(viewModel.isFile.value!!,
-                viewModel.checkType.settingBean,
-                viewModel.gainMinValue))
+            PrPsChartsRenderer(this.requireContext(),
+                SocketManager.get().realDataDeque,
+                viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPsChartsRenderer)
-        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {

@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
-import android.view.View
-import com.mr.mf_pd.application.view.renderer.PrPsChartsRenderer
+import com.mr.mf_pd.application.view.check.real.PrPsChartsRenderer
 
 open class RealView : GLSurfaceView {
 

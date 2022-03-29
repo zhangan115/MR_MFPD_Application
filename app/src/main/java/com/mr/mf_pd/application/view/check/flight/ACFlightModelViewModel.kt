@@ -63,6 +63,7 @@ class ACFlightModelViewModel(
                 filesRepository.toSaveRealData2File(source)
             }
         }
+
     }
 
     private var flightCallback: FlightDataCallback? = null
@@ -123,8 +124,8 @@ class ACFlightModelViewModel(
             receiverCount++
             flightCallback?.flightData(dataMaps)
         }
-    }
 
+    }
 
     fun setCheckFile(filePath: String) {
         val file = File(filePath)

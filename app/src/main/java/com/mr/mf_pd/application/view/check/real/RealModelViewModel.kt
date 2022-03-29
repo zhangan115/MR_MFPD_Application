@@ -44,7 +44,7 @@ class RealModelViewModel(
 
     //圆柱数据
     var prPsDataCallback: PrPsDataCallback? = null
-
+    var toUpdateGl:(()->Unit)? = null
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -63,7 +63,7 @@ class RealModelViewModel(
         }
     }
 
-    private val realBytesDataCallback = object : BytesDataCallback {
+    val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
             if (filesRepository.isSaveData()?.value == true) {
@@ -151,8 +151,6 @@ class RealModelViewModel(
             }
             mcCount++
         }
-        Log.d("zhangan", "1 deal data time is ${System.currentTimeMillis() - startTime}")
-        startTime = System.currentTimeMillis()
         if (receiverCount % 5 == 0) {
             if (maxGainValue != null) {
                 gainFloatList.add(maxGainValue!!)
@@ -177,7 +175,6 @@ class RealModelViewModel(
         } else {
             ++receiverCount
         }
-        Log.d("zhangan", "2 deal data time is ${System.currentTimeMillis() - startTime}")
         prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
     }
 
@@ -251,7 +248,7 @@ class RealModelViewModel(
             CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+//            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
@@ -261,7 +258,7 @@ class RealModelViewModel(
             CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+//            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }
 
     }

@@ -112,8 +112,7 @@ object TextureUtils {
         p: Paint,
         textRect: TextRectInOpenGl,
         texts: ConcurrentHashMap<String, CopyOnWriteArrayList<String>>,
-        textureId: Int,
-        bitmap: Bitmap?,
+        textureId: Int
     ): Int {
         val oldTextureObjectIds = IntArray(1)
         oldTextureObjectIds[0] = textureId
@@ -133,11 +132,9 @@ object TextureUtils {
         )
 
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR)
-        if (bitmap != null) {
-            createBitmap(p, textRect, texts, bitmap)
-            GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
-//            bitmap.recycle()
-        }
+        val bitmap = createBitmap(p, textRect, texts).bitmap
+        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
+        bitmap.recycle()
         GLES30.glGenerateMipmap(GLES30.GL_TEXTURE_2D)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, 0)
         return textureObjectIds[0]
@@ -146,8 +143,8 @@ object TextureUtils {
     private fun createBitmap(
         context: Context,
         textMaps: Map<String, CopyOnWriteArrayList<String>>,
-        bitmap: Bitmap,
-    ) {
+    ): TextBitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         //背景颜色
         canvas.drawColor(Color.TRANSPARENT)
@@ -210,6 +207,7 @@ object TextureUtils {
                 }
             }
         }
+        return TextBitmap(bitmap)
     }
 
     /**
@@ -221,8 +219,10 @@ object TextureUtils {
         p: Paint,
         textRect: TextRectInOpenGl,
         textMaps: ConcurrentHashMap<String, CopyOnWriteArrayList<String>>,
-        bitmap: Bitmap,
-    ) {
+    ): TextBitmap {
+        val bitmap = Bitmap.createBitmap(width,
+            height,
+            Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         //背景颜色
         canvas.drawColor(Color.TRANSPARENT)
@@ -232,8 +232,10 @@ object TextureUtils {
                 Constants.KEY_UNIT -> {
                     if (it.value.size > 0) {
                         val startX = textRect.textWidthGraphics * 1.5f
-                        canvas.drawText(it.value.first(), startX,
-                            textRect.textHeightGraphics, p)
+                        it.value.firstOrNull()?.let { it1 ->
+                            canvas.drawText(it1, startX,
+                                textRect.textHeightGraphics, p)
+                        }
                     }
                 }
                 Constants.KEY_X_TEXT -> {
@@ -263,6 +265,7 @@ object TextureUtils {
                 }
             }
         }
+        return TextBitmap(bitmap)
     }
 
 }

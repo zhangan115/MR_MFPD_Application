@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.manager.socket
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
 import com.mr.mf_pd.application.common.Constants
@@ -13,18 +14,13 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
@@ -42,10 +38,15 @@ class SocketManager private constructor() {
 
     private var socket: Socket? = null
 
-    //开辟100K的存储空间 用来保存数据
-    private val dataBuffer = ByteArray(1024 * 100)
+    //开辟10K的存储空间 用来保存数据
+    private val dataBuffer = ByteArray(1024 * 10)
+
+    var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
+    var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
+    var fdDataDeque: ArrayBlockingQueue<ByteArray>? = null//放电数据队列
 
     companion object {
+
         private const val DEVICE_NO = 1
         private var isConnected //是否连接
                 = false
@@ -67,6 +68,9 @@ class SocketManager private constructor() {
     private var mRequestExecutor: ExecutorService? = null
     private var future: Future<*>? = null
 
+    private var mQueueExecutor: ExecutorService? = null
+    private var mQueueFuture: Future<*>? = null
+
     private val requestRunnable = Runnable {
         try {
             val address = InetSocketAddress(appHost(), port())
@@ -80,24 +84,13 @@ class SocketManager private constructor() {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
             var size: Int
-            var startTime = System.currentTimeMillis()
             while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
                 try {
-                    val s = System.currentTimeMillis()
-//                    Log.i("zhangan", "read data size is $size")
-                    if (mDataByteList.isNotEmpty()) {
-                        if (mDataByteList.size > 3000) {
-//                            Log.e("zhangan", "error data byte list ${mDataByteList.size}")
-                            mDataByteList.clear()
-                        }
-                    }
+                    mDataByteList.clear()
                     val sources = ByteArray(size)
                     System.arraycopy(dataBuffer, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
                     dealStickyBytes()
-//                    Log.i("zhangan", "cost time is ${System.currentTimeMillis() - s}ms")
-//                    Log.i("zhangan", "total time is ${System.currentTimeMillis() - startTime}ms")
-                    startTime = System.currentTimeMillis()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mDataByteList.clear()
@@ -114,7 +107,6 @@ class SocketManager private constructor() {
                 outputStream?.close()
                 socket?.close()
                 linkStateListeners?.forEach { it.onLinkState(Constants.LINK_FAIL) }
-                Log.d("zhangan", "socket close")
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -122,7 +114,6 @@ class SocketManager private constructor() {
     }
 
     private fun dealStickyBytes() {
-        val startTime = System.currentTimeMillis()
         var length = -1
         var commandType: CommandType? = null
         if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
@@ -175,6 +166,17 @@ class SocketManager private constructor() {
 //                val list = mDataByteList.subList(position, length)
 //
 //            }
+//            var position = 0
+//            val newList = LinkedList<Byte>()
+//            while (position < mDataByteList.size && position > 0) {
+//
+//                val length = getLength(mDataByteList)
+//                if (length < 0) {
+//                    break
+//                }
+//                val list = mDataByteList.subList(position, length)
+//
+//            }
             val list = mDataByteList.subList(0, length)
             commandCallback(commandType, Bytes.toArray(list))
             val newList = LinkedList<Byte>()
@@ -182,20 +184,80 @@ class SocketManager private constructor() {
                 newList.add(mDataByteList[i])
             }
             mDataByteList = newList
-            val totalTime = System.currentTimeMillis() - startTime
-            if (totalTime > 15) {
-//                Log.e("zhangan", "total time is $totalTime")
-            }
             if (mDataByteList.size > 0) {
                 dealStickyBytes()
             }
         }
     }
 
+    private fun getLength(bytes: LinkedList<Byte>): Int {
+        var length = -1
+        var commandType: CommandType?
+        if (bytes[0].toInt() == DEVICE_NO && bytes.size > 4) {
+            //根据数据获取命令类型
+            commandType = CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }
+            when (commandType) {
+                CommandType.SendTime -> {
+                    if (bytes.size >= commandType.length) {
+                        length = commandType.length
+                    }
+                }
+                CommandType.SwitchPassageway -> {
+                    if (bytes.size >= commandType.length) {
+                        length = commandType.length
+                    }
+                }
+                CommandType.ReadYcData -> {
+                    length = bytes[2].toInt() * 4 + 5
+                }
+                CommandType.ReadSettingValue -> {
+                    length = bytes[2].toInt() * 4 + 5
+                }
+                CommandType.WriteValue -> {
+                    length = bytes[2].toInt() + 5
+                }
+                CommandType.FdData -> {
+                    mDataByteList.clear()
+//                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
+//                    val length = ByteLibUtil.getInt(lengthBytes) + 2
+//                    byteList.removeAll(handOut(byteList, length))
+                }
+                CommandType.RealData -> {
+                    val lengthBytes = byteArrayOf(0x00, 0x00, bytes[3], bytes[4])
+                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
+                }
+                CommandType.FlightValue -> {
+                    val lengthBytes = byteArrayOf(0x00, 0x00, bytes[3], bytes[4])
+                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
+                }
+                else -> {
+                    mDataByteList.clear()
+                    Log.d("zhangan", "不支持的命令参数")
+                }
+            }
+        }
+
+        return length
+    }
+
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
-            bytesCallbackMap[commandType]?.forEach {
-                it.onData(source)
+            when (commandType) {
+                CommandType.FlightValue -> {
+                    val isSuccess = flightDeque?.offer(source)
+
+                }
+                CommandType.RealData -> {
+                    val isSuccess = realDataDeque?.offer(source)
+                }
+                CommandType.FdData -> {
+                    fdDataDeque?.offer(source)
+                }
+                else -> {
+                    bytesCallbackMap[commandType]?.forEach {
+                        it.onData(source)
+                    }
+                }
             }
         }
     }
@@ -228,15 +290,26 @@ class SocketManager private constructor() {
      */
     fun releaseRequest() {
         destroy()
+        if (mRequestExecutor != null && !mRequestExecutor!!.isShutdown) {
+            mRequestExecutor!!.shutdownNow()
+            mRequestExecutor = null
+        }
         future?.let {
             if (it.isCancelled) {
                 it.cancel(true)
             }
         }
-        if (mRequestExecutor != null && !mRequestExecutor!!.isShutdown) {
-            mRequestExecutor!!.shutdownNow()
-            mRequestExecutor = null
+        isQueueRuing.set(false)
+        if (mQueueExecutor != null && !mQueueExecutor!!.isShutdown) {
+            mQueueExecutor?.shutdownNow()
+            mQueueExecutor = null
         }
+        mQueueFuture?.let {
+            if (it.isCancelled) {
+                it.cancel(true)
+            }
+        }
+
     }
 
     @MainThread
@@ -274,12 +347,71 @@ class SocketManager private constructor() {
         }
     }
 
+    private var isQueueRuing: AtomicBoolean = AtomicBoolean(true)
+
     /**
      * socket 连接
      */
     fun initLink() {
+        realDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        flightDeque = ArrayBlockingQueue<ByteArray>(50)
+        fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
+
         mRequestExecutor = Executors.newSingleThreadExecutor()
         future = mRequestExecutor?.submit(requestRunnable)
+    }
+
+    fun initQueue() {
+        isQueueRuing.set(true)
+        mQueueExecutor = Executors.newSingleThreadExecutor()
+        mQueueFuture = mQueueExecutor?.submit {
+            try {
+                val list = ArrayList<ByteArray>()
+                while (isQueueRuing.get()) {
+
+                    realDataDeque?.drainTo(list)
+                    if (list.size > 0) {
+                        Log.d("zhangan", "realDataDeque data size is " + list.size)
+                        val callbacks = bytesCallbackMap[CommandType.RealData]
+                        list.forEach { source ->
+                            callbacks?.forEach {
+                                it.onData(source)
+                            }
+                        }
+                    }
+
+                    list.clear()
+                    flightDeque?.drainTo(list)
+                    if (list.size > 0) {
+                        Log.d("zhangan", "flightDeque data size is " + list.size)
+                        val callbacks = bytesCallbackMap[CommandType.FlightValue]
+                        list.forEach { source ->
+                            callbacks?.forEach {
+                                it.onData(source)
+                            }
+                        }
+                    }
+
+                    list.clear()
+                    fdDataDeque?.drainTo(list)
+                    if (list.size > 0) {
+                        Log.d("zhangan", "fdDataDeque data size is " + list.size)
+                        val callbacks = bytesCallbackMap[CommandType.FdData]
+                        list.forEach { source ->
+                            callbacks?.forEach {
+                                it.onData(source)
+                            }
+                        }
+                    }
+                    list.clear()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isQueueRuing.set(false)
+                Log.e("zhangan", "-> queue is finish")
+            }
+        }
     }
 
     /**

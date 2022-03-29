@@ -1,25 +1,25 @@
-package com.mr.mf_pd.application.view.renderer
+package com.mr.mf_pd.application.view.check.phase
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.opengl.GLES20.*
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
-import android.util.Log
-import androidx.annotation.MainThread
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.view.opengl.`object`.*
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.view.opengl.`object`.PointSinChartLine
+import com.mr.mf_pd.application.view.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.view.opengl.`object`.TextGlHelp
+import com.mr.mf_pd.application.view.opengl.`object`.TextRectInOpenGl
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -28,7 +28,11 @@ import javax.microedition.khronos.opengles.GL10
  * @author anson
  * @since 2022-03-25
  */
-class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
+class PrPdChartsRenderer(
+    var context: Context, var queue: ArrayBlockingQueue<ByteArray>?,
+    var dataCallback: BytesDataCallback?
+) :
+    GLSurfaceView.Renderer {
 
     private lateinit var chartsLines: PointSinChartLine
     private val textHelp = TextGlHelp()
@@ -72,8 +76,7 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
     private lateinit var colorPointProgram: Point2DColorPointShaderProgram
     private var texture: Int = 0
 
-    private var bitmap: Bitmap? = null
-
+    private var updateBitmap = true
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
@@ -100,21 +103,20 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
     }
 
+    @Synchronized
     fun updateYAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
-        unitList.clear()
-        yList.clear()
-        unitList.addAll(unit)
-        yList.addAll(textList)
-        measureTextWidth(yList)
-        textRectInOpenGl?.let {
+        if (unit != unitList || textList != yList) {
+            updateBitmap = true
+            unitList.clear()
+            yList.clear()
+            unitList.addAll(unit)
+            yList.addAll(textList)
             measureTextWidth(yList)
-            it.updateData(width, height)
-            texture = TextureUtils.loadTextureWithText(paint, it, textMaps, texture, bitmap)
         }
     }
 
     fun setValue(values: Map<Int, Map<Float, Int>>) {
-        prPsPoints?.setValue(values)
+        prPsPoints?.setValue(values, textRectInOpenGl)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -124,11 +126,6 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         TextureUtils.height = height
         TextureUtils.width = width
 
-        if (bitmap == null) {
-            bitmap = Bitmap.createBitmap(width,
-                height,
-                Bitmap.Config.ARGB_8888)
-        }
         GLES30.glViewport(0, 0, width, height)
     }
 
@@ -142,19 +139,22 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
         colorProgram.useProgram()
         colorProgram.setUniforms(0.4f, 0.4f, 0.4f)
 
-        textRectInOpenGl?.let {
-            measureTextWidth(yList)
-            it.updateData(width, height)
-            texture = TextureUtils.loadTextureWithText(paint, it, textMaps, texture, bitmap)
+        if (updateBitmap) {
+            textRectInOpenGl?.let {
+                measureTextWidth(yList)
+                it.updateData(width, height)
+                texture = TextureUtils.loadTextureWithText(paint, it, textMaps, texture)
+            }
+            updateBitmap = false
         }
 
         chartsLines.updateGenerateData()
         chartsLines.bindData(colorProgram)
         chartsLines.draw()
 
-//        colorPointProgram.useProgram()
-//        prPsPoints?.bindData(colorPointProgram)
-//        prPsPoints?.draw()
+        colorPointProgram.useProgram()
+        prPsPoints?.bindData(colorPointProgram)
+        prPsPoints?.draw()
 
         GLES30.glDepthMask(false)
 
@@ -163,6 +163,12 @@ class PrPdChartsRenderer(var context: Context) : GLSurfaceView.Renderer {
 
         textHelp.bindData(textureProgram)
         textHelp.draw()
+
+        val list = ArrayList<ByteArray>()
+        queue?.drainTo(list)
+        list.forEach {
+            dataCallback?.onData(it)
+        }
     }
 
     /**

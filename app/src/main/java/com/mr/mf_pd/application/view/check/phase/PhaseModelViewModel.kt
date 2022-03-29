@@ -59,7 +59,7 @@ class PhaseModelViewModel(
         }
     }
 
-    private val realBytesDataCallback = object : BytesDataCallback {
+    val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
             dataCallback?.invoke(dataMaps)
@@ -247,8 +247,8 @@ class PhaseModelViewModel(
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
-            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+//            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+//            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }
 
     }

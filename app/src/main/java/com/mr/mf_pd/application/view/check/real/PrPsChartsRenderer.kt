@@ -1,24 +1,25 @@
-package com.mr.mf_pd.application.view.renderer
+package com.mr.mf_pd.application.view.check.real
 
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import android.util.Log
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.view.opengl.`object`.*
 import com.mr.mf_pd.application.view.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.PrPsColorPointShaderProgram
 import com.mr.mf_pd.application.view.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.view.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
-import com.mr.mf_pd.application.view.renderer.impl.GetPrpsValueCallback
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayList<String>) :
+class PrPsChartsRenderer(var context: Context, var queue: ArrayBlockingQueue<ByteArray>?,
+                         var dataCallback: BytesDataCallback?) :
     GLSurfaceView.Renderer {
 
     @Volatile
@@ -67,11 +68,11 @@ class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayLi
         textMaps[Constants.KEY_X_TEXT] = CopyOnWriteArrayList<String>(xTextList)
         textMaps[Constants.KEY_Y_TEXT] = CopyOnWriteArrayList<String>(yTextList)
 
-        if (zTextList.isEmpty()) {
-            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList()
-        } else {
-            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList<String>(zTextList)
-        }
+//        if (zTextList.isEmpty()) {
+//            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList()
+//        } else {
+//            textXZMaps[Constants.KEY_Z_TEXT] = CopyOnWriteArrayList<String>(zTextList)
+//        }
 
         prPsPoints = PrpsPointList()
 
@@ -191,8 +192,12 @@ class PrPsChartsRenderer(var context: Context, var zTextList: CopyOnWriteArrayLi
             }
         }
         val timeEnd = System.currentTimeMillis()
-//        Log.d("za", "cost time ${timeEnd - timeStart}")
-//        getPrpsValueCallback?.getData()
+
+        val list = ArrayList<ByteArray>()
+        queue?.drainTo(list)
+        list.forEach {
+            dataCallback?.onData(it)
+        }
     }
 
     private fun position() {

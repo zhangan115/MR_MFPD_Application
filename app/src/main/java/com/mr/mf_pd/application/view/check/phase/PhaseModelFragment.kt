@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.view.check.phase
 
 import android.graphics.PixelFormat
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -10,13 +9,12 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
-import com.mr.mf_pd.application.view.callback.FlightDataCallback
-import com.mr.mf_pd.application.view.renderer.PrPdChartsRenderer
 import kotlinx.android.synthetic.main.fragment_phase.*
 import java.text.DecimalFormat
 
@@ -63,13 +61,14 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
                     viewModel.checkType.settingBean,
                     viewModel.gainMinValue))
             prPdChartsRenderer?.setValue(it)
-//            surfaceView1.requestRender()
         }
     }
 
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
-        prPdChartsRenderer = PrPdChartsRenderer(this.requireContext())
+        prPdChartsRenderer = PrPdChartsRenderer(this.requireContext(),
+            SocketManager.get().realDataDeque,
+            viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPdChartsRenderer)
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
