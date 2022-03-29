@@ -30,16 +30,7 @@ public class PrPdPoint2DList {
     public static float minValue = -80.0f;
     public static float maxValue = -20.0f;
 
-    //保第一个是X，二个是Y 第三个是出现的次数
-//    @Volatile
-//    private final byte[] showValues = new byte[100 * 100 * 3];
-
-//    private final float[] showValues = new float[100 * 100 * 3];
-
     private Point2DColorPointShaderProgram colorProgram;
-
-    public static final float stepX = (1 - Constants.PRPS_SPACE
-            + 1 - Constants.PRPS_SPACE) / Constants.PRPS_COLUMN;
 
     private short[] indices;
 
@@ -47,9 +38,9 @@ public class PrPdPoint2DList {
     private final List<Float> color2 = new ArrayList<>();
     private final List<Float> color3 = new ArrayList<>();
 
-    List<Float> vertexPointList = new ArrayList<>();
-    List<Float> colorList = new ArrayList<>();
-    List<Short> indicesList = new ArrayList<>();
+    private final List<Float> vertexPointList = new ArrayList<>();
+    private final List<Float> colorList = new ArrayList<>();
+    private final List<Short> indicesList = new ArrayList<>();
 
     public PrPdPoint2DList() {
         color1.add(1f);
@@ -65,27 +56,8 @@ public class PrPdPoint2DList {
         color3.add(1f);
     }
 
-    public void addValue(byte[] bytes, Rect rect) throws Exception {
-        if (bytes.length % 6 != 0) {
-            throw new Exception("bytes length Cannot be divided by 6");
-        }
-        for (int i = 0; i < bytes.length / 6; i++) {
-            byte[] values = new byte[6];
-            System.arraycopy(bytes, 6 * i, values, 0, 6);
-            int column = values[1];
-            byte[] valueBytes = new byte[4];
-            System.arraycopy(values, 2, valueBytes, 0, 4);
-            float value = ByteUtil.getFloat(valueBytes);
-            maxValue = Math.max(maxValue, value);
-            minValue = Math.max(minValue, value);
-        }
-    }
 
-    public void setValue(Map<Integer, Map<Float, Integer>> map, TextRectInOpenGl textRect) {
-        createVertexBuffer(map, textRect);
-    }
-
-    private void createVertexBuffer(Map<Integer, Map<Float, Integer>> values, TextRectInOpenGl rect) {
+    public void setValue(Map<Integer, Map<Float, Integer>> values, TextRectInOpenGl rect) {
         if (rect != null) {
             float spaceWidth = 1.5f * rect.getTextWidth();
             float spaceHeight = 2f * rect.getTextHeight();

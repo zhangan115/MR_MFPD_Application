@@ -6,6 +6,7 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -13,6 +14,7 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * AC 飞行模式
@@ -54,15 +56,20 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
             }
         }
         viewModel.setFlightCallback(object : FlightDataCallback {
-            override fun flightData(data: HashMap<Int, HashMap<Float, Int>>) {
+            override fun flightData(data: HashMap<Int, HashMap<Float, Int>>, xMaxValue: Int) {
                 flightChartsRenderer?.setFlightData(data)
-                flightChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-                    viewModel.checkType.settingBean,
-                    viewModel.gainMinValue))
+                flightChartsRenderer?.updateYAxis(
+                    getUnitValue(viewModel.checkType.settingBean),
+                    getYAxisValue(viewModel.isFile.value!!,
+                        viewModel.checkType.settingBean,
+                        viewModel.gainMinValue),
+                    xMaxValue
+                )
 
             }
         })
     }
+
 
     override fun setIsFileValue(isFile: Boolean?) {
         viewModel.isFile.value = isFile
@@ -71,11 +78,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         flightChartsRenderer = FlightChartsRenderer(this.requireContext(),
-            getYAxisValue(viewModel.isFile.value!!,
-                viewModel.checkType.settingBean,
-                viewModel.gainMinValue))
+            SocketManager.get().flightDeque,
+            viewModel.flightValueCallBack)
         surfaceView1.setRenderer(flightChartsRenderer)
-//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {

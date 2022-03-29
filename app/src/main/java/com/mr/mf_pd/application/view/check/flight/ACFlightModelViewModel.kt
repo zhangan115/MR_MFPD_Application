@@ -45,7 +45,7 @@ class ACFlightModelViewModel(
             dataRepository.switchPassageway(checkType.passageway, checkType.commandType)
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+//            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 
@@ -74,8 +74,9 @@ class ACFlightModelViewModel(
 
     private var maxGainValue: Float? = null
 
-    private val flightValueCallBack = object : BytesDataCallback {
+    val flightValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
+            var maxXValue = -1
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
             if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
@@ -87,6 +88,7 @@ class ACFlightModelViewModel(
                     System.arraycopy(values, 2, height, 0, 4)
                     val value = ByteUtil.getFloat(height)
                     val key = ByteLibUtil.getInt(lengthBytes)
+                    maxXValue = max(key, maxXValue)
                     maxGainValue = if (maxGainValue == null) {
                         value
                     } else {
@@ -122,7 +124,7 @@ class ACFlightModelViewModel(
                 maxGainValue = null
             }
             receiverCount++
-            flightCallback?.flightData(dataMaps)
+            flightCallback?.flightData(dataMaps,maxXValue)
         }
 
     }
@@ -160,24 +162,24 @@ class ACFlightModelViewModel(
     fun onResume() {
         if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-            CheckFileReadManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+//            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+//            CheckFileReadManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
+//            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
+//            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-            CheckFileReadManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
+//            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+//            CheckFileReadManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
+//            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
+//            SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 

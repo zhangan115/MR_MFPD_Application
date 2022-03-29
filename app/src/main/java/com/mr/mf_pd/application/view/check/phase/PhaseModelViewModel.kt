@@ -15,7 +15,6 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*

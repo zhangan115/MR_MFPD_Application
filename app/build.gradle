@@ -159,6 +159,6 @@ dependencies {
     //友盟统计
     implementation 'com.umeng.umsdk:common:9.4.4'
 
-    kapt project(":compiler")
-    implementation project(":annotation")
+//    kapt project(":compiler")
+//    implementation project(":annotation")
 }

@@ -43,7 +43,6 @@ class PrPdChartsRenderer(
     @Volatile
     private var yList = CopyOnWriteArrayList<String>()
 
-    @Volatile
     private var textMaps = ConcurrentHashMap<String, CopyOnWriteArrayList<String>>()
 
     @Volatile
@@ -103,7 +102,6 @@ class PrPdChartsRenderer(
 
     }
 
-    @Synchronized
     fun updateYAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
         if (unit != unitList || textList != yList) {
             updateBitmap = true
@@ -127,6 +125,7 @@ class PrPdChartsRenderer(
         TextureUtils.width = width
 
         GLES30.glViewport(0, 0, width, height)
+        updateBitmap = true
     }
 
     override fun onDrawFrame(gl: GL10?) {

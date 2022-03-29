@@ -26,16 +26,17 @@ public class FlightPoint2DList {
     public static float maxValue = -20.0f;
 
     //保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
-    private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();
     private Point2DColorPointShaderProgram colorProgram;
 
-    public static final float stepX = (1 - Constants.PRPS_SPACE
-            + 1 - Constants.PRPS_SPACE) / Constants.FLIGHT_COLUMN;
     private short[] indices;
 
     private final List<Float> color1 = new ArrayList<>();
     private final List<Float> color2 = new ArrayList<>();
     private final List<Float> color3 = new ArrayList<>();
+
+    private final List<Float> vertexPointList = new ArrayList<>();
+    private final List<Float> colorList = new ArrayList<>();
+    private final List<Short> indicesList = new ArrayList<>();
 
     public FlightPoint2DList() {
         color1.add(1f);
@@ -51,20 +52,22 @@ public class FlightPoint2DList {
         color3.add(1f);
     }
 
-    public void setValue(Map<Integer, Map<Float, Integer>> values) {
-        List<Float> vertexPointList = new ArrayList<>();
-        List<Float> colorList = new ArrayList<>();
-        List<Short> indicesList = new ArrayList<>();
+    public void setValue(Map<Integer, Map<Float, Integer>> values,int column, TextRectInOpenGl rect) {
+
+        float spaceWidth = 1.5f * rect.getTextWidth();
+        float spaceHeight = 2f * rect.getTextHeight();
+        float stepX = (2 - 2 * spaceWidth) / column;
+
         Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
         short count = 0;
-        float h = 1 - Constants.PRPS_SPACE + 1 - Constants.PRPS_SPACE;
-        float startY = -1 + Constants.PRPS_SPACE;
+        float h = 2 - 2 * spaceHeight;
+        float startY = -1 + spaceHeight;
         for (Map.Entry<Integer, Map<Float, Integer>> entry1 : entrySet1) {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
                 float zY = startY + (entry2.getKey() - minValue) / (maxValue - minValue) * h;
-                float startX = -1 + Constants.PRPS_SPACE + stepX * entry1.getKey();
+                float startX = -1 + spaceWidth + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(zY);
                 vertexPointList.add(0f);
@@ -103,10 +106,10 @@ public class FlightPoint2DList {
         //传入指定的数据
         colorBuffer.put(colors);
         colorBuffer.position(0);
-    }
 
-    public void cleanAllData() {
-        values.clear();
+        vertexPointList.clear();
+        colorList.clear();
+        indicesList.clear();
     }
 
     public void bindData(Point2DColorPointShaderProgram colorProgram) {
