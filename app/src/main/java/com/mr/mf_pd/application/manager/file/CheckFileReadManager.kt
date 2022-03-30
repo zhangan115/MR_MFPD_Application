@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.manager.file
 
+import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.ConstantStr
@@ -11,6 +12,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import kotlin.collections.ArrayList
 
 class CheckFileReadManager {
@@ -43,11 +45,14 @@ class CheckFileReadManager {
     private val readFlightData = ArrayList<ArrayList<Byte>>() //读取出来的飞行数据
     private val surplusFlightData = ArrayList<Byte>() //读取处理的未处理的不完整飞行数据
 
+    var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
+    var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
+    var fdDataDeque: ArrayBlockingQueue<ByteArray>? = null//放电数据队列
+
     private val bytesCallbackMap: LinkedHashMap<CommandType, LinkedList<BytesDataCallback>> =
         LinkedHashMap()
 
     companion object {
-
         private var instance: CheckFileReadManager? = null
             get() {
                 if (field == null) {
@@ -62,6 +67,12 @@ class CheckFileReadManager {
     }
 
     var checkFile: File? = null
+
+    fun initQueue() {
+        fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        realDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        flightDeque = ArrayBlockingQueue<ByteArray>(50)
+    }
 
     fun setFile(checkFile: File) {
         this.checkFile = checkFile
@@ -218,6 +229,28 @@ class CheckFileReadManager {
         }
     }
 
+    private fun commandCallback(commandType: CommandType?, source: ByteArray) {
+        if (commandType != null) {
+            when (commandType) {
+                CommandType.FlightValue -> {
+                    val isSuccess = flightDeque?.offer(source)
+
+                }
+                CommandType.RealData -> {
+                    val isSuccess = realDataDeque?.offer(source)
+                }
+                CommandType.FdData -> {
+                    fdDataDeque?.offer(source)
+                }
+                else -> {
+                    bytesCallbackMap[commandType]?.forEach {
+                        it.onData(source)
+                    }
+                }
+            }
+        }
+    }
+
     private fun startReadRealDataFromFile() {
         readRealData.clear()
         realBytePosition = 0
@@ -228,9 +261,7 @@ class CheckFileReadManager {
     fun readRealDataFromFile() {
         if (realDataIStream != null) {
             if (readRealData.size > realBytePosition) {
-                getCallback(CommandType.RealData).forEach {
-                    it.onData(Bytes.toArray(readRealData[realBytePosition]))
-                }
+                commandCallback(CommandType.RealData, Bytes.toArray(readRealData[realBytePosition]))
             } else {
                 readRealDataFile()
             }
@@ -275,13 +306,12 @@ class CheckFileReadManager {
                 }
             }
             if (readRealData.size > realBytePosition) {
-                getCallback(CommandType.RealData).forEach {
-                    it.onData(Bytes.toArray(readRealData[realBytePosition]))
-                }
+                commandCallback(CommandType.RealData, Bytes.toArray(readRealData[realBytePosition]))
             } else {
                 getCallback(CommandType.RealData).forEach {
                     it.onData(ByteArray(0))
                 }
+                commandCallback(CommandType.RealData, ByteArray(0))
             }
         }
     }
@@ -296,9 +326,8 @@ class CheckFileReadManager {
     fun readFlightDataFromFile() {
         if (flightDataIStream != null) {
             if (readFlightData.size > flightBytePosition) {
-                getCallback(CommandType.FlightValue).forEach {
-                    it.onData(Bytes.toArray(readFlightData[flightBytePosition]))
-                }
+                commandCallback(CommandType.FlightValue,
+                    Bytes.toArray(readFlightData[flightBytePosition]))
             } else {
                 readFlightDataFile()
             }
@@ -343,13 +372,10 @@ class CheckFileReadManager {
                 }
             }
             if (readFlightData.size > flightBytePosition) {
-                getCallback(CommandType.FlightValue).forEach {
-                    it.onData(Bytes.toArray(readFlightData[flightBytePosition]))
-                }
+                commandCallback(CommandType.FlightValue,
+                    Bytes.toArray(readFlightData[flightBytePosition]))
             } else {
-                getCallback(CommandType.FlightValue).forEach {
-                    it.onData(ByteArray(0))
-                }
+                commandCallback(CommandType.FlightValue, ByteArray(0))
             }
         }
     }

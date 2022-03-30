@@ -14,6 +14,7 @@ import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
 import java.io.File
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import kotlin.collections.HashMap
 import kotlin.math.max
 
@@ -33,7 +34,7 @@ class ACFlightModelViewModel(
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
 
-    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+    private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
     var receiverCount = 0
 
@@ -76,6 +77,7 @@ class ACFlightModelViewModel(
 
     val flightValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
+            if (source.isEmpty() || source.size < 7) return
             var maxXValue = -1
             val bytes = ByteArray(source.size - 7)
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
@@ -124,7 +126,7 @@ class ACFlightModelViewModel(
                 maxGainValue = null
             }
             receiverCount++
-            flightCallback?.flightData(dataMaps,maxXValue)
+            flightCallback?.flightData(dataMaps, maxXValue)
         }
 
     }
@@ -151,6 +153,7 @@ class ACFlightModelViewModel(
     fun cleanCurrentData() {
         receiverCount = 0
         val list = Vector<Float>()
+        dataMaps = HashMap()
         if (isFile.value == true) {
             this.gainValues.postValue(list)
         } else {
@@ -158,28 +161,27 @@ class ACFlightModelViewModel(
         }
     }
 
+    fun getQueue(): ArrayBlockingQueue<ByteArray>?{
+        return if (isFile.value!!) {
+            CheckFileReadManager.get().flightDeque
+        } else {
+            SocketManager.get().flightDeque
+        }
+    }
 
     fun onResume() {
         if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-//            CheckFileReadManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-//            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-//            CheckFileReadManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-//            SocketManager.get().removeCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 

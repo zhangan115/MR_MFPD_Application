@@ -18,6 +18,7 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
@@ -68,6 +69,14 @@ class PhaseModelViewModel(
         }
     }
 
+    fun getQueue(): ArrayBlockingQueue<ByteArray>?{
+        return if (isFile.value!!) {
+            CheckFileReadManager.get().realDataDeque
+        } else {
+            SocketManager.get().realDataDeque
+        }
+    }
+
     var dataCallback: ((data: HashMap<Int, HashMap<Float, Int>>) -> Unit)? = null
 
     fun setCheckFile(filePath: String) {
@@ -91,7 +100,7 @@ class PhaseModelViewModel(
 
     fun cleanCurrentData() {
         this.gainValues.postValue(null)
-        this.dataMaps.clear()
+        this.dataMaps = HashMap()
         this.gainFloatList.clear()
         this.dataCallback?.invoke(dataMaps)
     }
@@ -111,7 +120,7 @@ class PhaseModelViewModel(
 
 
     private fun dealRealData(source: ByteArray) {
-        if (source.isEmpty()) return
+        if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         for (i in 0 until (bytes.size / 6)) {

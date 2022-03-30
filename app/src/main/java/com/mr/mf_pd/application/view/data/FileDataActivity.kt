@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
@@ -54,6 +55,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     }
 
     override fun initData(savedInstanceState: Bundle?) {
+        CheckFileReadManager.get().initQueue()
         intent.getStringExtra(ConstantStr.KEY_BUNDLE_STR)?.let {
             currentFile = File(it)
             GlobalScope.runCatching {

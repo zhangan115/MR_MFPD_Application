@@ -67,12 +67,11 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         prPdChartsRenderer = PrPdChartsRenderer(this.requireContext(),
-            SocketManager.get().realDataDeque,
+            viewModel.getQueue(),
             viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPdChartsRenderer)
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
-//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
@@ -154,6 +153,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
+        prPdChartsRenderer?.cleanData()
     }
 
     override fun isSaving(): Boolean {

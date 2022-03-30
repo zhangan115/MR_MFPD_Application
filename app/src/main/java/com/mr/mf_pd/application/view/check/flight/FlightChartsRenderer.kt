@@ -10,11 +10,14 @@ import android.opengl.GLSurfaceView
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.view.opengl.`object`.*
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
-import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PointSinChartLine
+import com.mr.mf_pd.application.opengl.`object`.TextGlHelp
+import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
+import com.mr.mf_pd.application.opengl.programs.Point2DColorPointShaderProgram
+import com.mr.mf_pd.application.opengl.programs.Point2DColorShaderProgram
+import com.mr.mf_pd.application.opengl.programs.TextureShaderProgram
+import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
@@ -79,6 +82,9 @@ class FlightChartsRenderer(
 
     private var updateBitmap = true
 
+    @Volatile
+    private var isToCleanData = false
+
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
@@ -100,7 +106,11 @@ class FlightChartsRenderer(
 
         prPsPoints = FlightPoint2DList()
 
-        chartsLines = PointSinChartLine(5, 4, 0, textRectInOpenGl)
+        chartsLines = PointSinChartLine(
+            5,
+            4,
+            0,
+            textRectInOpenGl)
     }
 
     fun setFlightData(values: Map<Int, Map<Float, Int>>) {
@@ -192,13 +202,17 @@ class FlightChartsRenderer(
 
         val list = ArrayList<ByteArray>()
         queue?.drainTo(list)
+        if (isToCleanData) {
+            list.clear()
+            isToCleanData = false
+        }
         list.forEach {
             dataCallback?.onData(it)
         }
     }
 
     fun cleanData() {
-
+        isToCleanData = true
     }
 
     /**

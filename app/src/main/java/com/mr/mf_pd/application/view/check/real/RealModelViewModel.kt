@@ -19,6 +19,7 @@ import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -40,11 +41,11 @@ class RealModelViewModel(
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
     //点数据
-    private val dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+    private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
     //圆柱数据
     var prPsDataCallback: PrPsDataCallback? = null
-    var toUpdateGl:(()->Unit)? = null
+    var toUpdateGl: (() -> Unit)? = null
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -83,6 +84,7 @@ class RealModelViewModel(
 
 
     private fun dealRealData(source: ByteArray) {
+        if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
@@ -232,9 +234,17 @@ class RealModelViewModel(
 
     fun cleanCurrentData() {
         this.gainValues.postValue(null)
-        this.dataMaps.clear()
+        this.dataMaps = HashMap()
         this.gainFloatList.clear()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
+    }
+
+    fun getQueue(): ArrayBlockingQueue<ByteArray>? {
+        return if (isFile.value!!) {
+            CheckFileReadManager.get().flightDeque
+        } else {
+            SocketManager.get().flightDeque
+        }
     }
 
     override fun onCleared() {

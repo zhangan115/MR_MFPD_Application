@@ -78,7 +78,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         flightChartsRenderer = FlightChartsRenderer(this.requireContext(),
-            SocketManager.get().flightDeque,
+            viewModel.getQueue(),
             viewModel.flightValueCallBack)
         surfaceView1.setRenderer(flightChartsRenderer)
         surfaceView1.setZOrderOnTop(true)
@@ -122,7 +122,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun onYcDataChange(bytes: ByteArray) {
-        val valueList = splitBytesToValue(bytes)
+        splitBytesToValue(bytes)
     }
 
     override fun cleanCurrentData() {

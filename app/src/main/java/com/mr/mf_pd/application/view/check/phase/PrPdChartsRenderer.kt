@@ -10,14 +10,14 @@ import android.opengl.GLSurfaceView
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.view.opengl.`object`.PointSinChartLine
-import com.mr.mf_pd.application.view.opengl.`object`.PrPdPoint2DList
-import com.mr.mf_pd.application.view.opengl.`object`.TextGlHelp
-import com.mr.mf_pd.application.view.opengl.`object`.TextRectInOpenGl
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorPointShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.Point2DColorShaderProgram
-import com.mr.mf_pd.application.view.opengl.programs.TextureShaderProgram
-import com.mr.mf_pd.application.view.opengl.utils.TextureUtils
+import com.mr.mf_pd.application.opengl.`object`.PointSinChartLine
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.TextGlHelp
+import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
+import com.mr.mf_pd.application.opengl.programs.Point2DColorPointShaderProgram
+import com.mr.mf_pd.application.opengl.programs.Point2DColorShaderProgram
+import com.mr.mf_pd.application.opengl.programs.TextureShaderProgram
+import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.concurrent.*
 import javax.microedition.khronos.egl.EGLConfig
@@ -30,11 +30,12 @@ import javax.microedition.khronos.opengles.GL10
  */
 class PrPdChartsRenderer(
     var context: Context, var queue: ArrayBlockingQueue<ByteArray>?,
-    var dataCallback: BytesDataCallback?
+    var dataCallback: BytesDataCallback?,
 ) :
     GLSurfaceView.Renderer {
 
     private lateinit var chartsLines: PointSinChartLine
+
     private val textHelp = TextGlHelp()
 
     @Volatile
@@ -52,6 +53,9 @@ class PrPdChartsRenderer(
 
     @Volatile
     var textRectInOpenGl: TextRectInOpenGl? = null
+
+    @Volatile
+    var column: Int = 100
 
     @Volatile
     var maxValue: Float? = null
@@ -77,6 +81,9 @@ class PrPdChartsRenderer(
 
     private var updateBitmap = true
 
+    @Volatile
+    var isToCleanData = false
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES30.glClearColor(1f, 1f, 1f, 1f)
 
@@ -98,23 +105,12 @@ class PrPdChartsRenderer(
         colorProgram = Point2DColorShaderProgram(context)
         colorPointProgram = Point2DColorPointShaderProgram(context)
 
-        chartsLines = PointSinChartLine(4, 4, 90, textRectInOpenGl)
+        chartsLines = PointSinChartLine(
+            4,
+            4,
+            90,
+            textRectInOpenGl)
 
-    }
-
-    fun updateYAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
-        if (unit != unitList || textList != yList) {
-            updateBitmap = true
-            unitList.clear()
-            yList.clear()
-            unitList.addAll(unit)
-            yList.addAll(textList)
-            measureTextWidth(yList)
-        }
-    }
-
-    fun setValue(values: Map<Int, Map<Float, Int>>) {
-        prPsPoints?.setValue(values, textRectInOpenGl)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -165,9 +161,29 @@ class PrPdChartsRenderer(
 
         val list = ArrayList<ByteArray>()
         queue?.drainTo(list)
+        if (isToCleanData) {
+            list.clear()
+
+            isToCleanData = false
+        }
         list.forEach {
             dataCallback?.onData(it)
         }
+    }
+
+    fun updateYAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
+        if (unit != unitList || textList != yList) {
+            updateBitmap = true
+            unitList.clear()
+            yList.clear()
+            unitList.addAll(unit)
+            yList.addAll(textList)
+            measureTextWidth(yList)
+        }
+    }
+
+    fun setValue(values: Map<Int, Map<Float, Int>>) {
+        prPsPoints?.setValue(values, column, textRectInOpenGl)
     }
 
     /**
@@ -182,6 +198,10 @@ class PrPdChartsRenderer(
             }
         }
         paint.getTextBounds(text, 0, text.length, rect)
+    }
+
+    fun cleanData() {
+        isToCleanData = true
     }
 
 }

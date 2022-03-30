@@ -69,14 +69,6 @@ class ContinuityModelViewModel(
         }
     }
 
-    private val realBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveRealData2File(source)
-            }
-        }
-    }
-
     fun setCheckFile(filePath: String) {
         val file = File(filePath)
         filesRepository.setCurrentClickFile(file)
@@ -106,20 +98,16 @@ class ContinuityModelViewModel(
     fun onResume() {
         if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 

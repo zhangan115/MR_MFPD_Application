@@ -16,10 +16,10 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.view.opengl.`object`.FlightPoint2DList
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.view.opengl.`object`.PrPdPoint2DList
-import com.mr.mf_pd.application.view.opengl.`object`.PrpsPointList
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import io.reactivex.disposables.Disposable
 
 class CheckDataViewModel(

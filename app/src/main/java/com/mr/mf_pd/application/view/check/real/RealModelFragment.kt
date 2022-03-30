@@ -62,9 +62,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 data: HashMap<Int, HashMap<Float, Int>>,
                 cubeList: CopyOnWriteArrayList<Float?>,
             ) {
-                prPsChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-                    viewModel.checkType.settingBean,
-                    viewModel.gainMinValue))
+                prPsChartsRenderer?.updateAxis(getUnitValue(viewModel.checkType.settingBean),
+                    getYAxisValue(viewModel.isFile.value!!,
+                        viewModel.checkType.settingBean,
+                        viewModel.gainMinValue))
                 prPsChartsRenderer?.updatePrpsData(data, cubeList)
             }
         }
@@ -75,10 +76,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer =
             PrPsChartsRenderer(this.requireContext(),
-                SocketManager.get().realDataDeque,
+                viewModel.getQueue(),
                 viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPsChartsRenderer)
-//        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {
@@ -166,9 +166,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
-        prPsChartsRenderer?.updateYAxis(getYAxisValue(viewModel.isFile.value!!,
-            settingBean,
-            viewModel.gainMinValue))
+        prPsChartsRenderer?.updateAxis(getUnitValue(settingBean),
+            getYAxisValue(viewModel.isFile.value!!,
+                settingBean,
+                viewModel.gainMinValue))
         surfaceView1.requestRender()
     }
 

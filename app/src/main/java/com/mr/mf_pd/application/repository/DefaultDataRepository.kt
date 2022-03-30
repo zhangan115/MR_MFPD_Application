@@ -6,7 +6,7 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
-import com.mr.mf_pd.application.view.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
 import java.util.*
 

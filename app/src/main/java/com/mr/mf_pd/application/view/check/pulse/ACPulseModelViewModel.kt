@@ -3,10 +3,6 @@ package com.mr.mf_pd.application.view.check.pulse
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
-import com.mr.mf_pd.application.repository.callback.RealDataCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import java.util.*
@@ -22,7 +18,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
 
     lateinit var checkType: CheckType
 
-    lateinit var gainValues: MutableLiveData<Vector<Float>>
+    var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData(Vector<Float>())
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun start() {
