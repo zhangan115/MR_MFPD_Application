@@ -59,7 +59,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "MR_Smart_PD${variant.flavorName}_V${defaultConfig.versionName}_${variant.buildType.name}.apk"
+            outputFileName = "MRs-M4Plus${variant.flavorName}_V${defaultConfig.versionName}_${variant.buildType.name}.apk"
         }
     }
     compileOptions {
