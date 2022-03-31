@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.opengl.GLES20.*
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
@@ -24,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import kotlin.math.ceil
 
 class FlightChartsRenderer(
     var context: Context, var queue: ArrayBlockingQueue<ByteArray>?,
@@ -123,37 +125,51 @@ class FlightChartsRenderer(
         maxXValue: Int,
     ) {
         val xListText = getXTextList(maxXValue)
-        if (unit != unitList || xTextList != xList || yList != yTextList) {
+        if (unit != unitList || xListText != xList || yList != yTextList) {
             unitList.clear()
             yList.clear()
             xList.clear()
             unitList.addAll(unit)
             yList.addAll(yTextList)
             xList.addAll(xListText)
+//            Log.d("zhangan", "column is $column xList is $xListText")
             updateBitmap = true
             measureTextWidth(yList)
         }
     }
 
     private fun getXTextList(value: Int): CopyOnWriteArrayList<String> {
+        var maxValue = value
+        if (value < column) {
+            maxValue = column
+        }
         val textList = CopyOnWriteArrayList<String>()
         val xTextList1 = listOf("0", "1", "2", "3", "4", "5")
         val xTextList2 = listOf("0", "2", "4", "6", "8", "10")
         val xTextList3 = listOf("0", "4", "8", "12", "16", "20")
         when {
-            value < 5000 -> {
+            maxValue <= 5000 -> {
                 column = 5000
                 textList.addAll(xTextList1)
             }
-            value in 5000..10000 -> {
+            maxValue in 5001..10000 -> {
                 column = 10000
                 textList.addAll(xTextList2)
             }
-            else -> {
+            maxValue in 10001..20000 -> {
                 column = 20000
                 textList.addAll(xTextList3)
             }
+            else -> {
+                val timeMs = ceil(maxValue.toDouble() / 1000.toDouble()).toInt()
+                val step = ceil(timeMs.toDouble() / 5).toInt()
+                for (i in 0..5) {
+                    textList.add((step * i).toString())
+                }
+                column = (step * 5 * 1000f).toInt()
+            }
         }
+
         return textList
     }
 

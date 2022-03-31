@@ -8,6 +8,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
@@ -96,6 +97,7 @@ class PrPsChartsRenderer(
         textMaps1[Constants.KEY_Y_TEXT] = CopyOnWriteArrayList<String>(yTextList)
 
         textMaps2[Constants.KEY_Z_TEXT] = zList
+        textMaps2[Constants.KEY_UNIT] = unitList
 
         val fontType = "宋体"
         val typeface = Typeface.create(fontType, Typeface.NORMAL)

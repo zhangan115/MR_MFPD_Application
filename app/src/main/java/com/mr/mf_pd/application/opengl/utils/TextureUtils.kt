@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.opengl.GLES30
 import android.opengl.GLUtils
+import android.text.TextUtils
 import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
@@ -231,7 +232,7 @@ object TextureUtils {
             val value = textMaps[Constants.KEY_Z_TEXT]
             if (value != null) {
                 for (i in 0 until value.size) {
-                    val startY = 2 *textRect.textHeightGraphics
+                    val startY = 2 * textRect.textHeightGraphics
                     val step = (textRect.heightGraphics - 2 * startY) / (value.size - 1)
                     val startX = textRect.textWidthGraphics * 0.25f
                     p.getTextBounds(value[i], 0, value[i].length, rect)
@@ -240,6 +241,11 @@ object TextureUtils {
                         (step * i + startY),
                         p)
                 }
+            }
+            val unit = textMaps[Constants.KEY_UNIT]?.firstOrNull()
+            if (!TextUtils.isEmpty(unit)) {
+                p.getTextBounds(unit, 0, unit!!.length, rect)
+                canvas.drawText(unit, 2 * textRect.textWidthGraphics, rect.height().toFloat(), p)
             }
         } else {
             canvas.drawColor(Color.TRANSPARENT)

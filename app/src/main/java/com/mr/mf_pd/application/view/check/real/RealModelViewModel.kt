@@ -241,9 +241,9 @@ class RealModelViewModel(
 
     fun getQueue(): ArrayBlockingQueue<ByteArray>? {
         return if (isFile.value!!) {
-            CheckFileReadManager.get().flightDeque
+            CheckFileReadManager.get().realDataDeque
         } else {
-            SocketManager.get().flightDeque
+            SocketManager.get().realDataDeque
         }
     }
 

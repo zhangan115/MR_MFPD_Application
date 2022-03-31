@@ -234,7 +234,6 @@ class CheckFileReadManager {
             when (commandType) {
                 CommandType.FlightValue -> {
                     val isSuccess = flightDeque?.offer(source)
-
                 }
                 CommandType.RealData -> {
                     val isSuccess = realDataDeque?.offer(source)
