@@ -8,6 +8,7 @@ import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
 import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.concurrent.ArrayBlockingQueue
@@ -22,10 +23,16 @@ import javax.microedition.khronos.opengles.GL10
  * @param dataCallback 数据回调
  */
 abstract class BaseRenderer(
-    var context: Context,
-    var queue: ArrayBlockingQueue<ByteArray>?,
-    var dataCallback: BytesDataCallback?,
+    open var context: Context,
+    open var queue: ArrayBlockingQueue<ByteArray>?,
+    open var dataCallback: BytesDataCallback?,
 ) : GLSurfaceView.Renderer {
+
+    @Volatile
+    var maxValue: Float? = null
+
+    @Volatile
+    var minValue: Float? = null
 
     @Volatile
     var height: Int = 0
@@ -33,11 +40,43 @@ abstract class BaseRenderer(
     @Volatile
     var width: Int = 0
 
+    /**
+     * 测量文字大小
+     */
     var rect: Rect = Rect()
+
+    /**
+     * 画笔
+     */
     val paint = Paint()
+
+    /**
+     * 更新Bitmap
+     */
     var updateBitmap = true
 
+    /**
+     * 清除数据的标记 true 清除数据
+     */
+    @Volatile
+    var isToCleanData = false
+
+    @Volatile
+    var unitList = CopyOnWriteArrayList<String>()
+
+    @Volatile
+    var xList = CopyOnWriteArrayList<String>()
+
+    @Volatile
+    var yList = CopyOnWriteArrayList<String>()
+
+    @Volatile
+    var textRectInOpenGl: TextRectInOpenGl? = null
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+        GLES30.glClearColor(1f, 1f, 1f, 1f)
+        textRectInOpenGl = TextRectInOpenGl(rect)
+
         val fontType = "宋体"
         val typeface = Typeface.create(fontType, Typeface.NORMAL)
         paint.color = context.getColor(R.color.text_title)
@@ -69,12 +108,6 @@ abstract class BaseRenderer(
         }
         paint.getTextBounds(text, 0, text.length, rect)
     }
-
-    /**
-     * 清除数据的标记 true 清除数据
-     */
-    @Volatile
-    private var isToCleanData = false
 
     /**
      * 清除数据

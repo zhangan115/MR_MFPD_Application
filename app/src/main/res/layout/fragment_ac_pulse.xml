@@ -50,21 +50,12 @@
                 tools:text="内同步，50kHz-300kHz" />
         </LinearLayout>
 
-        <LinearLayout
+
+        <com.mr.mf_pd.application.widget.MRSurfaceView
+            android:id="@+id/surfaceView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
+            android:layout_weight="1" />
 
         <LinearLayout
             android:layout_width="match_parent"

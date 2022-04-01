@@ -89,6 +89,13 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
+    public static GeneratedData createChartLines(int column, short[] values, float min, float max, TextRectInOpenGl rect) {
+        int size = sizeOfPoint2DSinLineInVertices(column);
+        ObjectBuilder builder = new ObjectBuilder(size);
+        builder.appLines(column, values, min, max, rect);
+        return builder.Build();
+    }
+
     public static GeneratedData createPrPsXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
         int size = sizeOfPrPsChartLinesInVertices(row, column);
         ObjectBuilder builder = new ObjectBuilder(size);
@@ -164,6 +171,30 @@ public class ObjectBuilder {
             sinStartX = sinStartX + sinXStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, sinLineStartVertex, sinCount + 1));
+    }
+
+
+    private void appLines(int column, short[] values, float min, float max, TextRectInOpenGl rect) {
+        float spaceWidth = 1.5f * rect.getTextWidth();
+        float endWidth = rect.getTextWidth();
+        float spaceHeight = 2f * rect.getTextHeight();
+
+        float startX = -1 + spaceWidth;
+
+        //数据线 线
+        final int startVertex = offset / FLOATS_PER_VERTEX;
+
+        float xStep = (2 - spaceWidth - endWidth) / column;
+        float sinStartX = startX;
+        float height = (2f - 2 * spaceHeight) / 2.0f;
+
+        for (int i = 0; i <= column; i++) {
+            vertexData[offset++] = sinStartX;
+            vertexData[offset++] = values[i] * height / (max - min);
+            sinStartX = sinStartX + xStep;
+            vertexData[offset++] = 0f;
+        }
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, column + 1));
     }
 
     private void appPrPs3DXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
