@@ -30,15 +30,13 @@
             android:padding="10dp"
             android:paddingStart="15dp">
 
-            <TextView
-                android:layout_width="0dp"
+            <TextClock
+                android:id="@+id/textClock"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@{vm.timeStr}"
-                android:textColor="#ff0063d5"
+                android:textColor="@color/blueColor"
                 android:textSize="14sp"
-                android:textStyle="bold|normal"
-                tools:text="12:09:23" />
+                android:textStyle="bold|normal" />
 
             <TextView
                 android:layout_width="wrap_content"

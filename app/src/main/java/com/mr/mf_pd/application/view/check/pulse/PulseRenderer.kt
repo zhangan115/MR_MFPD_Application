@@ -3,22 +3,23 @@ package com.mr.mf_pd.application.view.check.pulse
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLES30
-import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.opengl.`object`.*
+import com.mr.mf_pd.application.opengl.`object`.ChartLineView
+import com.mr.mf_pd.application.opengl.`object`.PointSinChartLine
+import com.mr.mf_pd.application.opengl.`object`.TextGlHelp
+import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
 import com.mr.mf_pd.application.opengl.programs.Point2DColorPointShaderProgram
 import com.mr.mf_pd.application.opengl.programs.Point2DColorShaderProgram
 import com.mr.mf_pd.application.opengl.programs.TextureShaderProgram
 import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.mr.mf_pd.application.view.base.BaseRenderer
-import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
-import kotlin.collections.ArrayList
+import kotlin.math.max
 
 class PulseRenderer(
     override var context: Context,
@@ -62,7 +63,8 @@ class PulseRenderer(
             10,
             0,
             textRectInOpenGl)
-
+        minValue = -80f
+        maxValue = -20f
         chartLineView = ChartLineView(column, values, minValue, maxValue, textRectInOpenGl)
     }
 

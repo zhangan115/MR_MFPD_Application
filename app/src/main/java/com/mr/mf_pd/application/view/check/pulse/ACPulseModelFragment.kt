@@ -1,17 +1,21 @@
 package com.mr.mf_pd.application.view.check.pulse
 
+import android.graphics.PixelFormat
 import android.os.Bundle
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
-import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_ac_pulse.*
-import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
+import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
+import kotlinx.android.synthetic.main.fragment_ac_pulse.image3
+import kotlinx.android.synthetic.main.fragment_ac_pulse.image4
 
 /**
  * AC 脉冲波形
@@ -22,6 +26,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     private val viewModel by viewModels<ACPulseModelViewModel> { getViewModelFactory() }
     private var rendererSet = false
+
     companion object {
 
         fun create(): ACPulseModelFragment {
@@ -41,9 +46,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun initData() {
-        if (viewModel.checkType.settingBean.gdCd == 1){
+        if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
-        }else{
+        } else {
             if (viewModel.isFile.value!!) {
                 viewModel.gainMinValue.postValue(DefaultFilesRepository.realDataMinValue.value?.toFloat())
             } else {
@@ -56,9 +61,43 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         viewModel.isFile.value = isFile
     }
 
+    var pulseRenderer: PulseRenderer? = null
     override fun initView() {
         activity?.let {
-            LineChartUtils.initChart(lineChart, it.applicationContext)
+            surfaceView.setEGLContextClientVersion(3)
+            pulseRenderer = PulseRenderer(this.requireContext(),
+                viewModel.getQueue(),
+                viewModel.fdValueCallBack)
+            surfaceView.setRenderer(pulseRenderer)
+            surfaceView.setZOrderOnTop(true)
+            surfaceView.holder.setFormat(PixelFormat.TRANSPARENT)
+            viewModel.isSaveData?.observe(this, {
+                if (it) {
+                    val animation =
+                        AnimationUtils.loadAnimation(requireContext(), R.anim.twinkle_anim)
+                    image1.startAnimation(animation)
+                } else {
+                    image1.clearAnimation()
+                }
+            })
+            image1.setOnClickListener {
+                if (image1.animation == null) {
+                    viewModel.startSaveData()
+                } else {
+                    viewModel.stopSaveData()
+                    showSaveFileDialog()
+                }
+            }
+            image2.setOnClickListener {
+                checkActionListener?.downLimitValue()
+            }
+            image3.setOnClickListener {
+                checkActionListener?.addLimitValue()
+            }
+            image4.setOnClickListener {
+                cleanCurrentData()
+            }
+            rendererSet = true
         }
     }
 
@@ -71,7 +110,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun cancelSaveData() {
-
+        viewModel.isSaveData?.postValue(false)
     }
 
 
@@ -80,7 +119,8 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun cleanCurrentData() {
-
+        pulseRenderer?.cleanData()
+        viewModel.cleanCurrentData()
     }
 
     override fun isAdd(): Boolean {
@@ -94,7 +134,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override fun onResume() {
         super.onResume()
         if (rendererSet) {
-            surfaceView1.onResume()
+            surfaceView.onResume()
         }
         viewModel.onResume()
         cleanCurrentData()
@@ -103,7 +143,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override fun onPause() {
         super.onPause()
         if (rendererSet) {
-            surfaceView1.onPause()
+            surfaceView.onPause()
         }
         viewModel.onPause()
     }

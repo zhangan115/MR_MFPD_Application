@@ -29,10 +29,10 @@ abstract class BaseRenderer(
 ) : GLSurfaceView.Renderer {
 
     @Volatile
-    var maxValue: Float? = null
+    var maxValue: Float = 0f
 
     @Volatile
-    var minValue: Float? = null
+    var minValue: Float = 0f
 
     @Volatile
     var height: Int = 0
@@ -112,7 +112,7 @@ abstract class BaseRenderer(
     /**
      * 清除数据
      */
-    fun cleanData() {
+    open fun cleanData() {
         isToCleanData = true
     }
 }

@@ -188,7 +188,7 @@ public class ObjectBuilder {
         float sinStartX = startX;
         float height = (2f - 2 * spaceHeight) / 2.0f;
 
-        for (int i = 0; i <= column; i++) {
+        for (int i = 0; i < column; i++) {
             vertexData[offset++] = sinStartX;
             vertexData[offset++] = values[i] * height / (max - min);
             sinStartX = sinStartX + xStep;
