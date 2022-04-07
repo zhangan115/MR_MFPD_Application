@@ -11,11 +11,14 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
+import com.mr.mf_pd.application.view.callback.FdDataCallback
+import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_pulse.*
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image3
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image4
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * AC 脉冲波形
@@ -46,6 +49,8 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun initData() {
+        mPassageway = viewModel.checkType.passageway
+        mCommandType = 4
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
@@ -55,6 +60,15 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
+        viewModel.setDataCallback(object : FdDataCallback {
+            override fun fdData(data: CopyOnWriteArrayList<Float?>) {
+                pulseRenderer?.updateYAxis(getUnitValue(viewModel.checkType.settingBean),
+                    getYAxisValue(viewModel.isFile.value!!,
+                        viewModel.checkType.settingBean,
+                        viewModel.gainMinValue))
+                pulseRenderer?.updateData(data)
+            }
+        })
     }
 
     override fun setIsFileValue(isFile: Boolean?) {
@@ -62,6 +76,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     var pulseRenderer: PulseRenderer? = null
+
     override fun initView() {
         activity?.let {
             surfaceView.setEGLContextClientVersion(3)
@@ -146,6 +161,14 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
             surfaceView.onPause()
         }
         viewModel.onPause()
+    }
+
+    override fun setCheckFile(str: String) {
+        viewModel.setCheckFile(str)
+    }
+
+    override fun createCheckFile() {
+        viewModel.createACheckFile()
     }
 
 }

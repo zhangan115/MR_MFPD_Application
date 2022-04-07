@@ -3,7 +3,6 @@ package com.mr.mf_pd.application.manager.socket
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
-import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
 import com.mr.mf_pd.application.common.Constants
@@ -44,6 +43,7 @@ class SocketManager private constructor() {
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
     var fdDataDeque: ArrayBlockingQueue<ByteArray>? = null//放电数据队列
+    var pulseDataDeque: ArrayBlockingQueue<ByteArray>? = null// 原始脉冲数据队列
 
     companion object {
 
@@ -90,6 +90,7 @@ class SocketManager private constructor() {
                     val sources = ByteArray(size)
                     System.arraycopy(dataBuffer, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
+//                    Log.d("zhangan", mDataByteList.toString())
                     dealStickyBytes()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -140,10 +141,13 @@ class SocketManager private constructor() {
                     length = mDataByteList[2].toInt() + 5
                 }
                 CommandType.FdData -> {
-                    mDataByteList.clear()
-//                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
-//                    val length = ByteLibUtil.getInt(lengthBytes) + 2
-//                    byteList.removeAll(handOut(byteList, length))
+                    val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[2], mDataByteList[3])
+                    length = ByteLibUtil.getInt(lengthBytes) + 4
+                }
+                CommandType.SendPulse -> {
+                    val lengthBytes =
+                        byteArrayOf(0x00, mDataByteList[2], mDataByteList[3], mDataByteList[4])
+                    length = ByteLibUtil.getInt(lengthBytes) + 4
                 }
                 CommandType.RealData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
@@ -155,28 +159,10 @@ class SocketManager private constructor() {
                 }
                 else -> {
                     mDataByteList.clear()
-                    Log.d("zhangan", "不支持的命令参数")
                 }
             }
         }
         if (length > 0 && length <= mDataByteList.size) {
-//            val map = HashMap<CommandType, LinkedList<ByteArray>>()
-//            var position = 0
-//            while (position < mDataByteList.size) {
-//                val list = mDataByteList.subList(position, length)
-//
-//            }
-//            var position = 0
-//            val newList = LinkedList<Byte>()
-//            while (position < mDataByteList.size && position > 0) {
-//
-//                val length = getLength(mDataByteList)
-//                if (length < 0) {
-//                    break
-//                }
-//                val list = mDataByteList.subList(position, length)
-//
-//            }
             val list = mDataByteList.subList(0, length)
             commandCallback(commandType, Bytes.toArray(list))
             val newList = LinkedList<Byte>()
@@ -190,68 +176,40 @@ class SocketManager private constructor() {
         }
     }
 
-    private fun getLength(bytes: LinkedList<Byte>): Int {
-        var length = -1
-        var commandType: CommandType?
-        if (bytes[0].toInt() == DEVICE_NO && bytes.size > 4) {
-            //根据数据获取命令类型
-            commandType = CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }
-            when (commandType) {
-                CommandType.SendTime -> {
-                    if (bytes.size >= commandType.length) {
-                        length = commandType.length
-                    }
-                }
-                CommandType.SwitchPassageway -> {
-                    if (bytes.size >= commandType.length) {
-                        length = commandType.length
-                    }
-                }
-                CommandType.ReadYcData -> {
-                    length = bytes[2].toInt() * 4 + 5
-                }
-                CommandType.ReadSettingValue -> {
-                    length = bytes[2].toInt() * 4 + 5
-                }
-                CommandType.WriteValue -> {
-                    length = bytes[2].toInt() + 5
-                }
-                CommandType.FdData -> {
-                    mDataByteList.clear()
-//                    val lengthBytes = byteArrayOf(0x00, 0x00, byteList[2], byteList[3])
-//                    val length = ByteLibUtil.getInt(lengthBytes) + 2
-//                    byteList.removeAll(handOut(byteList, length))
-                }
-                CommandType.RealData -> {
-                    val lengthBytes = byteArrayOf(0x00, 0x00, bytes[3], bytes[4])
-                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                }
-                CommandType.FlightValue -> {
-                    val lengthBytes = byteArrayOf(0x00, 0x00, bytes[3], bytes[4])
-                    length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                }
-                else -> {
-                    mDataByteList.clear()
-                    Log.d("zhangan", "不支持的命令参数")
-                }
-            }
-        }
-
-        return length
-    }
-
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
             when (commandType) {
                 CommandType.FlightValue -> {
-                    val isSuccess = flightDeque?.offer(source)
-
+                    flightDeque?.let {
+                        val isSuccess = it.offer(source)
+                        if (!isSuccess) {
+                            it.clear()
+                        }
+                    }
                 }
                 CommandType.RealData -> {
-                    val isSuccess = realDataDeque?.offer(source)
+                    realDataDeque?.let {
+                        val isSuccess = it.offer(source)
+                        if (!isSuccess) {
+                            it.clear()
+                        }
+                    }
                 }
                 CommandType.FdData -> {
-                    fdDataDeque?.offer(source)
+                    fdDataDeque?.let {
+                        val isSuccess = it.offer(source)
+                        if (!isSuccess) {
+                            it.clear()
+                        }
+                    }
+                }
+                CommandType.SendPulse -> {
+                    pulseDataDeque?.let {
+                        val isSuccess = it.offer(source)
+                        if (!isSuccess) {
+                            it.clear()
+                        }
+                    }
                 }
                 else -> {
                     bytesCallbackMap[commandType]?.forEach {
@@ -368,7 +326,6 @@ class SocketManager private constructor() {
             try {
                 val list = ArrayList<ByteArray>()
                 while (isQueueRuing.get()) {
-
                     realDataDeque?.drainTo(list)
                     if (list.size > 0) {
                         Log.d("zhangan", "realDataDeque data size is " + list.size)

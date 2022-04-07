@@ -48,6 +48,8 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun initData() {
+        mPassageway = viewModel.checkType.passageway
+        mCommandType = 1
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {

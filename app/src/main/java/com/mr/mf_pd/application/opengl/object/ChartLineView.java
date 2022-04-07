@@ -4,6 +4,7 @@ import com.mr.mf_pd.application.opengl.data.VertexArray;
 import com.mr.mf_pd.application.opengl.programs.Point2DColorShaderProgram;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import kotlin.jvm.Volatile;
 
@@ -18,7 +19,7 @@ public class ChartLineView {
     private VertexArray vertexArray;
     private List<ObjectBuilder.DrawCommand> drawList;
 
-    public ChartLineView(int column, short[] values, Float min, Float max, TextRectInOpenGl rect) {
+    public ChartLineView(int column,CopyOnWriteArrayList<Float> values, Float min, Float max, TextRectInOpenGl rect) {
         this.rect = rect;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
                 .createChartLines(column, values,min,max, rect);
@@ -26,7 +27,7 @@ public class ChartLineView {
         this.drawList = generatedData.drawList;
     }
 
-    public void updateGenerateData(int column, short[] values,Float min, Float max) {
+    public void updateGenerateData(int column, CopyOnWriteArrayList<Float> values, Float min, Float max) {
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
                 .createChartLines(column, values,min,max, rect);
         vertexArray = new VertexArray(generatedData.vertexData);

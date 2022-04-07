@@ -10,13 +10,17 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.view.callback.FlightDataCallback
-import com.sito.tool.library.utils.ByteLibUtil
+import com.mr.mf_pd.application.view.callback.FdDataCallback
+import java.io.File
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.max
 
-class ACPulseModelViewModel(val dataRepository: DataRepository, val filesRepository: FilesRepository) : ViewModel() {
+class ACPulseModelViewModel(
+    val dataRepository: DataRepository,
+    val filesRepository: FilesRepository,
+) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData()
@@ -37,6 +41,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
             this.checkType = dataRepository.getCheckType()
         }
     }
+
     var isSaveData: MutableLiveData<Boolean>? = null
 
     fun startSaveData() {
@@ -47,7 +52,7 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
         filesRepository.stopSaveData()
     }
 
-    fun getQueue(): ArrayBlockingQueue<ByteArray>?{
+    fun getQueue(): ArrayBlockingQueue<ByteArray>? {
         return if (isFile.value!!) {
             CheckFileReadManager.get().fdDataDeque
         } else {
@@ -57,34 +62,32 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
 
     fun onResume() {
         if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.FdData, fdValueCallBack)
+            CheckFileReadManager.get().addCallBack(CommandType.SendPulse, fdValueCallBack)
         } else {
-            SocketManager.get().addCallBack(CommandType.FdData, fdValueCallBack)
+            SocketManager.get().addCallBack(CommandType.SendPulse, fdValueCallBack)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.FdData, fdValueCallBack)
+            CheckFileReadManager.get().removeCallBack(CommandType.SendPulse, fdValueCallBack)
         } else {
-            SocketManager.get().removeCallBack(CommandType.FdData, fdValueCallBack)
+            SocketManager.get().removeCallBack(CommandType.SendPulse, fdValueCallBack)
         }
     }
 
     private var maxGainValue: Float? = null
-    private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
     var receiverCount = 0
 
-    private var flightCallback: FlightDataCallback? = null
+    private var fdCallback: FdDataCallback? = null
 
-    fun setFlightCallback(callback: FlightDataCallback) {
-        flightCallback = callback
+    fun setDataCallback(callback: FdDataCallback) {
+        fdCallback = callback
     }
 
     fun cleanCurrentData() {
         receiverCount = 0
         val list = Vector<Float>()
-        dataMaps = HashMap()
         if (isFile.value == true) {
             this.gainValues.postValue(list)
         } else {
@@ -92,43 +95,27 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
         }
     }
 
-
     val fdValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (source.isEmpty() || source.size < 7) return
-            var maxXValue = -1
-            val bytes = ByteArray(source.size - 7)
-            System.arraycopy(source, 5, bytes, 0, source.size - 7)
+            val valueList = CopyOnWriteArrayList<Float?>()
+            if (source.isEmpty() || source.size < 25) return
+            val bytes = ByteArray(source.size - 25)
+            System.arraycopy(source, 21, bytes, 0, source.size - 25)
+
             if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
-                for (i in 0 until (bytes.size / 6)) {
-                    val values = ByteArray(6)
-                    System.arraycopy(bytes, 6 * i, values, 0, 6)
-                    val lengthBytes = byteArrayOf(0x00, 0x00, values[0], values[1])
-                    val height = ByteArray(4)
-                    System.arraycopy(values, 2, height, 0, 4)
-                    val value = ByteUtil.getFloat(height)
-                    val key = ByteLibUtil.getInt(lengthBytes)
-                    maxXValue = max(key, maxXValue)
+                var position = 0
+                while (position < bytes.size) {
+                    val values = ByteArray(2)
+                    values[0] = bytes[position]
+                    values[1] = bytes[position + 1]
+                    val value = ByteUtil.getShort(values, 0) * 0.1f
                     maxGainValue = if (maxGainValue == null) {
                         value
                     } else {
                         max(value, maxGainValue!!)
                     }
-                    if (dataMaps.containsKey(key)) {
-                        val map = dataMaps[key]
-                        if (map != null && map.containsKey(value)) {
-                            val value1 = map[value]
-                            if (value1 != null) {
-                                map[value] = value1 + 1
-                            }
-                        } else {
-                            map?.set(value, 1)
-                        }
-                    } else {
-                        val newMap: HashMap<Float, Int> = HashMap()
-                        newMap[value] = 1
-                        dataMaps[key] = newMap
-                    }
+                    valueList.add(value)
+                    position += 2
                 }
             }
             if (receiverCount % 5 == 0) {
@@ -144,9 +131,20 @@ class ACPulseModelViewModel(val dataRepository: DataRepository, val filesReposit
                 maxGainValue = null
             }
             receiverCount++
-            flightCallback?.flightData(dataMaps, maxXValue)
+            fdCallback?.fdData(valueList)
         }
 
+    }
+
+    fun setCheckFile(filePath: String) {
+        val file = File(filePath)
+        filesRepository.setCurrentClickFile(file)
+        location.postValue(filesRepository.getCurrentCheckName())
+        createACheckFile()
+    }
+
+    fun createACheckFile() {
+        filesRepository.toCreateCheckFile(checkType)
     }
 
 }

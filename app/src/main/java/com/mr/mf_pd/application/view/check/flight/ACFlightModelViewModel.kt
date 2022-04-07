@@ -43,10 +43,8 @@ class ACFlightModelViewModel(
             this.checkType = filesRepository.getCheckType()
         } else {
             this.checkType = dataRepository.getCheckType()
-            dataRepository.switchPassageway(checkType.passageway, checkType.commandType)
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-//            SocketManager.get().addCallBack(CommandType.FlightValue, flightValueCallBack)
         }
     }
 

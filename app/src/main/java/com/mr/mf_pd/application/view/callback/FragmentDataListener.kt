@@ -6,6 +6,7 @@ package com.mr.mf_pd.application.view.callback
  * @since 2022-03-19
  */
 interface FragmentDataListener {
+
     /**
      * 遥测数据发生变化
      */

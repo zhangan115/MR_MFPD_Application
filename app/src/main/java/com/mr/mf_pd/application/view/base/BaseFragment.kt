@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +64,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
             return
         }
         if (userVisibleHint) {
+            Log.d("zhangan","lazyLoad")
             lazyLoad()
             isLoad = true
         } else {

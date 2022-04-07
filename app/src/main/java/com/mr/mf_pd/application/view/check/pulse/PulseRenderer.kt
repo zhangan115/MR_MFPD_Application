@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
-import kotlin.math.max
 
 class PulseRenderer(
     override var context: Context,
@@ -41,7 +40,7 @@ class PulseRenderer(
 
     @Volatile
     private var chartLineView: ChartLineView? = null
-    private var values = ShortArray(250)
+    private val values = CopyOnWriteArrayList<Float>()
 
     private val xTextList = listOf("0", "50", "100", "150", "200", "250")
 
@@ -128,8 +127,6 @@ class PulseRenderer(
     fun updateYAxis(
         unit: CopyOnWriteArrayList<String>,
         yTextList: CopyOnWriteArrayList<String>,
-        minValue: Float?,
-        maxXValue: Float?,
     ) {
         if (unit != unitList || yList != yTextList) {
             unitList.clear()
@@ -139,6 +136,15 @@ class PulseRenderer(
             yList.addAll(yTextList)
             updateBitmap = true
             measureTextWidth(yList)
+        }
+    }
+
+    fun updateData(floatList: CopyOnWriteArrayList<Float?>) {
+        if (floatList.isEmpty()) {
+            cleanData()
+        } else {
+            values.clear()
+            values.addAll(floatList)
         }
     }
 }

@@ -9,7 +9,6 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataBinding
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -46,6 +45,8 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
     }
 
     override fun initData() {
+        mPassageway = viewModel.checkType.passageway
+        mCommandType = 1
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {

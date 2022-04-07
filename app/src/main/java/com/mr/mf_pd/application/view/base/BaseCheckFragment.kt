@@ -7,17 +7,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -34,21 +34,53 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @since 2021-11-28
  */
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
+
     open var TAG = "BaseCheckFragment"
+
+    //通道
+    open var mPassageway: Int = 0
+
+    //命令类型
+    open var mCommandType: Int = 0
+
+    //检测类型
+    open var checkType: CheckType? = null
+
+    //设置参数
+    open var settingBean: SettingBean? = null
+
+    //操作回调监听
     var checkActionListener: CheckActivityListener? = null
+
+    //选择的地址
     var location: String? = null
-    private val requestChooseDirCode = 200
-    var isOpenFromFile = false
+
+    //是否是文件数据
+    private var dataFromFile = false
+
+    //设置数据广播监听
     private var settingBeanBr: SettingChangeBr? = null
+
+    //选择文件夹请求Code
+    private val requestChooseDirCode = 200
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isFile = arguments?.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN)
-        setIsFileValue(isFile)
+        arguments?.let {
+            dataFromFile = it.getBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN, false)
+        }
+        setIsFileValue(dataFromFile)
+    }
+
+    private fun switchPassageway(passageway: Int, commandType: Int) {
+        if (!dataFromFile) {
+            SocketManager.get().sendData(CommandHelp.switchPassageway(passageway, commandType))
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        switchPassageway(mPassageway, mCommandType)
         Log.d("zhangan", "$TAG onResume")
     }
 
@@ -84,20 +116,12 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
     }
 
-    fun getLocationValue(): String? {
+    open fun getLocationValue(): String? {
         return location
     }
 
-    fun setLocationValue(location: String?) {
+    open fun setLocationValue(location: String?) {
         this.location = location
-    }
-
-    open fun setCheckFile(str: String) {
-
-    }
-
-    open fun createCheckFile() {
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -111,6 +135,10 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             }
         }
     }
+
+    abstract fun setCheckFile(str: String)
+
+    abstract fun createCheckFile()
 
     /**
      * 显示提示保存的Dialog
@@ -161,6 +189,29 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
     }
 
+    /**
+     * 数据是否正在保存
+     */
+    abstract fun isSaving(): Boolean
+
+    /***
+     * 取消数据保存
+     */
+    abstract fun cancelSaveData()
+
+
+    fun changeBandDetectionModel() {
+        checkActionListener?.changeBandDetectionModel()
+    }
+
+    fun addLimitValue() {
+        checkActionListener?.addLimitValue()
+    }
+
+    fun downLimitValue() {
+        checkActionListener?.downLimitValue()
+    }
+
     fun getUnitValue(settingBean: SettingBean): CopyOnWriteArrayList<String> {
         val unitList = CopyOnWriteArrayList<String>()
         if (settingBean.fzUnit != null) {
@@ -200,30 +251,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
         yList.reverse()
         return yList
-    }
-
-
-    /**
-     * 数据是否正在保存
-     */
-    abstract fun isSaving(): Boolean
-
-    /***
-     * 取消数据保存
-     */
-    abstract fun cancelSaveData()
-
-
-    fun changeBandDetectionModel() {
-        checkActionListener?.changeBandDetectionModel()
-    }
-
-    fun addLimitValue() {
-        checkActionListener?.addLimitValue()
-    }
-
-    fun downLimitValue() {
-        checkActionListener?.downLimitValue()
     }
 
     fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {

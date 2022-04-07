@@ -33,7 +33,6 @@ class CheckDataViewModel(
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     val settingValues: ArrayList<Float> = ArrayList()
 
-    var switchCommand: ByteArray? = null
     var writeSettingCommand: ByteArray? = null
 
     private val _toYcDataEvent = MutableLiveData<Event<ByteArray>>()
@@ -50,10 +49,7 @@ class CheckDataViewModel(
         SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
         SocketManager.get().addCallBack(CommandType.WriteValue, writeSettingDataCallback)
         SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        SocketManager.get().addCallBack(CommandType.SwitchPassageway, switchBytesDataCallback)
-
-        switchCommand = CommandHelp.switchPassageway(mCheckType.passageway, mCheckType.commandType)
-        dataRepository.switchPassageway(mCheckType.passageway, mCheckType.commandType)
+        readYcValue()
     }
 
     private fun updateSettingValue() {
@@ -225,21 +221,11 @@ class CheckDataViewModel(
         }
     }
 
-    private val switchBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-            if (source.contentEquals(switchCommand)) {
-                readYcValue()
-            }
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
-
         SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
         SocketManager.get().removeCallBack(CommandType.WriteValue, writeSettingDataCallback)
         SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        SocketManager.get().removeCallBack(CommandType.SwitchPassageway, switchBytesDataCallback)
         dataRepository.closePassageway()
         disposableList.forEach { disposable ->
             if (!disposable.isDisposed) {

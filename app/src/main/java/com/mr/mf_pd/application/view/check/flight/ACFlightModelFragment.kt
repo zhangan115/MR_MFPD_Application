@@ -46,6 +46,8 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun initData() {
+        mPassageway = viewModel.checkType.passageway
+        mCommandType = 2
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
@@ -113,7 +115,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun setCheckFile(str: String) {
-        super.setCheckFile(str)
         viewModel.setCheckFile(str)
     }
 

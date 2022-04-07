@@ -6,6 +6,7 @@ import com.mr.mf_pd.application.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 物体构建器
@@ -89,7 +90,7 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    public static GeneratedData createChartLines(int column, short[] values, float min, float max, TextRectInOpenGl rect) {
+    public static GeneratedData createChartLines(int column, CopyOnWriteArrayList<Float> values, float min, float max, TextRectInOpenGl rect) {
         int size = sizeOfPoint2DSinLineInVertices(column);
         ObjectBuilder builder = new ObjectBuilder(size);
         builder.appLines(column, values, min, max, rect);
@@ -174,7 +175,7 @@ public class ObjectBuilder {
     }
 
 
-    private void appLines(int column, short[] values, float min, float max, TextRectInOpenGl rect) {
+    private void appLines(int column, CopyOnWriteArrayList<Float> values, float min, float max, TextRectInOpenGl rect) {
         float spaceWidth = 1.5f * rect.getTextWidth();
         float endWidth = rect.getTextWidth();
         float spaceHeight = 2f * rect.getTextHeight();
@@ -188,9 +189,9 @@ public class ObjectBuilder {
         float sinStartX = startX;
         float height = (2f - 2 * spaceHeight) / 2.0f;
 
-        for (int i = 0; i < column; i++) {
+        for (int i = 0; i < values.size(); i++) {
             vertexData[offset++] = sinStartX;
-            vertexData[offset++] = values[i] * height / (max - min);
+            vertexData[offset++] = values.get(i) * height / (max - min);
             sinStartX = sinStartX + xStep;
             vertexData[offset++] = 0f;
         }
