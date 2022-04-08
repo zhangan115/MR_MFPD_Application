@@ -86,12 +86,15 @@ class SocketManager private constructor() {
             var size: Int
             while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
                 try {
-                    mDataByteList.clear()
+//                    mDataByteList.clear()
                     val sources = ByteArray(size)
                     System.arraycopy(dataBuffer, 0, sources, 0, size)
                     mDataByteList.addAll(Bytes.asList(*sources))
 //                    Log.d("zhangan", mDataByteList.toString())
                     dealStickyBytes()
+                    if (mDataByteList.isNotEmpty()) {
+                        Log.d("zhangan",mDataByteList.toString())
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mDataByteList.clear()
@@ -117,7 +120,7 @@ class SocketManager private constructor() {
     private fun dealStickyBytes() {
         var length = -1
         var commandType: CommandType? = null
-        if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 4) {
+        if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 5) {
             //根据数据获取命令类型
             commandType = CommandType.values().firstOrNull { it.funCode == mDataByteList[1] }
             when (commandType) {
