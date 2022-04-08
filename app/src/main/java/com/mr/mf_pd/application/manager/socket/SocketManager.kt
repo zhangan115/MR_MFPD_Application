@@ -1,13 +1,16 @@
 package com.mr.mf_pd.application.manager.socket
 
+import android.os.Environment
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.*
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.utils.DateUtil
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -64,12 +67,57 @@ class SocketManager private constructor() {
         }
     }
 
+    var saveFileDeque: ArrayBlockingQueue<ByteArray>? = null// 原始脉冲数据队列
+
     //执行请求任务的线程池
     private var mRequestExecutor: ExecutorService? = null
     private var future: Future<*>? = null
 
     private var mQueueExecutor: ExecutorService? = null
     private var mQueueFuture: Future<*>? = null
+
+    private var fos: FileOutputStream? = null
+
+    @Volatile
+    private var toSaveData = true
+
+    private fun initFile() {
+        saveFileDeque = ArrayBlockingQueue(50)
+        Environment.getExternalStorageDirectory()
+        val dir = MRApplication.instance.fileCacheFile()
+        val mrDir = File(dir, "Mr")
+        if (!mrDir.exists()) {
+            mrDir.mkdir()
+        }
+        val file = File(mrDir,
+            DateUtil.timeFormat(System.currentTimeMillis(), "yyyy_MM_dd_HH_mm_ss") + ".txt")
+        file.createNewFile()
+        Log.d("zhangan", "file position is  " + file.absolutePath)
+        fos = FileOutputStream(file, true)
+        Thread {
+            try {
+                while (toSaveData) {
+                    val dataList = saveFileDeque?.take()
+                    if (dataList != null) {
+                        mDataByteList.addAll(Bytes.asList(*dataList))
+                        dealStickyBytes()
+                        fos?.write((ByteLibUtil.bytes2HexStr(dataList) + "\n").toByteArray())
+                        fos?.flush()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    fos?.close()
+                    Log.d("zhangan", "file close")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }.start()
+    }
 
     private val requestRunnable = Runnable {
         try {
@@ -84,20 +132,20 @@ class SocketManager private constructor() {
                 linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
             }
             var size: Int
+            initFile()
             while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
                 try {
-//                    mDataByteList.clear()
                     val sources = ByteArray(size)
                     System.arraycopy(dataBuffer, 0, sources, 0, size)
-                    mDataByteList.addAll(Bytes.asList(*sources))
-//                    Log.d("zhangan", mDataByteList.toString())
-                    dealStickyBytes()
-                    if (mDataByteList.isNotEmpty()) {
-                        Log.d("zhangan",mDataByteList.toString())
+                    saveFileDeque?.let {
+                        val isSuccess = it.offer(sources)
+                        if (!isSuccess) {
+                            it.clear()
+                        }
+                        it.offer(sources)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    mDataByteList.clear()
                 }
             }
         } catch (e: IOException) {
@@ -105,6 +153,7 @@ class SocketManager private constructor() {
             socket = null
         } finally {
             try {
+                toSaveData = false
                 mDataByteList.clear()
                 isConnected = false
                 inputStream?.close()
