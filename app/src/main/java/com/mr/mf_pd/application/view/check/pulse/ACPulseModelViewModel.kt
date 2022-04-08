@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.check.pulse
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -54,25 +55,25 @@ class ACPulseModelViewModel(
 
     fun getQueue(): ArrayBlockingQueue<ByteArray>? {
         return if (isFile.value!!) {
-            CheckFileReadManager.get().fdDataDeque
+            CheckFileReadManager.get().pulseDataDeque
         } else {
-            SocketManager.get().fdDataDeque
+            SocketManager.get().pulseDataDeque
         }
     }
 
     fun onResume() {
         if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.SendPulse, fdValueCallBack)
+            CheckFileReadManager.get().addCallBack(CommandType.SendPulse, pulseValueCallBack)
         } else {
-            SocketManager.get().addCallBack(CommandType.SendPulse, fdValueCallBack)
+            SocketManager.get().addCallBack(CommandType.SendPulse, pulseValueCallBack)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.SendPulse, fdValueCallBack)
+            CheckFileReadManager.get().removeCallBack(CommandType.SendPulse, pulseValueCallBack)
         } else {
-            SocketManager.get().removeCallBack(CommandType.SendPulse, fdValueCallBack)
+            SocketManager.get().removeCallBack(CommandType.SendPulse, pulseValueCallBack)
         }
     }
 
@@ -95,14 +96,17 @@ class ACPulseModelViewModel(
         }
     }
 
-    val fdValueCallBack = object : BytesDataCallback {
+    val pulseValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             val valueList = CopyOnWriteArrayList<Float?>()
-            if (source.isEmpty() || source.size < 25) return
-            val bytes = ByteArray(source.size - 25)
-            System.arraycopy(source, 21, bytes, 0, source.size - 25)
-
-            if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
+            val onePulseCount = 11 + 249 * 2 + 10 + 2
+            if (source.isEmpty() || source.size < onePulseCount) return
+            val pulseCount = source[10].toInt()
+            Log.d("zhangan", "pulseCount $pulseCount")
+            val bytes = ByteArray(249 * 2)
+            val srcPos = 11 + (pulseCount - 1) * (249 * 2 + 10)
+            System.arraycopy(source, srcPos + 10, bytes, 0, 249 * 2)
+            if (bytes.isNotEmpty() && bytes.size % 2 == 0) {
                 var position = 0
                 while (position < bytes.size) {
                     val values = ByteArray(2)
@@ -117,6 +121,7 @@ class ACPulseModelViewModel(
                     valueList.add(value)
                     position += 2
                 }
+                Log.d("zhangan","valueList ${valueList.size}")
             }
             if (receiverCount % 5 == 0) {
                 if (maxGainValue != null) {

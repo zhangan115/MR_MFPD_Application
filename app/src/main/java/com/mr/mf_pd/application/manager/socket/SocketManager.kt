@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.manager.socket
 
-import android.os.Environment
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
@@ -40,8 +39,8 @@ class SocketManager private constructor() {
 
     private var socket: Socket? = null
 
-    //开辟10K的存储空间 用来保存数据
-    private val dataBuffer = ByteArray(1024 * 10)
+    //开辟100Kb的存储空间 用来保存数据
+    private val dataBuffer = ByteArray(1024 * 100)
 
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
@@ -67,7 +66,7 @@ class SocketManager private constructor() {
         }
     }
 
-    var saveFileDeque: ArrayBlockingQueue<ByteArray>? = null// 原始脉冲数据队列
+    private val dataQueue: ArrayBlockingQueue<ByteArray> = ArrayBlockingQueue(50)
 
     //执行请求任务的线程池
     private var mRequestExecutor: ExecutorService? = null
@@ -79,11 +78,12 @@ class SocketManager private constructor() {
     private var fos: FileOutputStream? = null
 
     @Volatile
-    private var toSaveData = true
+    private var isExecuting = true
 
-    private fun initFile() {
-        saveFileDeque = ArrayBlockingQueue(50)
-        Environment.getExternalStorageDirectory()
+    /**
+     *
+     */
+    private fun startQueueTask() {
         val dir = MRApplication.instance.fileCacheFile()
         val mrDir = File(dir, "Mr")
         if (!mrDir.exists()) {
@@ -92,60 +92,45 @@ class SocketManager private constructor() {
         val file = File(mrDir,
             DateUtil.timeFormat(System.currentTimeMillis(), "yyyy_MM_dd_HH_mm_ss") + ".txt")
         file.createNewFile()
-        Log.d("zhangan", "file position is  " + file.absolutePath)
+        Log.d("zhangan", file.absolutePath)
         fos = FileOutputStream(file, true)
-        Thread {
-            try {
-                while (toSaveData) {
-                    val dataList = saveFileDeque?.take()
-                    if (dataList != null) {
-                        mDataByteList.addAll(Bytes.asList(*dataList))
-                        dealStickyBytes()
-                        fos?.write((ByteLibUtil.bytes2HexStr(dataList) + "\n").toByteArray())
-                        fos?.flush()
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                try {
-                    fos?.close()
-                    Log.d("zhangan", "file close")
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+    }
 
-            }
-        }.start()
+    private fun cleanAllData() {
+        mDataByteList.clear()
+        dataQueue.clear()
     }
 
     private val requestRunnable = Runnable {
         try {
             val address = InetSocketAddress(appHost(), port())
             socket = Socket()
-            socket?.connect(address, 2000)
-            socket?.keepAlive = true
-            isConnected = socket!!.isConnected
-            inputStream = socket!!.getInputStream()
-            outputStream = socket!!.getOutputStream()
-            for (i in linkStateListeners!!.indices) {
-                linkStateListeners!![i].onLinkState(Constants.LINK_SUCCESS)
+            socket?.let { socket ->
+                socket.connect(address, 2000)
+                socket.keepAlive = true
+                isConnected = socket.isConnected
+                inputStream = socket.getInputStream()
+                outputStream = socket.getOutputStream()
+                linkStateListeners?.forEach {
+                    it.onLinkState(Constants.LINK_SUCCESS)
+                }
             }
             var size: Int
-            initFile()
-            while (inputStream!!.read(dataBuffer).also { size = it } != -1) {
-                try {
-                    val sources = ByteArray(size)
-                    System.arraycopy(dataBuffer, 0, sources, 0, size)
-                    saveFileDeque?.let {
-                        val isSuccess = it.offer(sources)
+//            startQueueTask()
+            inputStream?.let { inputStream ->
+                while (inputStream.read(dataBuffer).also { size = it } != -1) {
+                    try {
+                        Log.d("zhangan", "read size is $size")
+                        val sources = ByteArray(size)
+                        System.arraycopy(dataBuffer, 0, sources, 0, size)
+                        val isSuccess = dataQueue.offer(sources)
                         if (!isSuccess) {
-                            it.clear()
+                            dataQueue.clear()
+                            dataQueue.offer(sources)
                         }
-                        it.offer(sources)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         } catch (e: IOException) {
@@ -153,7 +138,8 @@ class SocketManager private constructor() {
             socket = null
         } finally {
             try {
-                toSaveData = false
+                isExecuting = false
+                dataQueue.offer(null)
                 mDataByteList.clear()
                 isConnected = false
                 inputStream?.close()
@@ -166,7 +152,7 @@ class SocketManager private constructor() {
         }
     }
 
-    private fun dealStickyBytes() {
+    private fun dealByteList() {
         var length = -1
         var commandType: CommandType? = null
         if (mDataByteList[0].toInt() == DEVICE_NO && mDataByteList.size > 5) {
@@ -192,6 +178,7 @@ class SocketManager private constructor() {
                 CommandType.WriteValue -> {
                     length = mDataByteList[2].toInt() + 5
                 }
+
                 CommandType.FdData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[2], mDataByteList[3])
                     length = ByteLibUtil.getInt(lengthBytes) + 4
@@ -199,7 +186,7 @@ class SocketManager private constructor() {
                 CommandType.SendPulse -> {
                     val lengthBytes =
                         byteArrayOf(0x00, mDataByteList[2], mDataByteList[3], mDataByteList[4])
-                    length = ByteLibUtil.getInt(lengthBytes) + 4
+                    length = ByteLibUtil.getInt(lengthBytes) + 7
                 }
                 CommandType.RealData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
@@ -208,9 +195,6 @@ class SocketManager private constructor() {
                 CommandType.FlightValue -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[3], mDataByteList[4])
                     length = ByteLibUtil.getInt(lengthBytes) * 6 + 7
-                }
-                else -> {
-                    mDataByteList.clear()
                 }
             }
         }
@@ -223,7 +207,7 @@ class SocketManager private constructor() {
             }
             mDataByteList = newList
             if (mDataByteList.size > 0) {
-                dealStickyBytes()
+                dealByteList()
             }
         }
     }
@@ -363,62 +347,38 @@ class SocketManager private constructor() {
      * socket 连接
      */
     fun initLink() {
+        cleanAllData()
+        isExecuting = true
         realDataDeque = ArrayBlockingQueue<ByteArray>(50)
         flightDeque = ArrayBlockingQueue<ByteArray>(50)
         fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
 
         mRequestExecutor = Executors.newSingleThreadExecutor()
         future = mRequestExecutor?.submit(requestRunnable)
-    }
 
-    fun initQueue() {
-        isQueueRuing.set(true)
         mQueueExecutor = Executors.newSingleThreadExecutor()
         mQueueFuture = mQueueExecutor?.submit {
             try {
-                val list = ArrayList<ByteArray>()
-                while (isQueueRuing.get()) {
-                    realDataDeque?.drainTo(list)
-                    if (list.size > 0) {
-                        Log.d("zhangan", "realDataDeque data size is " + list.size)
-                        val callbacks = bytesCallbackMap[CommandType.RealData]
-                        list.forEach { source ->
-                            callbacks?.forEach {
-                                it.onData(source)
-                            }
-                        }
+                while (isExecuting) {
+                    val dataList = dataQueue.take()
+                    dataList?.let {
+                        mDataByteList.addAll(Bytes.asList(*it))
+                        dealByteList()
+//                        fos?.write((ByteLibUtil.bytes2HexStr(it) + "\n").toByteArray())
+//                        fos?.flush()
                     }
-
-                    list.clear()
-                    flightDeque?.drainTo(list)
-                    if (list.size > 0) {
-                        Log.d("zhangan", "flightDeque data size is " + list.size)
-                        val callbacks = bytesCallbackMap[CommandType.FlightValue]
-                        list.forEach { source ->
-                            callbacks?.forEach {
-                                it.onData(source)
-                            }
-                        }
-                    }
-
-                    list.clear()
-                    fdDataDeque?.drainTo(list)
-                    if (list.size > 0) {
-                        Log.d("zhangan", "fdDataDeque data size is " + list.size)
-                        val callbacks = bytesCallbackMap[CommandType.FdData]
-                        list.forEach { source ->
-                            callbacks?.forEach {
-                                it.onData(source)
-                            }
-                        }
-                    }
-                    list.clear()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                isQueueRuing.set(false)
-                Log.e("zhangan", "-> queue is finish")
+                try {
+                    fos?.close()
+                    Log.d("zhangan", "file close")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
             }
         }
     }

@@ -12,7 +12,6 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FdDataCallback
-import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_pulse.*
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
@@ -82,7 +81,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
             surfaceView.setEGLContextClientVersion(3)
             pulseRenderer = PulseRenderer(this.requireContext(),
                 viewModel.getQueue(),
-                viewModel.fdValueCallBack)
+                viewModel.pulseValueCallBack)
             surfaceView.setRenderer(pulseRenderer)
             surfaceView.setZOrderOnTop(true)
             surfaceView.holder.setFormat(PixelFormat.TRANSPARENT)

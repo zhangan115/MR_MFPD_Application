@@ -48,6 +48,7 @@ class CheckFileReadManager {
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
     var fdDataDeque: ArrayBlockingQueue<ByteArray>? = null//放电数据队列
+    var pulseDataDeque: ArrayBlockingQueue<ByteArray>? = null//脉冲数据队列
 
     private val bytesCallbackMap: LinkedHashMap<CommandType, LinkedList<BytesDataCallback>> =
         LinkedHashMap()

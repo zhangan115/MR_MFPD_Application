@@ -36,7 +36,7 @@ class PulseRenderer(
     private var texture: Int = 0
 
     @Volatile
-    var column: Int = 250
+    var column: Int = 249
 
     @Volatile
     private var chartLineView: ChartLineView? = null
@@ -119,7 +119,7 @@ class PulseRenderer(
             list.clear()
             isToCleanData = false
         }
-        list.forEach {
+        list.lastOrNull()?.let {
             dataCallback?.onData(it)
         }
     }
