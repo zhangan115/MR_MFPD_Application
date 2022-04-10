@@ -132,7 +132,6 @@ class FlightChartsRenderer(
             unitList.addAll(unit)
             yList.addAll(yTextList)
             xList.addAll(xListText)
-//            Log.d("zhangan", "column is $column xList is $xListText")
             updateBitmap = true
             measureTextWidth(yList)
         }

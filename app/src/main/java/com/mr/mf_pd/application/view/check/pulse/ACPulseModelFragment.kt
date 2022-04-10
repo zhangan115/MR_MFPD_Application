@@ -4,6 +4,7 @@ import android.graphics.PixelFormat
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image3
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image4
+import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -69,6 +71,26 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
             }
         })
     }
+
+    override fun getYAxisValue(
+        isFile: Boolean,
+        settingBean: SettingBean,
+        gainMinValue: MutableLiveData<Float?>,
+    ): CopyOnWriteArrayList<String> {
+        val yList = CopyOnWriteArrayList<String>()
+        val minValue = -1000f
+        val maxValue = 1000f
+        val df1 = DecimalFormat("0.0")
+        val value = maxValue - minValue
+        val step = value / 10.0f
+        for (i in 0..10) {
+            yList.add(df1.format(minValue + step * i))
+        }
+        gainMinValue.postValue(minValue)
+        yList.reverse()
+        return yList
+    }
+
 
     override fun setIsFileValue(isFile: Boolean?) {
         viewModel.isFile.value = isFile

@@ -178,7 +178,6 @@ class SocketManager private constructor() {
                 CommandType.WriteValue -> {
                     length = mDataByteList[2].toInt() + 5
                 }
-
                 CommandType.FdData -> {
                     val lengthBytes = byteArrayOf(0x00, 0x00, mDataByteList[2], mDataByteList[3])
                     length = ByteLibUtil.getInt(lengthBytes) + 4
@@ -363,6 +362,9 @@ class SocketManager private constructor() {
                 while (isExecuting) {
                     val dataList = dataQueue.take()
                     dataList?.let {
+                        if (isLegalBytes(it)) {
+                            mDataByteList.clear()
+                        }
                         mDataByteList.addAll(Bytes.asList(*it))
                         dealByteList()
 //                        fos?.write((ByteLibUtil.bytes2HexStr(it) + "\n").toByteArray())
@@ -381,6 +383,17 @@ class SocketManager private constructor() {
 
             }
         }
+    }
+
+    private fun isLegalBytes(bytes: ByteArray): Boolean {
+        if (bytes.size > 1 && bytes[0].toInt() == DEVICE_NO) {
+            val commandType: CommandType? =
+                CommandType.values().firstOrNull { it.funCode == bytes[1] }
+            if (commandType != null) {
+                return true
+            }
+        }
+        return false
     }
 
     /**

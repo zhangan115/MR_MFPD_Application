@@ -52,6 +52,7 @@ class PulseRenderer(
         colorPointProgram = Point2DColorPointShaderProgram(context)
 
         textRectInOpenGl = TextRectInOpenGl(rect)
+        xList.clear()
         xList.addAll(xTextList)
         textMaps[Constants.KEY_UNIT] = unitList
         textMaps[Constants.KEY_X_TEXT] = xList
@@ -62,8 +63,8 @@ class PulseRenderer(
             10,
             0,
             textRectInOpenGl)
-        minValue = -80f
-        maxValue = -20f
+        minValue = -1000f
+        maxValue = 1000f
         chartLineView = ChartLineView(column, values, minValue, maxValue, textRectInOpenGl)
     }
 
@@ -131,7 +132,6 @@ class PulseRenderer(
         if (unit != unitList || yList != yTextList) {
             unitList.clear()
             yList.clear()
-            xList.clear()
             unitList.addAll(unit)
             yList.addAll(yTextList)
             updateBitmap = true

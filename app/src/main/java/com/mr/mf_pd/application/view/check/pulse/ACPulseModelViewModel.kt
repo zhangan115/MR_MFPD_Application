@@ -102,7 +102,6 @@ class ACPulseModelViewModel(
             val onePulseCount = 11 + 249 * 2 + 10 + 2
             if (source.isEmpty() || source.size < onePulseCount) return
             val pulseCount = source[10].toInt()
-            Log.d("zhangan", "pulseCount $pulseCount")
             val bytes = ByteArray(249 * 2)
             val srcPos = 11 + (pulseCount - 1) * (249 * 2 + 10)
             System.arraycopy(source, srcPos + 10, bytes, 0, 249 * 2)
@@ -121,7 +120,6 @@ class ACPulseModelViewModel(
                     valueList.add(value)
                     position += 2
                 }
-                Log.d("zhangan","valueList ${valueList.size}")
             }
             if (receiverCount % 5 == 0) {
                 if (maxGainValue != null) {

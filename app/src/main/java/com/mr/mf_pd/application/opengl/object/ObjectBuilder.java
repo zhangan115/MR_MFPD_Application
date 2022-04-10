@@ -62,6 +62,10 @@ public class ObjectBuilder {
         return sinCount + 1;
     }
 
+    private static int sizeOfLineInVertices(int column) {
+        return column;
+    }
+
     /**
      * 圆柱侧面定点数量
      *
@@ -91,7 +95,7 @@ public class ObjectBuilder {
     }
 
     public static GeneratedData createChartLines(int column, CopyOnWriteArrayList<Float> values, float min, float max, TextRectInOpenGl rect) {
-        int size = sizeOfPoint2DSinLineInVertices(column);
+        int size = sizeOfLineInVertices(column);
         ObjectBuilder builder = new ObjectBuilder(size);
         builder.appLines(column, values, min, max, rect);
         return builder.Build();
@@ -195,7 +199,7 @@ public class ObjectBuilder {
             sinStartX = sinStartX + xStep;
             vertexData[offset++] = 0f;
         }
-        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, column + 1));
+        drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, column));
     }
 
     private void appPrPs3DXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {

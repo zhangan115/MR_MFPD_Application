@@ -220,7 +220,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         return unitList
     }
 
-    fun getYAxisValue(
+    open fun getYAxisValue(
         isFile: Boolean,
         settingBean: SettingBean,
         gainMinValue: MutableLiveData<Float?>,
