@@ -25,6 +25,7 @@ import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -245,7 +246,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             val value = maxValue - minValue
             val step = value / 4.0f
             for (i in 0..4) {
-                yList.add(df1.format(minValue + step * i))
+                val y = df1.format(minValue + step * i)
+                yList.add(BigDecimal(y).stripTrailingZeros().toPlainString())
             }
             gainMinValue.postValue(minValue)
         }

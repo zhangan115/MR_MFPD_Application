@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image3
 import kotlinx.android.synthetic.main.fragment_ac_pulse.image4
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -84,7 +85,8 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         val value = maxValue - minValue
         val step = value / 10.0f
         for (i in 0..10) {
-            yList.add(df1.format(minValue + step * i))
+            val y = df1.format(minValue + step * i)
+            yList.add(BigDecimal(y).stripTrailingZeros().toPlainString())
         }
         gainMinValue.postValue(minValue)
         yList.reverse()
