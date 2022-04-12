@@ -2,10 +2,7 @@ package com.mr.mf_pd.application.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -22,7 +19,12 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var defaultMaxValue: Float? = null
     var defaultMinValue: Float? = null
 
-    var textRect: TextRectInOpenGl? = null
+    private var unitRect = Rect()
+    private var yAxisRect = Rect()
+    private var xAxisRect = Rect()
+    private var chartRect = Rect()
+
+    private var textRect: TextRectInOpenGl = TextRectInOpenGl(Rect())
 
     //y轴
     var yAxisText: CopyOnWriteArrayList<String> = CopyOnWriteArrayList()
@@ -60,14 +62,10 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     constructor(ctx: Context) : this(ctx, null)
 
-    private var yAxisRect: Rect? = null
-    private var xAxisRect: Rect? = null
-
     constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
 
     constructor (context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
-        textRect = TextRectInOpenGl(rect)
         mPaint = Paint()
         mPaint?.let {
             context?.resources?.getColor(R.color.text_title, null)?.let { color ->
@@ -90,7 +88,16 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
         rect = getTextRect(yAxisText)
-        textRect?.updateData(width, height)
+        textRect.updateData(width, height, rect)
+        unitRect.set(0, 0, width, height)
+    }
+
+    private fun updateRect() {
+        unitRect.set(0, 0, width, (textRect.textHeightGraphics * 2).toInt())
+        yAxisRect.set(0,
+            (textRect.textHeightGraphics * 2).toInt(),
+            (textRect.textWidthGraphics * 1.5).toInt(),
+            height - (2 * textRect.textHeightGraphics).toInt())
     }
 
     override fun surfaceRedrawNeeded(holder: SurfaceHolder?) {
@@ -98,7 +105,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        Log.d("zhangan", "surfaceDestroyed")
         mIsDrawing = false
     }
 
@@ -127,24 +133,24 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             //draw sin
             //draw line
             //draw xAxis
-            val startX = textRect!!.textWidthGraphics * 1.5f
+            val startX = textRect.textWidthGraphics * 1.5f
             val step =
-                (textRect!!.widthGraphics - startX - textRect!!.textWidthGraphics) / (xAxisText.size - 1)
-            val y = textRect!!.heightGraphics - textRect!!.textHeightGraphics / 2
+                (textRect.widthGraphics - startX - textRect.textWidthGraphics) / (xAxisText.size - 1)
+            val y = textRect.heightGraphics - textRect.textHeightGraphics / 2
             for (i in 0 until xAxisText.size) {
                 mCanvas?.drawText(xAxisText[i],
-                    (i * step + startX) - (rect.width() / 2f),
+                    (i * step + startX) - (textRect.widthGraphics / 2f),
                     y,
                     mPaint!!)
             }
             //draw yAxis
-            val startY = textRect!!.textHeightGraphics * 2f
-            val step2 = (textRect!!.heightGraphics - 2 * startY) / (yAxisText.size - 1)
-            val startX2 = textRect!!.textWidthGraphics * 0.25f
+            val startY = textRect.textHeightGraphics * 2f
+            val step2 = (textRect.heightGraphics - 2 * startY) / (yAxisText.size - 1)
+            val startX2 = textRect.textWidthGraphics * 0.25f
             for (i in 0 until yAxisText.size) {
                 mCanvas?.drawText(yAxisText[i],
                     startX2,
-                    (step2 * i + startY) + textRect!!.rect.height() / 2,
+                    (step2 * i + startY) + textRect.rect.height() / 2,
                     mPaint!!)
             }
             //draw values
@@ -210,5 +216,15 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             paint.getTextBounds(text, 0, text.length, rect)
         }
         return rect
+    }
+
+    /**
+     * 清除指定区域的内容
+     * @param rect 指定的区域
+     */
+    private fun cleanRectDraw(rect: Rect) {
+        val clearPaint = Paint()
+        clearPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+        mCanvas?.drawRect(rect, clearPaint)
     }
 }
