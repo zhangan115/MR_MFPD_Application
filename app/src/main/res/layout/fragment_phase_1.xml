@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="PhaseDataChartBinding">
+
+        <variable
+            name="vm"
+            type="com.mr.mf_pd.application.view.check.phase.PhaseModelViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        app:toast="@{vm.toastStr}">
+
+        <com.mr.mf_pd.application.widget.CheckParamsView
+            android:id="@+id/checkParamsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:check_params="@{vm.checkType.checkParams}" />
+
+        <com.mr.mf_pd.application.widget.MrChartView
+            android:id="@+id/mrChartView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/phaseActionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="end"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
+
+            <ImageView
+                android:id="@+id/image1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/uhf_icon_record" />
+
+            <ImageView
+                android:id="@+id/image2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@mipmap/uhf_icon_small" />
+
+            <ImageView
+                android:id="@+id/image3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/uhf_icon_big" />
+
+            <ImageView
+                android:id="@+id/image4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="12dp"
+                android:background="@mipmap/uhf_icon_reset" />
+
+            <ImageView
+                android:id="@+id/image5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:background="@mipmap/uhf_icon_band" />
+        </LinearLayout>
+
+        <com.mr.mf_pd.application.widget.GainChartView
+            android:id="@+id/gainChartView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:gain_minValue="@{vm.gainMinValue}"
+            app:gain_value="@{vm.gainValues}" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="20dp"
+            android:text="@{vm.location}"
+            android:textColor="@color/blueColor"
+            android:textSize="13sp" />
+    </LinearLayout>
+</layout>

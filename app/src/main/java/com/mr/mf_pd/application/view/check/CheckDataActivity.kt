@@ -2,37 +2,33 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
-import com.google.gson.Gson
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.model.EventObserver
-import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
+import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
+import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
+import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
+import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.mr.mf_pd.application.view.setting.ae.AESettingActivity
 import com.mr.mf_pd.application.view.setting.hf.HFSettingActivity
 import com.mr.mf_pd.application.view.setting.tev.TEVSettingActivity
 import com.mr.mf_pd.application.view.setting.uhf.UHFSettingActivity
-import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
-import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
-import com.mr.mf_pd.application.view.check.real.RealModelFragment
-import com.sito.tool.library.utils.SPHelper
 import kotlinx.android.synthetic.main.activity_file_data.*
 
 class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClickListener,
@@ -50,7 +46,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             CheckType.UHF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
-                fragments.add(PhaseModelFragment.create(false))
+                fragments.add(PhaseModelChartFragment.create(false))
                 fragments.add(RealModelFragment.create(false))
                 clickClass = UHFSettingActivity::class.java
                 limitPosition = 7
