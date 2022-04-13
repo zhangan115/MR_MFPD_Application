@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.math.sin
 
 class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
@@ -86,7 +87,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             context?.resources?.getColor(R.color.text_title, null)?.let { color ->
                 it.color = color
             }
-//            it.style = Paint.Style.STROKE
             it.strokeWidth = 1f
             it.isAntiAlias = true
         }
@@ -178,6 +178,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 yFloat[4 * i + 3] = topSpaceValue + yStep * i
             }
             mPaint?.let {
+                it.color = findColor(R.color.text_content_third_color)
+                it.strokeWidth = 1f
                 mCanvas?.drawLines(xFloat, it)
                 mCanvas?.drawLines(yFloat, it)
             }
@@ -190,14 +192,21 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 for (i in 0 until sinCount) {
                     val radians = Math.toRadians(i.toDouble() / sinCount.toDouble() * 360.0)
                     sinFloat[4 * i] = leftSpaceValue + step * i
-                    sinFloat[4 * i + 1] = startYPointValue - (Math.sin(radians) * height).toFloat()
+                    sinFloat[4 * i + 1] = startYPointValue - (sin(radians) * height).toFloat()
                     val radians1 = Math.toRadians((i + 1).toDouble() / sinCount.toDouble() * 360.0)
                     sinFloat[4 * i + 2] = leftSpaceValue + step * (i + 1)
-                    sinFloat[4 * i + 3] = startYPointValue - (Math.sin(radians1) * height).toFloat()
+                    sinFloat[4 * i + 3] = startYPointValue - (sin(radians1) * height).toFloat()
                 }
-                mPaint?.let { mCanvas?.drawLines(sinFloat, it) }
+                mPaint?.let {
+                    it.color = findColor(R.color.text_content_secondary_color)
+                    it.strokeWidth = 1f
+                    mCanvas?.drawLines(sinFloat, it)
+                }
             }
             //draw xAxis
+            mPaint?.color = findColor(R.color.text_title)
+            mPaint?.strokeWidth = 1f
+            mPaint?.textSize = DisplayUtil.dip2px(context, 14f).toFloat()
             val stepX =
                 (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) / (xAxisText.size - 1)
             val y = textRect.heightGraphics - textRect.textHeightGraphics / 2
