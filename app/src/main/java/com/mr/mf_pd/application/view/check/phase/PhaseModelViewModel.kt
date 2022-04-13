@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.view.check.phase
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -178,8 +177,6 @@ class PhaseModelViewModel(
                     newMap[value] = 1
                     dataMaps[column] = newMap
                 }
-            } else {
-                Log.d("zhangan", "数据相位异常：$column")
             }
             mcCount++
         }

@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataChartBinding
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -53,13 +54,15 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
+        mrChartView.dataCallback = viewModel.realBytesDataCallback
         viewModel.dataCallback = {
-
+            mrChartView.setValue(it)
         }
+        mrChartView.mQueue = SocketManager.get().realDataDeque
     }
 
     override fun initView() {
-
+        mrChartView.setZOrderOnTop(true)
         viewModel.isSaveData?.observe(this, {
             if (it) {
                 val animation =
