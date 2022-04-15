@@ -57,6 +57,19 @@ enum class CheckType(
         ConstantStr.SETTING_AC,
         MutableLiveData(CheckParamsBean(2))
     ),
+    AA(
+        4,
+        R.string.file_type_aa,
+        R.string.type_ac,
+        ".check_aa",
+        R.mipmap.img_check_icon,
+        SettingBean(),
+        13,
+        3,
+        "mV",
+        ConstantStr.SETTING_AA,
+        MutableLiveData(CheckParamsBean(4))
+    ),
     HF(
         3,
         R.string.file_type_hf,

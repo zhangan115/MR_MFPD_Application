@@ -86,6 +86,9 @@
     <color name="color_yellow_bg">#fff0f7e4</color>
     <color name="color_yellow_bg_normal">@color/color_yellow_bg</color>
     <color name="color_yellow_bg_press">#88f0f7e4</color>
+    <color name="color_green_bg">#ffd4ffe2</color>
+    <color name="color_green_bg_normal">@color/color_green_bg</color>
+    <color name="color_green_bg_press">#88d4ffe2</color>
     <!--  紫色背景颜色-->
     <color name="color_purple_bg">#DFE8FF</color>
     <color name="color_purple_bg_normal">@color/color_purple_bg</color>

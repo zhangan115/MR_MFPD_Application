@@ -45,6 +45,11 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
             startActivity(intent)
         }
+        aaTaskLayout.setOnClickListener {
+            val intent = Intent(this, CheckDataActivity::class.java)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
+            startActivity(intent)
+        }
         checkDataLayout.setOnClickListener {
             val intent = Intent(this, FilePickerActivity::class.java)
             startActivity(intent)

@@ -72,7 +72,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 limitPosition = 7
                 bandDetectionPosition = -1
             }
-            CheckType.AE -> {
+            CheckType.AE, CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
