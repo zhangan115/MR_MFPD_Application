@@ -47,7 +47,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         }
         aaTaskLayout.setOnClickListener {
             val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AA)
             startActivity(intent)
         }
         checkDataLayout.setOnClickListener {

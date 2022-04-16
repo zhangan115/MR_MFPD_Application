@@ -104,6 +104,14 @@
             android:taskAffinity="${TASK_AFFINITY_VALUE}"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".view.setting.aa.AASettingActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop"
+            android:taskAffinity="${TASK_AFFINITY_VALUE}"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
 
         <activity
             android:name=".view.setting.hf.HFSettingActivity"

@@ -37,6 +37,7 @@ import com.mr.mf_pd.application.view.check.phase.PhaseModelViewModel
 import com.mr.mf_pd.application.view.check.real.RealModelViewModel
 import com.mr.mf_pd.application.view.main.MainViewModel
 import com.mr.mf_pd.application.view.setting.SettingViewModel
+import com.mr.mf_pd.application.view.setting.aa.AASettingViewModel
 import com.mr.mf_pd.application.view.splash.SplashViewModel
 
 
@@ -73,6 +74,8 @@ class ViewModelFactory constructor(
 
             isAssignableFrom(AESettingViewModel::class.java) ->
                 AESettingViewModel(settingRepository)
+            isAssignableFrom(AASettingViewModel::class.java) ->
+                AASettingViewModel(settingRepository)
             isAssignableFrom(ACFlightModelViewModel::class.java) ->
                 ACFlightModelViewModel(dataRepository,filesRepository)
             isAssignableFrom(ACPulseModelViewModel::class.java) ->

@@ -72,7 +72,22 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 limitPosition = 7
                 bandDetectionPosition = -1
             }
-            CheckType.AE, CheckType.AA -> {
+            CheckType.AE-> {
+                checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
+                checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
+                checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
+                checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
+                fragments.add(ContinuityModelFragment.create(false))
+                fragments.add(PhaseModelFragment.create(false))
+                fragments.add(ACFlightModelFragment.create())
+                fragments.add(RealModelFragment.create(false))
+                fragments.add(ACPulseModelFragment.create())
+                clickClass = AESettingActivity::class.java
+                limitPosition = 7
+                bandDetectionPosition = -1
+            }
+            CheckType.AA ->{
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
