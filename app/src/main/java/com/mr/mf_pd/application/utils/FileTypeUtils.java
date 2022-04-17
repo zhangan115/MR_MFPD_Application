@@ -60,6 +60,8 @@ public class FileTypeUtils {
                 return CheckType.AE;
             case TEV:
                 return CheckType.TEV;
+            case AA:
+                return CheckType.AA;
             default:
                 return null;
         }
@@ -73,6 +75,7 @@ public class FileTypeUtils {
         DIRECTORY(R.mipmap.data_icon_file, R.string.type_directory),
         UHF(R.mipmap.detect_icon_uhf, R.string.type_uhf),
         AE(R.mipmap.detect_icon_ac, R.string.type_ac),
+        AA(R.mipmap.detect_icon_aa, R.string.type_ac),
         TEV(R.mipmap.detect_icon_tev, R.string.type_tev),
         HF(R.mipmap.detect_icon_hf, R.string.type_hf);
 

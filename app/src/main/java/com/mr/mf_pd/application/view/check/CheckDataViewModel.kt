@@ -104,6 +104,11 @@ class CheckDataViewModel(
                     checkParamsBean?.value?.phaseAttr =
                         Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
                 }
+                CheckType.AA -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                }
                 CheckType.TEV -> {
                     settingBean?.limitValue = valueList[7].toInt()
                     checkParamsBean?.value?.frequencyBandAttr =
@@ -142,6 +147,11 @@ class CheckDataViewModel(
             settingValues.addAll(valueList)
             when (mCheckType) {
                 CheckType.AE -> {
+                    settingBean?.limitValue = valueList[7].toInt()
+                    checkParamsBean?.value?.phaseAttr =
+                        Constants.PHASE_MODEL_LIST[valueList[11].toInt()]
+                }
+                CheckType.AA -> {
                     settingBean?.limitValue = valueList[7].toInt()
                     checkParamsBean?.value?.phaseAttr =
                         Constants.PHASE_MODEL_LIST[valueList[11].toInt()]

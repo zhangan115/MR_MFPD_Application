@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
@@ -29,9 +30,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     companion object {
 
-        fun create(): ACFlightModelFragment {
+        fun create(isFile: Boolean): ACFlightModelFragment {
             val fragment = ACFlightModelFragment()
             val bundle = Bundle()
+            bundle.putBoolean(ConstantStr.KEY_BUNDLE_BOOLEAN, isFile)
             fragment.arguments = bundle
             return fragment
         }

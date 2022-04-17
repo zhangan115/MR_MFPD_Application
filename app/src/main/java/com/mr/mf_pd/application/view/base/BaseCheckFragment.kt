@@ -75,7 +75,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
 
     private fun switchPassageway(passageway: Int, commandType: Int) {
         if (!dataFromFile) {
-            SocketManager.get().sendData(CommandHelp.switchPassageway(passageway, commandType))
+//            SocketManager.get().sendData(CommandHelp.switchPassageway(passageway, commandType))
         }
     }
 

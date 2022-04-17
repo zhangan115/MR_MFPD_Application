@@ -143,7 +143,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
             view?.let {
                 val df1 = DecimalFormat("0.00")
                 viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
-                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE) && valueList.size >= 6) {
+                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE || viewModel.checkType == CheckType.AA) && valueList.size >= 6) {
                     viewModel.checkType.checkParams.value?.effectiveValueAttr =
                         df1.format(valueList[3])
                 }

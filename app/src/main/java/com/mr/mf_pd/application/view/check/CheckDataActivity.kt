@@ -25,6 +25,7 @@ import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
+import com.mr.mf_pd.application.view.setting.aa.AASettingActivity
 import com.mr.mf_pd.application.view.setting.ae.AESettingActivity
 import com.mr.mf_pd.application.view.setting.hf.HFSettingActivity
 import com.mr.mf_pd.application.view.setting.tev.TEVSettingActivity
@@ -80,9 +81,9 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
                 fragments.add(ContinuityModelFragment.create(false))
                 fragments.add(PhaseModelFragment.create(false))
-                fragments.add(ACFlightModelFragment.create())
+                fragments.add(ACFlightModelFragment.create(false))
                 fragments.add(RealModelFragment.create(false))
-                fragments.add(ACPulseModelFragment.create())
+                fragments.add(ACPulseModelFragment.create(false))
                 clickClass = AESettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
@@ -95,10 +96,10 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
                 fragments.add(ContinuityModelFragment.create(false))
                 fragments.add(PhaseModelFragment.create(false))
-                fragments.add(ACFlightModelFragment.create())
+                fragments.add(ACFlightModelFragment.create(false))
                 fragments.add(RealModelFragment.create(false))
-                fragments.add(ACPulseModelFragment.create())
-                clickClass = AESettingActivity::class.java
+                fragments.add(ACPulseModelFragment.create(false))
+                clickClass = AASettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
             }
