@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -55,6 +56,9 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var yAxisStep: Float? = null
 
     @Volatile
+    var moveY: Int = 0
+
+    @Volatile
     var xAxisStep: Float? = null
 
     private var mSurfaceHolder: SurfaceHolder? = null
@@ -71,6 +75,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     private var rect: Rect = Rect()
 
     private val clearPaint = Paint()
+
+    private val stepCount = 5
 
     private var pointValues: CopyOnWriteArrayList<CopyOnWriteArrayList<Float>> =
         CopyOnWriteArrayList()
@@ -159,27 +165,44 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             val rightSpaceValue = textRect.textWidthGraphics
             val topSpaceValue = textRect.textHeightGraphics * 1.5f
             val bottomSpaceValue = textRect.textHeightGraphics * 2f
-
-            val xStep = (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) / 4
-            val yStep = (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) / 5
+            val totalHeight = textRect.heightGraphics - topSpaceValue - bottomSpaceValue
+            val totalWidth = textRect.widthGraphics - leftSpaceValue - rightSpaceValue
+            val xStep = totalWidth / 4
+            val yStep = totalHeight / stepCount
+            val sideXFloatValues = FloatArray(8)
+            val sideYFloatValues = FloatArray(8)
+            for (i in 0..1) {
+                sideYFloatValues[4 * i] = leftSpaceValue
+                sideYFloatValues[4 * i + 1] = topSpaceValue + totalHeight * i
+                sideYFloatValues[4 * i + 2] =
+                    textRect.widthGraphics - rightSpaceValue
+                sideYFloatValues[4 * i + 3] = topSpaceValue + totalHeight * i
+            }
+            for (i in 0..1) {
+                sideXFloatValues[4 * i] = leftSpaceValue + totalWidth * i
+                sideXFloatValues[4 * i + 1] = topSpaceValue
+                sideXFloatValues[4 * i + 2] = leftSpaceValue + totalWidth * i
+                sideXFloatValues[4 * i + 3] = textRect.heightGraphics - bottomSpaceValue
+            }
             val xFloat = FloatArray(20)
-            val yFloat = FloatArray(24)
+            val yFloat = FloatArray((stepCount + 1) * 4)
             for (i in 0..4) {
                 xFloat[4 * i] = leftSpaceValue + xStep * i
                 xFloat[4 * i + 1] = topSpaceValue
                 xFloat[4 * i + 2] = leftSpaceValue + xStep * i
                 xFloat[4 * i + 3] = textRect.heightGraphics - bottomSpaceValue
             }
-            for (i in 0..5) {
+            for (i in 1..stepCount) {
                 yFloat[4 * i] = leftSpaceValue
-                yFloat[4 * i + 1] = topSpaceValue + yStep * i
+                yFloat[4 * i + 1] = topSpaceValue + yStep * i + moveY
                 yFloat[4 * i + 2] =
                     textRect.widthGraphics - rightSpaceValue
-                yFloat[4 * i + 3] = topSpaceValue + yStep * i
+                yFloat[4 * i + 3] = topSpaceValue + yStep * i + moveY
             }
             mPaint?.let {
                 it.color = findColor(R.color.text_content_third_color)
                 it.strokeWidth = 1f
+                mCanvas?.drawLines(sideYFloatValues, it)
                 mCanvas?.drawLines(xFloat, it)
                 mCanvas?.drawLines(yFloat, it)
             }
@@ -226,7 +249,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 mPaint!!.getTextBounds(yAxisText[i], 0, yAxisText[i].length, textRect1)
                 mCanvas?.drawText(yAxisText[i],
                     startX2 + textRect.textWidthGraphics - textRect1.width(),
-                    (stepY * i + topSpaceValue) + textRect1.height() / 2,
+                    (stepY * i + topSpaceValue + moveY) + textRect1.height() / 2,
                     mPaint!!)
             }
             //draw unit
@@ -315,25 +338,34 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
         isFocusableInTouchMode = true
     }
 
-    private var x: Int = 0
-    private var y: Int = 0
+    private var x: Int = -1
+    private var y: Int = -1
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let { e ->
-            x = e.x.toInt()
-            y = e.y.toInt()
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
 
                 }
                 MotionEvent.ACTION_MOVE -> {
-
+                    Log.d("zhangan", "x is $x y is $y")
+                    if (x != -1) {
+                        e.x.toInt() - x
+                    }
+                    if (y != -1) {
+                        moveY += e.y.toInt() - y
+                        Log.d("zhangan", "y move is $moveY")
+                    }
                 }
                 MotionEvent.ACTION_UP -> {
 
                 }
+                else -> {
+                }
             }
+            x = e.x.toInt()
+            y = e.y.toInt()
         }
         return true
     }
