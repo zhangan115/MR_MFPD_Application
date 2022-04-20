@@ -30,8 +30,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var drawSinLines = true
 
     private var unitRect = Rect()
-    private var yAxisRect = Rect()
-    private var xAxisRect = Rect()
     private var chartRect = Rect()
 
     private var textRect: TextRectInOpenGl = TextRectInOpenGl(Rect())
@@ -156,8 +154,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             }
             mCanvas = mSurfaceHolder?.lockCanvas()
             mCanvas?.drawColor(Color.WHITE)
-            yAxisRect = getTextRect(yAxisText)
-            xAxisRect = getTextRect(xAxisText)
 
             //draw line
             val sinCount = 180
@@ -192,7 +188,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 xFloat[4 * i + 2] = leftSpaceValue + xStep * i
                 xFloat[4 * i + 3] = textRect.heightGraphics - bottomSpaceValue
             }
-            for (i in 1..stepCount) {
+            for (i in 0..stepCount) {
                 yFloat[4 * i] = leftSpaceValue
                 yFloat[4 * i + 1] = topSpaceValue + yStep * i + moveY
                 yFloat[4 * i + 2] =
