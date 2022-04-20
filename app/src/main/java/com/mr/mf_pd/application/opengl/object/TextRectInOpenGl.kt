@@ -39,4 +39,12 @@ class TextRectInOpenGl(var rect: Rect) {
         this.textWidth = width * textWidthGraphics / widthGraphics
         this.textHeight = height * textHeightGraphics / heightGraphics
     }
+
+    fun updateData(rect: Rect){
+        this.rect.set(rect)
+        this.textWidthGraphics = rect.width().toFloat()
+        this.textHeightGraphics = rect.height().toFloat()
+        this.textWidth = width * textWidthGraphics / widthGraphics
+        this.textHeight = height * textHeightGraphics / heightGraphics
+    }
 }

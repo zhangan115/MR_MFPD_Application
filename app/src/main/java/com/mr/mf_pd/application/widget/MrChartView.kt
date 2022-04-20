@@ -11,7 +11,6 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
 import com.sito.tool.library.utils.DisplayUtil
 import java.util.concurrent.ArrayBlockingQueue
@@ -23,8 +22,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var mQueue: ArrayBlockingQueue<ByteArray>? = null
 
     //默认的最大最小值
-    var defaultMaxValue: Float? = null
-    var defaultMinValue: Float? = null
+    var defaultMaxValue: Float = 0f
+    var defaultMinValue: Float = 0f
 
     @Volatile
     var drawSinLines = true
@@ -45,19 +44,20 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var unit: String = "dBm"
 
     @Volatile
-    var maxValue: Float? = null
+    var maxValue: Float = 0f
 
     @Volatile
-    var minValue: Float? = null
+    var minValue: Float = -100f
 
-    @Volatile
-    var yAxisStep: Float? = null
+    private val stepCount = 10
 
     @Volatile
     var moveY: Int = 0
 
     @Volatile
-    var xAxisStep: Float? = null
+    var yStepValuePixel: Int = 0
+
+    var yStepValue: Float = 0f
 
     private var mSurfaceHolder: SurfaceHolder? = null
 
@@ -74,10 +74,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     private val clearPaint = Paint()
 
-    private val stepCount = 5
-
-    private var pointValues: CopyOnWriteArrayList<CopyOnWriteArrayList<Float>> =
-        CopyOnWriteArrayList()
+    private var pointValues: ArrayList<ArrayList<Float>> =
+        ArrayList()
 
     constructor(ctx: Context) : this(ctx, null)
 
@@ -99,9 +97,9 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
         maxValue = defaultMaxValue
         minValue = defaultMinValue
 
-        pointValues.add(CopyOnWriteArrayList())
-        pointValues.add(CopyOnWriteArrayList())
-        pointValues.add(CopyOnWriteArrayList())
+        pointValues.add(ArrayList())
+        pointValues.add(ArrayList())
+        pointValues.add(ArrayList())
 
         initView()
     }
@@ -165,6 +163,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             val totalWidth = textRect.widthGraphics - leftSpaceValue - rightSpaceValue
             val xStep = totalWidth / 4
             val yStep = totalHeight / stepCount
+            yStepValuePixel = yStep.toInt()
             val sideXFloatValues = FloatArray(8)
             val sideYFloatValues = FloatArray(8)
             for (i in 0..1) {
@@ -189,11 +188,18 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 xFloat[4 * i + 3] = textRect.heightGraphics - bottomSpaceValue
             }
             for (i in 0..stepCount) {
+                val y = topSpaceValue + yStep * i + moveY
+                val yValue = if (y < topSpaceValue) {
+                    topSpaceValue
+                } else if (y > topSpaceValue + totalHeight) {
+                    topSpaceValue + totalHeight
+                } else {
+                    y
+                }
                 yFloat[4 * i] = leftSpaceValue
-                yFloat[4 * i + 1] = topSpaceValue + yStep * i + moveY
-                yFloat[4 * i + 2] =
-                    textRect.widthGraphics - rightSpaceValue
-                yFloat[4 * i + 3] = topSpaceValue + yStep * i + moveY
+                yFloat[4 * i + 1] = yValue
+                yFloat[4 * i + 2] = textRect.widthGraphics - rightSpaceValue
+                yFloat[4 * i + 3] = yValue
             }
             mPaint?.let {
                 it.color = findColor(R.color.text_content_third_color)
@@ -261,46 +267,45 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
             //draw point
             val entrySet1 = dataMaps.entries
-            pointValues.firstOrNull()?.clear()
-            pointValues[1]?.clear()
-            pointValues.lastOrNull()?.clear()
-            if (minValue != null && maxValue != null) {
-                for ((x, value) in entrySet1) {
-                    val entrySet2 = value.entries
-                    for ((y, count) in entrySet2) {
-                        val float = FloatArray(2)
-                        float[0] =
-                            x / 360f * (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) + leftSpaceValue
-                        float[1] =
-                            (1f - (y - minValue!!) / (maxValue!! - minValue!!)) * (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) + topSpaceValue
-                        when {
-                            count < 10 -> {
-                                pointValues.firstOrNull()?.add(float[0])
-                                pointValues.firstOrNull()?.add(float[1])
-                            }
-                            count in 10..20 -> {
-                                pointValues[1]?.add(float[0])
-                                pointValues[1]?.add(float[1])
-                            }
-                            else -> {
-                                pointValues.lastOrNull()?.add(float[0])
-                                pointValues.lastOrNull()?.add(float[1])
-                            }
+            pointValues[0].clear()
+            pointValues[1].clear()
+            pointValues[2].clear()
+            for ((x, value) in entrySet1) {
+                val entrySet2 = value.entries
+                for ((key, count) in entrySet2) {
+                    if (key < minValue || key > maxValue) continue
+                    val float = FloatArray(2)
+                    float[0] =
+                        x / 360f * (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) + leftSpaceValue
+                    float[1] =
+                        (1f - (key - minValue) / (maxValue - minValue)) * (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) + topSpaceValue
+                    when {
+                        count < 10 -> {
+                            pointValues[0].add(float[0])
+                            pointValues[0].add(float[1])
+                        }
+                        count in 10..20 -> {
+                            pointValues[1].add(float[0])
+                            pointValues[1].add(float[1])
+                        }
+                        else -> {
+                            pointValues[2].add(float[0])
+                            pointValues[2].add(float[1])
                         }
                     }
                 }
             }
-            val list1 = pointValues.firstOrNull()
+            val list1 = pointValues[0]
             val list2 = pointValues[1]
             val list3 = pointValues[2]
             mPaint?.let {
                 it.strokeWidth = 5f
                 it.color = findColor(R.color.blueColor)
-                list1?.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
+                list1.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
                 it.color = findColor(R.color.main_yellow_color)
-                list2?.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
+                list2.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
                 it.color = findColor(R.color.main_red_color)
-                list3?.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
+                list3.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -308,7 +313,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             mCanvas?.let {
                 mSurfaceHolder?.unlockCanvasAndPost(it)
             }
-
             val list = ArrayList<ByteArray>()
             mQueue?.drainTo(list)
             list.forEach {
@@ -326,7 +330,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     fun initView() {
         xAxisText.addAll(listOf("0°", "90°", "180°", "270°", "360°"))
-        yAxisText.addAll(listOf("0", "-20", "-40", "-60", "-80", "-100"))
+        yStepValue = (maxValue - minValue) / stepCount
+        updateYAxis()
         mSurfaceHolder = holder
         mSurfaceHolder?.addCallback(this)
         isFocusable = true
@@ -345,13 +350,28 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    Log.d("zhangan", "x is $x y is $y")
                     if (x != -1) {
                         e.x.toInt() - x
                     }
                     if (y != -1) {
                         moveY += e.y.toInt() - y
-                        Log.d("zhangan", "y move is $moveY")
+                        if (yStepValuePixel > 0) {
+
+                            val v = (maxValue - minValue) * moveY / (yStepValuePixel * stepCount)
+                            minValue += v
+                            maxValue += v
+                            if (moveY > yStepValuePixel) {
+                                moveY %= yStepValuePixel
+                                updateYAxis()
+                            } else if (moveY < -1 * yStepValuePixel) {
+                                moveY %= yStepValuePixel
+//                                minValue -= yStepValue
+//                                maxValue -= yStepValue
+                                updateYAxis()
+                            }
+
+                        }
+                        Log.d("zhangan", "move y $moveY")
                     }
                 }
                 MotionEvent.ACTION_UP -> {
@@ -364,6 +384,14 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             y = e.y.toInt()
         }
         return true
+    }
+
+    private fun updateYAxis() {
+        yAxisText.clear()
+        for (index in 0..stepCount) {
+            yAxisText.add((maxValue - yStepValue * index).toInt().toString())
+        }
+        textRect.updateData(getTextRect(yAxisText))
     }
 
     /**
