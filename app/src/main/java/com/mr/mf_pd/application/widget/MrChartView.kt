@@ -52,6 +52,11 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     private val stepCount = 10
 
     @Volatile
+    private var xOffValue = 0
+    @Volatile
+    private var yOffValue = 0f
+
+    @Volatile
     var moveY: Int = 0
 
     @Volatile
@@ -131,9 +136,9 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             cleanRectDraw(chartRect)
             draw()
             val end = System.currentTimeMillis()
-            if (end - start < 20) {
+            if (end - start < 16) {
                 try {
-                    Thread.sleep(20 - (end - start))
+                    Thread.sleep(16 - (end - start))
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
@@ -187,7 +192,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 xFloat[4 * i + 3] = textRect.heightGraphics - bottomSpaceValue
             }
             for (i in 0..stepCount) {
-                val y = topSpaceValue + yStep * i + moveY
+                val y = topSpaceValue + yStep * i + moveY + yOffValue
                 val yValue = if (y < topSpaceValue) {
                     topSpaceValue
                 } else if (y > topSpaceValue + totalHeight) {
@@ -203,9 +208,9 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             mPaint?.let {
                 it.color = findColor(R.color.text_content_third_color)
                 it.strokeWidth = 1f
-                mCanvas?.drawLines(sideYFloatValues, it)
                 mCanvas?.drawLines(xFloat, it)
                 mCanvas?.drawLines(yFloat, it)
+                mCanvas?.drawLines(sideYFloatValues, it)
             }
             //draw sin
             if (drawSinLines) {
@@ -272,12 +277,13 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             for ((x, value) in entrySet1) {
                 val entrySet2 = value.entries
                 for ((key, count) in entrySet2) {
-                    if (key < minValue || key > maxValue) continue
+                    val value = key - yOffValue
+                    if (value < minValue || value > maxValue) continue
                     val float = FloatArray(2)
                     float[0] =
                         x / 360f * (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) + leftSpaceValue
                     float[1] =
-                        (1f - (key - minValue) / (maxValue - minValue)) * (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) + topSpaceValue
+                        (1f - (value - minValue) / (maxValue - minValue)) * (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) + topSpaceValue
                     when {
                         count < 10 -> {
                             pointValues[0].add(float[0])
@@ -358,13 +364,18 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                         moveY += m
                         if (yStepValuePixel > 0) {
                             val v = (maxValue - minValue) * m / (yStepValuePixel * stepCount)
-                            minValue += v
-                            maxValue += v
+                            yOffValue += v
                             if (moveY > yStepValuePixel) {
+                                yOffValue = 0f
                                 moveY %= yStepValuePixel
+                                minValue += yStepValue
+                                maxValue += yStepValue
                                 updateYAxis()
                             } else if (moveY < -1 * yStepValuePixel) {
+                                yOffValue = 0f
                                 moveY %= yStepValuePixel
+                                minValue -= yStepValue
+                                maxValue -= yStepValue
                                 updateYAxis()
                             }
 
