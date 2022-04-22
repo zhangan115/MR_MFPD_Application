@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import kotlin.jvm.Volatile;
+
 /**
  * 展示PrPs在平面的数据
  */
@@ -23,10 +25,10 @@ public class PrpsPointList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
+    @Volatile
     public static float minValue = -80.0f;
+    @Volatile
     public static float maxValue = -20.0f;
-
-    private TextRectInOpenGl rect;
 
     private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;

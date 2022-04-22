@@ -11,6 +11,8 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -208,6 +210,12 @@ class RealModelViewModel(
             } else {
                 DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             }
+            val maxValue = max(PrPsCubeList.maxValue, f)
+            val minValue = min(PrPsCubeList.minValue, f)
+            PrPsCubeList.maxValue = maxValue
+            PrPsCubeList.minValue = minValue
+            PrpsPointList.maxValue = maxValue
+            PrpsPointList.minValue = minValue
         }
         return value
     }

@@ -11,6 +11,8 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import kotlin.jvm.Volatile;
+
 /**
  * 3D 展示PrPs一组立方体
  */
@@ -18,8 +20,9 @@ public class PrPsCubeList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
-
+    @Volatile
     public static float minValue = -80.0f;
+    @Volatile
     public static float maxValue = -20.0f;
 
     private CopyOnWriteArrayList<Float> values;

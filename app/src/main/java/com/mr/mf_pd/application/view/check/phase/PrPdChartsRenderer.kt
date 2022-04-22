@@ -163,7 +163,6 @@ class PrPdChartsRenderer(
         queue?.drainTo(list)
         if (isToCleanData) {
             list.clear()
-
             isToCleanData = false
         }
         list.forEach {

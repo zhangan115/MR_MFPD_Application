@@ -10,6 +10,9 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -68,7 +71,7 @@ class PhaseModelViewModel(
         }
     }
 
-    fun getQueue(): ArrayBlockingQueue<ByteArray>?{
+    fun getQueue(): ArrayBlockingQueue<ByteArray>? {
         return if (isFile.value!!) {
             CheckFileReadManager.get().realDataDeque
         } else {
@@ -233,6 +236,10 @@ class PhaseModelViewModel(
             } else {
                 DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             }
+            val maxValue = max(PrPdPoint2DList.maxValue, f)
+            val minValue = min(PrPdPoint2DList.minValue, f)
+            PrPdPoint2DList.maxValue = maxValue
+            PrPdPoint2DList.minValue = minValue
         }
         return value
     }

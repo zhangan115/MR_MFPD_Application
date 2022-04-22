@@ -49,10 +49,18 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     @Volatile
     var minValue: Float = -100f
 
-    private val stepCount = 10
+    @Volatile
+    var maxXValue: Float = 360f
 
     @Volatile
-    private var xOffValue = 0
+    var minXValue: Float = 0f
+
+    private val stepCount = 10
+    private val xStepCount = 10
+
+    @Volatile
+    private var xOffValue = 0f
+
     @Volatile
     private var yOffValue = 0f
 
@@ -60,8 +68,15 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var moveY: Int = 0
 
     @Volatile
+    var moveX: Int = 0
+
+    @Volatile
     var yStepValuePixel: Int = 0
 
+    @Volatile
+    var xStepValuePixel: Int = 0
+
+    var xStepValue: Float = 0f
     var yStepValue: Float = 0f
 
     private var mSurfaceHolder: SurfaceHolder? = null
@@ -274,8 +289,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             pointValues[0].clear()
             pointValues[1].clear()
             pointValues[2].clear()
-            for ((x, value) in entrySet1) {
-                val entrySet2 = value.entries
+            for ((x, valueMap) in entrySet1) {
+                val entrySet2 = valueMap.entries
                 for ((key, count) in entrySet2) {
                     val value = key - yOffValue
                     if (value < minValue || value > maxValue) continue
@@ -356,8 +371,26 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 }
                 MotionEvent.ACTION_MOVE -> {
                     if (x != -1) {
-                       val m = e.x.toInt() - x
+                        val m = e.x.toInt() - x
+                        moveX += m
+                        if (xStepValuePixel > 0) {
+                            val v = (maxXValue - minXValue) * m / (xStepValuePixel * xStepCount)
+                            xOffValue += v
+                            if (moveX > xStepValuePixel) {
+                                xOffValue = 0f
+                                moveX %= xStepValuePixel
+                                minXValue += xStepValue
+                                maxXValue += xStepValue
+                                updateXAxis()
+                            } else if (moveX < -1 * xStepValuePixel) {
+                                xOffValue = 0f
+                                moveX %= xStepValuePixel
+                                minXValue -= xStepValue
+                                maxXValue -= xStepValue
+                                updateXAxis()
+                            }
 
+                        }
                     }
                     if (y != -1) {
                         val m = e.y.toInt() - y
@@ -380,7 +413,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                             }
 
                         }
-                        Log.d("zhangan", "move y $moveY")
                     }
                 }
                 MotionEvent.ACTION_UP -> {
@@ -394,6 +426,14 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
         }
 
         return true
+    }
+
+    private fun updateXAxis() {
+        yAxisText.clear()
+        for (index in 0..stepCount) {
+            yAxisText.add((maxValue - yStepValue * index).toInt().toString())
+        }
+        textRect.updateData(getTextRect(yAxisText))
     }
 
     private fun updateYAxis() {

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import kotlin.jvm.Volatile;
+
 /**
  * 展示PrPs在平面的数据
  */
@@ -21,8 +23,9 @@ public class PrPdPoint2DList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-
+    @Volatile
     public static float minValue = -80.0f;
+    @Volatile
     public static float maxValue = -20.0f;
 
     private Point2DColorPointShaderProgram colorProgram;
@@ -52,12 +55,12 @@ public class PrPdPoint2DList {
     }
 
 
-    public void setValue(Map<Integer, Map<Float, Integer>> values,int column, TextRectInOpenGl rect) {
+    public void setValue(Map<Integer, Map<Float, Integer>> values, int column, TextRectInOpenGl rect) {
         if (rect != null) {
             float spaceWidth = 1.5f * rect.getTextWidth();
             float endWidth = rect.getTextWidth();
             float spaceHeight = 2f * rect.getTextHeight();
-            float stepX = (2 -  spaceWidth - endWidth) / column;
+            float stepX = (2 - spaceWidth - endWidth) / column;
             Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
             short count = 0;
             float h = 2 - 2 * spaceHeight;
