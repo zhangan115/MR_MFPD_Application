@@ -81,8 +81,8 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         gainMinValue: MutableLiveData<Float?>,
     ): CopyOnWriteArrayList<String> {
         val yList = CopyOnWriteArrayList<String>()
-        val minValue = -1000f
-        val maxValue = 1000f
+        val minValue = -200f
+        val maxValue = 200f
         val df1 = DecimalFormat("0.0")
         val value = maxValue - minValue
         val step = value / 10.0f

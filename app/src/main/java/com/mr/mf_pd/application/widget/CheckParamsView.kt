@@ -64,6 +64,13 @@ class CheckParamsView : LinearLayout {
                 tempText2Value.text = ""
                 checkParams4Layout.visibility = GONE
             }
+            4 -> {
+                tempText1.text = "脉冲数："
+                tempText2.text = ""
+                tempText1Value.text = checkParamsBean.mcCountAttr
+                tempText2Value.text = ""
+                checkParams4Layout.visibility = GONE
+            }
         }
     }
 }

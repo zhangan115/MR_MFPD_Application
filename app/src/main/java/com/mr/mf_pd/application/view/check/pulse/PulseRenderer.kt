@@ -63,8 +63,8 @@ class PulseRenderer(
             10,
             0,
             textRectInOpenGl)
-        minValue = -1000f
-        maxValue = 1000f
+        minValue = -200f
+        maxValue = 200f
         chartLineView = ChartLineView(column, values, minValue, maxValue, textRectInOpenGl)
     }
 

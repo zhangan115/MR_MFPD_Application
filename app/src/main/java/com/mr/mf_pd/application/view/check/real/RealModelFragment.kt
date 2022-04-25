@@ -139,8 +139,14 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (valueList.size >= 2) {
             view?.let {
                 val df1 = DecimalFormat("0.00")
-                viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
-                viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
+                viewModel.checkType.checkParams.value?.let {
+                    it.hzAttr = df1.format(valueList[1])
+                    if (!viewModel.canUpdateFz){
+                        val fzValue = valueList.lastOrNull()
+                        it.fzAttr = df1.format(fzValue) +  viewModel.checkType.settingBean.fzUnit
+                    }
+                    viewModel.updateFzValue(it)
+                }
             }
         }
     }

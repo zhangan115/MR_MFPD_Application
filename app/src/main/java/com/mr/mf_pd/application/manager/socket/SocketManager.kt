@@ -120,7 +120,7 @@ class SocketManager private constructor() {
             inputStream?.let { inputStream ->
                 while (inputStream.read(dataBuffer).also { size = it } != -1) {
                     try {
-//                        Log.d("zhangan", "read size is $size")
+                        Log.d("zhangan", "read size is $size")
                         val sources = ByteArray(size)
                         System.arraycopy(dataBuffer, 0, sources, 0, size)
                         val isSuccess = dataQueue.offer(sources)
@@ -429,7 +429,7 @@ class SocketManager private constructor() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                emitter.onError(e)
+//                emitter.onError(e)
             } finally {
                 emitter.onComplete()
             }
@@ -454,7 +454,7 @@ class SocketManager private constructor() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                emitter.onError(e)
+//                emitter.onError(e)
             } finally {
                 emitter.onComplete()
             }

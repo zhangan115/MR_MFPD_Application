@@ -84,10 +84,13 @@ class RealModelViewModel(
 
     var gainFloatList = Vector<Float>()
 
+    @Volatile
+    var canUpdateFz = true
 
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
+        canUpdateFz = bytes.isNotEmpty()
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
         for (j in 0 until Constants.PRPS_COLUMN) {
@@ -167,12 +170,12 @@ class RealModelViewModel(
         }
         if (receiverCount == 50) { //一秒钟刷新一次数据
             val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
-            if (maxValue != null) {
+            if (canUpdateFz && maxValue != null) {
                 val df1 = DecimalFormat("0.00")
                 checkParamsBean?.fzAttr = df1.format(maxValue) + checkType.settingBean.fzUnit
             }
             checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
-            checkType.checkParams.postValue(checkParamsBean)
+            updateFzValue(checkParamsBean)
             receiverCount = 0
             mcCount = 0
             maxValue = null
@@ -180,6 +183,11 @@ class RealModelViewModel(
             ++receiverCount
         }
         prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
+    }
+
+    @Synchronized
+    fun updateFzValue(checkParamsBean: CheckParamsBean?) {
+        checkType.checkParams.postValue(checkParamsBean)
     }
 
     private fun dealMaxAndMinValue(

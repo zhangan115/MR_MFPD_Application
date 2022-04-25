@@ -386,8 +386,7 @@ public class ByteUtil {
      * 转换short为byte
      *
      * @param b
-     * @param s
-     *            需要转换的short
+     * @param s     需要转换的short
      * @param index
      */
     public static void putShort(byte b[], short s, int index) {
@@ -399,12 +398,26 @@ public class ByteUtil {
      * 通过byte数组取到short
      *
      * @param b
-     * @param index
-     *            第几位开始取
+     * @param index 第几位开始取
      * @return
      */
+//    public static short getShort(byte[] b, int index) {
+//        return (short) (((b[index + 1] << 8) | b[index] & 0xff));
+//    }
+//    public static short getShort(byte[] b, int index) {
+//        return (short) (((b[index + 1] & 0xff ) | b[index] << 8));
+//    }
     public static short getShort(byte[] b, int index) {
-        return (short) (((b[index + 1] << 8) | b[index] & 0xff));
+        return (short) ((b[0] << 8) + b[1]);
+    }
+
+    public static short byte2short(byte[] b){
+        short l = 0;
+        for (int i = 0; i < 2; i++) {
+            l<<=8; //<<=和我们的 +=是一样的，意思就是 l = l << 8
+            l |= (b[i] & 0xff); //和上面也是一样的  l = l | (b[i]&0xff)
+        }
+        return l;
     }
 
     /**
@@ -425,8 +438,7 @@ public class ByteUtil {
      * 通过byte数组取到int
      *
      * @param bb
-     * @param index
-     *            第几位开始
+     * @param index 第几位开始
      * @return
      */
     public static int getInt(byte[] bb, int index) {
@@ -479,7 +491,7 @@ public class ByteUtil {
     public static void putChar(byte[] bb, char ch, int index) {
         int temp = (int) ch;
         // byte[] b = new byte[2];
-        for (int i = 0; i < 2; i ++ ) {
+        for (int i = 0; i < 2; i++) {
             bb[index + i] = new Integer(temp & 0xff).byteValue(); // 将最高位保存在最低位
             temp = temp >> 8; // 向右移8位
         }

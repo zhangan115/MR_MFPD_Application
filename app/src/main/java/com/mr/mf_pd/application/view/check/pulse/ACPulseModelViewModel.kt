@@ -111,7 +111,7 @@ class ACPulseModelViewModel(
                     val values = ByteArray(2)
                     values[0] = bytes[position]
                     values[1] = bytes[position + 1]
-                    val value = ByteUtil.getShort(values, 0) * 0.1f
+                    val value = ByteUtil.byte2short(values) * 0.1f
                     maxGainValue = if (maxGainValue == null) {
                         value
                     } else {
