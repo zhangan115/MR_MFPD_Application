@@ -45,7 +45,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
-
+    //通道门限值调整步长
+    var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -109,6 +110,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.limitValue != null) {
             limitValueStr.postValue(settingBean.limitValue.toString())
         }
+        limitStepValueStr.postValue(settingBean.limitStepValue.toString())
         if (settingBean.jjLimitValue != null) {
             jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
         }
@@ -203,6 +205,9 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
             settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
             settingBean.limitValue = limitValueStr.value?.toIntOrNull()
+            limitStepValueStr.value?.toIntOrNull()?.let {
+                settingBean.limitStepValue = it
+            }
             settingBean.jjLimitValue = jjLimitValueStr.value?.toIntOrNull()
             settingBean.overLimitValue = overLimitValueStr.value?.toIntOrNull()
             settingBean.alarmLimitValue = alarmLimitValueStr.value?.toIntOrNull()

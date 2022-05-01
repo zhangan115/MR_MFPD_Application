@@ -54,6 +54,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 4
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
@@ -73,6 +74,10 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
                 pulseRenderer?.updateData(data)
             }
         })
+    }
+
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
     }
 
     override fun getYAxisValue(

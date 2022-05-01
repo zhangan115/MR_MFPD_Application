@@ -29,6 +29,7 @@ class ContinuityModelViewModel(
     var f2ValueList: ArrayList<Float> = ArrayList()
 
     var fzMinValue: MutableLiveData<String> = MutableLiveData()
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var fzValue: MutableLiveData<String> = MutableLiveData()
     var yxMinValue: MutableLiveData<String> = MutableLiveData()
     var yxValue: MutableLiveData<String> = MutableLiveData()

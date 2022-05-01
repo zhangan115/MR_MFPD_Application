@@ -34,10 +34,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
-            android:gravity="end">
+            android:gravity="end"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:text="@{vm.limitValueStr}"
+                android:textColor="@color/text_first_content"
+                android:textSize="14sp" />
+
 
             <ImageView
                 android:id="@+id/image1"

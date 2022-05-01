@@ -67,23 +67,15 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="增益水平："
-                android:textColor="@color/text_content_third_color"
-                android:textSize="14sp"
-                android:visibility="gone" />
-
-            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:layout_weight="1"
-                android:text="@{vm.gainLevelStr}"
-                android:textColor="@color/text_title"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="invisible"
-                tools:text="20dB" />
+                android:text="@{vm.limitValueStr}"
+                android:textColor="@color/text_first_content"
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

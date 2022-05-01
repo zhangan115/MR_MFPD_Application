@@ -46,6 +46,7 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 1
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
@@ -106,6 +107,10 @@ class PhaseModelFragment : BaseCheckFragment<PhaseDataBinding>() {
             image5.visibility = View.GONE
         }
         rendererSet = true
+    }
+
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
     }
 
     override fun setCheckFile(str: String) {

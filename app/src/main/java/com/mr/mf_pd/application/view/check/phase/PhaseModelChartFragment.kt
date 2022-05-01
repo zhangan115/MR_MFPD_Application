@@ -44,6 +44,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 1
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
@@ -118,7 +119,6 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun onPause() {
         super.onPause()
-
         viewModel.onPause()
     }
 
@@ -128,7 +128,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
             view?.let {
                 val df1 = DecimalFormat("0.00")
                 viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
-                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE|| viewModel.checkType == CheckType.AA) && valueList.size >= 6) {
+                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE || viewModel.checkType == CheckType.AA) && valueList.size >= 6) {
                     viewModel.checkType.checkParams.value?.effectiveValueAttr =
                         df1.format(valueList[3])
                 }
@@ -137,9 +137,12 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         }
     }
 
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
+    }
+
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
-
     }
 
     override fun isSaving(): Boolean {

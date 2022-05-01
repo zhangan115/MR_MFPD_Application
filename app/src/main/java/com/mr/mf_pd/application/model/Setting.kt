@@ -28,6 +28,8 @@ data class SettingBean(
     var jzOutValue: Float = 10.0f,//校准器输出
     //通道门限值
     var limitValue: Int? = null,
+    //通道门限值的调整步长
+    var limitStepValue:Int = 10,
     //警戒门限
     var jjLimitValue: Int? = null,
     //过高门限
@@ -73,6 +75,7 @@ data class SettingBean(
         parcel.readFloat(),
         parcel.readFloat(),
         parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readValue(Int::class.java.classLoader) as Int,
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readValue(Int::class.java.classLoader) as? Int,
@@ -108,6 +111,7 @@ data class SettingBean(
         parcel.writeFloat(jzRatio)
         parcel.writeFloat(jzOutValue)
         parcel.writeValue(limitValue)
+        parcel.writeValue(limitStepValue)
         parcel.writeValue(jjLimitValue)
         parcel.writeValue(overLimitValue)
         parcel.writeValue(alarmLimitValue)

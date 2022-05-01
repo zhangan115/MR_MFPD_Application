@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data class="PhaseDataBinding">
 
@@ -36,8 +37,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
-            android:gravity="end"
             android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:text="@{vm.limitValueStr}"
+                android:layout_marginEnd="12dp"
+                android:textColor="@color/text_first_content"
+                android:textSize="14sp"
+                tools:text="通道门限值:30" />
 
             <ImageView
                 android:id="@+id/image1"

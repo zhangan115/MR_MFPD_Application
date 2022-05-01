@@ -29,7 +29,7 @@ class CheckDataViewModel(
     lateinit var mCheckType: CheckType
     var writeSetting = false
     var toastStr: MutableLiveData<String> = MutableLiveData()
-    private var settingBean: SettingBean? = null
+    var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     val settingValues: ArrayList<Float> = ArrayList()
 
@@ -37,6 +37,9 @@ class CheckDataViewModel(
 
     private val _toYcDataEvent = MutableLiveData<Event<ByteArray>>()
     val toYcDataEvent: LiveData<Event<ByteArray>> = _toYcDataEvent
+
+    private val _toSettingValueEvent = MutableLiveData<Event<Unit>>()
+    val toSettingValueEvent: LiveData<Event<Unit>> = _toSettingValueEvent
 
     private val disposableList = ArrayList<Disposable>()
 
@@ -137,6 +140,7 @@ class CheckDataViewModel(
             checkParamsBean?.postValue(checkParamsBean?.value)
         }
         updateSettingValue()
+        _toSettingValueEvent.postValue(Event(Unit))
     }
 
 

@@ -61,6 +61,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 1
     }
 
@@ -182,6 +183,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
             }
         }
+    }
+
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
     }
 
     override fun cleanCurrentData() {

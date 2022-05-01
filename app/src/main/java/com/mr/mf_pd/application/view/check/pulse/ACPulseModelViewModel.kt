@@ -34,7 +34,7 @@ class ACPulseModelViewModel(
 
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData(Vector<Float>())
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
     fun start() {
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()

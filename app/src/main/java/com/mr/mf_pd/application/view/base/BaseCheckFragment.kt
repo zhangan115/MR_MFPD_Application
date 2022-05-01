@@ -79,9 +79,16 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
     }
 
+    override fun onLimitValueChange(value: Int) {
+
+    }
+
     override fun onResume() {
         super.onResume()
         switchPassageway(mPassageway, mCommandType)
+        checkType?.settingBean?.let {
+            it.limitValue?.let { it1 -> onLimitValueChange(it1) }
+        }
         Log.d("zhangan", "$TAG onResume")
     }
 

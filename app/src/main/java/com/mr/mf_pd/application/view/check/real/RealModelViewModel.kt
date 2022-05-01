@@ -38,7 +38,7 @@ class RealModelViewModel(
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
-
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
     //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 

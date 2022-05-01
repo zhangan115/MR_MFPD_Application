@@ -49,6 +49,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 2
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
@@ -74,6 +75,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         })
     }
 
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
+    }
 
     override fun setIsFileValue(isFile: Boolean?) {
         viewModel.isFile.value = isFile

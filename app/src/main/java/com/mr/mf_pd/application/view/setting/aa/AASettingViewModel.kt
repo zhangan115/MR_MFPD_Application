@@ -55,6 +55,8 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
+    //通道门限值调整步长
+    var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
     //触发门限值
     var cfLimitValueStr: MutableLiveData<String> = MutableLiveData()
     //低通滤波器
@@ -136,6 +138,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
         jzXsStr.postValue(settingBean.jzRatio.toString())
         jzQShuChu.postValue(settingBean.jzOutValue.toString())
         fzUnitStr.postValue(settingBean.fzUnit)
+        limitStepValueStr.postValue(settingBean.limitStepValue.toString())
         if (settingBean.limitValue != null) {
             limitValueStr.postValue(settingBean.limitValue.toString())
         }
@@ -247,6 +250,9 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.maxValue2= maximumAmplitudeStr2.value!!.toInt()
             settingBean.minValue2 = minimumAmplitudeStr2.value!!.toInt()
             settingBean.limitValue = limitValueStr.value?.toInt()
+           limitStepValueStr.value?.toIntOrNull()?.let {
+               settingBean.limitStepValue = it
+           }
             settingBean.jjLimitValue = jjLimitValueStr.value?.toInt()
             settingBean.overLimitValue = overLimitValueStr.value?.toInt()
             settingBean.alarmLimitValue = alarmLimitValueStr.value?.toInt()

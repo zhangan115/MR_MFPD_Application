@@ -39,7 +39,7 @@ class PhaseModelViewModel(
     var isSaveData: MutableLiveData<Boolean>? = null
 
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
     var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()

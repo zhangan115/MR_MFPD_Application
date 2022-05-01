@@ -13,6 +13,11 @@ interface FragmentDataListener {
     fun onYcDataChange(bytes: ByteArray)
 
     /**
+     * 通道门限值发生变化
+     */
+    fun onLimitValueChange(value: Int)
+
+    /**
      * 清理数据
      */
     fun cleanCurrentData()

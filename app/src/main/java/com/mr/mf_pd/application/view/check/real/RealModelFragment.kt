@@ -49,6 +49,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
+        checkType = viewModel.checkType
         mCommandType = 1
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
@@ -120,6 +121,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
             image5.visibility = View.GONE
         }
         rendererSet = true
+    }
+
+    override fun onLimitValueChange(value: Int) {
+        viewModel.limitValueStr.postValue("通道门限值:$value")
     }
 
     override fun setViewModel(dataBinding: RealDataBinding?) {

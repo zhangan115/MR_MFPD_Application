@@ -73,7 +73,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 limitPosition = 7
                 bandDetectionPosition = -1
             }
-            CheckType.AE-> {
+            CheckType.AE -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
@@ -88,7 +88,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 limitPosition = 7
                 bandDetectionPosition = -1
             }
-            CheckType.AA ->{
+            CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
@@ -117,6 +117,10 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             fragmentDataListener.forEach { listener ->
                 listener.onYcDataChange(it)
             }
+        })
+        viewModel.toSettingValueEvent.observe(this, EventObserver {
+            val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
+            updateLimitValue(currentValue)
         })
     }
 
@@ -184,24 +188,40 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     override fun addLimitValue() {
         if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
-            var newValue = currentValue + ConstantInt.LIMIT_VALUE_STEP
-            if (newValue > 8192) {
-                newValue = 8192
+            viewModel.settingBean?.limitStepValue?.let {
+                var newValue = currentValue + it
+                if (newValue > 8192) {
+                    newValue = 8192
+                }
+                viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
+                updateLimitValue(newValue)
+                writeSettingValue()
             }
-            viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
-            writeSettingValue()
         }
     }
 
     override fun downLimitValue() {
         if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
-            var newValue = currentValue - ConstantInt.LIMIT_VALUE_STEP
-            if (newValue < 0) {
-                newValue = 0
+            viewModel.settingBean?.limitStepValue?.let {
+                var newValue = currentValue - it
+                if (newValue < 0) {
+                    newValue = 0
+                }
+                viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
+                updateLimitValue(newValue)
+                writeSettingValue()
             }
-            viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
-            writeSettingValue()
+        }
+    }
+
+    private fun updateLimitValue(newValue: Int) {
+        fragmentDataListener.forEach { listener ->
+            run {
+                if (listener.isAdd()) {
+                    listener.onLimitValueChange(newValue)
+                }
+            }
         }
     }
 
