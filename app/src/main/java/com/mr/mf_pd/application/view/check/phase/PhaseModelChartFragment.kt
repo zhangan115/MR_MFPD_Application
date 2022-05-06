@@ -127,12 +127,17 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         if (valueList.size >= 2) {
             view?.let {
                 val df1 = DecimalFormat("0.00")
-                viewModel.checkType.checkParams.value?.hzAttr = df1.format(valueList[1])
-                if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE || viewModel.checkType == CheckType.AA) && valueList.size >= 6) {
-                    viewModel.checkType.checkParams.value?.effectiveValueAttr =
-                        df1.format(valueList[3])
+                viewModel.checkType.checkParams.value?.let {
+                    it.hzAttr = df1.format(valueList[1])
+                    if ((viewModel.checkType == CheckType.TEV || viewModel.checkType == CheckType.AE || viewModel.checkType == CheckType.AA) && valueList.size >= 6) {
+                        it.effectiveValueAttr = df1.format(valueList[3])
+                    }
+                    if (!viewModel.canUpdateFz) {
+                        val fzValue = valueList.lastOrNull()
+                        it.fzAttr = df1.format(fzValue) + viewModel.checkType.settingBean.fzUnit
+                    }
+                    viewModel.updateFzValue(it)
                 }
-                viewModel.checkType.checkParams.postValue(viewModel.checkType.checkParams.value)
             }
         }
     }

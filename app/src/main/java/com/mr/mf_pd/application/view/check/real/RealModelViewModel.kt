@@ -39,6 +39,7 @@ class RealModelViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
+
     //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
@@ -86,11 +87,11 @@ class RealModelViewModel(
 
     @Volatile
     var canUpdateFz = true
+    var emptyCount = 0
 
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
-        canUpdateFz = bytes.isNotEmpty()
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
         for (j in 0 until Constants.PRPS_COLUMN) {
@@ -169,6 +170,7 @@ class RealModelViewModel(
             maxGainValue = null
         }
         if (receiverCount == 50) { //一秒钟刷新一次数据
+            canUpdateFz = emptyCount != 50
             val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
             if (canUpdateFz && maxValue != null) {
                 val df1 = DecimalFormat("0.00")
@@ -179,8 +181,12 @@ class RealModelViewModel(
             receiverCount = 0
             mcCount = 0
             maxValue = null
+            emptyCount = 0
         } else {
             ++receiverCount
+            if (bytes.isEmpty()) {
+                ++emptyCount
+            }
         }
         prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
     }

@@ -122,6 +122,7 @@ class PhaseModelViewModel(
 
     @Volatile
     var canUpdateFz = true
+    var emptyCount = 0
 
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
@@ -197,6 +198,7 @@ class PhaseModelViewModel(
             maxGainValue = null
         }
         if (receiverCount == 50) { //一秒钟刷新一次数据
+            canUpdateFz = emptyCount != 50
             val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
             if (canUpdateFz && maxValue != null) {
                 val df1 = DecimalFormat("0.00")
@@ -208,6 +210,9 @@ class PhaseModelViewModel(
             mcCount = 0
         } else {
             ++receiverCount
+            if (bytes.isEmpty()) {
+                ++emptyCount
+            }
         }
     }
 

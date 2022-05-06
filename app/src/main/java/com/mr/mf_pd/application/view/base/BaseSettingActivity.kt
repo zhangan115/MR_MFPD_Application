@@ -25,12 +25,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
             MaterialDialog(this)
                 .show {
                     listItems(R.array.choose_phase_model) { _, index, text ->
-                        //单独处理
-                        if (index != 0) {
-                            onPhaseModelChange(text.toString(), 2)
-                        } else {
-                            onPhaseModelChange(text.toString(), index)
-                        }
+                        onPhaseModelChange(text.toString(), index)
                     }
                     lifecycleOwner(this@BaseSettingActivity)
                 }
