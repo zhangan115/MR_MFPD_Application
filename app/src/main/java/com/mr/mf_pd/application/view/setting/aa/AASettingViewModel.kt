@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.setting.aa
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -183,7 +184,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
             fzUnitStr.postValue(checkType.defaultUnit)
         }
         SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
             .sendData(readSettingCommand)
     }
@@ -314,6 +315,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
     }
 
     private fun writeValue() {
+        Log.d("zhangan","values ${values.toArray()}")
         val writeCommand = CommandHelp.writeSettingValue(checkType.passageway, values)
         SocketManager.get().sendData(writeCommand)
     }

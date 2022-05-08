@@ -180,7 +180,7 @@ class AESettingViewModel(val setting: SettingRepository) : ViewModel() {
             fzUnitStr.postValue(checkType.defaultUnit)
         }
         SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, 10)
+        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
             .sendData(readSettingCommand)
     }

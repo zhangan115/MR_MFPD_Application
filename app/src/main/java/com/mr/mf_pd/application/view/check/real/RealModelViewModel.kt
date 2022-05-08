@@ -186,6 +186,9 @@ class RealModelViewModel(
             ++receiverCount
             if (bytes.isEmpty()) {
                 ++emptyCount
+            } else {
+                canUpdateFz = true
+                emptyCount = 0
             }
         }
         prPsDataCallback?.prpsDataChange(dataMaps, newValueList)

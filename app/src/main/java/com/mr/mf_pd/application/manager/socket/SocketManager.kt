@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.app.MRApplication.Companion.port
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.*
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
@@ -422,7 +423,7 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
-                    Log.d("zhangan", "send data " + Bytes.asList(*data).toString())
+                    Log.d("zhangan", "send data " +  ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
                 } else {
                     Log.d("zhangan", "发送失败")
                     emitter.onNext(false)

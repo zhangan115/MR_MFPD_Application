@@ -127,7 +127,6 @@ class PhaseModelViewModel(
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
-        canUpdateFz = bytes.isNotEmpty()
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         for (i in 0 until (bytes.size / 6)) {
             val values = ByteArray(6)
@@ -212,6 +211,9 @@ class PhaseModelViewModel(
             ++receiverCount
             if (bytes.isEmpty()) {
                 ++emptyCount
+            }else {
+                emptyCount = 0
+                canUpdateFz = true
             }
         }
     }

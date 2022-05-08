@@ -2,6 +2,7 @@ package com.mr.mf_pd.application.view.check.real
 
 import android.graphics.PixelFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels

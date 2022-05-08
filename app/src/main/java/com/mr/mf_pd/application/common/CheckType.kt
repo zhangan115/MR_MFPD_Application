@@ -54,7 +54,7 @@ enum class CheckType(
         13,
         3,
         "mV",
-        ConstantStr.SETTING_AC,
+        ConstantStr.SETTING_AE,
         MutableLiveData(CheckParamsBean(2))
     ),
     AA(
