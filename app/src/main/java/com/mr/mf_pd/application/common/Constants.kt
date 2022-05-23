@@ -97,6 +97,6 @@ object Constants {
     const val KEY_Y_TEXT = "key_y_text"
     const val KEY_Z_TEXT = "key_z_text"
 
-    val PHASE_MODEL_LIST = listOf("根据设定频率进行内同步", "无线同步", "自适应内同步")
+    val PHASE_MODEL_LIST = listOf("内同步", "无线同步", "自适应同步")
     val BAND_DETECTION_LIST = listOf("全通", "高通", "低通")
 }
