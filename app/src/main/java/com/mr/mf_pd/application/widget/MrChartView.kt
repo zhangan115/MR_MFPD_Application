@@ -26,7 +26,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     var defaultMinValue: Float = 0f
 
     @Volatile
-    var drawSinLines = true
+    var drawSinLines = false
 
     private var unitRect = Rect()
     private var chartRect = Rect()
@@ -41,7 +41,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     //单位
     @Volatile
-    var unit: String = "dBm"
+    var unit: String? = "dBm"
 
     @Volatile
     var maxValue: Float = 0f
@@ -276,7 +276,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             //draw unit
             if (!TextUtils.isEmpty(unit)) {
                 mPaint?.let {
-                    mCanvas?.drawText(unit,
+                    mCanvas?.drawText(unit!!,
                         leftSpaceValue,
                         textRect.textHeightGraphics,
                         it)

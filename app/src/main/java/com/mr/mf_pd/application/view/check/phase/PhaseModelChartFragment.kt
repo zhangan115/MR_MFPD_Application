@@ -55,6 +55,8 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
                 viewModel.gainMinValue.postValue(DefaultDataRepository.realDataMinValue.value?.toFloat())
             }
         }
+        mrChartView.drawSinLines = true
+        mrChartView.unit = checkType?.settingBean?.fzUnit
         mrChartView.dataCallback = viewModel.realBytesDataCallback
         viewModel.dataCallback = {
             mrChartView.setValue(it)
@@ -168,5 +170,6 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
+        mrChartView.unit = settingBean.fzUnit
     }
 }
