@@ -77,7 +77,7 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zTopPosition = (entry2.getKey() - minValue) / (maxValue - minValue) * (2.0f - 2 * Constants.PRPS_SPACE);
+                float zTopPosition = (entry2.getKey() - minValue) / (maxValue - minValue) * (2.0f - 2 * spaceHeight);
                 float startX = -1 + spaceWidth + stepX * entry1.getKey();
                 vertexPointList.add(startX);
                 vertexPointList.add(1 - spaceHeight);

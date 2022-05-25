@@ -41,7 +41,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     //单位
     @Volatile
-    var unit: String? = "dBm"
+    var unit: String? = ""
 
     @Volatile
     var maxValue: Float = 0f
@@ -111,8 +111,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             it.strokeWidth = 1f
             it.isAntiAlias = true
         }
-        defaultMaxValue = 0f
-        defaultMinValue = -100f
         maxValue = defaultMaxValue
         minValue = defaultMinValue
 
@@ -285,6 +283,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             //draw values
 
             //draw point
+
             val entrySet1 = dataMaps.entries
             pointValues[0].clear()
             pointValues[1].clear()
@@ -296,7 +295,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
                     if (value < minValue || value > maxValue) continue
                     val float = FloatArray(2)
                     float[0] =
-                        x / 360f * (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) + leftSpaceValue
+                        x / 100f * (textRect.widthGraphics - leftSpaceValue - rightSpaceValue) + leftSpaceValue
                     float[1] =
                         (1f - (value - minValue) / (maxValue - minValue)) * (textRect.heightGraphics - topSpaceValue - bottomSpaceValue) + topSpaceValue
                     when {
