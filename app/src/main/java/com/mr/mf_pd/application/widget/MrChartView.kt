@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -141,7 +140,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
         mIsDrawing = false
     }
-
 
     override fun run() {
         while (mIsDrawing) {
@@ -349,7 +347,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     fun initView() {
         xAxisText.addAll(listOf("0°", "90°", "180°", "270°", "360°"))
-        yStepValue = (maxValue - minValue) / stepCount
         updateYAxis()
         mSurfaceHolder = holder
         mSurfaceHolder?.addCallback(this)
@@ -427,15 +424,17 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
         return true
     }
 
-    private fun updateXAxis() {
-        yAxisText.clear()
-        for (index in 0..stepCount) {
-            yAxisText.add((maxValue - yStepValue * index).toInt().toString())
+    fun updateXAxis() {
+        xStepValue = (maxXValue - minXValue) / xStepCount
+        xAxisText.clear()
+        for (index in 0..xStepCount) {
+            xAxisText.add((maxXValue - xStepValue * index).toInt().toString())
         }
-        textRect.updateData(getTextRect(yAxisText))
+        textRect.updateData(getTextRect(xAxisText))
     }
 
-    private fun updateYAxis() {
+    fun updateYAxis() {
+        yStepValue = (maxValue - minValue) / stepCount
         yAxisText.clear()
         for (index in 0..stepCount) {
             yAxisText.add((maxValue - yStepValue * index).toInt().toString())

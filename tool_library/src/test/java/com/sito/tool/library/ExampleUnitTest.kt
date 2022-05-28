@@ -6,6 +6,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import java.util.*
 
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -40,7 +41,9 @@ class ExampleUnitTest {
         System.out.println(ByteLibUtil.getInt(values))
 
         assertEquals(4, 2 + 2)
-
+        val bytes = ByteLibUtil.floatToByteArray(10.0f)
+        System.out.println(bytes)
+        assertArrayEquals(byteArrayOf(65, 32, 0, 0), ByteLibUtil.floatToByteArray(10.0f))
 
     }
 }

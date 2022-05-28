@@ -62,6 +62,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
             mrChartView.defaultMinValue = it.minValue.toFloat()
             mrChartView.maxValue = it.maxValue.toFloat()
             mrChartView.minValue = it.minValue.toFloat()
+            mrChartView.updateYAxis()
         }
         mrChartView.dataCallback = viewModel.realBytesDataCallback
         viewModel.dataCallback = {
@@ -181,5 +182,6 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         mrChartView.defaultMinValue = settingBean.minValue.toFloat()
         mrChartView.maxValue = settingBean.maxValue.toFloat()
         mrChartView.minValue = settingBean.minValue.toFloat()
+        mrChartView.updateYAxis()
     }
 }

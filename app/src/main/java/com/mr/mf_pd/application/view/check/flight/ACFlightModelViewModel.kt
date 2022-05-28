@@ -87,7 +87,7 @@ class ACFlightModelViewModel(
                     val lengthBytes = byteArrayOf(0x00, 0x00, values[0], values[1])
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    val value = ByteUtil.getFloat(height)
+                    val value = ByteLibUtil.byteArrayToFloat(height)
                     val key = ByteLibUtil.getInt(lengthBytes)
                     maxXValue = max(key, maxXValue)
                     maxGainValue = if (maxGainValue == null) {

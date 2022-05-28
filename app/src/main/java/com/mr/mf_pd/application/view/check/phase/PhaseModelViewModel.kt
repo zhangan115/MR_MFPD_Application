@@ -17,6 +17,7 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.sito.tool.library.utils.ByteLibUtil
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
@@ -135,7 +136,7 @@ class PhaseModelViewModel(
             val column = values[1].toInt()
             val height = ByteArray(4)
             System.arraycopy(values, 2, height, 0, 4)
-            val f = ByteUtil.getFloat(height)
+            val f = ByteLibUtil.byteArrayToFloat(height)
             maxValue = if (maxValue == null) {
                 f
             } else {

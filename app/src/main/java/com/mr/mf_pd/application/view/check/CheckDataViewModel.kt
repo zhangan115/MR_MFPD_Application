@@ -20,6 +20,7 @@ import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
+import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 
 class CheckDataViewModel(
@@ -198,7 +199,7 @@ class CheckDataViewModel(
             for (i in 0 until (source.size / 4)) {
                 val value = ByteArray(4)
                 System.arraycopy(source, 4 * i, value, 0, 4)
-                val f = ByteUtil.getFloat(value)
+                val f = ByteLibUtil.byteArrayToFloat(value)
                 valueList.add(f)
             }
         }
@@ -214,7 +215,7 @@ class CheckDataViewModel(
             for (i in 0 until (source.size / 4)) {
                 val value = ByteArray(4)
                 System.arraycopy(source, 4 * i, value, 0, 4)
-                val f = ByteUtil.getFloat(value)
+                val f = ByteLibUtil.byteArrayToFloat(value)
                 valueList.add(f)
             }
         }

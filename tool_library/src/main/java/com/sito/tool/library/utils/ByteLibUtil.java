@@ -5,6 +5,18 @@ package com.sito.tool.library.utils;
  */
 public class ByteLibUtil {
 
+    public static byte[] floatToByteArray(float value) {
+        int intBits =  Float.floatToIntBits(value);
+        return new byte[] {
+                (byte) (intBits >> 24), (byte) (intBits >> 16), (byte) (intBits >> 8), (byte) (intBits) };
+    }
+
+    public static float byteArrayToFloat(byte[] bytes) {
+        int intBits =
+                bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
+        return Float.intBitsToFloat(intBits);
+    }
+
     /**
      * 字节数组转换成对应的16进制表示的字符串
      *

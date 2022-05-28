@@ -6,6 +6,7 @@ import androidx.annotation.NonNull
 import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.repository.RepositoryService
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository

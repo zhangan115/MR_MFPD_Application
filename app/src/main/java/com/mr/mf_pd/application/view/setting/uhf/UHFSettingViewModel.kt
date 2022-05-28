@@ -12,9 +12,12 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.readFloatBE
+import com.sito.tool.library.utils.ByteLibUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import kotlin.math.roundToInt
 
 class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
@@ -45,8 +48,10 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
+
     //通道门限值调整步长
     var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
+
     //实时上传
     var isUploadReal: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -142,7 +147,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         } else {
             fzUnitStr.postValue(checkType.defaultUnit)
         }
-        SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
+        SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
         val readSettingCommand =
             CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get().sendData(readSettingCommand)
@@ -184,7 +189,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             for (i in 0 until (source.size / 4)) {
                 val value = ByteArray(4)
                 System.arraycopy(source, 4 * i, value, 0, 4)
-                val f = ByteUtil.getFloat(value)
+                val f = ByteLibUtil.byteArrayToFloat(value)
                 valueList.add(f)
             }
         }
@@ -250,9 +255,10 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     private fun saveDataToList(float: Float?) {
         if (float == null) {
-            values.add(0f)
+            values.add(0.0f)
         } else {
-            values.add(float)
+            val b = ((float * 100).roundToInt() / 100).toFloat()
+            values.add(b)
         }
     }
 
@@ -263,7 +269,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        SocketManager.get().removeCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
+        SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
     }
 
 }

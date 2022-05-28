@@ -12,6 +12,7 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.sito.tool.library.utils.ByteLibUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -164,7 +165,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             for (i in 0 until (source.size / 4)) {
                 val value = ByteArray(4)
                 System.arraycopy(source, 4 * i, value, 0, 4)
-                val f = ByteUtil.getFloat(value)
+                val f = ByteLibUtil.byteArrayToFloat(value)
                 valueList.add(f)
             }
         }

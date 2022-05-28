@@ -1,11 +1,14 @@
 package com.mr.mf_pd.application.manager.socket.comand;
 
+import android.util.Log;
+
 import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.model.SettingBean;
 import com.mr.mf_pd.application.utils.ByteUtil;
 import com.sito.tool.library.utils.ByteLibUtil;
 import com.sito.tool.library.utils.NumberLibUtils;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -118,7 +121,7 @@ public class CommandHelp {
     public static byte[] writeSettingValue(int passageway, int valuePosition, Float value) {
         byte b = (byte) passageway;
 
-        byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(value));
+        byte[] valueByte = ByteLibUtil.floatToByteArray(value);
 
         byte[] bytes = new byte[]{
                 0x01, 0x10, b, (byte) valuePosition, valueByte[0], valueByte[1], valueByte[2], valueByte[3]
@@ -144,7 +147,7 @@ public class CommandHelp {
         byteList.addAll(Bytes.asList(size));
         byteList.addAll(Bytes.asList(b));
         for (Float f : value) {
-            byte[] valueByte = ByteLibUtil.hexStr2bytes(NumberLibUtils.floatToHexString(f));
+            byte[] valueByte = ByteLibUtil.floatToByteArray(f);
             byteList.addAll(Bytes.asList(valueByte));
         }
         byte[] bytes = Bytes.toArray(byteList);
