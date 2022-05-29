@@ -4,6 +4,7 @@ import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
@@ -46,6 +47,10 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
+    //通道门限值滑动条的值
+    var limitProgressValue: MutableLiveData<Int> = MutableLiveData()
+    //通道门限值调整步长
+    var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
     //触发门限值
     var cfLimitValueStr: MutableLiveData<String> = MutableLiveData()
     //低通滤波器
@@ -119,7 +124,9 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
         if (settingBean.limitValue != null) {
             limitValueStr.postValue(settingBean.limitValue.toString())
+            limitProgressValue.postValue(((settingBean.limitValue!! / ConstantInt.LIMIT_VALUE_MAX.toFloat()) * 100).toInt())
         }
+        limitStepValueStr.postValue(settingBean.limitStepValue.toString())
         if (settingBean.jjLimitValue != null) {
             jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
         }
@@ -183,6 +190,7 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             secondDischargeMinCountStr.postValue(valueList[5].toInt().toString())
             noiseLimitStr.postValue(valueList[6].toInt().toString())
             limitValueStr.postValue(valueList[7].toInt().toString())
+            limitProgressValue.postValue(((valueList[7] / ConstantInt.LIMIT_VALUE_MAX) * 100).toInt())
             cfLimitValueStr.postValue(valueList[8].toInt().toString())
             lowPassFilteringStr.postValue(valueList[9].toInt().toString())
             highPassFilteringStr.postValue(valueList[10].toInt().toString())
@@ -224,6 +232,9 @@ class HFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
             settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
             settingBean.limitValue = limitValueStr.value?.toInt()
+            limitStepValueStr.value?.toIntOrNull()?.let {
+                settingBean.limitStepValue = it
+            }
             settingBean.jjLimitValue = jjLimitValueStr.value?.toInt()
             settingBean.overLimitValue = overLimitValueStr.value?.toInt()
             settingBean.alarmLimitValue = alarmLimitValueStr.value?.toInt()

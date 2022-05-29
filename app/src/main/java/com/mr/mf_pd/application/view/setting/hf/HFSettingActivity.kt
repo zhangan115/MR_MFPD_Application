@@ -3,10 +3,11 @@ package com.mr.mf_pd.application.view.setting.hf
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.common.eventbus.EventBus
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.HFSettingDataBinding
@@ -23,8 +24,29 @@ class HFSettingActivity : BaseSettingActivity<HFSettingDataBinding>() {
         calibrationButton.setOnClickListener {
 
         }
-    }
+        viewModel.limitProgressValue.observe(this){
+            limitValueProgressBar.setProgress(it,false)
+        }
+        limitValueProgressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val value = ConstantInt.LIMIT_VALUE_MAX * progress / 100
+                    limitValueEt.setText(value.toString())
+                    viewModel.limitValueStr.postValue(value.toString())
+                }
+            }
 
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+//                limitValueEt.removeTextChangedListener(textWatcher)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+//                limitValueEt.addTextChangedListener(textWatcher)
+            }
+        })
+
+    }
 
     override fun initData(savedInstanceState: Bundle?) {
         super.initData(savedInstanceState)

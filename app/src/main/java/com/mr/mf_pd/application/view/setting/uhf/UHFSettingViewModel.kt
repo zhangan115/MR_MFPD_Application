@@ -4,6 +4,7 @@ import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
@@ -11,8 +12,6 @@ import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
-import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.utils.readFloatBE
 import com.sito.tool.library.utils.ByteLibUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -48,7 +47,8 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
-
+    //通道门限值滑动条的值
+    var limitProgressValue: MutableLiveData<Int> = MutableLiveData()
     //通道门限值调整步长
     var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
 
@@ -114,6 +114,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
         if (settingBean.limitValue != null) {
             limitValueStr.postValue(settingBean.limitValue.toString())
+            limitProgressValue.postValue(((settingBean.limitValue!! / ConstantInt.LIMIT_VALUE_MAX.toFloat()) * 100).toInt())
         }
         limitStepValueStr.postValue(settingBean.limitStepValue.toString())
         if (settingBean.jjLimitValue != null) {
@@ -170,6 +171,7 @@ class UHFSettingViewModel(val setting: SettingRepository) : ViewModel() {
             secondDischargeMinCountStr.postValue(valueList[5].toInt().toString())
             noiseLimitStr.postValue(valueList[6].toInt().toString())
             limitValueStr.postValue(valueList[7].toInt().toString())
+            limitProgressValue.postValue(((valueList[7] / ConstantInt.LIMIT_VALUE_MAX) * 100).toInt())
             bandDetectionInt.postValue(valueList[8].toInt())
             bandDetectionStr.postValue(Constants.BAND_DETECTION_LIST[valueList[8].toInt()])
             phaseModelInt.postValue(valueList[9].toInt())

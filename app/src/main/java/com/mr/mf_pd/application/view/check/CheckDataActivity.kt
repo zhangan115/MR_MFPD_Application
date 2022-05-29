@@ -190,8 +190,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
             viewModel.settingBean?.limitStepValue?.let {
                 var newValue = currentValue + it
-                if (newValue > 8192) {
-                    newValue = 8192
+                if (newValue > ConstantInt.LIMIT_VALUE_MAX) {
+                    newValue = ConstantInt.LIMIT_VALUE_MAX
                 }
                 viewModel.settingValues[getLimitPosition()] = newValue.toFloat()
                 updateLimitValue(newValue)

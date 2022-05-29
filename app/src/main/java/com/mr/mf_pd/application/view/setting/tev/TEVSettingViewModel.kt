@@ -4,6 +4,7 @@ import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
@@ -11,7 +12,6 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.sito.tool.library.utils.ByteLibUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,10 +26,13 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
+
     //内同步的同步频率
     var phaseValueStr: MutableLiveData<String> = MutableLiveData()
+
     //幅值单位
     var fzUnitStr: MutableLiveData<String> = MutableLiveData("mV")
+
     //警戒门限
     var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
 
@@ -53,7 +56,10 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
-
+    //通道门限值滑动条的值
+    var limitProgressValue: MutableLiveData<Int> = MutableLiveData()
+    //通道门限值调整步长
+    var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
     //自动同步
     var isAutoSync: MutableLiveData<Boolean> = MutableLiveData(true)
 
@@ -92,15 +98,17 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
         maximumAmplitudeStr.postValue(settingBean.maxValue.toString())
         minimumAmplitudeStr.postValue(settingBean.minValue.toString())
         if (settingBean.limitValue != null) {
+            limitProgressValue.postValue(((settingBean.limitValue!! / ConstantInt.LIMIT_VALUE_MAX.toFloat()) * 100).toInt())
             limitValueStr.postValue(settingBean.limitValue.toString())
         }
+        limitStepValueStr.postValue(settingBean.limitStepValue.toString())
         if (settingBean.jjLimitValue != null) {
             jjLimitValueStr.postValue(settingBean.jjLimitValue.toString())
         }
         if (settingBean.overLimitValue != null) {
             overLimitValueStr.postValue(settingBean.overLimitValue.toString())
         }
-        if (settingBean.alarmLimitValue!=null) {
+        if (settingBean.alarmLimitValue != null) {
             alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
         }
         if (settingBean.maxAverageValue != null) {
@@ -120,13 +128,14 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
         val fzUnit = settingBean.fzUnit
-        if (!TextUtils.isEmpty(fzUnit)){
+        if (!TextUtils.isEmpty(fzUnit)) {
             fzUnitStr.postValue(fzUnit)
-        }else{
+        } else {
             fzUnitStr.postValue(checkType.defaultUnit)
         }
-        SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
+        SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
+        val readSettingCommand =
+            CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
             .sendData(readSettingCommand)
     }
@@ -148,6 +157,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             secondDischargeMinCountStr.postValue(valueList[5].toInt().toString())
             noiseLimitStr.postValue(valueList[6].toInt().toString())
             limitValueStr.postValue(valueList[7].toInt().toString())
+            limitProgressValue.postValue(((valueList[7] / ConstantInt.LIMIT_VALUE_MAX) * 100).toInt())
             phaseModelInt.postValue(valueList[8].toInt())
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[valueList[8].toInt()])
             val df1 = DecimalFormat("0.00")
@@ -185,6 +195,9 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.maxValue = maximumAmplitudeStr.value!!.toInt()
             settingBean.minValue = minimumAmplitudeStr.value!!.toInt()
             settingBean.limitValue = limitValueStr.value?.toIntOrNull()
+            limitStepValueStr.value?.toIntOrNull()?.let {
+                settingBean.limitStepValue = it
+            }
             settingBean.jjLimitValue = jjLimitValueStr.value?.toIntOrNull()
             settingBean.overLimitValue = overLimitValueStr.value?.toIntOrNull()
             settingBean.alarmLimitValue = alarmLimitValueStr.value?.toIntOrNull()
@@ -194,9 +207,9 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.noiseLimit = noiseLimitStr.value?.toIntOrNull()
             settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
             val fzUnit = fzUnitStr.value
-            if (!TextUtils.isEmpty(fzUnit)){
+            if (!TextUtils.isEmpty(fzUnit)) {
                 settingBean.fzUnit = fzUnit!!
-            }else{
+            } else {
                 settingBean.fzUnit = checkType.defaultUnit
             }
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
@@ -239,7 +252,7 @@ class TEVSettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        SocketManager.get().removeCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
+        SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
     }
 
 }

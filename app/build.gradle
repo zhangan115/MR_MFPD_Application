@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "com.mr.mf_pd.application"
-        minSdk 23
+        minSdk 24
         targetSdk 29
         versionCode 1
         versionName "1.0"

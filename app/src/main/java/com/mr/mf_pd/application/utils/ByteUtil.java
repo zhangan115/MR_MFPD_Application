@@ -132,32 +132,6 @@ public class ByteUtil {
     }
 
     /**
-     * 字符串转十六进制字符串
-     *
-     * @param str
-     * @return
-     */
-    public static String str2HexString(String str) {
-        char[] chars = "0123456789ABCDEF".toCharArray();
-        StringBuilder sb = new StringBuilder();
-        byte[] bs = null;
-        try {
-
-            bs = str.getBytes("utf8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int bit;
-        for (int i = 0; i < bs.length; i++) {
-            bit = (bs[i] & 0x0f0) >> 4;
-            sb.append(chars[bit]);
-            bit = bs[i] & 0x0f;
-            sb.append(chars[bit]);
-        }
-        return sb.toString();
-    }
-
-    /**
      * 把十六进制表示的字节数组字符串，转换成十六进制字节数组
      *
      * @param
@@ -232,16 +206,6 @@ public class ByteUtil {
         }
     }
 
-    public static String verify(byte[] arr) {
-        byte verify = 0;
-        for (int i = 0; i < arr.length; i++) {
-            verify = (byte) (verify ^ arr[i]);
-        }
-        byte[] jy_arr = {verify};
-        String s = bytes2HexStr(jy_arr);
-        return s;
-    }
-
     public static byte[] intToByteArray(int a) {
         return new byte[]{
                 //                (byte) ((a >> 24) & 0xFF),
@@ -250,89 +214,6 @@ public class ByteUtil {
         };
     }
 
-    /**
-     * 获取高字节 然后转化为int
-     *
-     * @param a
-     * @return
-     */
-    public static int getIntHeightByte(byte a) {
-        return ((a >> 4) & 0x0F);
-    }
-
-    /**
-     * 获取低字节 然后转化为int
-     *
-     * @param a
-     * @return
-     */
-    public static int getIntLowByte(byte a) {
-        return (a & 0x0F);
-    }
-
-    @Nullable
-    public static short[] CheckRegValues(String writeValue, int radix) {
-        short[] mRegValues = null;
-        try {
-            String[] split = StringUtils.split(writeValue.trim(), ',');
-            ArrayList<Integer> result = new ArrayList<>();
-            for (String s : split) {
-                result.add(Integer.parseInt(s.trim(), radix));
-            }
-            short[] values = new short[result.size()];
-            for (int i = 0; i < values.length; i++) {
-                int v = result.get(i);
-                if (v >= 0 && v <= 0xffff) {
-                    values[i] = (short) v;
-                } else {
-                    throw new RuntimeException();
-                }
-            }
-            if (values.length > 0) {
-                mRegValues = values;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return mRegValues;
-    }
-
-    public static float getFloat(byte[] bytes) {
-        return Float.intBitsToFloat(getInt(bytes));
-    }
-
-    public static byte[] float2byte(float f) {
-
-        // 把float转换为byte[]
-        int fbit = Float.floatToIntBits(f);
-
-        byte[] b = new byte[4];
-        for (int i = 0; i < 4; i++) {
-            b[i] = (byte) (fbit >> (24 - i * 8));
-        }
-
-        // 翻转数组
-        int len = b.length;
-        // 建立一个与源数组元素类型相同的数组
-        byte[] dest = new byte[len];
-        // 为了防止修改源数组，将源数组拷贝一份副本
-        System.arraycopy(b, 0, dest, 0, len);
-        byte temp;
-        // 将顺位第i个与倒数第i个交换
-        for (int i = 0; i < len / 2; ++i) {
-            temp = dest[i];
-            dest[i] = dest[len - i - 1];
-            dest[len - i - 1] = temp;
-        }
-
-        return dest;
-
-    }
-
-    public static int getInt(byte[] bytes) {
-        return (0xff000000 & (bytes[0] << 24) | (0xff0000 & (bytes[1] << 16)) | (0xff00 & (bytes[2] << 8))
-                | (0xff & bytes[3]));
-    }
 
     /**
      * 计算CRC16校验码
