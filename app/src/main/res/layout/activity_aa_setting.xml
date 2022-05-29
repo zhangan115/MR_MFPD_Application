@@ -804,7 +804,6 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="20dp"
                     android:background="@drawable/shape_content_bg"
                     android:orientation="vertical">
 
@@ -948,7 +947,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/shape_content_bg">
 
                     <TextView

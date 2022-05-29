@@ -70,7 +70,6 @@ class FlightChartsRenderer(
     @Volatile
     var column: Int = 5000
 
-
     private val paint = Paint()
 
     @Volatile
