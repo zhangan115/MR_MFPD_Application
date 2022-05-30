@@ -28,7 +28,7 @@
 
     <string name="phase_model_1">内同步</string>
     <string name="phase_model_2">无线同步</string>
-    <string name="phase_model_3">自适应同步</string>
+    <string name="phase_model_3">智能同步</string>
 
     <string name="empty_directory_hint">当前文件夹为空</string>
 

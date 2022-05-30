@@ -51,7 +51,7 @@ class SocketManager private constructor() {
     companion object {
 
         private const val DEVICE_NO = 1
-        private var isConnected //是否连接
+        var isConnected //是否连接
                 = false
 
         private var instance: SocketManager? = null

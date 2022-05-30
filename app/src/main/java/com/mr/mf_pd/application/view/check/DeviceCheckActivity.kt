@@ -26,29 +26,19 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
     override fun initView(savedInstanceState: Bundle?) {
         uhfDataLayout.setOnClickListener {
-            val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.UHF)
-            startActivity(intent)
+            startCheckDataActivity(CheckType.UHF)
         }
         aeTaskLayout.setOnClickListener {
-            val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AE)
-            startActivity(intent)
+            startCheckDataActivity(CheckType.AE)
         }
         tevDataLayout.setOnClickListener {
-            val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.TEV)
-            startActivity(intent)
+            startCheckDataActivity(CheckType.TEV)
         }
         hfTaskLayout.setOnClickListener {
-            val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.HF)
-            startActivity(intent)
+            startCheckDataActivity(CheckType.HF)
         }
         aaTaskLayout.setOnClickListener {
-            val intent = Intent(this, CheckDataActivity::class.java)
-            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, CheckType.AA)
-            startActivity(intent)
+            startCheckDataActivity(CheckType.AA)
         }
         checkDataLayout.setOnClickListener {
             val intent = Intent(this, FilePickerActivity::class.java)
@@ -60,6 +50,16 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         }
         linkToDevice()
         ClickAnnotationRealize.Bind(this)
+    }
+
+    private fun startCheckDataActivity(checkType:CheckType){
+        if (SocketManager.isConnected){
+            val intent = Intent(this, CheckDataActivity::class.java)
+            intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, checkType)
+            startActivity(intent)
+        }else{
+            ToastAdapter.bindToast(uhfDataLayout, "请连接设备")
+        }
     }
 
     var disposable: Disposable? = null
