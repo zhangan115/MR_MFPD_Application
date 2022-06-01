@@ -11,6 +11,7 @@ import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,12 +22,15 @@ import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.MainDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.udp.DeviceListenerManager
+import com.mr.mf_pd.application.manager.udp.UDPListener
 import com.mr.mf_pd.application.manager.wifi.BaseWiFiManager
 import com.mr.mf_pd.application.manager.wifi.WiFiManager
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiConnectListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
@@ -60,6 +64,12 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
         registerReceiver(wifiReceiver, intentFilter)
+        DeviceListenerManager.startListener()
+        DeviceListenerManager.addListener(object : UDPListener {
+            override fun onData(byteArray: ByteArray) {
+
+            }
+        })
     }
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -274,5 +284,6 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         SocketManager.get().releaseRequest()
         unregisterReceiver(wifiReceiver)
         connectivityManager?.unregisterNetworkCallback(callback)
+        DeviceListenerManager.disableListener()
     }
 }
