@@ -1,5 +1,7 @@
 package com.mr.mf_pd.application.manager.udp
 
+import android.os.Handler
+import android.os.Message
 import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -16,6 +18,20 @@ object DeviceListenerManager {
     private var thread: Thread? = null
     private var socket: DatagramSocket? = null
     private val callback: Vector<UDPListener> = Vector()
+
+    private class DeviceHandle : Handler() {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            if (msg.what == 1) {
+                val byteArray = msg.obj as ByteArray
+                callback.forEach {
+                    it.onData(byteArray)
+                }
+            }
+        }
+    }
+
+    private val handle = DeviceHandle()
 
     fun startListener() {
         if (thread != null) {
@@ -37,9 +53,10 @@ object DeviceListenerManager {
                     val length = dgp.length
                     val resultByteArray = ByteArray(length)
                     System.arraycopy(buff, 0, resultByteArray, 0, length)
-                    callback.forEach {
-                        it.onData(resultByteArray)
-                    }
+                    val message = Message()
+                    message.what = 1
+                    message.obj = resultByteArray
+                    handle.sendMessage(message)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

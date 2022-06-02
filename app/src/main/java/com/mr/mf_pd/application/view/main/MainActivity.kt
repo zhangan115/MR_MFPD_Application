@@ -44,6 +44,7 @@ import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class MainActivity : AbsBaseActivity<MainDataBinding>(),
     OnWifiConnectListener, OnWifiEnabledListener, OnWifiScanResultsListener {
@@ -52,6 +53,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
     private var mWiFiManager: WiFiManager? = null
     private var dataList = ArrayList<DeviceBean>()
     private var scanDataList = ArrayList<ScanResult>()
+    private val deviceMap = HashMap<String, DeviceBean>()
     private var linkPosition = -1
 
     private val wifiReceiver = WiFiManager.NetworkBroadcastReceiver()
@@ -67,7 +69,40 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         DeviceListenerManager.startListener()
         DeviceListenerManager.addListener(object : UDPListener {
             override fun onData(byteArray: ByteArray) {
+                val mrPDByteArray = ByteArray(4)
+                val ipAddressByteArray = ByteArray(4)
+                val deviceNumByteArray = ByteArray(6)
+                val devicePowerByteArray = ByteArray(1)
+                System.arraycopy(byteArray, 0, mrPDByteArray, 0, 4)
+                System.arraycopy(byteArray, 4, ipAddressByteArray, 0, 4)
+                System.arraycopy(byteArray, 8, deviceNumByteArray, 0, 6)
+                System.arraycopy(byteArray, 14, devicePowerByteArray, 0, 1)
 
+                val mrPDStr = String(mrPDByteArray)
+                if (mrPDStr == "MRPD") {
+                    val deviceNum = ByteUtil.bytes2HexStr(deviceNumByteArray)
+                    val intList = IntArray(4)
+                    ipAddressByteArray.forEachIndexed { index, byte ->
+                        intList[index] = byte.toInt() and 0xff
+                    }
+                    val ip = intList.joinToString(".")
+                    val power = devicePowerByteArray.first().toInt()
+                    val deviceBean = if (deviceMap.containsKey(deviceNum)) {
+                        deviceMap[deviceNum]
+                    } else {
+                        val powerState =
+                            if (power < 20) 0 else if (power in 20..59) 1 else 2
+                        DeviceBean(mrPDStr, deviceNum, 0, power, powerState, null, 0, ip)
+                    }
+                    if (deviceBean != null) {
+                        deviceMap[deviceNum] = deviceBean
+                        if (!dataList.contains(deviceBean)) {
+                            dataList.add(deviceBean)
+                        }
+                        viewModel.deviceExist.postValue(dataList.isNotEmpty())
+                        recycleView.adapter?.notifyDataSetChanged()
+                    }
+                }
             }
         })
     }
@@ -80,24 +115,25 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            if (dataList[position].deviceName.equals("Test")) {
-                socketLink(position)
-                return@setOnItemChildClickListener
-            }
-            if (mWiFiManager != null && mWiFiManager!!.connectionInfo?.bssid.equals(scanDataList[position].BSSID)) {
-                socketLink(position)
-                return@setOnItemChildClickListener
-            } else {
-                dataList[position].deviceName?.let {
-                    linkPosition = position
-                    //API 29 以上无法直接连接WIFI需要单独处理
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        connectWifi()
-                    } else {
-                        mWiFiManager?.connectOpenNetwork(it)
-                    }
-                }
-            }
+            socketLink(position)
+//            if (dataList[position].deviceName.equals("Test")) {
+//                socketLink(position)
+//                return@setOnItemChildClickListener
+//            }
+//            if (mWiFiManager != null && mWiFiManager!!.connectionInfo?.bssid.equals(scanDataList[position].BSSID)) {
+//                socketLink(position)
+//                return@setOnItemChildClickListener
+//            } else {
+//                dataList[position].deviceName?.let {
+//                    linkPosition = position
+//                    //API 29 以上无法直接连接WIFI需要单独处理
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                        connectWifi()
+//                    } else {
+//                        mWiFiManager?.connectOpenNetwork(it)
+//                    }
+//                }
+//            }
         }
         checkDataLayout.setOnClickListener {
             val intent = Intent(this, FilePickerActivity::class.java)
@@ -148,7 +184,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                         if (!mWiFiManager!!.isWifiEnabled) {//wifi是否打开状态
                             mWiFiManager?.openWiFi()//打开wifi
                         }
-                        refreshLayout.setEnableRefresh(true)
+                        refreshLayout.setEnableRefresh(false)
                         // 添加监听
                         mWiFiManager?.setOnWifiConnectListener(this@MainActivity)
                         mWiFiManager?.setOnWifiScanResultsListener(this@MainActivity)
@@ -224,25 +260,25 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 
     override fun onScanResults(scanResults: MutableList<ScanResult>?) {
         val wifiList = BaseWiFiManager.excludeRepetition(scanResults)
-        dataList.clear()
-        scanDataList.clear()
-        wifiList.forEach {
-            if (it.SSID != null && it.capabilities.equals("[ESS]")) {
-                val deviceBean = DeviceBean(
-                    it.SSID!!, "", it.level,
-                    0, 0, "", 0, it.BSSID
-                )
-                dataList.add(deviceBean)
-                scanDataList.add(it)
-            }
-        }
-        val deviceBean = DeviceBean(
-            "Test", "", -80,
-            0, 0, "", 0, "BSSID"
-        )
-        dataList.add(deviceBean)
-
-        viewModel.deviceExist.postValue(dataList.isNotEmpty())
+//        dataList.clear()
+//        scanDataList.clear()
+//        wifiList.forEach {
+//            if (it.SSID != null && it.capabilities.equals("[ESS]")) {
+//                val deviceBean = DeviceBean(
+//                    it.SSID!!, "", it.level,
+//                    0, 0, "", 0, it.BSSID
+//                )
+//                dataList.add(deviceBean)
+//                scanDataList.add(it)
+//            }
+//        }
+//        val deviceBean = DeviceBean(
+//            "Test", "", -80,
+//            0, 0, "", 0, "BSSID"
+//        )
+//        dataList.add(deviceBean)
+//
+//        viewModel.deviceExist.postValue(dataList.isNotEmpty())
         recycleView.adapter?.notifyDataSetChanged()
         refreshLayout.finishRefresh(1000)
     }
