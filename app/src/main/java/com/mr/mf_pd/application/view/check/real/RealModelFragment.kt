@@ -80,6 +80,8 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer =
             PrPsChartsRenderer(this.requireContext(),
+                checkType == CheckType.HF || checkType == CheckType.AE || checkType == CheckType.AA,
+                checkType!!.settingBean,
                 viewModel.getQueue(),
                 viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPsChartsRenderer)
@@ -147,9 +149,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 val df1 = DecimalFormat("0.00")
                 viewModel.checkType.checkParams.value?.let {
                     it.hzAttr = df1.format(valueList[1])
-                    if (!viewModel.canUpdateFz){
+                    if (!viewModel.canUpdateFz) {
                         val fzValue = valueList.lastOrNull()
-                        it.fzAttr = df1.format(fzValue) +  viewModel.checkType.settingBean.fzUnit
+                        it.fzAttr = df1.format(fzValue) + viewModel.checkType.settingBean.fzUnit
                     }
                     viewModel.updateFzValue(it)
                 }

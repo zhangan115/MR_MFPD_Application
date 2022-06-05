@@ -101,17 +101,17 @@ public class ObjectBuilder {
         return builder.Build();
     }
 
-    public static GeneratedData createPrPsXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    public static GeneratedData createPrPsXYLines(int row, int column, int sinCount, boolean isZeroCenter, TextRectInOpenGl rect) {
         int size = sizeOfPrPsChartLinesInVertices(row, column);
         ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appPrPs3DXYLines(row, column, sinCount, rect);
+        builder.appPrPs3DXYLines(row, column, sinCount, isZeroCenter, rect);
         return builder.Build();
     }
 
-    public static GeneratedData createPrPsXZLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    public static GeneratedData createPrPsXZLines(int row, int column, int sinCount, boolean isZeroCenter, TextRectInOpenGl rect) {
         int size = sizeOfPrPsChartLinesInVertices(row, column) + sizeOfPoint2DSinLineInVertices(sinCount);
         ObjectBuilder builder = new ObjectBuilder(size);
-        builder.appPrPs3DXZLines(row, column, sinCount, rect);
+        builder.appPrPs3DXZLines(row, column, sinCount, isZeroCenter, rect);
         return builder.Build();
     }
 
@@ -202,7 +202,7 @@ public class ObjectBuilder {
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINE_STRIP, startVertex, column));
     }
 
-    private void appPrPs3DXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    private void appPrPs3DXYLines(int row, int column, int sinCount, boolean isZeroCenter, TextRectInOpenGl rect) {
         float spaceWidth = 1.5f * rect.getTextWidth();
         float endWidth = rect.getTextWidth();
         float spaceHeight = 2f * rect.getTextHeight();
@@ -215,15 +215,20 @@ public class ObjectBuilder {
         float endX = 1 - endWidth;
         float yPosition = -1 + spaceHeight;
 
+        float zPosition = 0f;
+        if (isZeroCenter){
+            zPosition = 1f - spaceHeight;
+        }
+
         for (int i = 0; i <= row; i++) {
             //startPoint
             vertexData[offset++] = startX;
             vertexData[offset++] = yPosition;
-            vertexData[offset++] = 0f;
+            vertexData[offset++] = zPosition;
             //endPoint
             vertexData[offset++] = endX;
             vertexData[offset++] = yPosition;
-            vertexData[offset++] = 0f;
+            vertexData[offset++] = zPosition;
 
             yPosition = yPosition + yStep;
         }
@@ -238,18 +243,18 @@ public class ObjectBuilder {
             //startPoint
             vertexData[offset++] = xPosition;
             vertexData[offset++] = startY;
-            vertexData[offset++] = 0f;
+            vertexData[offset++] = zPosition;
             //endPoint
             vertexData[offset++] = xPosition;
             vertexData[offset++] = endY;
-            vertexData[offset++] = 0f;
+            vertexData[offset++] = zPosition;
 
             xPosition = xPosition + xStep;
         }
         drawList.add(() -> GLES30.glDrawArrays(GLES30.GL_LINES, startVertex, numVertices));
     }
 
-    private void appPrPs3DXZLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    private void appPrPs3DXZLines(int row, int column, int sinCount, boolean isZeroCenter, TextRectInOpenGl rect) {
         float spaceWidth = 1.5f * rect.getTextWidth();
         float endWidth = rect.getTextWidth();
         float spaceHeight = 2f * rect.getTextHeight();

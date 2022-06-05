@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.opengl.object;
 import android.opengl.GLES30;
 
 import com.mr.mf_pd.application.common.Constants;
+import com.mr.mf_pd.application.model.SettingBean;
 import com.mr.mf_pd.application.opengl.programs.PrPsColorPointShaderProgram;
 
 import java.nio.ByteBuffer;
@@ -20,6 +21,8 @@ public class PrPsCubeList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
+    private final boolean isZeroCenter;
+    private final SettingBean settingBean;
     @Volatile
     public static float minValue = -80.0f;
     @Volatile
@@ -35,7 +38,9 @@ public class PrPsCubeList {
 
     //默认数据
 
-    public PrPsCubeList(TextRectInOpenGl rect, CopyOnWriteArrayList<Float> height) {
+    public PrPsCubeList(TextRectInOpenGl rect, SettingBean settingBean, CopyOnWriteArrayList<Float> height, boolean isZeroCenter) {
+        this.isZeroCenter = isZeroCenter;
+        this.settingBean = settingBean;
         updateTextRect(rect);
         appPrPsCubeList(rect, height);
     }
@@ -57,19 +62,38 @@ public class PrPsCubeList {
             float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
             float spaceWidth = 1.5f * rect.getTextWidth();
             float spaceHeight = 2f * rect.getTextHeight();
+            float maxV = maxValue;
+            float minV = minValue;
+            float startZPosition = 0;
+            if (isZeroCenter) {
+                startZPosition = 1 - spaceHeight;
+                if (minValue < 0 && maxValue < -1 * minV) {
+                    maxV = minValue * -1;
+                } else {
+                    minV = maxValue * -1;
+                }
+            }
             for (int i = 0; i < values.size(); i++) {
                 float zTopPosition = 0;
                 if (values.get(i) != null) {
-                    zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
+                    if (isZeroCenter) {
+                        if (values.get(i) >= 0) {
+                            zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
+                        } else {
+                            zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
+                        }
+                    } else {
+                        zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
+                    }
                 }
                 float startX = -1 + spaceWidth + stepX * i;
                 float startY = -1 + spaceHeight + stepY * row;
                 float[] vertexPoint = new float[]{
                         //正面矩形
-                        startX, startY, 0f,
-                        startX, startY + stepY / 2, 0f,
-                        startX + stepX / 2, startY + stepY / 2, 0f,
-                        startX + stepX / 2, startY, 0f,
+                        startX, startY, startZPosition,
+                        startX, startY + stepY / 2, startZPosition,
+                        startX + stepX / 2, startY + stepY / 2, startZPosition,
+                        startX + stepX / 2, startY, startZPosition,
                         //背面矩形
                         startX, startY, zTopPosition,
                         startX, startY + stepY / 2, zTopPosition,
@@ -95,22 +119,42 @@ public class PrPsCubeList {
         if (rect != null) {
             float spaceWidth = 1.5f * rect.getTextWidth();
             float spaceHeight = 2f * rect.getTextHeight();
+            float maxV = maxValue;
+            float minV = minValue;
+            float startZPosition = 0;
+
+            if (isZeroCenter) {
+                startZPosition = 1 - spaceHeight;
+                if (minValue < 0 && maxValue < -1 * minV) {
+                    maxV = minValue * -1;
+                } else {
+                    minV = maxValue * -1;
+                }
+            }
 
             float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
             float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
             for (int i = 0; i < values.size(); i++) {
                 float zTopPosition = 0;
                 if (values.get(i) != null) {
-                    zTopPosition = 0 + (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - 2 * spaceHeight);
+                    if (isZeroCenter) {
+                        if (values.get(i) >= 0) {
+                            zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
+                        } else {
+                            zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
+                        }
+                    } else {
+                        zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
+                    }
                 }
                 float startX = -1 + spaceWidth + stepX * i;
                 float startY = -1 + spaceHeight;
                 float[] vertexPoint = new float[]{
                         //正面矩形
-                        startX, startY, 0f,
-                        startX, startY + stepY / 2, 0f,
-                        startX + stepX / 2, startY + stepY / 2, 0f,
-                        startX + stepX / 2, startY, 0f,
+                        startX, startY, startZPosition,
+                        startX, startY + stepY / 2, startZPosition,
+                        startX + stepX / 2, startY + stepY / 2, startZPosition,
+                        startX + stepX / 2, startY, startZPosition,
                         //背面矩形
                         startX, startY, zTopPosition,
                         startX, startY + stepY / 2, zTopPosition,
@@ -118,11 +162,14 @@ public class PrPsCubeList {
                         startX + stepX / 2, startY, zTopPosition,
                 };
                 float[] color;
+                float level1Num = settingBean.getAlarmLimitValue() == null? 0: settingBean.getAlarmLimitValue();
+                float level2Num = settingBean.getOverLimitValue() == null? 0: settingBean.getOverLimitValue();
+                float level3Num = settingBean.getJjLimitValue() == null? 0: settingBean.getJjLimitValue();
                 if (values.get(i) == null) {
                     color = Constants.INSTANCE.getTransparentColors();
-                } else if (values.get(i) < -60f) {
+                } else if (values.get(i) < level1Num) {
                     color = Constants.INSTANCE.getRedColors();
-                } else if (values.get(i) >= -60f && values.get(i) < -30f) {
+                } else if (values.get(i) >= level1Num && values.get(i) < level2Num) {
                     color = Constants.INSTANCE.getBlueColors();
                 } else {
                     color = Constants.INSTANCE.getGreenColors();

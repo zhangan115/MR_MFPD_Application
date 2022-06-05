@@ -12,6 +12,7 @@ import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.*
 import com.mr.mf_pd.application.opengl.programs.ColorShaderProgram
 import com.mr.mf_pd.application.opengl.programs.PrPsColorPointShaderProgram
@@ -26,7 +27,10 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class PrPsChartsRenderer(
-    var context: Context, var queue: ArrayBlockingQueue<ByteArray>?,
+    var context: Context,
+    var isZeroCenter: Boolean = false,
+    var settingBean: SettingBean,
+    var queue: ArrayBlockingQueue<ByteArray>?,
     var dataCallback: BytesDataCallback?,
 ) :
     GLSurfaceView.Renderer {
@@ -113,9 +117,9 @@ class PrPsChartsRenderer(
         colorPointProgram = PrPsColorPointShaderProgram(context)
 
         prPs3DXYLines =
-            PrPsXYLines(5, 4, 90, textRectInOpenGl)
+            PrPsXYLines(5, 4, 90, textRectInOpenGl,isZeroCenter)
         prPs3DXZLines =
-            PrPsXZLines(4, 4, 90, textRectInOpenGl)
+            PrPsXZLines(4, 4, 90, textRectInOpenGl,isZeroCenter)
 
     }
 
@@ -145,7 +149,7 @@ class PrPsChartsRenderer(
     private fun addPrpsData(prPsList: PrPsCubeList?) {
         if (prpsCubeList != null && prPsList != null) {
             for (i in 0 until prpsCubeList!!.size) {
-                prpsCubeList!![i].updateRow(textRectInOpenGl,i + 1)
+                prpsCubeList!![i].updateRow(textRectInOpenGl, i + 1)
             }
             prpsCubeList!!.add(0, prPsList)
             if (prpsCubeList!!.size > Constants.PRPS_ROW) {
@@ -155,11 +159,11 @@ class PrPsChartsRenderer(
     }
 
     fun updatePrpsData(values: Map<Int, Map<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
-        this.prPsPoints?.setValue(textRectInOpenGl,values)
+        this.prPsPoints?.setValue(textRectInOpenGl, values)
         if (floatList.isEmpty()) {
             cleanData()
         } else {
-            addPrpsData(PrPsCubeList(textRectInOpenGl,floatList))
+            addPrpsData(PrPsCubeList(textRectInOpenGl,settingBean, floatList, isZeroCenter))
         }
     }
 
@@ -222,14 +226,17 @@ class PrPsChartsRenderer(
 
         textureProgram.useProgram()
         textureProgram.setUniforms(modelViewProjectionMatrix, texture1)
-
-        text1Help.bindData(textureProgram)
+        if (isZeroCenter) {
+            text1Help.bindDataZero(textureProgram)
+        } else {
+            text1Help.bindData(textureProgram)
+        }
         text1Help.draw()
 
         textureProgram.useProgram()
         textureProgram.setUniforms(modelViewProjectionMatrix, texture2)
 
-        text2Help.bindXZData(textRectInOpenGl,textureProgram)
+        text2Help.bindXZData(textRectInOpenGl, textureProgram)
         text2Help.draw()
 
         if (isToCleanData) {

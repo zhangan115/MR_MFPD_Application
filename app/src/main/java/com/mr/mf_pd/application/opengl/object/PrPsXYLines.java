@@ -18,21 +18,23 @@ public class PrPsXYLines {
     public TextRectInOpenGl rect;
     private VertexArray vertexArray;
     private List<ObjectBuilder.DrawCommand> drawList;
+    private final boolean isZeroCenter;
 
-    public PrPsXYLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    public PrPsXYLines(int row, int column, int sinCount, TextRectInOpenGl rect, boolean isZeroCenter) {
         this.column = column;
         this.row = row;
         this.sinCount = sinCount;
         this.rect = rect;
+        this.isZeroCenter = isZeroCenter;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsXYLines(row, column, sinCount, rect);
+                .createPrPsXYLines(row, column, sinCount,isZeroCenter, rect);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }
 
     public void updateGenerateData() {
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsXYLines(row, column, sinCount, rect);
+                .createPrPsXYLines(row, column, sinCount,isZeroCenter, rect);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }

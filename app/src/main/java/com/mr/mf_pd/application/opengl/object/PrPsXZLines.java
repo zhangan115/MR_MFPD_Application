@@ -13,26 +13,28 @@ import kotlin.jvm.Volatile;
 public class PrPsXZLines {
 
     private static final int POSITION_COMPONENT_COUNT = 3;
-    public final int column, row,sinCount;
+    public final int column, row, sinCount;
     @Volatile
     public TextRectInOpenGl rect;
     private VertexArray vertexArray;
     private List<ObjectBuilder.DrawCommand> drawList;
+    private final boolean isZeroCenter;
 
-    public PrPsXZLines(int row, int column, int sinCount, TextRectInOpenGl rect) {
+    public PrPsXZLines(int row, int column, int sinCount, TextRectInOpenGl rect, boolean isZeroCenter) {
         this.column = column;
         this.row = row;
         this.rect = rect;
         this.sinCount = sinCount;
+        this.isZeroCenter = isZeroCenter;
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsXZLines(row, column, sinCount, rect);
+                .createPrPsXZLines(row, column, sinCount, isZeroCenter, rect);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }
 
     public void updateGenerateData() {
         ObjectBuilder.GeneratedData generatedData = ObjectBuilder
-                .createPrPsXZLines(row, column, sinCount, rect);
+                .createPrPsXZLines(row, column, sinCount, isZeroCenter, rect);
         vertexArray = new VertexArray(generatedData.vertexData);
         this.drawList = generatedData.drawList;
     }

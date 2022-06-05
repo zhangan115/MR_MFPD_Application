@@ -21,6 +21,14 @@ open class TextGlPrpsHelp {
             1f, 1f, -0.1f, 1.0f, 0f,
         )
 
+        private val VERTEX_DATA_XY_ZERO = floatArrayOf(
+            //X Y Z S T
+            -1f, -1f, 1f, 0f, 1.0f,
+            1f, -1f, 1f, 1.0f, 1.0f,
+            -1f, 1f, 1f, 0f, 0f,
+            1f, 1f, 1f, 1.0f, 0f,
+        )
+
         private val VERTEX_DATA_XZ = floatArrayOf(
             //X Y Z S T
             -1f, 1f, 0f, 0f, 1.0f,
@@ -35,6 +43,23 @@ open class TextGlPrpsHelp {
     fun bindData(textureProgram: TextureShader3DProgram) {
 
         vertexArray = VertexArray(VERTEX_DATA_XY)
+
+        vertexArray.setVertexAttributePointer(
+            0,
+            textureProgram.positionAttributeLocation,
+            POSITION_COMPONENT_COUNT, STRIDE
+        )
+        vertexArray.setVertexAttributePointer(
+            POSITION_COMPONENT_COUNT,
+            textureProgram.textureCoordinatesAttributeLocation,
+            TEXTURE_COORDINATES_COUNT,
+            STRIDE
+        )
+    }
+
+    fun bindDataZero(textureProgram: TextureShader3DProgram) {
+
+        vertexArray = VertexArray(VERTEX_DATA_XY_ZERO)
 
         vertexArray.setVertexAttributePointer(
             0,
