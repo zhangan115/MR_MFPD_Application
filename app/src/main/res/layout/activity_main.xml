@@ -101,7 +101,7 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="20dp"
-                            android:text="下拉刷新，搜索设备"
+                            android:text="设备搜索......"
                             android:textColor="@color/text_title"
                             android:textSize="14sp"
                             android:visibility="@{vm.deviceExist?View.GONE:View.VISIBLE}" />

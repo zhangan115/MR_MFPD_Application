@@ -1,12 +1,9 @@
 package com.mr.mf_pd.application.view.main
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.repository.impl.UserRepository
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -24,7 +21,6 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
                 }
             }
             Constants.indicesList = list.toShortArray()
-            Log.d("zhangan",Constants.indicesList.size.toString())
         }
     }
 
