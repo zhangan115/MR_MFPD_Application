@@ -26,10 +26,14 @@ import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
+    private var any: Any = Any()
     private var inputStream //输入流
             : InputStream? = null
     private var outputStream //输出流
             : OutputStream? = null
+
+    //连接上的设备序列号
+    var linkedDeviceSerialNo: String? = null
 
     private var mDataByteList: LinkedList<Byte> = LinkedList()
 
@@ -261,6 +265,7 @@ class SocketManager private constructor() {
      */
     private fun destroy() {
         try {
+            linkedDeviceSerialNo = null
             socket?.close()
             inputStream?.close()
             outputStream?.close()
@@ -346,42 +351,45 @@ class SocketManager private constructor() {
     /**
      * socket 连接
      */
-    fun initLink() {
-        cleanAllData()
-        isExecuting = true
-        realDataDeque = ArrayBlockingQueue<ByteArray>(50)
-        flightDeque = ArrayBlockingQueue<ByteArray>(50)
-        fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
-        pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
+    fun initLink(SerialNo:String?) {
+        synchronized(any) {
+            linkedDeviceSerialNo = SerialNo
+            cleanAllData()
+            isExecuting = true
+            realDataDeque = ArrayBlockingQueue<ByteArray>(50)
+            flightDeque = ArrayBlockingQueue<ByteArray>(50)
+            fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
+            pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
 
-        mRequestExecutor = Executors.newSingleThreadExecutor()
-        future = mRequestExecutor?.submit(requestRunnable)
+            mRequestExecutor = Executors.newSingleThreadExecutor()
+            future = mRequestExecutor?.submit(requestRunnable)
 
-        mQueueExecutor = Executors.newSingleThreadExecutor()
-        mQueueFuture = mQueueExecutor?.submit {
-            try {
-                while (isExecuting) {
-                    val dataList = dataQueue.take()
-                    dataList?.let {
-                        if (isLegalBytes(it)) {
-                            mDataByteList.clear()
-                        }
-                        mDataByteList.addAll(Bytes.asList(*it))
-                        dealByteList()
+            mQueueExecutor = Executors.newSingleThreadExecutor()
+            mQueueFuture = mQueueExecutor?.submit {
+                try {
+                    while (isExecuting) {
+                        val dataList = dataQueue.take()
+                        dataList?.let {
+                            if (isLegalBytes(it)) {
+                                mDataByteList.clear()
+                            }
+                            mDataByteList.addAll(Bytes.asList(*it))
+                            dealByteList()
 //                        fos?.write((ByteLibUtil.bytes2HexStr(it) + "\n").toByteArray())
 //                        fos?.flush()
+                        }
                     }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                try {
-                    fos?.close()
-                    Log.d("zhangan", "file close")
                 } catch (e: Exception) {
                     e.printStackTrace()
-                }
+                } finally {
+                    try {
+                        fos?.close()
+                        Log.d("zhangan", "file close")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
 
+                }
             }
         }
     }
@@ -423,7 +431,8 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
-                    Log.d("zhangan", "send data " +  ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
+                    Log.d("zhangan",
+                        "send data " + ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
                 } else {
                     Log.d("zhangan", "发送失败")
                     emitter.onNext(false)

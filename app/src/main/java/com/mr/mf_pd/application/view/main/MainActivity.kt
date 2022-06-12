@@ -18,10 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
+import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.MainDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
+import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.udp.DeviceListenerManager
 import com.mr.mf_pd.application.manager.udp.UDPListener
 import com.mr.mf_pd.application.manager.wifi.BaseWiFiManager
@@ -41,7 +46,10 @@ import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
+import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.activity_device_check.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.checkDataLayout
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -57,6 +65,9 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
     private var linkPosition = -1
 
     private val wifiReceiver = WiFiManager.NetworkBroadcastReceiver()
+
+    var disposable: Disposable? = null
+    var isShowTips = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +113,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                         viewModel.deviceExist.postValue(dataList.isNotEmpty())
                         recycleView.adapter?.notifyDataSetChanged()
                     }
+                    linkToDevice(deviceBean)
                 }
             }
         })
@@ -155,6 +167,8 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
+
+        initSocketCallback()
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -317,9 +331,57 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         super.onDestroy()
         mWiFiManager?.removeOnWifiScanResultsListener()
         mWiFiManager?.removeOnWifiConnectListener()
+        disposable?.dispose()
+        SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
         SocketManager.get().releaseRequest()
         unregisterReceiver(wifiReceiver)
         connectivityManager?.unregisterNetworkCallback(callback)
         DeviceListenerManager.disableListener()
     }
+
+    private fun linkToDevice(device: DeviceBean?) {
+        if (device == null || SocketManager.isConnected) {
+            return
+        }
+        SocketManager.get().releaseRequest()
+        SocketManager.get().initLink(device.serialNo)
+    }
+
+    /**
+     * 初始化Socket 连接回调
+     */
+    private fun initSocketCallback() {
+        SocketManager.get().addCallBack(CommandType.SendTime, sendTimeCallback)
+        SocketManager.get().addLinkStateListeners {
+            if (it == Constants.LINK_SUCCESS) {
+                //一分钟一次的连接对时，保证数据接通
+                disposable = SocketManager.get().sendRepeatData(CommandHelp.getTimeCommand(), 60)
+            } else {
+                SocketManager.get().releaseRequest()
+            }
+            dataList.forEach { deviceBean ->
+                if (deviceBean.serialNo == SocketManager.get().linkedDeviceSerialNo) {
+                    deviceBean.linkState = 1
+                    deviceBean.linkStateStr = "已连接"
+                } else {
+                    deviceBean.linkState = 0
+                    deviceBean.linkStateStr = "未连接"
+                }
+            }
+            recycleView.adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private val sendTimeCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (isShowTips) {
+                return
+            }
+            isShowTips = true
+            //解决不断上传的问题，对时成功后先关闭采集通道
+            val close = CommandHelp.closePassageway()
+            SocketManager.get().sendData(close)
+        }
+    }
+
 }

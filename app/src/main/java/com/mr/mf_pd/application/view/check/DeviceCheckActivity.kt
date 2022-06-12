@@ -48,7 +48,6 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         selfCheckingLayout.setOnClickListener {
 
         }
-        linkToDevice()
         ClickAnnotationRealize.Bind(this)
     }
 
@@ -59,41 +58,6 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
             startActivity(intent)
         }else{
             ToastAdapter.bindToast(uhfDataLayout, "请连接设备")
-        }
-    }
-
-    var disposable: Disposable? = null
-    var isShowTips = false
-
-    private fun linkToDevice() {
-        SocketManager.get().releaseRequest()
-        SocketManager.get().initLink()
-        SocketManager.get().addCallBack(CommandType.SendTime, sendTimeCallback)
-        SocketManager.get().addLinkStateListeners {
-            if (it == Constants.LINK_SUCCESS) {
-                //一分钟一次的连接对时，保证数据接通
-                disposable = SocketManager.get().sendRepeatData(CommandHelp.getTimeCommand(), 60)
-            } else {
-                runOnUiThread {
-                    ToastAdapter.bindToast(uhfDataLayout, "设备连接失败")
-                }
-                SocketManager.get().releaseRequest()
-            }
-        }
-    }
-
-    private val sendTimeCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-            if (isShowTips) {
-                return
-            }
-            isShowTips = true
-            //解决不断上传的问题，对时成功后先关闭采集通道
-            val close = CommandHelp.closePassageway()
-            SocketManager.get().sendData(close)
-            runOnUiThread {
-                ToastAdapter.bindToast(uhfDataLayout, "设备连接成功")
-            }
         }
     }
 
@@ -109,10 +73,4 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         return R.layout.activity_device_check
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
-        SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
-        SocketManager.get().releaseRequest()
-    }
 }

@@ -45,7 +45,7 @@ object DeviceListenerManager {
         override fun run() {
             super.run()
             socket = DatagramSocket(7277)
-            val buff = ByteArray(1204)
+            val buff = ByteArray(1024)
             while (!isInterrupted) {
                 try {
                     val dgp = DatagramPacket(buff, buff.size)

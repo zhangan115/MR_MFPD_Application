@@ -80,7 +80,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer =
             PrPsChartsRenderer(this.requireContext(),
-                checkType == CheckType.HF || checkType == CheckType.AE || checkType == CheckType.AA,
+                checkType == CheckType.HF,
                 checkType!!.settingBean,
                 viewModel.getQueue(),
                 viewModel.realBytesDataCallback)

@@ -15,16 +15,15 @@ data class DeviceBean(
     var powerState: Int,//电量类型 0低电量 1高电量
     var versionCode: String?,//版本号
     var deviceType: Int,//设备类型
-    var bssid:String?
+    var bssid: String?,
+    var linkState: Int = -1,//连接状态
+    var linkStateStr: String? = "未连接",//连接状态描述
 ) : Parcelable {
 
     val deviceNameAttr: ObservableField<String> = ObservableField(deviceName)
     val serialNoAttr: ObservableField<String> = ObservableField("序列号：$serialNo")
-    val rSSIAttr: ObservableField<String> = ObservableField("${rSSI}dbm")
     val powerAttr: ObservableField<String> = ObservableField("$power%")
     val powerStateAttr: ObservableField<Int> = ObservableField(powerState)
-    val deviceTypeAttr: ObservableField<Int> = ObservableField(deviceType)
-    val versionCodeAttr: ObservableField<String> = ObservableField("版本号：$versionCode")
 
     constructor(parcel: Parcel) : this(
         parcel.readString(),
@@ -34,8 +33,10 @@ data class DeviceBean(
         parcel.readInt(),
         parcel.readString(),
         parcel.readInt(),
+        parcel.readString(),
+        parcel.readInt(),
         parcel.readString()
-        ) {
+    ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -46,6 +47,8 @@ data class DeviceBean(
         parcel.writeInt(powerState)
         parcel.writeString(versionCode)
         parcel.writeInt(deviceType)
+        parcel.writeInt(linkState)
+        parcel.writeString(linkStateStr)
     }
 
     override fun describeContents(): Int {
