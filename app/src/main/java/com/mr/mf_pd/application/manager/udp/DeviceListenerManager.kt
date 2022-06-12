@@ -74,7 +74,7 @@ object DeviceListenerManager {
         callback.remove(listener)
     }
 
-    fun cleanListener() {
+    private fun cleanListener() {
         callback.clear()
     }
 

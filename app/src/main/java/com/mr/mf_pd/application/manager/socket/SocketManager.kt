@@ -53,10 +53,8 @@ class SocketManager private constructor() {
     var pulseDataDeque: ArrayBlockingQueue<ByteArray>? = null// 原始脉冲数据队列
 
     companion object {
-
+        private var host: String? = null
         private const val DEVICE_NO = 1
-        var isConnected //是否连接
-                = false
 
         private var instance: SocketManager? = null
             get() {
@@ -106,16 +104,21 @@ class SocketManager private constructor() {
         dataQueue.clear()
     }
 
+    fun getConnection(): Boolean {
+        return if (socket == null) false else socket!!.isConnected
+    }
+
     private val requestRunnable = Runnable {
         try {
-            val address = InetSocketAddress(appHost(), port())
+            val host = if (host == null) appHost() else host
+            Log.d("zhangan",host +" "+ socket?.isConnected + " " + isExecuting)
+            val address = InetSocketAddress(host, port())
             socket = Socket()
-            socket?.let { socket ->
-                socket.connect(address, 2000)
-                socket.keepAlive = true
-                isConnected = socket.isConnected
-                inputStream = socket.getInputStream()
-                outputStream = socket.getOutputStream()
+            if (socket!=null){
+                socket!!.connect(address, 2000)
+                socket!!.keepAlive = false
+                inputStream = socket!!.getInputStream()
+                outputStream = socket!!.getOutputStream()
                 linkStateListeners?.forEach {
                     it.onLinkState(Constants.LINK_SUCCESS)
                 }
@@ -125,7 +128,7 @@ class SocketManager private constructor() {
             inputStream?.let { inputStream ->
                 while (inputStream.read(dataBuffer).also { size = it } != -1) {
                     try {
-                        Log.d("zhangan", "read size is $size")
+                        Log.d("zhangan", "read data $size")
                         val sources = ByteArray(size)
                         System.arraycopy(dataBuffer, 0, sources, 0, size)
                         val isSuccess = dataQueue.offer(sources)
@@ -146,7 +149,6 @@ class SocketManager private constructor() {
                 isExecuting = false
                 dataQueue.offer(null)
                 mDataByteList.clear()
-                isConnected = false
                 inputStream?.close()
                 outputStream?.close()
                 socket?.close()
@@ -265,6 +267,7 @@ class SocketManager private constructor() {
      */
     private fun destroy() {
         try {
+            host = null
             linkedDeviceSerialNo = null
             socket?.close()
             inputStream?.close()
@@ -287,7 +290,8 @@ class SocketManager private constructor() {
     /**
      * 释放请求线程
      */
-    fun releaseRequest() {
+    fun release() {
+        isExecuting = true
         destroy()
         if (mRequestExecutor != null && !mRequestExecutor!!.isShutdown) {
             mRequestExecutor!!.shutdownNow()
@@ -351,45 +355,44 @@ class SocketManager private constructor() {
     /**
      * socket 连接
      */
-    fun initLink(SerialNo:String?) {
-        synchronized(any) {
-            linkedDeviceSerialNo = SerialNo
-            cleanAllData()
-            isExecuting = true
-            realDataDeque = ArrayBlockingQueue<ByteArray>(50)
-            flightDeque = ArrayBlockingQueue<ByteArray>(50)
-            fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
-            pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
+    fun initLink(SerialNo: String?, ip: String?) {
+        cleanAllData()
+        linkedDeviceSerialNo = SerialNo
+        host = ip
+        isExecuting = true
+        realDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        flightDeque = ArrayBlockingQueue<ByteArray>(50)
+        fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
+        pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
 
-            mRequestExecutor = Executors.newSingleThreadExecutor()
-            future = mRequestExecutor?.submit(requestRunnable)
+        mRequestExecutor = Executors.newSingleThreadExecutor()
+        future = mRequestExecutor?.submit(requestRunnable)
 
-            mQueueExecutor = Executors.newSingleThreadExecutor()
-            mQueueFuture = mQueueExecutor?.submit {
-                try {
-                    while (isExecuting) {
-                        val dataList = dataQueue.take()
-                        dataList?.let {
-                            if (isLegalBytes(it)) {
-                                mDataByteList.clear()
-                            }
-                            mDataByteList.addAll(Bytes.asList(*it))
-                            dealByteList()
+        mQueueExecutor = Executors.newSingleThreadExecutor()
+        mQueueFuture = mQueueExecutor?.submit {
+            try {
+                while (isExecuting) {
+                    val dataList = dataQueue.take()
+                    dataList?.let {
+                        if (isLegalBytes(it)) {
+                            mDataByteList.clear()
+                        }
+                        mDataByteList.addAll(Bytes.asList(*it))
+                        dealByteList()
 //                        fos?.write((ByteLibUtil.bytes2HexStr(it) + "\n").toByteArray())
 //                        fos?.flush()
-                        }
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    fos?.close()
+                    Log.d("zhangan", "file close")
                 } catch (e: Exception) {
                     e.printStackTrace()
-                } finally {
-                    try {
-                        fos?.close()
-                        Log.d("zhangan", "file close")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
                 }
+
             }
         }
     }

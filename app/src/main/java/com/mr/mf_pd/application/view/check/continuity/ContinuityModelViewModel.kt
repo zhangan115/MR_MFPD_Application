@@ -10,6 +10,7 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import io.reactivex.disposables.Disposable
 import java.io.File
 
 class ContinuityModelViewModel(
@@ -44,6 +45,7 @@ class ContinuityModelViewModel(
     var text4: MutableLiveData<String> = MutableLiveData()
 
     lateinit var checkType: CheckType
+    var disposable: Disposable? = null
 
     fun start() {
         if (isFile.value!!) {
@@ -53,6 +55,7 @@ class ContinuityModelViewModel(
             this.checkType = dataRepository.getCheckType()
         }
         updateTitle(checkType.settingBean)
+        disposable = dataRepository.readContinuityYcData()
     }
 
     fun updateTitle(settingBean: SettingBean) {
@@ -110,6 +113,11 @@ class ContinuityModelViewModel(
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable?.dispose()
     }
 
 }

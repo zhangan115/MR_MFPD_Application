@@ -8,16 +8,11 @@ import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.annotation.ClickAnnotationRealize
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
-import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_device_check.*
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
@@ -52,7 +47,7 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
     }
 
     private fun startCheckDataActivity(checkType:CheckType){
-        if (SocketManager.isConnected){
+        if (SocketManager.get().getConnection()){
             val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, checkType)
             startActivity(intent)

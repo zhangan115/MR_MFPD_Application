@@ -140,7 +140,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                     f2Hz = max(minValue!!, f2Hz)
                 }
 
-                val df1 = DecimalFormat("0.00")
+                val df1 = DecimalFormat("0.0")
 
                 viewModel.fzValueList.add(fzValue - minValue!!)
                 viewModel.fzValue.postValue(df1.format(fzValue))

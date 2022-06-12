@@ -1,6 +1,8 @@
 package com.mr.mf_pd.application.view.main
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -11,14 +13,14 @@ import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
 import android.os.PatternMatcher
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
-import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
@@ -71,6 +73,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         val intentFilter = IntentFilter()
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
@@ -78,6 +81,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
         registerReceiver(wifiReceiver, intentFilter)
         DeviceListenerManager.startListener()
+        SocketManager.get().release()
         DeviceListenerManager.addListener(object : UDPListener {
             override fun onData(byteArray: ByteArray) {
                 val mrPDByteArray = ByteArray(4)
@@ -98,22 +102,28 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                     }
                     val ip = intList.joinToString(".")
                     val power = devicePowerByteArray.first().toInt()
-                    val deviceBean = if (deviceMap.containsKey(deviceNum)) {
+                    val device = if (deviceMap.containsKey(deviceNum)) {
                         deviceMap[deviceNum]
                     } else {
                         val powerState =
                             if (power < 20) 0 else if (power in 20..59) 1 else 2
                         DeviceBean(mrPDStr, deviceNum, 0, power, powerState, null, 0, ip)
                     }
-                    if (deviceBean != null) {
-                        deviceMap[deviceNum] = deviceBean
-                        if (!dataList.contains(deviceBean)) {
-                            dataList.add(deviceBean)
+                    if (device != null) {
+                        deviceMap[deviceNum] = device
+                        if (!dataList.contains(device)) {
+                            dataList.add(device)
                         }
                         viewModel.deviceExist.postValue(dataList.isNotEmpty())
                         recycleView.adapter?.notifyDataSetChanged()
                     }
-                    linkToDevice(deviceBean)
+                    runOnUiThread {
+                        showNotification(power)
+                    }
+                    if (device == null || SocketManager.get().getConnection()) {
+                        return
+                    }
+                    linkToDevice(device)
                 }
             }
         })
@@ -127,11 +137,17 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         recycleView.adapter = adapter
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
-            socketLink(position)
-//            if (dataList[position].deviceName.equals("Test")) {
-//                socketLink(position)
-//                return@setOnItemChildClickListener
-//            }
+            val device = dataList[position]
+            if (SocketManager.get().linkedDeviceSerialNo != null) {
+                if (dataList[position].serialNo == SocketManager.get().linkedDeviceSerialNo) {
+                    openCheckActivity(device)
+                } else {
+                    linkToDevice(device)
+                }
+            } else {
+                linkToDevice(device)
+            }
+
 //            if (mWiFiManager != null && mWiFiManager!!.connectionInfo?.bssid.equals(scanDataList[position].BSSID)) {
 //                socketLink(position)
 //                return@setOnItemChildClickListener
@@ -167,8 +183,6 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
-
-        initSocketCallback()
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -215,12 +229,11 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 
     /**
      * 打开检测页面
-     * @param position 选择的WIFI 位置
+     * @param device 检测设备
      */
-    private fun socketLink(position: Int) {
-        linkPosition = position
+    private fun openCheckActivity(device: DeviceBean?) {
         val intent = Intent(this, DeviceCheckActivity::class.java)
-        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, dataList[position])
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, device)
         startActivity(intent)
     }
 
@@ -299,7 +312,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 
     override fun onWiFiConnectSuccess(SSID: String?) {
         if (linkPosition != -1) {
-            socketLink(linkPosition)
+
         }
     }
 
@@ -333,18 +346,16 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         mWiFiManager?.removeOnWifiConnectListener()
         disposable?.dispose()
         SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
-        SocketManager.get().releaseRequest()
+        SocketManager.get().release()
         unregisterReceiver(wifiReceiver)
         connectivityManager?.unregisterNetworkCallback(callback)
         DeviceListenerManager.disableListener()
     }
 
-    private fun linkToDevice(device: DeviceBean?) {
-        if (device == null || SocketManager.isConnected) {
-            return
-        }
-        SocketManager.get().releaseRequest()
-        SocketManager.get().initLink(device.serialNo)
+    private fun linkToDevice(device: DeviceBean) {
+        SocketManager.get().release()
+        initSocketCallback()
+        SocketManager.get().initLink(device.serialNo, device.ip)
     }
 
     /**
@@ -357,18 +368,20 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                 //一分钟一次的连接对时，保证数据接通
                 disposable = SocketManager.get().sendRepeatData(CommandHelp.getTimeCommand(), 60)
             } else {
-                SocketManager.get().releaseRequest()
+                SocketManager.get().release()
             }
-            dataList.forEach { deviceBean ->
-                if (deviceBean.serialNo == SocketManager.get().linkedDeviceSerialNo) {
-                    deviceBean.linkState = 1
-                    deviceBean.linkStateStr = "已连接"
-                } else {
-                    deviceBean.linkState = 0
-                    deviceBean.linkStateStr = "未连接"
+            runOnUiThread {
+                dataList.forEach { deviceBean ->
+                    if (deviceBean.serialNo == SocketManager.get().linkedDeviceSerialNo) {
+                        deviceBean.linkState = 1
+                        deviceBean.linkStateStr = "已连接"
+                    } else {
+                        deviceBean.linkState = 0
+                        deviceBean.linkStateStr = "未连接"
+                    }
                 }
+                recycleView.adapter?.notifyDataSetChanged()
             }
-            recycleView.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -381,6 +394,40 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             //解决不断上传的问题，对时成功后先关闭采集通道
             val close = CommandHelp.closePassageway()
             SocketManager.get().sendData(close)
+        }
+    }
+
+    private val notificationMap = ArrayList<Int>()
+
+    private fun showNotification(power: Int) {
+        if (power > 20) return
+        val powerValue =
+            if (power in 15..20) 20 else if (power in 10..14) 15 else if (power in 6..9) 10 else 5
+        if (notificationMap.contains(powerValue)) {
+            return
+        }
+        val builder = NotificationCompat.Builder(this, Constants.CHANNEL_ID)
+            .setContentTitle("设备充电提示")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentText("设备电量低于$powerValue%,请及时给设备充电")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        with(NotificationManagerCompat.from(this)) {
+            notify(powerValue, builder.build())
+            notificationMap.add(powerValue)
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(Constants.CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import io.reactivex.disposables.Disposable
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DefaultDataRepository : DataRepository {
 
@@ -42,5 +43,9 @@ class DefaultDataRepository : DataRepository {
 
     override fun readRepeatData(): Disposable {
         return SocketManager.get().sendRepeatData(CommandHelp.readYcValue(getCheckType().passageway),1)
+    }
+
+    override fun readContinuityYcData(): Disposable {
+        return SocketManager.get().sendRepeatData(CommandHelp.readYcValue(getCheckType().passageway),100,TimeUnit.MILLISECONDS)
     }
 }

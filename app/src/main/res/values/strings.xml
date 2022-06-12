@@ -54,6 +54,8 @@
     <string name="file_type_tev">暂态地电压(TEV)</string>
     <string name="file_type_hf">高频(HF)</string>
     <string name="file_type_uhf">特高频(UHF)</string>
+    <string name="channel_name">设备电量低提示</string>
+    <string name="channel_description">设备电量低提示</string>
 
     <drawable name="bk_color">@color/colorWhite</drawable>
 

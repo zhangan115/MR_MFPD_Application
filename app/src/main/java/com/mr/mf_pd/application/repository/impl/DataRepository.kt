@@ -30,4 +30,9 @@ interface DataRepository {
      */
     fun readRepeatData(): Disposable
 
+    /**
+     * 读取连续模式下的遥测数据
+     */
+    fun readContinuityYcData(): Disposable
+
 }

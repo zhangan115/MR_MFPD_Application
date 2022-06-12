@@ -15,7 +15,7 @@ data class DeviceBean(
     var powerState: Int,//电量类型 0低电量 1高电量
     var versionCode: String?,//版本号
     var deviceType: Int,//设备类型
-    var bssid: String?,
+    var ip: String?,//设备IP
     var linkState: Int = -1,//连接状态
     var linkStateStr: String? = "未连接",//连接状态描述
 ) : Parcelable {

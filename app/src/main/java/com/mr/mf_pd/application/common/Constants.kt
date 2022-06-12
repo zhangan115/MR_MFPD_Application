@@ -11,6 +11,8 @@ object Constants {
 
     const val UPDATE_SETTING = "update_setting"
 
+    const val CHANNEL_ID = "Lower_Device_Power"
+
     var indices = shortArrayOf(
         0, 3, 2, 0, 2, 1,
         0, 1, 5, 0, 5, 4,
