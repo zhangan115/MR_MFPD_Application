@@ -117,9 +117,9 @@ class PrPsChartsRenderer(
         colorPointProgram = PrPsColorPointShaderProgram(context)
 
         prPs3DXYLines =
-            PrPsXYLines(5, 4, 90, textRectInOpenGl,isZeroCenter)
+            PrPsXYLines(5, 4, 90, textRectInOpenGl, isZeroCenter)
         prPs3DXZLines =
-            PrPsXZLines(4, 4, 90, textRectInOpenGl,isZeroCenter)
+            PrPsXZLines(4, 4, 90, textRectInOpenGl, isZeroCenter)
 
     }
 
@@ -163,7 +163,7 @@ class PrPsChartsRenderer(
         if (floatList.isEmpty()) {
             cleanData()
         } else {
-            addPrpsData(PrPsCubeList(textRectInOpenGl,settingBean, floatList, isZeroCenter))
+            addPrpsData(PrPsCubeList(textRectInOpenGl, settingBean, floatList, isZeroCenter))
         }
     }
 
@@ -255,6 +255,7 @@ class PrPsChartsRenderer(
         list.forEach {
             dataCallback?.onData(it)
         }
+        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
     }
 
     private fun position() {
