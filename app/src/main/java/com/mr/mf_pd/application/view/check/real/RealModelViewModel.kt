@@ -17,8 +17,11 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
+import io.reactivex.disposables.Disposable
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
@@ -49,7 +52,10 @@ class RealModelViewModel(
 
     //圆柱数据
     var prPsDataCallback: PrPsDataCallback? = null
-    var toUpdateGl: (() -> Unit)? = null
+
+    var timeStr: MutableLiveData<String> = MutableLiveData()
+    var saveDataStartTime: Long = 0
+    var mTimeDisposable: Disposable? = null
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -239,10 +245,17 @@ class RealModelViewModel(
     }
 
     fun startSaveData() {
+        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
+        mTimeDisposable?.dispose()
+        mTimeDisposable = RepeatActionUtils.execute {
+            val time = System.currentTimeMillis() - saveDataStartTime
+            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
+        }
     }
 
     fun stopSaveData() {
+        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 
@@ -276,6 +289,7 @@ class RealModelViewModel(
     override fun onCleared() {
         super.onCleared()
         prPsDataCallback = null
+        mTimeDisposable?.dispose()
     }
 
     fun onResume() {

@@ -17,7 +17,13 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
+import kotlinx.android.synthetic.main.fragment_phase_1.*
 import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_real.image1
+import kotlinx.android.synthetic.main.fragment_real.image2
+import kotlinx.android.synthetic.main.fragment_real.image3
+import kotlinx.android.synthetic.main.fragment_real.image4
+import kotlinx.android.synthetic.main.fragment_real.image5
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -162,6 +168,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
         prPsChartsRenderer?.cleanData()
+        initChartView(viewModel.checkType.settingBean)
     }
 
     override fun isSaving(): Boolean {
@@ -182,6 +189,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
+        initChartView(settingBean)
+    }
+
+    private fun initChartView(settingBean: SettingBean){
         prPsChartsRenderer?.updateAxis(getUnitValue(settingBean),
             getYAxisValue(viewModel.isFile.value!!,
                 settingBean,

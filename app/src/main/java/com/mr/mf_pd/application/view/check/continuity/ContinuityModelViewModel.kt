@@ -10,6 +10,8 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
+import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import io.reactivex.disposables.Disposable
 import java.io.File
 
@@ -46,6 +48,10 @@ class ContinuityModelViewModel(
 
     lateinit var checkType: CheckType
     var disposable: Disposable? = null
+
+    var timeStr: MutableLiveData<String> = MutableLiveData()
+    var saveDataStartTime: Long = 0
+    var mTimeDisposable: Disposable? = null
 
     fun start() {
         if (isFile.value!!) {
@@ -85,10 +91,17 @@ class ContinuityModelViewModel(
     }
 
     fun startSaveData() {
+        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
+        mTimeDisposable?.dispose()
+        mTimeDisposable = RepeatActionUtils.execute {
+            val time = System.currentTimeMillis() - saveDataStartTime
+            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
+        }
     }
 
     fun stopSaveData() {
+        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

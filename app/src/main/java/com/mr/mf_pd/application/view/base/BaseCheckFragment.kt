@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.base
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -22,13 +23,19 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.sito.tool.library.utils.ByteLibUtil
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 /**
  * 检测类型页面的基类

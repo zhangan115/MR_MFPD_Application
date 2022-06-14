@@ -368,6 +368,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                 //一分钟一次的连接对时，保证数据接通
                 disposable = SocketManager.get().sendRepeatData(CommandHelp.getTimeCommand(), 60)
             } else {
+                disposable?.dispose()
                 SocketManager.get().release()
             }
             runOnUiThread {

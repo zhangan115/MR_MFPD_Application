@@ -17,7 +17,10 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.sito.tool.library.utils.ByteLibUtil
+import io.reactivex.disposables.Disposable
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
@@ -33,17 +36,24 @@ class PhaseModelViewModel(
 
     lateinit var checkType: CheckType
 
+    var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()//图表的最低值
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+
     var isSaveData: MutableLiveData<Boolean>? = null
 
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
+
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
-    var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+    var timeStr: MutableLiveData<String> = MutableLiveData()
+    var saveDataStartTime: Long = 0
+    var mTimeDisposable: Disposable? = null
+
 
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
@@ -94,10 +104,17 @@ class PhaseModelViewModel(
     }
 
     fun startSaveData() {
+        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
+        mTimeDisposable?.dispose()
+        mTimeDisposable = RepeatActionUtils.execute {
+            val time = System.currentTimeMillis() - saveDataStartTime
+            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
+        }
     }
 
     fun stopSaveData() {
+        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 
@@ -111,6 +128,7 @@ class PhaseModelViewModel(
     override fun onCleared() {
         super.onCleared()
         this.dataCallback = null
+        mTimeDisposable?.dispose()
     }
 
     var receiverCount = 0
@@ -212,7 +230,7 @@ class PhaseModelViewModel(
             ++receiverCount
             if (bytes.isEmpty()) {
                 ++emptyCount
-            }else {
+            } else {
                 emptyCount = 0
                 canUpdateFz = true
             }
@@ -278,7 +296,5 @@ class PhaseModelViewModel(
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
             SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }
-
     }
-
 }

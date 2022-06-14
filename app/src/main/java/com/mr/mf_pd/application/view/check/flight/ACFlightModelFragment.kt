@@ -7,7 +7,6 @@ import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -15,8 +14,6 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
-import java.util.concurrent.CopyOnWriteArrayList
-
 /**
  * AC 飞行模式
  */
@@ -70,7 +67,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                         viewModel.gainMinValue),
                     xMaxValue
                 )
-
             }
         })
     }

@@ -10,8 +10,11 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
+import io.reactivex.disposables.Disposable
 import java.io.File
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
@@ -25,10 +28,7 @@ class ACFlightModelViewModel(
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
-    var timeStr: MutableLiveData<String> = MutableLiveData()
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
-    var synchronizationModel: MutableLiveData<String> = MutableLiveData("内同步，50kHz-300kHz")
-    var gainLevelStr: MutableLiveData<String> = MutableLiveData("20dB")
     lateinit var checkType: CheckType
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
@@ -36,6 +36,10 @@ class ACFlightModelViewModel(
     var isSaveData: MutableLiveData<Boolean>? = null
 
     private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+
+    var timeStr: MutableLiveData<String> = MutableLiveData()
+    var saveDataStartTime: Long = 0
+    var mTimeDisposable: Disposable? = null
 
     var receiverCount = 0
 
@@ -142,10 +146,17 @@ class ACFlightModelViewModel(
     }
 
     fun startSaveData() {
+        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
+        mTimeDisposable?.dispose()
+        mTimeDisposable = RepeatActionUtils.execute {
+            val time = System.currentTimeMillis() - saveDataStartTime
+            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
+        }
     }
 
     fun stopSaveData() {
+        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

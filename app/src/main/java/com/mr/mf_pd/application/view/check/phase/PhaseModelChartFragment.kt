@@ -157,6 +157,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
+        initChartView(viewModel.checkType.settingBean)
     }
 
     override fun isSaving(): Boolean {
@@ -177,6 +178,10 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
+        cleanCurrentData()
+    }
+
+    private fun initChartView(settingBean: SettingBean){
         mrChartView.unit = settingBean.fzUnit
         mrChartView.defaultMaxValue = settingBean.maxValue.toFloat()
         mrChartView.defaultMinValue = settingBean.minValue.toFloat()
