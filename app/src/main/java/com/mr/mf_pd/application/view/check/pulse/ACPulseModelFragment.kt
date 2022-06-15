@@ -15,10 +15,6 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FdDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_pulse.*
-import kotlinx.android.synthetic.main.fragment_ac_pulse.image1
-import kotlinx.android.synthetic.main.fragment_ac_pulse.image2
-import kotlinx.android.synthetic.main.fragment_ac_pulse.image3
-import kotlinx.android.synthetic.main.fragment_ac_pulse.image4
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
@@ -100,6 +96,10 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
         return yList
     }
 
+    override fun oneSecondUIChange() {
+        super.oneSecondUIChange()
+        gainChartView.updateFzValue()
+    }
 
     override fun setIsFileValue(isFile: Boolean?) {
         viewModel.isFile.value = isFile

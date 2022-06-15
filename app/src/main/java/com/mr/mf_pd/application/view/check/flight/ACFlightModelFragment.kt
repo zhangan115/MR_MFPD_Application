@@ -14,6 +14,7 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
+
 /**
  * AC 飞行模式
  */
@@ -42,6 +43,11 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     override fun getContentView(): Int {
         return R.layout.fragment_ac_flight
+    }
+
+    override fun oneSecondUIChange() {
+        super.oneSecondUIChange()
+        gainChartView.updateFzValue()
     }
 
     override fun initData() {

@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.check.continuity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AnimationUtils
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
@@ -139,20 +140,16 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                     f2Hz = min(maxValue!!, f2Hz)
                     f2Hz = max(minValue!!, f2Hz)
                 }
-
-                val df1 = DecimalFormat("0.0")
+                this.fzValue = fzValue
+                this.yxValue = yxValue
+                this.f1Hz = f1Hz
+                this.f2Hz = f2Hz
 
                 viewModel.fzValueList.add(fzValue - minValue!!)
-                viewModel.fzValue.postValue(df1.format(fzValue))
-
                 viewModel.yxValueList.add(yxValue - minValue!!)
-                viewModel.yxValue.postValue(df1.format(yxValue))
-
                 viewModel.f1ValueList.add(f1Hz - minValue!!)
-                viewModel.f1Value.postValue(df1.format(f1Hz))
-
                 viewModel.f2ValueList.add(f2Hz - minValue!!)
-                viewModel.f2Value.postValue(df1.format(f2Hz))
+
 
                 calculationProgress(progressBar1, yxValue)
                 calculationProgress(progressBar2, fzValue)
@@ -236,6 +233,35 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     override fun updateSettingBean(settingBean: SettingBean) {
         viewModel.checkType.settingBean = settingBean
         viewModel.updateTitle(settingBean)
+    }
+
+    @Volatile
+    var fzValue: Float? = null
+
+    @Volatile
+    var yxValue: Float? = null
+
+    @Volatile
+    var f1Hz: Float? = null
+
+    @Volatile
+    var f2Hz: Float? = null
+
+    override fun oneSecondUIChange() {
+        super.oneSecondUIChange()
+        val df1 = DecimalFormat("0.0")
+        fzValue?.let {
+            viewModel.fzValue.postValue(df1.format(it))
+        }
+        yxValue?.let {
+            viewModel.yxValue.postValue(df1.format(it))
+        }
+        f1Hz?.let {
+            viewModel.f1Value.postValue(df1.format(it))
+        }
+        f2Hz?.let {
+            viewModel.f2Value.postValue(df1.format(it))
+        }
     }
 
 }

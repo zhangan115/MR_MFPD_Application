@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.view.check.real
 
 import android.graphics.PixelFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
@@ -10,20 +9,20 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.RealDataBinding
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
-import kotlinx.android.synthetic.main.fragment_phase_1.*
+import kotlinx.android.synthetic.main.fragment_ac_flight.*
 import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_real.gainChartView
 import kotlinx.android.synthetic.main.fragment_real.image1
 import kotlinx.android.synthetic.main.fragment_real.image2
 import kotlinx.android.synthetic.main.fragment_real.image3
 import kotlinx.android.synthetic.main.fragment_real.image4
-import kotlinx.android.synthetic.main.fragment_real.image5
+import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -163,6 +162,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 }
             }
         }
+    }
+
+    override fun oneSecondUIChange() {
+        super.oneSecondUIChange()
+        gainChartView.updateFzValue()
     }
 
     override fun cleanCurrentData() {

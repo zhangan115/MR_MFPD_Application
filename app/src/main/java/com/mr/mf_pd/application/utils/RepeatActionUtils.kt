@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.utils
 
+import androidx.annotation.WorkerThread
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
@@ -17,8 +18,9 @@ object RepeatActionUtils {
      * 执行重复事件
      * @param time 时间
      * @param unit 时间单位
-     * @param callback 重复回调
+     * @param callback 回调
      */
+    @WorkerThread
     fun execute(
         time: Long = 1,
         unit: TimeUnit = TimeUnit.SECONDS,
@@ -26,7 +28,7 @@ object RepeatActionUtils {
     ): Disposable {
         return Observable.create { emitter: ObservableEmitter<Boolean?> ->
             try {
-                callback.invoke()
+                callback()
                 emitter.onNext(false)
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -36,24 +36,23 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
-            android:gravity="end"
             android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
                 android:text="@{vm.limitValueStr}"
                 android:textColor="@color/text_first_content"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_time"
                 android:gravity="center"
                 android:text="@{vm.timeStr}"
@@ -71,8 +70,8 @@
                 android:id="@+id/image2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:background="@mipmap/uhf_icon_small" />
 
             <ImageView
@@ -85,15 +84,15 @@
                 android:id="@+id/image4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:background="@mipmap/uhf_icon_reset" />
 
             <ImageView
                 android:id="@+id/image5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="10dp"
                 android:background="@mipmap/uhf_icon_band" />
         </LinearLayout>
 

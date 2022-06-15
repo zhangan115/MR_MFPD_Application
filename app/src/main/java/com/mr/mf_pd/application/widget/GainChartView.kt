@@ -11,6 +11,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.utils.LineChartUtils
 import kotlinx.android.synthetic.main.layout_gain_chart.view.*
+import kotlinx.coroutines.MainScope
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.*
@@ -18,7 +19,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
-class GainChartView : LinearLayout {
+open class GainChartView : LinearLayout {
 
     constructor(context: Context?) : super(context!!) {
         init()
@@ -64,12 +65,33 @@ class GainChartView : LinearLayout {
             val dataSet = LineDataSet(entries, "")
             initDataSet(dataSet)
             dataSets.add(dataSet)
-            val df1 = DecimalFormat("0.00")
-            num1.text = df1.format(max)
-            num2.text = df1.format(chartDataList1.last())
-            num3.text = df1.format(min)
+            this.numMax = max
+            this.numData = chartDataList1.last()
+            this.numMin = min
         }
         return LineData(dataSets)
+    }
+
+    @Volatile
+    var numMax: Float? = null
+
+    @Volatile
+    var numData: Float? = null
+
+    @Volatile
+    var numMin: Float? = null
+
+    open fun updateFzValue() {
+        val df1 = DecimalFormat("0.00")
+        numMax?.let {
+            num1.text = df1.format(it)
+        }
+        numData?.let {
+            num2.text = df1.format(numData)
+        }
+        numMin?.let {
+            num3.text = df1.format(it)
+        }
     }
 
     private fun initDataSet(dataSet: LineDataSet) {

@@ -47,7 +47,7 @@ class ContinuityModelViewModel(
     var text4: MutableLiveData<String> = MutableLiveData()
 
     lateinit var checkType: CheckType
-    var disposable: Disposable? = null
+    var continuityDisposable: Disposable? = null
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
     var saveDataStartTime: Long = 0
@@ -61,7 +61,6 @@ class ContinuityModelViewModel(
             this.checkType = dataRepository.getCheckType()
         }
         updateTitle(checkType.settingBean)
-        disposable = dataRepository.readContinuityYcData()
     }
 
     fun updateTitle(settingBean: SettingBean) {
@@ -113,6 +112,7 @@ class ContinuityModelViewModel(
     }
 
     fun onResume() {
+        continuityDisposable = dataRepository.readContinuityYcData()
         if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
         } else {
@@ -121,6 +121,7 @@ class ContinuityModelViewModel(
     }
 
     fun onPause() {
+        continuityDisposable?.dispose()
         if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
         } else {
@@ -130,7 +131,7 @@ class ContinuityModelViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        disposable?.dispose()
+        continuityDisposable?.dispose()
     }
 
 }
