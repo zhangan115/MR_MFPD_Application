@@ -158,7 +158,7 @@ class PrPsChartsRenderer(
         }
     }
 
-    fun updatePrpsData(values: Map<Int, Map<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
+    fun updatePrpsData(values: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
         this.prPsPoints?.setValue(textRectInOpenGl, values)
         if (floatList.isEmpty()) {
             cleanData()
@@ -216,7 +216,7 @@ class PrPsChartsRenderer(
         prPs3DXZLines.draw()
 
         if (isToCleanData) {
-            prPsPoints?.cleanAllData()
+//            prPsPoints?.cleanAllData()
         } else {
             prPsPoints?.bindData(colorPointProgram)
             prPsPoints?.draw()
@@ -255,7 +255,7 @@ class PrPsChartsRenderer(
         list.forEach {
             dataCallback?.onData(it)
         }
-        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
+//        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
     }
 
     private fun position() {

@@ -26,6 +26,7 @@ import java.io.File
 import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -48,7 +49,7 @@ class RealModelViewModel(
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
     //点数据
-    private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+    private var dataMaps: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>> = ConcurrentHashMap()
 
     //圆柱数据
     var prPsDataCallback: PrPsDataCallback? = null
@@ -157,7 +158,7 @@ class RealModelViewModel(
                         map?.set(value, 1)
                     }
                 } else {
-                    val newMap: HashMap<Float, Int> = HashMap()
+                    val newMap: ConcurrentHashMap<Float, Int> = ConcurrentHashMap()
                     newMap[value] = 1
                     dataMaps[column] = newMap
                 }
@@ -270,10 +271,9 @@ class RealModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
-
     fun cleanCurrentData() {
         this.gainValues.postValue(null)
-        this.dataMaps = HashMap()
+        this.dataMaps = ConcurrentHashMap()
         this.gainFloatList.clear()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
     }

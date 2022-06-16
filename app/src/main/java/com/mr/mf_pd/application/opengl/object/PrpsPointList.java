@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kotlin.jvm.Volatile;
 
@@ -30,7 +31,7 @@ public class PrpsPointList {
     @Volatile
     public static float maxValue = -20.0f;
 
-    private final Map<Integer, Map<Float, Integer>> values = new HashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
+    private final ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> values = new ConcurrentHashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
 
 
@@ -59,7 +60,7 @@ public class PrpsPointList {
      *
      * @param map 数据
      */
-    public void setValue(TextRectInOpenGl rect, Map<Integer, Map<Float, Integer>> map) {
+    public void setValue(TextRectInOpenGl rect, ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> map) {
         this.values.clear();
         this.values.putAll(map);
 
@@ -71,9 +72,9 @@ public class PrpsPointList {
         List<Float> vertexPointList = new ArrayList<>();
         List<Float> colorList = new ArrayList<>();
         List<Short> indicesList = new ArrayList<>();
-        Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
+        Set<ConcurrentHashMap.Entry<Integer, ConcurrentHashMap<Float, Integer>>> entrySet1 = values.entrySet();
         short count = 0;
-        for (Map.Entry<Integer, Map<Float, Integer>> entry1 : entrySet1) {
+        for (ConcurrentHashMap.Entry<Integer, ConcurrentHashMap<Float, Integer>> entry1 : entrySet1) {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);

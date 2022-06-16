@@ -146,13 +146,13 @@ class SocketManager private constructor() {
             socket = null
         } finally {
             try {
+                linkStateListeners?.forEach { it.onLinkState(Constants.LINK_FAIL) }
                 isExecuting = false
-                dataQueue.offer(null)
                 mDataByteList.clear()
                 inputStream?.close()
                 outputStream?.close()
                 socket?.close()
-                linkStateListeners?.forEach { it.onLinkState(Constants.LINK_FAIL) }
+                dataQueue.offer(null)
             } catch (e: IOException) {
                 e.printStackTrace()
             }

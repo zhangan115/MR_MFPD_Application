@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_real.image3
 import kotlinx.android.synthetic.main.fragment_real.image4
 import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 import java.text.DecimalFormat
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
@@ -68,7 +69,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         }
         viewModel.prPsDataCallback = object : PrPsDataCallback {
             override fun prpsDataChange(
-                data: HashMap<Int, HashMap<Float, Int>>,
+                data: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>,
                 cubeList: CopyOnWriteArrayList<Float?>,
             ) {
                 prPsChartsRenderer?.updateAxis(getUnitValue(viewModel.checkType.settingBean),
