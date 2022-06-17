@@ -36,6 +36,9 @@ class PrPsChartsRenderer(
     GLSurfaceView.Renderer {
 
     @Volatile
+    var startReadData: Boolean = false
+
+    @Volatile
     var angleX: Float = -60f
 
     @Volatile
@@ -158,7 +161,10 @@ class PrPsChartsRenderer(
         }
     }
 
-    fun updatePrpsData(values: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>, floatList: CopyOnWriteArrayList<Float?>) {
+    fun updatePrpsData(
+        values: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>,
+        floatList: CopyOnWriteArrayList<Float?>,
+    ) {
         this.prPsPoints?.setValue(textRectInOpenGl, values)
         if (floatList.isEmpty()) {
             cleanData()
@@ -180,6 +186,7 @@ class PrPsChartsRenderer(
     }
 
     override fun onDrawFrame(gl: GL10?) {
+        Log.d("zhangan","onDrawFrame")
         val timeStart = System.currentTimeMillis()
 
         GLES30.glEnable(GLES20.GL_BLEND)
@@ -250,12 +257,25 @@ class PrPsChartsRenderer(
         }
         val timeEnd = System.currentTimeMillis()
 
-        val list = ArrayList<ByteArray>()
-        queue?.drainTo(list)
-        list.forEach {
-            dataCallback?.onData(it)
+//        val list = ArrayList<ByteArray>()
+        if (queue != null && queue!!.size > 20) {
+            startReadData = true
         }
-//        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
+        if (startReadData) {
+            Log.d("zhangan","queue list size is " + queue?.size)
+            val bytes = queue?.take()
+            if (bytes != null) {
+                dataCallback?.onData(bytes)
+            }
+        }
+//        queue?.drainTo(list)
+//
+//        val bytes = queue?.take()
+//
+//        list.forEach {
+//            dataCallback?.onData(it)
+//        }
+        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
     }
 
     private fun position() {

@@ -10,6 +10,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
@@ -123,6 +124,23 @@ class PhaseModelViewModel(
         this.dataMaps = HashMap()
         this.gainFloatList.clear()
         this.dataCallback?.invoke(dataMaps)
+        updateSettingValue()
+    }
+
+    private fun updateSettingValue() {
+        checkType.settingBean.let {
+            PrPdPoint2DList.maxValue = it.maxValue.toFloat()
+            PrPdPoint2DList.minValue = it.minValue.toFloat()
+
+            PrpsPointList.maxValue = it.maxValue.toFloat()
+            PrpsPointList.minValue = it.minValue.toFloat()
+
+            PrPsCubeList.maxValue = it.maxValue.toFloat()
+            PrPsCubeList.minValue = it.minValue.toFloat()
+
+            FlightPoint2DList.maxValue = it.maxValue.toFloat()
+            FlightPoint2DList.minValue = it.minValue.toFloat()
+        }
     }
 
     override fun onCleared() {
@@ -173,7 +191,7 @@ class PhaseModelViewModel(
             //根据设置处理数据
             val setting = checkType.settingBean
             //处理固定尺度
-            val value = dealMaxAndMinValue(setting, f)
+            var value = dealMaxAndMinValue(setting, f)
             //处理偏移量
             val py = setting.xwPy
             val off: Int = if (py in 1..359) {
@@ -187,6 +205,9 @@ class PhaseModelViewModel(
                 column
             }
             if (off < Constants.PRPS_COLUMN && off >= 0) {
+                if ((checkType == CheckType.AA || checkType == CheckType.AE) && value < 0) {
+                    value *= -1
+                }
                 if (dataMaps.containsKey(column)) {
                     val map = dataMaps[column]
                     if (map != null && map.containsKey(value)) {

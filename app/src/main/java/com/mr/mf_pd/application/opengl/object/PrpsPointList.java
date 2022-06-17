@@ -11,7 +11,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -100,24 +99,26 @@ public class PrpsPointList {
             vertexPoints[i] = vertexPointList.get(i);
             colors[i] = colorList.get(i);
         }
-        for (int i = 0; i < indicesList.size(); i++) {
-            indices[i] = indicesList.get(i);
-        }
-        //分配内存空间,每个浮点型占4字节空间
-        vertexBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        //传入指定的坐标数据
-        vertexBuffer.put(vertexPoints);
-        vertexBuffer.position(0);
+        if (indices.length > 0) {
+            for (int i = 0; i < indicesList.size(); i++) {
+                indices[i] = indicesList.get(i);
+            }
+            //分配内存空间,每个浮点型占4字节空间
+            vertexBuffer = ByteBuffer.allocateDirect(vertexPoints.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            //传入指定的坐标数据
+            vertexBuffer.put(vertexPoints);
+            vertexBuffer.position(0);
 
-        //分配内存空间,每个浮点型占4字节空间
-        colorBuffer = ByteBuffer.allocateDirect(colors.length * 4)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        //传入指定的数据
-        colorBuffer.put(colors);
-        colorBuffer.position(0);
+            //分配内存空间,每个浮点型占4字节空间
+            colorBuffer = ByteBuffer.allocateDirect(colors.length * 4)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            //传入指定的数据
+            colorBuffer.put(colors);
+            colorBuffer.position(0);
+        }
     }
 
     public void cleanAllData() {

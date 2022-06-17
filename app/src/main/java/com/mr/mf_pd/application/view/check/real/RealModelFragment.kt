@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.check.real
 
 import android.graphics.PixelFormat
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -15,14 +16,7 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
-import kotlinx.android.synthetic.main.fragment_ac_flight.*
 import kotlinx.android.synthetic.main.fragment_real.*
-import kotlinx.android.synthetic.main.fragment_real.gainChartView
-import kotlinx.android.synthetic.main.fragment_real.image1
-import kotlinx.android.synthetic.main.fragment_real.image2
-import kotlinx.android.synthetic.main.fragment_real.image3
-import kotlinx.android.synthetic.main.fragment_real.image4
-import kotlinx.android.synthetic.main.fragment_real.surfaceView1
 import java.text.DecimalFormat
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -91,6 +85,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 viewModel.getQueue(),
                 viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPsChartsRenderer)
+        surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         surfaceView1.setZOrderOnTop(true)
         surfaceView1.holder.setFormat(PixelFormat.TRANSPARENT)
         viewModel.isSaveData?.observe(this, {

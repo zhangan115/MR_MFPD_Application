@@ -11,6 +11,8 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
@@ -84,7 +86,6 @@ class RealModelViewModel(
         }
     }
 
-
     var receiverCount = 0
     var mcCount = 0
     var maxValue: Float? = null
@@ -132,7 +133,7 @@ class RealModelViewModel(
             //根据设置处理数据
             val setting = checkType.settingBean
             //处理固定尺度
-            val value = dealMaxAndMinValue(setting, f)
+            var value = dealMaxAndMinValue(setting, f)
             //处理偏移量
             val py = setting.xwPy
             val off: Int = if (py in 1..359) {
@@ -146,9 +147,12 @@ class RealModelViewModel(
                 column
             }
             if (off < Constants.PRPS_COLUMN && off >= 0) {
+                if ((checkType == CheckType.AA || checkType == CheckType.AE) && value < 0) {
+                    value *= -1
+                }
                 newValueList[off] = value
-                if (dataMaps.containsKey(column)) {
-                    val map = dataMaps[column]
+                if (dataMaps.containsKey(off)) {
+                    val map = dataMaps[off]
                     if (map != null && map.containsKey(value)) {
                         val value1 = map[value]
                         if (value1 != null) {
@@ -160,10 +164,10 @@ class RealModelViewModel(
                 } else {
                     val newMap: ConcurrentHashMap<Float, Int> = ConcurrentHashMap()
                     newMap[value] = 1
-                    dataMaps[column] = newMap
+                    dataMaps[off] = newMap
                 }
             } else {
-                Log.d("zhangan", "数据相位异常：$column")
+                Log.d("zhangan", "数据相位异常：$off")
             }
             mcCount++
         }
@@ -276,6 +280,23 @@ class RealModelViewModel(
         this.dataMaps = ConcurrentHashMap()
         this.gainFloatList.clear()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
+        updateSettingValue()
+    }
+
+    private fun updateSettingValue() {
+        checkType.settingBean.let {
+        PrPdPoint2DList.maxValue = it.maxValue.toFloat()
+        PrPdPoint2DList.minValue = it.minValue.toFloat()
+
+        PrpsPointList.maxValue = it.maxValue.toFloat()
+        PrpsPointList.minValue = it.minValue.toFloat()
+
+        PrPsCubeList.maxValue = it.maxValue.toFloat()
+        PrPsCubeList.minValue = it.minValue.toFloat()
+
+        FlightPoint2DList.maxValue = it.maxValue.toFloat()
+        FlightPoint2DList.minValue = it.minValue.toFloat()
+        }
     }
 
     fun getQueue(): ArrayBlockingQueue<ByteArray>? {

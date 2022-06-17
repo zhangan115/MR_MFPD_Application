@@ -111,7 +111,6 @@ class SocketManager private constructor() {
     private val requestRunnable = Runnable {
         try {
             val host = if (host == null) appHost() else host
-            Log.d("zhangan",host +" "+ socket?.isConnected + " " + isExecuting)
             val address = InetSocketAddress(host, port())
             socket = Socket()
             if (socket!=null){
@@ -392,7 +391,6 @@ class SocketManager private constructor() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
             }
         }
     }
