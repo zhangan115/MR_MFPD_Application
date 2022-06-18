@@ -111,5 +111,15 @@
     <color name="titColor3">#008100</color>
     <color name="titColor4">#0200FB</color>
     <color name="titColor5">#82007E</color>
+    <!--    红：#FF0000-->
+    <!--    橙：#FF7000-->
+    <!--    黄：#FFD900-->
+    <!--    青：#00FFC0-->
+    <!--    蓝：#006DFF-->
+    <color name="prps_red">#FF0000</color>
+    <color name="prps_orange">#FF7000</color>
+    <color name="prps_yellow">#FFD900</color>
+    <color name="prps_green">#00FFC0</color>
+    <color name="prps_blue">#006DFF</color>
 
 </resources>

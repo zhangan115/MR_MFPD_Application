@@ -131,20 +131,22 @@ public class PrPsCubeList {
                     minV = maxValue * -1;
                 }
             }
-
+            float ratio = 0;
             float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
             float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
             for (int i = 0; i < values.size(); i++) {
                 float zTopPosition = 0;
                 if (values.get(i) != null) {
                     if (isZeroCenter) {
+                        ratio = values.get(i) / maxV;
                         if (values.get(i) >= 0) {
-                            zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
+                            zTopPosition = ratio * (2.0f - spaceHeight * 2) / 2 + startZPosition;
                         } else {
-                            zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
+                            zTopPosition = ratio * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
                         }
                     } else {
-                        zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
+                        ratio = (values.get(i) - minValue) / (maxValue - minValue);
+                        zTopPosition = ratio * (2.0f - spaceHeight * 2);
                     }
                 }
                 float startX = -1 + spaceWidth + stepX * i;
@@ -162,17 +164,20 @@ public class PrPsCubeList {
                         startX + stepX / 2, startY, zTopPosition,
                 };
                 float[] color;
-                float level1Num = settingBean.getAlarmLimitValue() == null? 0: settingBean.getAlarmLimitValue();
-                float level2Num = settingBean.getOverLimitValue() == null? 0: settingBean.getOverLimitValue();
-                float level3Num = settingBean.getJjLimitValue() == null? 0: settingBean.getJjLimitValue();
                 if (values.get(i) == null) {
                     color = Constants.INSTANCE.getTransparentColors();
-                } else if (values.get(i) < level1Num) {
-                    color = Constants.INSTANCE.getRedColors();
-                } else if (values.get(i) >= level1Num && values.get(i) < level2Num) {
-                    color = Constants.INSTANCE.getBlueColors();
                 } else {
-                    color = Constants.INSTANCE.getGreenColors();
+                    if (ratio >= 0 && ratio < 0.2f) {
+                        color = Constants.INSTANCE.getPrpsBlueColors();
+                    } else if (ratio >= 0.2f && ratio < 0.4f) {
+                        color = Constants.INSTANCE.getPrpsGreenColors();
+                    } else if (ratio >= 0.4f && ratio < 0.6f) {
+                        color = Constants.INSTANCE.getYellowColors();
+                    } else if (ratio >= 0.6f && ratio < 0.8f) {
+                        color = Constants.INSTANCE.getPrpsOrangeColors();
+                    } else {
+                        color = Constants.INSTANCE.getPrpsRedColors();
+                    }
                 }
                 System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
                 System.arraycopy(color, 0, colors, 8 * i * VERTEX_COLOR_SIZE, color.length);

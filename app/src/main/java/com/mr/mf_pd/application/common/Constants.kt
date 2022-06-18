@@ -55,18 +55,7 @@ object Constants {
         1f, 1f, 0f, 1f,
     )
 
-    var blueColors = floatArrayOf(
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-        0f, 0f, 1f, 0.7f,
-    )
-
-    var redColors = floatArrayOf(
+    var prpsRedColors = floatArrayOf(
         1f, 0f, 0f, 1f,
         1f, 0f, 0f, 1f,
         1f, 0f, 0f, 1f,
@@ -77,15 +66,49 @@ object Constants {
         1f, 0f, 0f, 1f,
     )
 
-    var greenColors = floatArrayOf(
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
-        0f, 1f, 0f, 0.7f,
+    var prpsOrangeColors = floatArrayOf(
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+        1f, 0.43f, 0f, 1f,
+    )
+
+    var prpsYellowColors = floatArrayOf(
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+        1f, 0.85f, 0f, 1f,
+    )
+
+    var prpsGreenColors = floatArrayOf(
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+        0f, 1f, 0.75f, 1f,
+    )
+
+
+    var prpsBlueColors = floatArrayOf(
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
+        0f, 0.43f, 1f, 1f,
     )
 
     var indicesList = shortArrayOf()

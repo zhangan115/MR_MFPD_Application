@@ -113,7 +113,7 @@ class SocketManager private constructor() {
             val host = if (host == null) appHost() else host
             val address = InetSocketAddress(host, port())
             socket = Socket()
-            if (socket!=null){
+            if (socket != null) {
                 socket!!.connect(address, 2000)
                 socket!!.keepAlive = false
                 inputStream = socket!!.getInputStream()
@@ -127,7 +127,10 @@ class SocketManager private constructor() {
             inputStream?.let { inputStream ->
                 while (inputStream.read(dataBuffer).also { size = it } != -1) {
                     try {
-                        Log.d("zhangan", "read data $size")
+//                        Log.d("zhangan", "read data $size")
+                        if (startTime == 0L) {
+                            startTime = System.currentTimeMillis()
+                        }
                         val sources = ByteArray(size)
                         System.arraycopy(dataBuffer, 0, sources, 0, size)
                         val isSuccess = dataQueue.offer(sources)
@@ -217,6 +220,8 @@ class SocketManager private constructor() {
         }
     }
 
+    private var count = 0
+    private var startTime = 0L
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
             when (commandType) {
@@ -229,6 +234,13 @@ class SocketManager private constructor() {
                     }
                 }
                 CommandType.RealData -> {
+                    if (count == 50) {
+                        val time = System.currentTimeMillis() - startTime
+                        startTime = 0
+                        count = 0
+                        Log.d("zhangan","50组数据耗时:$time")
+                    }
+                    count++
                     realDataDeque?.let {
                         val isSuccess = it.offer(source)
                         if (!isSuccess) {

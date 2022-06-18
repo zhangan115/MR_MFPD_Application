@@ -268,6 +268,7 @@ class PhaseModelViewModel(
             updateFzValue(checkParamsBean)
             receiverCount = 0
             mcCount = 0
+            gainMinValue.postValue(minValue)
         } else {
             ++receiverCount
             if (bytes.isEmpty()) {

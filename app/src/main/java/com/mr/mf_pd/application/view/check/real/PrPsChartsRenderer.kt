@@ -89,7 +89,8 @@ class PrPsChartsRenderer(
     private lateinit var prPs3DXZLines: PrPsXZLines
     private var rect: Rect = Rect()
     private val paint = Paint()
-    private var updateBitmap = true
+    @Volatile
+    var updateBitmap = true
 
     @Volatile
     private var height: Int = 0
@@ -292,6 +293,7 @@ class PrPsChartsRenderer(
     }
 
     fun cleanData() {
+        updateBitmap = true
         isToCleanData = true
     }
 

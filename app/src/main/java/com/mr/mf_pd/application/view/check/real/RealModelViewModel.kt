@@ -195,6 +195,7 @@ class RealModelViewModel(
             mcCount = 0
             maxValue = null
             emptyCount = 0
+            gainMinValue.postValue(minValue)
         } else {
             ++receiverCount
             if (bytes.isEmpty()) {
@@ -301,22 +302,8 @@ class RealModelViewModel(
         }
         val setting = checkType.settingBean
         if (setting.gdCd == 0) {
-            if (DefaultDataRepository.realDataMaxValue.value != null) {
-                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, setting.maxValue)
-                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
-                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
-                }
-            } else {
-                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
-            }
-            if (DefaultDataRepository.realDataMinValue.value != null) {
-                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, setting.minValue)
-                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
-                    DefaultDataRepository.realDataMinValue.postValue(minValue)
-                }
-            } else {
-                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
-            }
+            DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             PrPsCubeList.maxValue = setting.maxValue.toFloat()
             PrPsCubeList.minValue = setting.minValue.toFloat()
             PrpsPointList.maxValue = setting.maxValue.toFloat()
