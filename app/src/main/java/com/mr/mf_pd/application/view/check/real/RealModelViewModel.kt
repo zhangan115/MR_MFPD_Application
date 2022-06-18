@@ -51,7 +51,8 @@ class RealModelViewModel(
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
     //点数据
-    private var dataMaps: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>> = ConcurrentHashMap()
+    private var dataMaps: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>> =
+        ConcurrentHashMap()
 
     //圆柱数据
     var prPsDataCallback: PrPsDataCallback? = null
@@ -281,21 +282,45 @@ class RealModelViewModel(
         this.gainFloatList.clear()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
         updateSettingValue()
+
     }
 
     private fun updateSettingValue() {
         checkType.settingBean.let {
-        PrPdPoint2DList.maxValue = it.maxValue.toFloat()
-        PrPdPoint2DList.minValue = it.minValue.toFloat()
+            PrPdPoint2DList.maxValue = it.maxValue.toFloat()
+            PrPdPoint2DList.minValue = it.minValue.toFloat()
 
-        PrpsPointList.maxValue = it.maxValue.toFloat()
-        PrpsPointList.minValue = it.minValue.toFloat()
+            PrpsPointList.maxValue = it.maxValue.toFloat()
+            PrpsPointList.minValue = it.minValue.toFloat()
 
-        PrPsCubeList.maxValue = it.maxValue.toFloat()
-        PrPsCubeList.minValue = it.minValue.toFloat()
+            PrPsCubeList.maxValue = it.maxValue.toFloat()
+            PrPsCubeList.minValue = it.minValue.toFloat()
 
-        FlightPoint2DList.maxValue = it.maxValue.toFloat()
-        FlightPoint2DList.minValue = it.minValue.toFloat()
+            FlightPoint2DList.maxValue = it.maxValue.toFloat()
+            FlightPoint2DList.minValue = it.minValue.toFloat()
+        }
+        val setting = checkType.settingBean
+        if (setting.gdCd == 0) {
+            if (DefaultDataRepository.realDataMaxValue.value != null) {
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, setting.maxValue)
+                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
+                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            }
+            if (DefaultDataRepository.realDataMinValue.value != null) {
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, setting.minValue)
+                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
+                    DefaultDataRepository.realDataMinValue.postValue(minValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
+            }
+            PrPsCubeList.maxValue = setting.maxValue.toFloat()
+            PrPsCubeList.minValue = setting.minValue.toFloat()
+            PrpsPointList.maxValue = setting.maxValue.toFloat()
+            PrpsPointList.minValue = setting.minValue.toFloat()
         }
     }
 

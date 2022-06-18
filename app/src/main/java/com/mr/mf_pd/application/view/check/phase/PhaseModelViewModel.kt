@@ -141,6 +141,27 @@ class PhaseModelViewModel(
             FlightPoint2DList.maxValue = it.maxValue.toFloat()
             FlightPoint2DList.minValue = it.minValue.toFloat()
         }
+        val setting = checkType.settingBean
+        if (setting.gdCd == 0) {
+            if (DefaultDataRepository.realDataMaxValue.value != null) {
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, setting.maxValue)
+                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
+                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            }
+            if (DefaultDataRepository.realDataMinValue.value != null) {
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, setting.minValue)
+                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
+                    DefaultDataRepository.realDataMinValue.postValue(minValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
+            }
+            PrPdPoint2DList.maxValue = setting.maxValue.toFloat()
+            PrPdPoint2DList.minValue = setting.minValue.toFloat()
+        }
     }
 
     override fun onCleared() {
