@@ -89,6 +89,9 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 viewModel.startSaveData()
             } else {
                 viewModel.stopSaveData()
+                if (viewModel.filesRepository.getCurrentCheckName() != null) {
+                    location = viewModel.filesRepository.getCurrentCheckName()
+                }
                 showSaveFileDialog()
             }
         }

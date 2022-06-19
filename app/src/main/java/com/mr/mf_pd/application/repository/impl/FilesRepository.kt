@@ -3,6 +3,7 @@ package com.mr.mf_pd.application.repository.impl
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import io.reactivex.disposables.Disposable
 import java.io.File
 
@@ -70,5 +71,15 @@ interface FilesRepository {
      * 释放读取文件的操作
      */
     fun releaseReadFile()
+
+    /**
+     * 设置检测文件数据对象
+     */
+    fun setCheckFileModel(model: CheckDataFileModel?)
+
+    /**
+     * 获取检测数据对象
+     */
+    fun getCheckFileModel():CheckDataFileModel?
 
 }

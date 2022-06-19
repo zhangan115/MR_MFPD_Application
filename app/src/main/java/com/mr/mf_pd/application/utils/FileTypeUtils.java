@@ -1,13 +1,17 @@
 package com.mr.mf_pd.application.utils;
 
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 
 import com.mr.mf_pd.application.R;
 import com.mr.mf_pd.application.common.CheckType;
+import com.mr.mf_pd.application.common.ConstantStr;
+import com.mr.mf_pd.application.common.Constants;
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -18,40 +22,33 @@ import javax.annotation.Nullable;
 
 public class FileTypeUtils {
 
-
-    public static String getCheckTypeStr(@Nullable FileType fileType) {
-        if (fileType == FileType.AE) {
-            return ".check_ae";
-        } else if (fileType == FileType.HF) {
-            return ".check_hf";
-        } else if (fileType == FileType.UHF) {
-            return ".check_uhf";
-        } else if (fileType == FileType.TEV) {
-            return ".check_tev";
-        }
-        return "";
-    }
-
     @Nullable
-    public static FileType getCheckTypeFromFile(File file) {
-        if (file.getName().startsWith(".check_ae")) {
+    public static FileType getCheckTypeFromFile(@Nullable String typeName) {
+        if (TextUtils.isEmpty(typeName)) {
+            return null;
+        }
+        assert typeName != null;
+        if (typeName.equals("ae")) {
             return FileType.AE;
         }
-        if (file.getName().startsWith(".check_hf")) {
+        if (typeName.equals("aa")) {
+            return FileType.AA;
+        }
+        if (typeName.equals("hf")) {
             return FileType.HF;
         }
-        if (file.getName().startsWith(".check_tev")) {
+        if (typeName.equals("tev")) {
             return FileType.TEV;
         }
-        if (file.getName().startsWith(".check_uhf")) {
+        if (typeName.equals("uhf")) {
             return FileType.UHF;
         }
         return null;
     }
 
     @Nullable
-    public static CheckType getCheckType(FileType fileType){
-        switch (fileType){
+    public static CheckType getCheckType(FileType fileType) {
+        switch (fileType) {
             case UHF:
                 return CheckType.UHF;
             case HF:
@@ -62,6 +59,24 @@ public class FileTypeUtils {
                 return CheckType.TEV;
             case AA:
                 return CheckType.AA;
+            default:
+                return null;
+        }
+    }
+
+    @Nullable
+    public static String getFileTypeName(FileType fileType) {
+        switch (fileType) {
+            case UHF:
+                return "uhf";
+            case HF:
+                return "hf";
+            case AE:
+                return "ae";
+            case TEV:
+                return "tev";
+            case AA:
+                return "aa";
             default:
                 return null;
         }
@@ -102,7 +117,7 @@ public class FileTypeUtils {
         }
     }
 
-    private static Map<String, FileType> fileTypeExtensions = new HashMap<>();
+    private static final Map<String, FileType> fileTypeExtensions = new HashMap<>();
 
     static {
         for (FileType fileType : FileType.values()) {
@@ -113,19 +128,10 @@ public class FileTypeUtils {
     }
 
     public static FileType getFileType(CheckDataFileModel file) {
-        if (Objects.requireNonNull(file.getFile()).getName().startsWith(".check_ae")) {
-            return FileType.AE;
+        if (file.getFileType()==null){
+            return FileType.DIRECTORY;
         }
-        if (file.getFile().getName().startsWith(".check_hf")) {
-            return FileType.HF;
-        }
-        if (file.getFile().getName().startsWith(".check_tev")) {
-            return FileType.TEV;
-        }
-        if (file.getFile().getName().startsWith(".check_uhf")) {
-            return FileType.UHF;
-        }
-        return FileType.DIRECTORY;
+        return file.getFileType();
     }
 
     private static String getExtension(String fileName) {

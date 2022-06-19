@@ -135,6 +135,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginBottom="20dp"
+            android:minWidth="100dp"
             android:text="@{vm.location}"
             android:textColor="@color/blueColor"
             android:textSize="13sp" />

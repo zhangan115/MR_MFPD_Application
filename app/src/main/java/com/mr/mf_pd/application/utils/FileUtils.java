@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,21 +51,13 @@ public class FileUtils {
     }
 
     public static Disposable getFileList(File directory, @Nullable FileTypeUtils.FileType checkType, FilterCallback callback) {
-        Observable<List<CheckDataFileModel>> observable = Observable.create((ObservableOnSubscribe<List<CheckDataFileModel>>) emitter -> {
+        Observable<List<CheckDataFileModel>> observable = Observable.create(emitter -> {
             List<CheckDataFileModel> checkDataFileModels = new ArrayList<>();
             File[] files = directory.listFiles();
             try {
                 if (files != null) {
                     //需要展示的文件
-                    List<File> filterFiles = new ArrayList<>();
-                    for (File file : files) {
-                        String startName = FileTypeUtils.getCheckTypeStr(checkType);
-                        if (file.getName().startsWith(startName)) {
-                            filterFiles.add(file);
-                        } else if (file.isDirectory() && !file.getName().startsWith(".")) {
-                            filterFiles.add(file);
-                        }
-                    }
+                    List<File> filterFiles = new ArrayList<>(Arrays.asList(files));
                     for (int i = 0; i < filterFiles.size(); i++) {
                         File file = filterFiles.get(i);
                         if (file.isDirectory()) {
@@ -93,8 +86,9 @@ public class FileUtils {
             CheckDataFileModel model = new CheckDataFileModel();
             model.setFile(file);
             model.setSelect(false);
-            FileTypeUtils.FileType ct = FileTypeUtils.getCheckTypeFromFile(file);
-            if (ct != null) {
+            File configFile = new File(file, ConstantStr.CHECK_FILE_CONFIG);
+            if (configFile.exists()) {
+                FileTypeUtils.FileType ct = null;
                 for (File listFile : Objects.requireNonNull(file.listFiles())) {
                     if (listFile.getName().endsWith(".png")
                             || listFile.getName().endsWith(".jpg")
@@ -107,11 +101,18 @@ public class FileUtils {
                             CheckConfigModel checkConfigModel = new Gson().fromJson(str, CheckConfigModel.class);
                             model.setColor(checkConfigModel.getColor());
                             model.setMarks(checkConfigModel.getMarks());
+                            model.setDataTime(checkConfigModel.getTime());
+                            ct = FileTypeUtils.getCheckTypeFromFile(checkConfigModel.getType());
                         }
                     }
                 }
                 model.setCheckFile(true);
-                model.setFileType(ct);
+                if (ct != null) {
+                    model.setFileType(ct);
+                } else {
+                    //解析失败的类型，跳过不展示。
+                    model = null;
+                }
             } else {
                 model.setCheckFile(false);
             }
@@ -167,6 +168,7 @@ public class FileUtils {
         fis.close();
         return sb.toString();
     }
+
     @NonNull
     public static List<Byte> readBytesFromFile(File file) throws IOException {
         if (!file.exists()) {
@@ -177,7 +179,7 @@ public class FileUtils {
         List<Byte> bytesList = new ArrayList<>();
         byte[] bytes = new byte[1024];
         while ((size = fis.read(bytes)) != -1) {
-            bytesList.addAll(Bytes.asList(bytes).subList(0,size));
+            bytesList.addAll(Bytes.asList(bytes).subList(0, size));
         }
         fis.close();
         return bytesList;

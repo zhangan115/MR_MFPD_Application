@@ -27,6 +27,7 @@ import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
+import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.sito.tool.library.utils.DisplayUtil
@@ -72,6 +73,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     }
 
     private fun initViewData(checkDataFileModel: CheckDataFileModel) {
+        viewModel.fileRepository.setCheckFileModel(checkDataFileModel)
         viewModel.toYcDataEvent.observe(this, EventObserver {
             runOnUiThread {
                 fragmentDataListener.forEach { listener ->
@@ -86,23 +88,20 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                     listener.cleanCurrentData()
             }
         })
-        val fileTypeNameStr =
-            FileTypeUtils.getCheckTypeStr(checkDataFileModel.fileType)
-        val titleName =
-            currentFile.name.substring(fileTypeNameStr.length, currentFile.name.length)
+        val titleName = currentFile.name
         setTitleValue(titleName + findString(checkDataFileModel.fileType!!.description))
         checkType = FileTypeUtils.getCheckType(checkDataFileModel.fileType)!!
         when (checkType) {
             CheckType.UHF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
-                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
             }
             CheckType.HF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "1"))
-                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
             }
             CheckType.TEV -> {
@@ -110,7 +109,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "2"))
                 fragments.add(ContinuityModelFragment.create(true))
-                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
             }
             CheckType.AE -> {
@@ -120,7 +119,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
                 checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
                 fragments.add(ContinuityModelFragment.create(true))
-                fragments.add(PhaseModelFragment.create(true))
+                fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(ACFlightModelFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
                 fragments.add(ACPulseModelFragment.create(true))
@@ -128,14 +127,10 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
             CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
-                checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
-                checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
-                checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
+                checkFragmentLayout.addView(createTitleTextView("实时模式", "2"))
                 fragments.add(ContinuityModelFragment.create(true))
-                fragments.add(PhaseModelFragment.create(true))
-                fragments.add(ACFlightModelFragment.create(true))
+                fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
-                fragments.add(ACPulseModelFragment.create(true))
             }
         }
         fragments.forEach {

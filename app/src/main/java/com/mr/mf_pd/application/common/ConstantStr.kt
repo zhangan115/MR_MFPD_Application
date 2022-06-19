@@ -17,11 +17,13 @@ interface ConstantStr {
         const val CURRENT_VERSION = "当前版本：V1.0"
         const val USER_LOCATION = "user_location"
 
-        const val CHECK_REAL_DATA = "check_real_data"
-        const val CHECK_FILE_CONFIG = "check_config.json"
-        const val CHECK_FILE_SETTING = "check_setting.json"
-        const val CHECK_YC_FILE_NAME = "check_yc"
-        const val CHECK_FLIGHT_FILE_NAME = "check_flight"
+        const val CHECK_FILE_DIR = "check_file_dir"//配置的默认保存位置
+        const val CHECK_FILE_CONFIG = "config.json"//配置文件
+        const val CHECK_FILE_SETTING = "setting.json"//设置文件
+        const val CHECK_REAL_DATA = "check_real.mr"//存放实时数据文件
+        const val CHECK_YC_FILE_NAME = "check_telemeter.mr"//存放遥测文件
+        const val CHECK_FLIGHT_FILE_NAME = "check_flight.mr"//存放飞行数据文件
+        const val CHECK_FD_FILE_NAME = "check_discharge.mr"//存放放电数据文件
 
 
         /**

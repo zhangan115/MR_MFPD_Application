@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 
 class FileDataViewModel(
     var dataRepository: DataRepository,
-    private val fileRepository: FilesRepository,
+    val fileRepository: FilesRepository,
 ) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()

@@ -73,7 +73,7 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
             holder.mLabelImage.visibility = View.GONE
             holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
         } else {
-            holder.mFileTitle.text = fileName.substring(FileTypeUtils.getCheckTypeStr(fileType).length, fileName.length)
+            holder.mFileTitle.text = fileName
             val color = currentFile.color
             if ( color!= -1) {
                 holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],null))

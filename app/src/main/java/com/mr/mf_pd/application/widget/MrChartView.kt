@@ -121,23 +121,23 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     }
 
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
+    override fun surfaceCreated(p0: SurfaceHolder) {
         mIsDrawing = true
         Thread(this).start()
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    override fun surfaceChanged(p0: SurfaceHolder, format: Int, width: Int, height: Int) {
         chartRect.set(0, 0, width, height)
         rect = getTextRect(yAxisText)
         textRect.updateData(width, height, rect)
         unitRect.set(0, 0, width, height)
     }
 
-    override fun surfaceRedrawNeeded(holder: SurfaceHolder?) {
+    override fun surfaceRedrawNeeded(p0: SurfaceHolder) {
 
     }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    override fun surfaceDestroyed(p0: SurfaceHolder) {
         mIsDrawing = false
     }
 

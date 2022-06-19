@@ -5,6 +5,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataChartBinding
@@ -92,6 +93,9 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
                 viewModel.startSaveData()
             } else {
                 viewModel.stopSaveData()
+                if (viewModel.filesRepository.getCurrentCheckName() != null) {
+                    location = viewModel.filesRepository.getCurrentCheckName()
+                }
                 showSaveFileDialog()
             }
         }
@@ -109,6 +113,9 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         }
         if (viewModel.checkType == CheckType.HF || viewModel.checkType == CheckType.TEV) {
             image5.visibility = View.GONE
+        }
+        locationText.setOnClickListener {
+            createChooseFileIntent()
         }
         rendererSet = true
     }
@@ -186,7 +193,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         cleanCurrentData()
     }
 
-    private fun initChartView(settingBean: SettingBean){
+    private fun initChartView(settingBean: SettingBean) {
         mrChartView.unit = settingBean.fzUnit
         mrChartView.defaultMaxValue = settingBean.maxValue.toFloat()
         mrChartView.defaultMinValue = settingBean.minValue.toFloat()

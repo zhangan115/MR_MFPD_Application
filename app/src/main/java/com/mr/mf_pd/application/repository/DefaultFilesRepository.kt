@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.repository
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -13,6 +14,8 @@ import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.FileUtils
+import com.mr.mf_pd.application.view.file.model.CheckConfigModel
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -44,6 +47,9 @@ class DefaultFilesRepository : FilesRepository {
     var realDataTempFile: File? = null
     var ycTempFile: File? = null
 
+    private var startTime = 0L
+    private var endTime = 0L
+
     private lateinit var mCheckType: CheckType
     var checkParamsBean: CheckParamsBean? = null
 
@@ -53,7 +59,8 @@ class DefaultFilesRepository : FilesRepository {
         if (!tempDir.exists()) {
             tempDir.mkdir()
         }
-        checkTempFile = File(tempDir, DateUtil.timeFormat(System.currentTimeMillis(), null))
+        checkTempFile =
+            File(tempDir, DateUtil.timeFormat(System.currentTimeMillis(), "yyyy_MM_dd_HH_mm_ss"))
         if (!checkTempFile!!.exists()) {
             checkTempFile!!.mkdir()
         }
@@ -72,6 +79,7 @@ class DefaultFilesRepository : FilesRepository {
         val realObs = ObservableOnSubscribe<ByteArray> {
             realDataEmitter = it
         }
+        startTime = System.currentTimeMillis()
         Observable.create(realObs).doOnNext {
             realDataFOS?.write(it)
             realDataFOS?.flush()
@@ -101,22 +109,34 @@ class DefaultFilesRepository : FilesRepository {
 
     override fun stopSaveData() {
         isSaving.postValue(false)
+        endTime = System.currentTimeMillis()
         realDataEmitter?.onComplete()
     }
 
     override fun setCurrentClickFile(file: File) {
         checkFile = file
+        MRApplication.instance.saveCheckFileToSp(file)
     }
 
     override fun toCreateCheckFile(checkType: CheckType) {
         if (ycTempFile != null && realDataTempFile != null && checkFile != null) {
             GlobalScope.runCatching {
                 try {
-                    val checkFileName = checkType.checkFile + checkTempFile!!.name
+                    val g = Gson()
+                    val checkFileName = checkTempFile!!.name
                     val checkFile = File(checkFile!!, checkFileName)
                     checkFile.mkdir()
+                    //创建配置信息
+                    val configBean = CheckConfigModel()
+                    configBean.type = checkType.checkFile
+                    configBean.time = endTime - startTime
+                    val configStr = g.toJson(configBean)
+                    FileUtils.writeStr2File(
+                        configStr,
+                        File(checkFile, ConstantStr.CHECK_FILE_CONFIG)
+                    )
                     //保存设置
-                    val settingStr = Gson().toJson(checkType.settingBean)
+                    val settingStr = g.toJson(checkType.settingBean)
                     FileUtils.writeStr2File(
                         settingStr,
                         File(checkFile, ConstantStr.CHECK_FILE_SETTING)
@@ -134,18 +154,19 @@ class DefaultFilesRepository : FilesRepository {
     }
 
     override fun getCurrentCheckFile(): File? {
-        if (checkFile != null) {
-            return checkFile
-        }
-        return MRApplication.instance.fileCacheFile()
+        return checkFile
     }
 
     override fun getCurrentCheckName(): String? {
         checkFile?.let {
-            return it.absolutePath.removeRange(
+            val str = it.absolutePath.removeRange(
                 0,
                 MRApplication.instance.fileCacheFile()!!.absolutePath.length
             )
+            if (TextUtils.isEmpty(str)) {
+                return "/"
+            }
+            return str
         }
         return null
     }
@@ -168,6 +189,16 @@ class DefaultFilesRepository : FilesRepository {
 
     override fun releaseReadFile() {
         CheckFileReadManager.get().releaseReadFile()
+    }
+
+    private var checkDataFileModel: CheckDataFileModel? = null
+
+    override fun setCheckFileModel(model: CheckDataFileModel?) {
+        checkDataFileModel = model
+    }
+
+    override fun getCheckFileModel(): CheckDataFileModel? {
+        return checkDataFileModel
     }
 
     override fun openCheckFile(

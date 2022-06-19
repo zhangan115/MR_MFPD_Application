@@ -1,12 +1,8 @@
 package com.mr.mf_pd.application.utils;
 
 
-import org.greenrobot.essentials.StringUtils;
-
 import java.math.BigInteger;
-import java.util.ArrayList;
-
-import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 
 /**
  * 字节相关操作工具类
@@ -15,6 +11,71 @@ public class ByteUtil {
 
     public static void main(String[] args) {
 
+    }
+
+    /**
+     * long类型转成byte数组
+     */
+    public static byte[] longToByte(long number) {
+        byte[] b = new byte[8];
+        long temp = number;
+        for (int i = 0; i < 8; i++) {
+            b[i] = new Long(temp).byteValue();// 将最低位保存在最低位 temp = temp >> 8;// 向右移8位
+            temp = temp >> 8;
+        }
+        byte[] bytes = reverseByteArr(b);
+        return bytes;
+
+    }
+
+    /**
+     * 字节数组到long的转换.
+     */
+    public static long byteToLong(byte[] b) {
+        byte[] bytes = reverseByteArr(b);
+
+        long s = 0;
+        long s0 = bytes[0] & 0xff;// 最低位
+        long s1 = bytes[1] & 0xff;
+        long s2 = bytes[2] & 0xff;
+        long s3 = bytes[3] & 0xff;
+        long s4 = bytes[4] & 0xff;// 最低位
+        long s5 = bytes[5] & 0xff;
+        long s6 = bytes[6] & 0xff;
+        long s7 = bytes[7] & 0xff;
+
+        // s0不变
+        s1 <<= 8;
+        s2 <<= 16;
+        s3 <<= 24;
+        s4 <<= 8 * 4;
+        s5 <<= 8 * 5;
+        s6 <<= 8 * 6;
+        s7 <<= 8 * 7;
+        s = s0 | s1 | s2 | s3 | s4 | s5 | s6 | s7;
+        return s;
+    }
+    //字节翻转
+    public static byte[] reverseByteArr(byte[] bytes){
+        if(bytes == null || bytes.length == 0){
+            throw new RuntimeException("bytes字节数组不能为空");
+        }
+        byte[] b = new byte[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            b[bytes.length -i - 1] = bytes[i];
+        }
+        return b;
+    }
+
+    public static byte[] toByteArray(long value) {
+        return ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(value).array();
+    }
+
+    public static long byteArrayToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.put(bytes, 0, bytes.length);
+        buffer.flip();
+        return buffer.getLong();
     }
 
     /**
@@ -106,6 +167,8 @@ public class ByteUtil {
         }
         return result;
     }
+
+
 
     /**
      * 把十进制数字转换成足位的十六进制字符串,并补全空位

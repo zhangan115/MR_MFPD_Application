@@ -2,6 +2,8 @@ package com.mr.mf_pd.application.app
 
 import android.app.Activity
 import android.app.Application
+import android.os.Environment
+import android.util.Log
 import androidx.annotation.NonNull
 import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
@@ -18,6 +20,8 @@ import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import com.sito.tool.library.utils.SPHelper
 import com.umeng.commonsdk.UMConfigure
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MRApplication : Application() {
 
@@ -83,7 +87,7 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
-        UMConfigure.preInit(this,BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL)
+        UMConfigure.preInit(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_CHANNEL)
     }
 
     /**
@@ -130,13 +134,27 @@ class MRApplication : Application() {
     }
 
     fun fileCacheFile(): File? {
-        if (externalCacheDir == null) {
-            return null
-        }
-        val file = File(externalCacheDir, ConstantStr.MR_FILE)
+        var externalFileRootDir = getExternalFilesDir(null)
+        do {
+            externalFileRootDir = Objects.requireNonNull(externalFileRootDir)?.parentFile
+        } while (Objects.requireNonNull(externalFileRootDir)?.absolutePath
+                ?.contains("/Android")!!
+        )
+        val saveDir = Objects.requireNonNull(externalFileRootDir)?.absolutePath;
+        val file = File(saveDir, ConstantStr.MR_FILE)
+        Log.d("zhangan", file.absolutePath)
         if (!file.exists()) {
-            file.mkdir()
+            if (file.mkdir()) {
+                Log.d("zhangan", "create file success")
+            }
         }
         return file
+    }
+
+    /**
+     * 保存上次保存检测文件的地址
+     */
+    fun saveCheckFileToSp(file: File) {
+        SPHelper.write(this, ConstantStr.USER_INFO, ConstantStr.CHECK_FILE_DIR, file.absolutePath)
     }
 }

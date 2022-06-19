@@ -12,13 +12,18 @@ import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.PatternMatcher
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
@@ -430,6 +435,39 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkExternalStorageState()
+    }
+
+    private fun checkExternalStorageState() {
+        val isHasStoragePermission = Environment.isExternalStorageManager()
+        if (isHasStoragePermission) {
+            val file = MRApplication.instance.fileCacheFile()
+            if (file!=null && file.exists()) {
+                file.mkdir()
+            }
+            return
+        }
+        if (!isHasStoragePermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            setTheme(R.style.AppTheme_MaterialDialog)
+            MaterialDialog(this)
+                .show {
+                    title = "提示"
+                    message(text = "本程序需要您同意允许访问所有文件权限")
+                    negativeButton(text = "取消", click = {
+                        it.dismiss()
+                    })
+                    positiveButton(text = "确定", click = {
+                        val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                        startActivity(intent = intent)
+                        it.dismiss()
+                    })
+                    lifecycleOwner(this@MainActivity)
+                }
         }
     }
 

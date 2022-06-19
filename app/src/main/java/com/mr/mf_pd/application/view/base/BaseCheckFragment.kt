@@ -28,6 +28,7 @@ import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.sito.tool.library.utils.ByteLibUtil
+import com.sito.tool.library.utils.SPHelper
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
@@ -104,7 +105,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             activity?.runOnUiThread {
                 oneSecondUIChange()
             }
-
         }
         Log.d("zhangan", "$TAG onResume")
     }
@@ -126,10 +126,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                 positiveButton(res = R.string.ok, click = { dialog ->
                     dialog.dismiss()
                     if (getLocationValue() == null) {
-                        //选择保存位置
-                        val intent = Intent(activity, FilePickerActivity::class.java)
-                        intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
-                        startActivityForResult(intent, requestChooseDirCode)
+                        createChooseFileIntent()
                     } else {
                         createCheckFile()
                     }
@@ -140,6 +137,13 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                 lifecycleOwner(this@BaseCheckFragment)
             }
         }
+    }
+
+    open fun createChooseFileIntent() {
+        //选择保存位置
+        val intent = Intent(activity, FilePickerActivity::class.java)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
+        startActivityForResult(intent, requestChooseDirCode)
     }
 
     open fun getLocationValue(): String? {

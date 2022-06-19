@@ -20,6 +20,7 @@ import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
+import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 import java.io.File
@@ -46,6 +47,8 @@ class PhaseModelViewModel(
 
     var isSaveData: MutableLiveData<Boolean>? = null
 
+    var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
@@ -60,6 +63,21 @@ class PhaseModelViewModel(
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            val checkDataFileModel = filesRepository.getCheckFileModel()
+            this.showTimeView.postValue(true)
+            var startTime = 0L
+            checkDataFileModel?.let {
+                mTimeDisposable = RepeatActionUtils.execute {
+                    it.dataTime?.let {
+                        timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
+                        startTime+= 1000L
+                        if (startTime > it) {
+                            startTime = 0
+                        }
+                    }
+                }
+            }
+
         } else {
             this.checkType = dataRepository.getCheckType()
         }
@@ -143,22 +161,8 @@ class PhaseModelViewModel(
         }
         val setting = checkType.settingBean
         if (setting.gdCd == 0) {
-            if (DefaultDataRepository.realDataMaxValue.value != null) {
-                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, setting.maxValue)
-                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
-                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
-                }
-            } else {
-                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
-            }
-            if (DefaultDataRepository.realDataMinValue.value != null) {
-                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, setting.minValue)
-                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
-                    DefaultDataRepository.realDataMinValue.postValue(minValue)
-                }
-            } else {
-                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
-            }
+            DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             PrPdPoint2DList.maxValue = setting.maxValue.toFloat()
             PrPdPoint2DList.minValue = setting.minValue.toFloat()
         }

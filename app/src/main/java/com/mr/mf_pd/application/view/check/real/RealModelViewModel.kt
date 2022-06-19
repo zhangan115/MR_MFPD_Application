@@ -36,7 +36,7 @@ import kotlin.math.min
 
 class RealModelViewModel(
     val dataRepository: DataRepository,
-    private val filesRepository: FilesRepository,
+    val filesRepository: FilesRepository,
 ) : ViewModel() {
 
     lateinit var checkType: CheckType

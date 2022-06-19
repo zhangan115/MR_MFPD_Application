@@ -30,6 +30,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+
         <LinearLayout
             android:id="@+id/phaseActionLayout"
             android:layout_width="match_parent"
@@ -51,7 +52,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="6dp"
                 android:background="@drawable/bg_time"
                 android:gravity="center"
@@ -96,6 +97,19 @@
                 android:background="@mipmap/uhf_icon_band" />
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bg_time"
+            android:gravity="center"
+            android:text="@{vm.timeStr}"
+            android:textColor="#FF6858"
+            android:textSize="12sp"
+            android:visibility="@{vm.showTimeView?View.VISIBLE:View.INVISIBLE}" />
+
         <com.mr.mf_pd.application.widget.GainChartView
             android:id="@+id/gainChartView"
             android:layout_width="match_parent"
@@ -104,11 +118,12 @@
             app:gain_value="@{vm.gainValues}" />
 
         <TextView
-            android:id="@+id/location"
+            android:id="@+id/locationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginBottom="20dp"
+            android:minWidth="100dp"
             android:text="@{vm.location}"
             android:textColor="@color/blueColor"
             android:textSize="13sp" />

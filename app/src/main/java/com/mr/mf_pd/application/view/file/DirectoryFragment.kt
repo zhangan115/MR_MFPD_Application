@@ -176,12 +176,14 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
                 model?.let {
                     GlobalScope.run {
                         val configFile = File(it.file, ConstantStr.CHECK_FILE_CONFIG)
+                        val checkConfig = CheckConfigModel()
                         if (!configFile.exists()) {
                             configFile.createNewFile()
                         }
-                        val checkConfig = CheckConfigModel()
                         checkConfig.color = it.color
                         checkConfig.marks = it.marks
+                        checkConfig.time = it.dataTime
+                        checkConfig.type = FileTypeUtils.getFileTypeName(model.fileType)
                         FileUtils.writeStr2File(Gson().toJson(checkConfig), configFile)
                     }
                 }

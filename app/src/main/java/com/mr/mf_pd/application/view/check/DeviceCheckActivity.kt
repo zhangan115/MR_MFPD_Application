@@ -2,18 +2,23 @@ package com.mr.mf_pd.application.view.check
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.ToastAdapter
 import com.mr.mf_pd.application.annotation.ClickAnnotationRealize
+import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.DeviceCheckDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
+import com.sito.tool.library.utils.SPHelper
 import kotlinx.android.synthetic.main.activity_device_check.*
+import java.io.File
 
 class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
 
@@ -43,15 +48,23 @@ class DeviceCheckActivity : AbsBaseActivity<DeviceCheckDataBinding>() {
         selfCheckingLayout.setOnClickListener {
 
         }
+        val saveFileDir =
+            SPHelper.readString(this, ConstantStr.USER_INFO, ConstantStr.CHECK_FILE_DIR)
+        if (!TextUtils.isEmpty(saveFileDir)) {
+            val file = File(saveFileDir)
+            if (file.exists()) {
+                MRApplication.instance.filesRepository.setCurrentClickFile(file)
+            }
+        }
         ClickAnnotationRealize.Bind(this)
     }
 
-    private fun startCheckDataActivity(checkType:CheckType){
-        if (SocketManager.get().getConnection()){
+    private fun startCheckDataActivity(checkType: CheckType) {
+        if (SocketManager.get().getConnection()) {
             val intent = Intent(this, CheckDataActivity::class.java)
             intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, checkType)
             startActivity(intent)
-        }else{
+        } else {
             ToastAdapter.bindToast(uhfDataLayout, "请连接设备")
         }
     }

@@ -3,7 +3,7 @@ package com.mr.mf_pd.application.view.file.model
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import java.io.File
 
- class CheckDataFileModel {
+class CheckDataFileModel {
     var isCheckFile = false //是否是检测文件
     var file //当前的检测文件
             : File? = null
@@ -17,4 +17,5 @@ import java.io.File
     var isSelect //是否被选中
             = false
     var isToChooseModel = false
+    var dataTime: Long? = null//文件时间
 }
