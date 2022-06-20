@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -53,7 +54,11 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
-        mCommandType = 2
+        mCommandType = if (checkType == CheckType.AE){
+            7
+        }else{
+            2
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {

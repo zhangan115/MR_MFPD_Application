@@ -108,7 +108,7 @@
             android:text="@{vm.timeStr}"
             android:textColor="#FF6858"
             android:textSize="12sp"
-            android:visibility="@{vm.showTimeView?View.VISIBLE:View.INVISIBLE}" />
+            android:visibility="@{vm.showTimeView?View.VISIBLE:View.GONE}" />
 
         <com.mr.mf_pd.application.widget.GainChartView
             android:id="@+id/gainChartView"

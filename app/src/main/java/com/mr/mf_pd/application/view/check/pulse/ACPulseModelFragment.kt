@@ -6,6 +6,7 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -20,7 +21,7 @@ import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * AC 脉冲波形
+ * AE 脉冲波形
  */
 class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
 
@@ -51,7 +52,11 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
-        mCommandType = 4
+        mCommandType = if (checkType == CheckType.AE){
+            7
+        }else{
+            4
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {

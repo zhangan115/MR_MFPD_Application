@@ -21,6 +21,9 @@ import java.text.DecimalFormat
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * 实时数据 实时模式
+ */
 class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override var TAG = "RealModelFragment"
@@ -51,7 +54,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     override fun initData() {
         mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
-        mCommandType = 1
+        mCommandType = if (checkType == CheckType.AE){
+            7
+        }else{
+            1
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {

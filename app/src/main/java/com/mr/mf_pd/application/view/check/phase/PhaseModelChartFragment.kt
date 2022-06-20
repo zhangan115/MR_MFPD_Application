@@ -5,7 +5,6 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataChartBinding
@@ -18,6 +17,9 @@ import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_phase_1.*
 import java.text.DecimalFormat
 
+/**
+ * 实时数据
+ */
 class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
     override var TAG = "PhaseModelChartFragment"
 
@@ -52,6 +54,11 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
         mCommandType = 1
+        mCommandType = if (checkType == CheckType.AE){
+            7
+        }else{
+            1
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
