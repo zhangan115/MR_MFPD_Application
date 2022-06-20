@@ -3,14 +3,14 @@ package com.mr.mf_pd.application.manager.socket
 import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
-import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
 import com.mr.mf_pd.application.app.MRApplication.Companion.port
+import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.callback.*
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.LinkStateListener
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.utils.DateUtil
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -26,7 +26,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
-    private var any: Any = Any()
+
     private var inputStream //输入流
             : InputStream? = null
     private var outputStream //输出流
@@ -49,8 +49,12 @@ class SocketManager private constructor() {
 
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
-    var fdDataDeque: ArrayBlockingQueue<ByteArray>? = null//放电数据队列
     var pulseDataDeque: ArrayBlockingQueue<ByteArray>? = null// 原始脉冲数据队列
+
+    private var ycFw: FileWriter? = null
+    private var realFw: FileWriter? = null
+    private var flightFw: FileWriter? = null
+    private var pulseFw: FileWriter? = null
 
     companion object {
         private var host: String? = null
@@ -67,6 +71,51 @@ class SocketManager private constructor() {
         fun get(): SocketManager {
             return instance!!
         }
+
+    }
+
+    private var mIsSaveData2File = false
+
+    fun setSaveDataFile(file: File?) {
+        if (file != null && file.exists()) {
+            val ycFile = File(file, ConstantStr.CHECK_YC_FILE_NAME)
+            if (!ycFile.exists()) {
+                ycFile.createNewFile()
+            }
+            ycFw = FileWriter(ycFile, true)
+
+            val realFile = File(file, ConstantStr.CHECK_REAL_DATA)
+            if (!realFile.exists()) {
+                realFile.createNewFile()
+            }
+            realFw = FileWriter(realFile, true)
+
+            val flightFile = File(file, ConstantStr.CHECK_FLIGHT_FILE_NAME)
+            if (!flightFile.exists()) {
+                flightFile.createNewFile()
+            }
+            flightFw = FileWriter(flightFile, true)
+
+            val pulseFile = File(file, ConstantStr.CHECK_PULSE_FILE_NAME)
+            if (!pulseFile.exists()) {
+                pulseFile.createNewFile()
+            }
+            pulseFw = FileWriter(pulseFile, true)
+
+            mIsSaveData2File = true
+        }
+    }
+
+    fun stopSaveData() {
+        mIsSaveData2File = false
+        try {
+            ycFw?.close()
+            realFw?.close()
+            flightFw?.close()
+            pulseFw?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     private val dataQueue: ArrayBlockingQueue<ByteArray> = ArrayBlockingQueue(50)
@@ -82,22 +131,6 @@ class SocketManager private constructor() {
 
     @Volatile
     private var isExecuting = true
-
-    /**
-     *
-     */
-    private fun startQueueTask() {
-        val dir = MRApplication.instance.fileCacheFile()
-        val mrDir = File(dir, "Mr")
-        if (!mrDir.exists()) {
-            mrDir.mkdir()
-        }
-        val file = File(mrDir,
-            DateUtil.timeFormat(System.currentTimeMillis(), "yyyy_MM_dd_HH_mm_ss") + ".txt")
-        file.createNewFile()
-        Log.d("zhangan", file.absolutePath)
-        fos = FileOutputStream(file, true)
-    }
 
     private fun cleanAllData() {
         mDataByteList.clear()
@@ -123,14 +156,9 @@ class SocketManager private constructor() {
                 }
             }
             var size: Int
-//            startQueueTask()
             inputStream?.let { inputStream ->
                 while (inputStream.read(dataBuffer).also { size = it } != -1) {
                     try {
-//                        Log.d("zhangan", "read data $size")
-                        if (startTime == 0L) {
-                            startTime = System.currentTimeMillis()
-                        }
                         val sources = ByteArray(size)
                         System.arraycopy(dataBuffer, 0, sources, 0, size)
                         val isSuccess = dataQueue.offer(sources)
@@ -154,7 +182,7 @@ class SocketManager private constructor() {
                 inputStream?.close()
                 outputStream?.close()
                 socket?.close()
-                dataQueue.offer(null)
+                dataQueue.clear()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -220,38 +248,29 @@ class SocketManager private constructor() {
         }
     }
 
-    private var count = 0
-    private var startTime = 0L
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
             when (commandType) {
                 CommandType.FlightValue -> {
                     flightDeque?.let {
                         val isSuccess = it.offer(source)
-                        if (!isSuccess) {
+                        if (isSuccess) {
+                            if (mIsSaveData2File && flightFw != null) {
+                                saveData2FileFun(flightFw, source)
+                            }
+                        } else {
                             it.clear()
                         }
                     }
                 }
                 CommandType.RealData -> {
-                    if (count == 50) {
-                        val time = System.currentTimeMillis() - startTime
-                        startTime = 0
-                        count = 0
-                        Log.d("zhangan","50组数据耗时:$time")
-                    }
-                    count++
                     realDataDeque?.let {
                         val isSuccess = it.offer(source)
-                        if (!isSuccess) {
-                            it.clear()
-                        }
-                    }
-                }
-                CommandType.FdData -> {
-                    fdDataDeque?.let {
-                        val isSuccess = it.offer(source)
-                        if (!isSuccess) {
+                        if (isSuccess) {
+                            if (mIsSaveData2File && realFw != null) {
+                                saveData2FileFun(realFw, source)
+                            }
+                        } else {
                             it.clear()
                         }
                     }
@@ -259,9 +278,18 @@ class SocketManager private constructor() {
                 CommandType.SendPulse -> {
                     pulseDataDeque?.let {
                         val isSuccess = it.offer(source)
-                        if (!isSuccess) {
+                        if (isSuccess) {
+                            if (mIsSaveData2File && pulseFw != null) {
+                                saveData2FileFun(pulseFw, source)
+                            }
+                        } else {
                             it.clear()
                         }
+                    }
+                }
+                CommandType.ReadYcData -> {
+                    if (mIsSaveData2File && ycFw != null) {
+                        saveData2FileFun(ycFw, source)
                     }
                 }
                 else -> {
@@ -270,6 +298,18 @@ class SocketManager private constructor() {
                     }
                 }
             }
+        }
+    }
+
+    private fun saveData2FileFun(fw: FileWriter?, source: ByteArray) {
+        if (fw != null) {
+            val time = ByteUtil.longToByte(System.currentTimeMillis())
+            val bytes = ByteArray(time.size + source.size)
+            System.arraycopy(time, 0, bytes, 0, time.size)
+            System.arraycopy(source, 0, bytes, time.size, source.size)
+            val sb = StringBuilder(String(bytes)).append("\n")
+            fw.write(sb.toString())
+            fw.flush()
         }
     }
 
@@ -373,7 +413,6 @@ class SocketManager private constructor() {
         isExecuting = true
         realDataDeque = ArrayBlockingQueue<ByteArray>(50)
         flightDeque = ArrayBlockingQueue<ByteArray>(50)
-        fdDataDeque = ArrayBlockingQueue<ByteArray>(50)
         pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
 
         mRequestExecutor = Executors.newSingleThreadExecutor()
@@ -390,8 +429,6 @@ class SocketManager private constructor() {
                         }
                         mDataByteList.addAll(Bytes.asList(*it))
                         dealByteList()
-//                        fos?.write((ByteLibUtil.bytes2HexStr(it) + "\n").toByteArray())
-//                        fos?.flush()
                     }
                 }
             } catch (e: Exception) {

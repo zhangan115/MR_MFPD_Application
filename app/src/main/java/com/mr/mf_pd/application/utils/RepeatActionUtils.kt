@@ -20,7 +20,6 @@ object RepeatActionUtils {
      * @param unit 时间单位
      * @param callback 回调
      */
-    @WorkerThread
     fun execute(
         time: Long = 1,
         unit: TimeUnit = TimeUnit.SECONDS,

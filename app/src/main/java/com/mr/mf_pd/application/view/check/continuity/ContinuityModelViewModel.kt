@@ -72,9 +72,7 @@ class ContinuityModelViewModel(
 
     private val ycBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveYCData2File(source)
-            }
+
         }
     }
 

@@ -8,6 +8,7 @@ import com.mr.mf_pd.application.app.MRApplication
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
+import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
@@ -64,7 +65,7 @@ class DefaultFilesRepository : FilesRepository {
         if (!checkTempFile!!.exists()) {
             checkTempFile!!.mkdir()
         }
-
+        SocketManager.get().setSaveDataFile(checkTempFile)
         realDataTempFile = File(checkTempFile, ConstantStr.CHECK_REAL_DATA)
         ycTempFile = File(checkTempFile, ConstantStr.CHECK_YC_FILE_NAME)
 
@@ -109,6 +110,7 @@ class DefaultFilesRepository : FilesRepository {
 
     override fun stopSaveData() {
         isSaving.postValue(false)
+        SocketManager.get().stopSaveData()
         endTime = System.currentTimeMillis()
         realDataEmitter?.onComplete()
     }
@@ -214,9 +216,9 @@ class DefaultFilesRepository : FilesRepository {
         CheckFileReadManager.get().setFile(file)
         return Observable.create { emitter: ObservableEmitter<SettingBean?> ->
             try {
-                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
-                val settingBean = Gson().fromJson(str, SettingBean::class.java)
-                emitter.onNext(settingBean)
+//                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
+//                val settingBean = Gson().fromJson(str, SettingBean::class.java)
+//                emitter.onNext(settingBean)
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)

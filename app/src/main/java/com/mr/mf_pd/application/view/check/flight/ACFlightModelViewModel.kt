@@ -55,19 +55,14 @@ class ACFlightModelViewModel(
 
     private val ycBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveYCData2File(source)
-            }
+
         }
     }
 
     private val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveRealData2File(source)
-            }
-        }
 
+        }
     }
 
     private var flightCallback: FlightDataCallback? = null

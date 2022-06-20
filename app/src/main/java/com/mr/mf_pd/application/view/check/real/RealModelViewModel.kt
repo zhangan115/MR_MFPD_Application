@@ -81,9 +81,6 @@ class RealModelViewModel(
     val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveRealData2File(source)
-            }
         }
     }
 

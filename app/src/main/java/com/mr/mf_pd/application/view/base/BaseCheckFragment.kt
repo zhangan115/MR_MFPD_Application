@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.view.base
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -17,26 +16,18 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.sito.tool.library.utils.ByteLibUtil
-import com.sito.tool.library.utils.SPHelper
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 
 /**
  * 检测类型页面的基类
@@ -46,13 +37,6 @@ import java.util.concurrent.TimeUnit
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
 
     open var TAG = "BaseCheckFragment"
-
-    //通道
-    open var mPassageway: Int = 0
-
-    //命令类型
-    open var mCommandType: Int = 0
-
     //检测类型
     open var checkType: CheckType? = null
 
@@ -84,19 +68,12 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         setIsFileValue(dataFromFile)
     }
 
-    private fun switchPassageway(passageway: Int, commandType: Int) {
-        if (!dataFromFile) {
-            SocketManager.get().sendData(CommandHelp.switchPassageway(passageway, commandType))
-        }
-    }
-
     override fun onLimitValueChange(value: Int) {
 
     }
 
     override fun onResume() {
         super.onResume()
-        switchPassageway(mPassageway, mCommandType)
         checkType?.settingBean?.let {
             it.limitValue?.let { it1 -> onLimitValueChange(it1) }
         }

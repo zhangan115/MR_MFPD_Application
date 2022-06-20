@@ -61,9 +61,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     }
 
     override fun initData() {
-        mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
-        mCommandType = 1
     }
 
     override fun setIsFileValue(isFile: Boolean?) {

@@ -77,52 +77,10 @@ class FileDataViewModel(
             if (!isStartReadYcData) {
                 ycDisposable?.dispose()
                 realDisposable?.dispose()
-                ycDisposable = startReadYcData()
-                realDisposable = startReadRealData()
                 isStartReadYcData = true
             }
         }
     }
-
-    private fun startReadYcData(
-        time: Long = 1,
-        unit: TimeUnit = TimeUnit.SECONDS,
-    ): Disposable {
-        return Observable.create { emitter: ObservableEmitter<Boolean> ->
-            try {
-                CheckFileReadManager.get().readYcDataFromFile()
-                emitter.onNext(true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emitter.onError(e)
-            } finally {
-                emitter.onComplete()
-            }
-        }.repeatWhen { objectObservable: Observable<Any?> ->
-            objectObservable.delay(time, unit)
-        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
-    }
-
-    private fun startReadRealData(
-        time: Long = 20,
-        unit: TimeUnit = TimeUnit.MILLISECONDS,
-    ): Disposable {
-        return Observable.create { emitter: ObservableEmitter<Boolean> ->
-            try {
-                CheckFileReadManager.get().readRealDataFromFile()
-                CheckFileReadManager.get().readFlightDataFromFile()
-                emitter.onNext(true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emitter.onError(e)
-            } finally {
-                emitter.onComplete()
-            }
-        }.repeatWhen { objectObservable: Observable<Any?> ->
-            objectObservable.delay(time, unit)
-        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
-    }
-
 
     override fun onCleared() {
         super.onCleared()

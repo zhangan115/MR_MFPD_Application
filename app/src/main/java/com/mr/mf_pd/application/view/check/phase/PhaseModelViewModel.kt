@@ -17,10 +17,8 @@ import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
-import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 import java.io.File
@@ -58,7 +56,6 @@ class PhaseModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
-
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
@@ -85,9 +82,7 @@ class PhaseModelViewModel(
 
     private val ycBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveYCData2File(source)
-            }
+
         }
     }
 
@@ -95,9 +90,6 @@ class PhaseModelViewModel(
         override fun onData(source: ByteArray) {
             dealRealData(source)
             dataCallback?.invoke(dataMaps)
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveRealData2File(source)
-            }
         }
     }
 

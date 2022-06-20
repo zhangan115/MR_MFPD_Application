@@ -13,6 +13,8 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
+import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
@@ -22,7 +24,6 @@ import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
-import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.mr.mf_pd.application.view.setting.aa.AASettingActivity
@@ -36,13 +37,17 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     CheckActivityListener {
 
     private val viewModel by viewModels<CheckDataViewModel> { getViewModelFactory() }
-
+    //命令类型
+    private var mCommandType: Int = 0
+    //通道
+    private var mPassageway: Int = 0
     private var clickClass: Class<*>? = null
     private var limitPosition: Int = -1
     private var bandDetectionPosition: Int = -1
     private var fragmentDataListener: ArrayList<FragmentDataListener> = ArrayList()
 
     override fun initView(savedInstanceState: Bundle?) {
+        mPassageway = checkType.passageway
         when (checkType) {
             CheckType.UHF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
@@ -52,6 +57,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = UHFSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = 8
+                mCommandType = 1
             }
             CheckType.HF -> {
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "0"))
@@ -61,6 +67,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = HFSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = 8
+                mCommandType = 1
             }
             CheckType.TEV -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
@@ -72,6 +79,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = TEVSettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
+                mCommandType = 1
             }
             CheckType.AE -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
@@ -87,6 +95,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = AESettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
+                mCommandType = 7
             }
             CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
@@ -98,12 +107,17 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = AASettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
+                mCommandType = 1
             }
         }
         super.initView(savedInstanceState)
         fragments.forEach {
             fragmentDataListener.add(it)
         }
+    }
+
+    private fun switchPassageway(passageway: Int, commandType: Int) {
+        SocketManager.get().sendData(CommandHelp.switchPassageway(passageway, commandType))
     }
 
     override fun initData(savedInstanceState: Bundle?) {
@@ -139,12 +153,17 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     override fun onResume() {
         super.onResume()
         viewModel.updateCallback()
+        switchPassageway(mPassageway,mCommandType)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        switchPassageway(mPassageway,0)
     }
 
     override fun getContentView(): Int {
         return R.layout.activity_file_data
     }
-
 
     override fun getViewPager(): ViewPager2 {
         return viewPager

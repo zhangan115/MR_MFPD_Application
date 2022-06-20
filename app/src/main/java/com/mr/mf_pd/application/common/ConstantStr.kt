@@ -23,6 +23,7 @@ interface ConstantStr {
         const val CHECK_REAL_DATA = "check_real.mr"//存放实时数据文件
         const val CHECK_YC_FILE_NAME = "check_telemeter.mr"//存放遥测文件
         const val CHECK_FLIGHT_FILE_NAME = "check_flight.mr"//存放飞行数据文件
+        const val CHECK_PULSE_FILE_NAME = "check_pulse.mr"//存放脉冲数据文件
         const val CHECK_FD_FILE_NAME = "check_discharge.mr"//存放放电数据文件
 
 

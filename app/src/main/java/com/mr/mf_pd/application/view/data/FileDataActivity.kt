@@ -28,7 +28,6 @@ import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
-import com.mr.mf_pd.application.view.check.phase.PhaseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.sito.tool.library.utils.DisplayUtil
 import kotlinx.android.synthetic.main.activity_file_data.*

@@ -51,14 +51,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
     }
 
     override fun initData() {
-        mPassageway = viewModel.checkType.passageway
         checkType = viewModel.checkType
-        mCommandType = 1
-        mCommandType = if (checkType == CheckType.AE){
-            7
-        }else{
-            1
-        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
