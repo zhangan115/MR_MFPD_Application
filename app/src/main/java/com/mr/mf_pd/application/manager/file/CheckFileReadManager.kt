@@ -1,16 +1,19 @@
 package com.mr.mf_pd.application.manager.file
 
+import android.util.Log
 import androidx.annotation.MainThread
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.DateUtil
 import io.reactivex.disposables.Disposable
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.*
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.ArrayList
 
 class CheckFileReadManager {
@@ -119,6 +122,11 @@ class CheckFileReadManager {
         }
     }
 
+    private val executorService: ExecutorService
+        get() {
+            return Executors.newFixedThreadPool(4)
+        }
+
     /**
      * 开始读取数据
      */
@@ -152,37 +160,69 @@ class CheckFileReadManager {
             }
             pulseFR = FileReader(pulseFile)
         }
-//        ThreadPoolExecutor(4,
-//            4,
-//            0L,
-//            TimeUnit.MINUTES,
-//            LinkedBlockingDeque<Runnable>(4),
-//            SimpleThreadFactory())
-//        val service: ExecutorService = Executors.newFixedThreadPool(4, SimpleThreadFactory())
-//        service.submit {
-//            Thread.currentThread().id
-//        }
+
+        ycFuture = executorService.submit {
+            Log.d("zhangan",
+                "ycFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            ycFR?.let { fr ->
+                readDataFromFr(fr, ycDataDeque)
+            }
+
+        }
+        realFuture = executorService.submit {
+            Log.d("zhangan",
+                "realFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            realFR?.let { fr ->
+                readDataFromFr(fr, realDataDeque)
+            }
+        }
+        flightFuture = executorService.submit {
+            Log.d("zhangan",
+                "flightFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            flightFR?.let { fr ->
+                readDataFromFr(fr, flightDeque)
+            }
+        }
+        pulseFuture = executorService.submit {
+            Log.d("zhangan",
+                "pulseFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            pulseFR?.let { fr ->
+                readDataFromFr(fr, pulseDataDeque)
+            }
+        }
     }
 
-    internal class WorkThread(var runnable: Runnable, var counter: AtomicInteger) : Thread() {
-        override fun run() {
-            super.run()
+    private fun readDataFromFr(fr: FileReader, dataDeque: ArrayBlockingQueue<ByteArray>?) {
+        val br = BufferedReader(fr)
+        var result: String? = null
+        var lastTime: Long? = null
+        while (br.readLine().also { result = it } != null) {
             try {
-                runnable.run()
+                val source = result?.toByteArray()
+                if (source != null && source.size > 8) {
+                    val timeBytes = ByteArray(8)
+                    val dataBytes = ByteArray(source.size - 8)
+                    System.arraycopy(timeBytes, 0, source, 0, timeBytes.size)
+                    System.arraycopy(dataBytes, 0, source, timeBytes.size, dataBytes.size)
+                    val time = ByteUtil.byteToLong(timeBytes)
+                    if (lastTime != null) {
+                        time - lastTime
+                        Thread.sleep(time)
+                    }
+                    dataDeque?.put(dataBytes)
+                    lastTime = time
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
+    var ycFuture: Future<*>? = null
+    var realFuture: Future<*>? = null
+    var flightFuture: Future<*>? = null
+    var pulseFuture: Future<*>? = null
 
-//    internal class SimpleThreadFactory() : ThreadFactory {
-//        private var counter: AtomicInteger = AtomicInteger(0)
-//        override fun newThread(r: Runnable?): Thread {
-//            val c = counter.incrementAndGet()
-//            return WorkThread(r!!, c)
-//        }
-//    }
 
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
@@ -207,21 +247,31 @@ class CheckFileReadManager {
 
 
     fun releaseReadFile() {
+        try {
+            realFR?.close()
+            ycFR?.close()
+            fdFR?.close()
+            flightFR?.close()
 
-        realFR?.close()
-        ycFR?.close()
-        fdFR?.close()
-        flightFR?.close()
+            executorService.shutdown()
+            ycFuture?.cancel(true)
+            realFuture?.cancel(true)
+            flightFuture?.cancel(true)
+            pulseFuture?.cancel(true)
 
-        realDisposable?.dispose()
-        ycDisposable?.dispose()
-        pulseDisposable?.dispose()
-        flightDisposable?.dispose()
+            realDisposable?.dispose()
+            ycDisposable?.dispose()
+            pulseDisposable?.dispose()
+            flightDisposable?.dispose()
 
-        ycFR = null
-        realFR = null
-        fdFR = null
-        flightFR = null
+            ycFR = null
+            realFR = null
+            fdFR = null
+            flightFR = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
 }
