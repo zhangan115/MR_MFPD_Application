@@ -213,17 +213,26 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             object : CheckRequestPermissionsListener {
 
                 override fun onAllPermissionOk(allPermissions: Array<Permission?>) {
-                    mWiFiManager = WiFiManager.getInstance(applicationContext)
-                    if (mWiFiManager != null) {
-                        if (!mWiFiManager!!.isWifiEnabled) {//wifi是否打开状态
-                            mWiFiManager?.openWiFi()//打开wifi
+//                    mWiFiManager = WiFiManager.getInstance(applicationContext)
+//                    if (mWiFiManager != null) {
+//                        if (!mWiFiManager!!.isWifiEnabled) {//wifi是否打开状态
+//                            mWiFiManager?.openWiFi()//打开wifi
+//                        }
+//                        refreshLayout.setEnableRefresh(false)
+//                        // 添加监听
+//                        mWiFiManager?.setOnWifiConnectListener(this@MainActivity)
+//                        mWiFiManager?.setOnWifiScanResultsListener(this@MainActivity)
+//                        mWiFiManager?.setOnWifiEnabledListener(this@MainActivity)
+//                        mWiFiManager?.startScan()
+//
+//                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        checkExternalStorageState()
+                    }else{
+                        val file = MRApplication.instance.fileCacheFile()
+                        if (file!=null && file.exists()) {
+                            file.mkdir()
                         }
-                        refreshLayout.setEnableRefresh(false)
-                        // 添加监听
-                        mWiFiManager?.setOnWifiConnectListener(this@MainActivity)
-                        mWiFiManager?.setOnWifiScanResultsListener(this@MainActivity)
-                        mWiFiManager?.setOnWifiEnabledListener(this@MainActivity)
-                        mWiFiManager?.startScan()
                     }
                 }
 
@@ -438,11 +447,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkExternalStorageState()
-    }
-
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun checkExternalStorageState() {
         val isHasStoragePermission = Environment.isExternalStorageManager()
         if (isHasStoragePermission) {
