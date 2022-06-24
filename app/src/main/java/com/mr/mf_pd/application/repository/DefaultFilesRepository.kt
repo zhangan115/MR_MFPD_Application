@@ -216,9 +216,9 @@ class DefaultFilesRepository : FilesRepository {
         CheckFileReadManager.get().setFile(file)
         return Observable.create { emitter: ObservableEmitter<SettingBean?> ->
             try {
-//                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
-//                val settingBean = Gson().fromJson(str, SettingBean::class.java)
-//                emitter.onNext(settingBean)
+                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
+                val settingBean = Gson().fromJson(str, SettingBean::class.java)
+                emitter.onNext(settingBean)
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)

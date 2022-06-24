@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.manager.file
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.MainThread
 import com.mr.mf_pd.application.common.ConstantStr
@@ -7,6 +8,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.toHexString
 import io.reactivex.disposables.Disposable
 import java.io.BufferedReader
 import java.io.File
@@ -24,24 +26,10 @@ class CheckFileReadManager {
     private var flightFR: FileReader? = null
     private var pulseFR: FileReader? = null
 
-    private var realDataFile: File? = null
-
     private var ycDisposable: Disposable? = null
     private var realDisposable: Disposable? = null
     private var pulseDisposable: Disposable? = null
     private var flightDisposable: Disposable? = null
-
-    private var realBytePosition = 0
-    private val readRealData = Vector<Vector<Byte>>() //读取出来的遥测数据
-    private val surplusRealData = Vector<Byte>() //读取处理的未处理的不完整遥测数据
-
-    private var ycBytePosition = 0
-    private val readYcData = ArrayList<ArrayList<Byte>>() //读取出来的遥测数据
-    private val surplusYcData = ArrayList<Byte>() //读取处理的未处理的不完整遥测数据
-
-    private var flightBytePosition = 0
-    private val readFlightData = ArrayList<ArrayList<Byte>>() //读取出来的飞行数据
-    private val surplusFlightData = ArrayList<Byte>() //读取处理的未处理的不完整飞行数据
 
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
@@ -67,6 +55,8 @@ class CheckFileReadManager {
 
     var checkFile: File? = null
 
+    var settingFile: File? = null
+
     fun initQueue() {
         ycDataDeque = ArrayBlockingQueue<ByteArray>(50)
         realDataDeque = ArrayBlockingQueue<ByteArray>(50)
@@ -76,6 +66,7 @@ class CheckFileReadManager {
 
     fun setFile(checkFile: File) {
         this.checkFile = checkFile
+        this.settingFile = File(checkFile, ConstantStr.CHECK_FILE_SETTING)
     }
 
     private fun getCallback(commandType: CommandType): LinkedList<BytesDataCallback> {
@@ -194,23 +185,25 @@ class CheckFileReadManager {
 
     private fun readDataFromFr(fr: FileReader, dataDeque: ArrayBlockingQueue<ByteArray>?) {
         val br = BufferedReader(fr)
-        var result: String? = null
+        var result: String?
         var lastTime: Long? = null
         while (br.readLine().also { result = it } != null) {
             try {
-                val source = result?.toByteArray()
-                if (source != null && source.size > 8) {
-                    val timeBytes = ByteArray(8)
-                    val dataBytes = ByteArray(source.size - 8)
-                    System.arraycopy(timeBytes, 0, source, 0, timeBytes.size)
-                    System.arraycopy(dataBytes, 0, source, timeBytes.size, dataBytes.size)
-                    val time = ByteUtil.byteToLong(timeBytes)
-                    if (lastTime != null) {
-                        time - lastTime
-                        Thread.sleep(time)
+                if (!TextUtils.isEmpty(result)) {
+                    val list = result!!.split(" ")
+                    if (list.size == 2) {
+                        val time = list.first().toLongOrNull()
+                        time?.let {
+                            val source = ByteUtil.hexStr2bytes(list[1])
+                            if (source != null) {
+                                if (lastTime != null) {
+                                    Thread.sleep(it - lastTime!!)
+                                }
+                                dataDeque?.put(source)
+                                lastTime = time
+                            }
+                        }
                     }
-                    dataDeque?.put(dataBytes)
-                    lastTime = time
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -12,7 +12,6 @@ public class ByteUtil {
     public static void main(String[] args) {
 
     }
-
     /**
      * long类型转成byte数组
      */

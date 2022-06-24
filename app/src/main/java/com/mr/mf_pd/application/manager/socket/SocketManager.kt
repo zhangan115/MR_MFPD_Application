@@ -11,6 +11,7 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.LinkStateListener
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.toHexString
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -303,11 +304,9 @@ class SocketManager private constructor() {
 
     private fun saveData2FileFun(fw: FileWriter?, source: ByteArray) {
         if (fw != null) {
-            val time = ByteUtil.longToByte(System.currentTimeMillis())
-            val bytes = ByteArray(time.size + source.size)
-            System.arraycopy(time, 0, bytes, 0, time.size)
-            System.arraycopy(source, 0, bytes, time.size, source.size)
-            val sb = StringBuilder(String(bytes)).append("\n")
+            val time = System.currentTimeMillis().toString()
+            val hexStr = source.toHexString(false)
+            val sb = StringBuilder(time).append(" ").append(hexStr).append("\n")
             fw.write(sb.toString())
             fw.flush()
         }
