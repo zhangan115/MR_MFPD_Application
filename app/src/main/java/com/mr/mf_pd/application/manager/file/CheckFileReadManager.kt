@@ -128,57 +128,53 @@ class CheckFileReadManager {
         releaseReadFile()
         checkFile?.let { file ->
             val ycFile = File(file, ConstantStr.CHECK_YC_FILE_NAME)
-            if (!ycFile.exists()) {
-                ycFile.createNewFile()
+            if (ycFile.exists()) {
+                ycFR = FileReader(ycFile)
             }
-            ycFR = FileReader(ycFile)
 
             val realFile = File(file, ConstantStr.CHECK_REAL_DATA)
-            if (!realFile.exists()) {
-                realFile.createNewFile()
+            if (realFile.exists()) {
+                realFR = FileReader(realFile)
             }
-            realFR = FileReader(realFile)
 
             val flightFile = File(file, ConstantStr.CHECK_FLIGHT_FILE_NAME)
-            if (!flightFile.exists()) {
-                flightFile.createNewFile()
+            if (flightFile.exists()) {
+                flightFR = FileReader(flightFile)
             }
-            flightFR = FileReader(flightFile)
 
             val pulseFile = File(file, ConstantStr.CHECK_PULSE_FILE_NAME)
-            if (!pulseFile.exists()) {
-                pulseFile.createNewFile()
+            if (pulseFile.exists()) {
+                pulseFR = FileReader(pulseFile)
             }
-            pulseFR = FileReader(pulseFile)
+
         }
 
         ycFuture = executorService.submit {
-            Log.d("zhangan",
-                "ycFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            val startTime = System.currentTimeMillis()
             ycFR?.let { fr ->
                 readDataFromFr(fr, ycDataDeque)
+                Log.d("zhangan", "yc time is ${System.currentTimeMillis() - startTime}")
             }
-
         }
         realFuture = executorService.submit {
-            Log.d("zhangan",
-                "realFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            val startTime = System.currentTimeMillis()
             realFR?.let { fr ->
                 readDataFromFr(fr, realDataDeque)
+                Log.d("zhangan", "real time is ${System.currentTimeMillis() - startTime}")
             }
         }
         flightFuture = executorService.submit {
-            Log.d("zhangan",
-                "flightFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            val startTime = System.currentTimeMillis()
             flightFR?.let { fr ->
                 readDataFromFr(fr, flightDeque)
+                Log.d("zhangan", "flight time is ${System.currentTimeMillis() - startTime}")
             }
         }
         pulseFuture = executorService.submit {
-            Log.d("zhangan",
-                "pulseFuture startTime" + DateUtil.timeFormat(System.currentTimeMillis(), null))
+            val startTime = System.currentTimeMillis()
             pulseFR?.let { fr ->
                 readDataFromFr(fr, pulseDataDeque)
+                Log.d("zhangan", "pulse time is ${System.currentTimeMillis() - startTime}")
             }
         }
     }
@@ -199,7 +195,7 @@ class CheckFileReadManager {
                                 if (lastTime != null) {
                                     Thread.sleep(it - lastTime!!)
                                 }
-                                dataDeque?.put(source)
+                                dataDeque?.offer(source)
                                 lastTime = time
                             }
                         }
