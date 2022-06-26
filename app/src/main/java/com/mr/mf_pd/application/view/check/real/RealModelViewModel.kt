@@ -72,9 +72,7 @@ class RealModelViewModel(
 
     private val ycBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (filesRepository.isSaveData()?.value == true) {
-                filesRepository.toSaveYCData2File(source)
-            }
+
         }
     }
 
@@ -325,20 +323,16 @@ class RealModelViewModel(
     fun onResume() {
         if (isFile.value!!) {
             CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
         }
     }
 
     fun onPause() {
         if (isFile.value!!) {
             CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         } else {
             SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-//            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
         }
 
     }

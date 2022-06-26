@@ -207,10 +207,10 @@ class CheckFileReadManager {
         }
     }
 
-    var ycFuture: Future<*>? = null
-    var realFuture: Future<*>? = null
-    var flightFuture: Future<*>? = null
-    var pulseFuture: Future<*>? = null
+    private var ycFuture: Future<*>? = null
+    private var realFuture: Future<*>? = null
+    private var flightFuture: Future<*>? = null
+    private var pulseFuture: Future<*>? = null
 
 
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {

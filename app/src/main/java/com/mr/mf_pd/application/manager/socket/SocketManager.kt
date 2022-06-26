@@ -292,6 +292,9 @@ class SocketManager private constructor() {
                     if (mIsSaveData2File && ycFw != null) {
                         saveData2FileFun(ycFw, source)
                     }
+                    bytesCallbackMap[commandType]?.forEach {
+                        it.onData(source)
+                    }
                 }
                 else -> {
                     bytesCallbackMap[commandType]?.forEach {

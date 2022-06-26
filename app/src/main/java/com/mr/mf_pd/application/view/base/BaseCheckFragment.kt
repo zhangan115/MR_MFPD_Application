@@ -37,6 +37,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), FragmentDataListener {
 
     open var TAG = "BaseCheckFragment"
+
     //检测类型
     open var checkType: CheckType? = null
 
@@ -58,8 +59,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     //选择文件夹请求Code
     private val requestChooseDirCode = 200
 
-    var mOneSecondDisposable: Disposable? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -77,18 +76,11 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         checkType?.settingBean?.let {
             it.limitValue?.let { it1 -> onLimitValueChange(it1) }
         }
-        mOneSecondDisposable?.dispose()
-        mOneSecondDisposable = RepeatActionUtils.execute {
-            activity?.runOnUiThread {
-                oneSecondUIChange()
-            }
-        }
         Log.d("zhangan", "$TAG onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        mOneSecondDisposable?.dispose()
         Log.d("zhangan", "$TAG onPause")
     }
 
@@ -141,6 +133,10 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                 setCheckFile(it)
             }
         }
+    }
+
+    override fun onOneSecondUiChange() {
+        oneSecondUIChange()
     }
 
     abstract fun setCheckFile(str: String)

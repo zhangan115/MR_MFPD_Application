@@ -16,6 +16,7 @@ import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.EventObserver
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseCheckActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
@@ -31,20 +32,26 @@ import com.mr.mf_pd.application.view.setting.ae.AESettingActivity
 import com.mr.mf_pd.application.view.setting.hf.HFSettingActivity
 import com.mr.mf_pd.application.view.setting.tev.TEVSettingActivity
 import com.mr.mf_pd.application.view.setting.uhf.UHFSettingActivity
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_file_data.*
 
 class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClickListener,
     CheckActivityListener {
 
     private val viewModel by viewModels<CheckDataViewModel> { getViewModelFactory() }
+
     //命令类型
     private var mCommandType: Int = 0
+
     //通道
     private var mPassageway: Int = 0
     private var clickClass: Class<*>? = null
     private var limitPosition: Int = -1
     private var bandDetectionPosition: Int = -1
     private var fragmentDataListener: ArrayList<FragmentDataListener> = ArrayList()
+
+    //一秒修改一次页面的定时器
+    private var mOneSecondDisposable: Disposable? = null
 
     override fun initView(savedInstanceState: Bundle?) {
         mPassageway = checkType.passageway
@@ -153,12 +160,21 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     override fun onResume() {
         super.onResume()
         viewModel.updateCallback()
-        switchPassageway(mPassageway,mCommandType)
+        switchPassageway(mPassageway, mCommandType)
+        mOneSecondDisposable?.dispose()
+        mOneSecondDisposable = RepeatActionUtils.execute {
+            runOnUiThread {
+                fragmentDataListener.forEach {
+                    it.onOneSecondUiChange()
+                }
+            }
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        switchPassageway(mPassageway,0)
+        mOneSecondDisposable?.dispose()
+        switchPassageway(mPassageway, 0)
     }
 
     override fun getContentView(): Int {
