@@ -8,7 +8,6 @@ import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.PhaseDataChartBinding
-import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
@@ -74,6 +73,9 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
             mrChartView.setValue(it)
         }
         mrChartView.mQueue = viewModel.getQueue()
+        viewModel.toResetEvent.observe(this) {
+            cleanCurrentData()
+        }
     }
 
     override fun initView() {

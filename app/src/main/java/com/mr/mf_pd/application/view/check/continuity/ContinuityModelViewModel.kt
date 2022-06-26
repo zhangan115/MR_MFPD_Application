@@ -1,8 +1,11 @@
 package com.mr.mf_pd.application.view.check.continuity
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
+import com.mr.mf_pd.application.manager.file.CheckFileReadManager
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -50,6 +53,9 @@ class ContinuityModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
+    private val _toResetEvent = MutableLiveData<Event<Unit>>()
+    val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
+
     fun start() {
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
@@ -81,7 +87,8 @@ class ContinuityModelViewModel(
      * 重新从文件中读取
      */
     private fun resetFileRead() {
-
+        _toResetEvent.postValue(Event(Unit))
+        CheckFileReadManager.get().startReadData()
     }
 
     fun updateTitle(settingBean: SettingBean) {

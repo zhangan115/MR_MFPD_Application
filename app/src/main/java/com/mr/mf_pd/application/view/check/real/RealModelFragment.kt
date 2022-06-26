@@ -74,6 +74,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 prPsChartsRenderer?.updatePrpsData(data, cubeList)
             }
         }
+        viewModel.toResetEvent.observe(this) {
+            cleanCurrentData()
+        }
     }
 
     override fun initView() {

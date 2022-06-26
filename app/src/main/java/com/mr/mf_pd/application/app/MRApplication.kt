@@ -87,7 +87,7 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
-        UMConfigure.preInit(this, BuildConfig.UMENG_APP_KEY, BuildConfig.UMENG_CHANNEL)
+        UMConfigure.init(this, BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL,1, null)
     }
 
     /**

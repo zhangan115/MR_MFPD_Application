@@ -66,6 +66,9 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
+        viewModel.toResetEvent.observe(this) {
+            cleanCurrentData()
+        }
     }
 
     override fun setIsFileValue(isFile: Boolean?) {

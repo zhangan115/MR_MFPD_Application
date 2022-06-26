@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.view.check.real
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -10,6 +11,7 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
@@ -46,7 +48,7 @@ class RealModelViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
-
+    var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
@@ -61,13 +63,36 @@ class RealModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
+    private val _toResetEvent = MutableLiveData<Event<Unit>>()
+    val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
+
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            val checkDataFileModel = filesRepository.getCheckFileModel()
+            this.showTimeView.postValue(true)
+            var startTime = 0L
+            checkDataFileModel?.let {
+                mTimeDisposable = RepeatActionUtils.execute {
+                    it.dataTime?.let {
+                        timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
+                        startTime += 1000L
+                        if (startTime > it) {
+                            resetFileRead()
+                            startTime = 0
+                        }
+                    }
+                }
+            }
         } else {
             this.checkType = dataRepository.getCheckType()
         }
+    }
+
+    private fun resetFileRead() {
+        _toResetEvent.postValue(Event(Unit))
+        CheckFileReadManager.get().startReadData()
     }
 
     val realBytesDataCallback = object : BytesDataCallback {

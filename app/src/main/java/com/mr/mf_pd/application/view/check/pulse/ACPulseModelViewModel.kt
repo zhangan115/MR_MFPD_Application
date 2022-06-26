@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.check.pulse
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -7,6 +8,7 @@ import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.ByteUtil
@@ -31,7 +33,7 @@ class ACPulseModelViewModel(
     var synchronizationModel: MutableLiveData<String> = MutableLiveData()
     var gainLevelStr: MutableLiveData<String> = MutableLiveData()
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
-
+    var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
     lateinit var checkType: CheckType
 
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData(Vector<Float>())
@@ -42,12 +44,35 @@ class ACPulseModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
+    private val _toResetEvent = MutableLiveData<Event<Unit>>()
+    val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
+
     fun start() {
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            val checkDataFileModel = filesRepository.getCheckFileModel()
+            this.showTimeView.postValue(true)
+            var startTime = 0L
+            checkDataFileModel?.let {
+                mTimeDisposable = RepeatActionUtils.execute {
+                    it.dataTime?.let {
+                        timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
+                        startTime += 1000L
+                        if (startTime > it) {
+                            resetFileRead()
+                            startTime = 0
+                        }
+                    }
+                }
+            }
         } else {
             this.checkType = dataRepository.getCheckType()
         }
+    }
+
+    private fun resetFileRead() {
+        _toResetEvent.postValue(Event(Unit))
+        CheckFileReadManager.get().startReadData()
     }
 
     var isSaveData: MutableLiveData<Boolean>? = null

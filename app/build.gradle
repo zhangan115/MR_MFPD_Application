@@ -157,7 +157,9 @@ dependencies {
     implementation 'com.leon:lfilepickerlibrary:1.8.0'
     implementation("com.google.guava:guava:31.0.1-android")
     //友盟统计
-    implementation 'com.umeng.umsdk:common:9.4.4'
+    implementation 'com.umeng.umsdk:common:9.5.0'
+    implementation  'com.umeng.umsdk:asms:1.4.1'
+    implementation 'com.umeng.umsdk:apm:1.6.4'
 
 //    kapt project(":compiler")
 //    implementation project(":annotation")

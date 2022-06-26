@@ -6,7 +6,6 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACPulseDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -69,6 +68,9 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
                 pulseRenderer?.updateData(data)
             }
         })
+        viewModel.toResetEvent.observe(this) {
+            cleanCurrentData()
+        }
     }
 
     override fun onLimitValueChange(value: Int) {

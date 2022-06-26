@@ -17,10 +17,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.model.EventObserver
-import com.mr.mf_pd.application.utils.FileTypeUtils
-import com.mr.mf_pd.application.utils.FileUtils
-import com.mr.mf_pd.application.utils.RepeatActionUtils
-import com.mr.mf_pd.application.utils.getViewModelFactory
+import com.mr.mf_pd.application.utils.*
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
@@ -49,6 +46,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     var titleList: ArrayList<TextView> = ArrayList()
     var fragments: ArrayList<BaseCheckFragment<*>> = ArrayList()
     var width: Int? = null
+
     //一秒修改一次页面的定时器
     private var mOneSecondDisposable: Disposable? = null
     private var fragmentDataListener: ArrayList<FragmentDataListener> = ArrayList()
@@ -90,7 +88,8 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                     listener.cleanCurrentData()
             }
         })
-        val titleName = currentFile.name
+        val time = DateUtil.date2TimeStamp(currentFile.name, "yyyy_MM_dd_HH_mm_ss")
+        val titleName = DateUtil.timeFormat(time, null)
         setTitleValue(titleName + findString(checkDataFileModel.fileType!!.description))
         checkType = FileTypeUtils.getCheckType(checkDataFileModel.fileType)!!
         when (checkType) {

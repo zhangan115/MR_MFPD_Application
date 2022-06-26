@@ -1,5 +1,6 @@
 package com.mr.mf_pd.application.view.check.phase
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
@@ -9,6 +10,7 @@ import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
@@ -56,6 +58,9 @@ class PhaseModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
+    private val _toResetEvent = MutableLiveData<Event<Unit>>()
+    val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
+
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
@@ -67,17 +72,22 @@ class PhaseModelViewModel(
                 mTimeDisposable = RepeatActionUtils.execute {
                     it.dataTime?.let {
                         timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
-                        startTime+= 1000L
+                        startTime += 1000L
                         if (startTime > it) {
+                            resetFileRead()
                             startTime = 0
                         }
                     }
                 }
             }
-
         } else {
             this.checkType = dataRepository.getCheckType()
         }
+    }
+
+    private fun resetFileRead() {
+        _toResetEvent.postValue(Event(Unit))
+        CheckFileReadManager.get().startReadData()
     }
 
 
