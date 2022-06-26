@@ -96,8 +96,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun oneSecondUIChange() {
-        super.oneSecondUIChange()
-        gainChartView.updateFzValue()
+        gainChartView?.updateFzValue()
     }
 
     override fun setIsFileValue(isFile: Boolean?) {

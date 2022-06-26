@@ -47,8 +47,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun oneSecondUIChange() {
-        super.oneSecondUIChange()
-        gainChartView.updateFzValue()
+        gainChartView?.updateFzValue()
     }
 
     override fun initData() {

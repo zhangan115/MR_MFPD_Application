@@ -80,11 +80,6 @@ class PhaseModelViewModel(
         }
     }
 
-    private val ycBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-
-        }
-    }
 
     val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
@@ -315,25 +310,5 @@ class PhaseModelViewModel(
             PrPdPoint2DList.minValue = minValue
         }
         return value
-    }
-
-    fun onResume() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-        } else {
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-        }
-    }
-
-    fun onPause() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            CheckFileReadManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-        } else {
-            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().removeCallBack(CommandType.RealData, realBytesDataCallback)
-        }
     }
 }

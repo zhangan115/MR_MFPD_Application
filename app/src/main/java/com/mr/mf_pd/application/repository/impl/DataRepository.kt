@@ -26,12 +26,12 @@ interface DataRepository {
     fun closePassageway()
 
     /**
-     * 一秒读取一次遥测数据
+     * 高频与特高频模式下一秒读取一次遥测数据
      */
     fun readRepeatData(): Disposable
 
     /**
-     * 读取连续模式下的遥测数据
+     * 读取连续模式下的100md读取一次遥测数据
      */
     fun readContinuityYcData(): Disposable
 

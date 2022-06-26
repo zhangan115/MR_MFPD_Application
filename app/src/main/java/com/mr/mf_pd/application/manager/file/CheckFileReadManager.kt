@@ -152,7 +152,7 @@ class CheckFileReadManager {
         ycFuture = executorService.submit {
             val startTime = System.currentTimeMillis()
             ycFR?.let { fr ->
-                readDataFromFr(fr, ycDataDeque)
+                readDataFromFr(fr, ycDataDeque, true)
                 Log.d("zhangan", "yc time is ${System.currentTimeMillis() - startTime}")
             }
         }
@@ -179,7 +179,11 @@ class CheckFileReadManager {
         }
     }
 
-    private fun readDataFromFr(fr: FileReader, dataDeque: ArrayBlockingQueue<ByteArray>?) {
+    private fun readDataFromFr(
+        fr: FileReader,
+        dataDeque: ArrayBlockingQueue<ByteArray>?,
+        isYcData: Boolean = false,
+    ) {
         val br = BufferedReader(fr)
         var result: String?
         var lastTime: Long? = null
@@ -195,7 +199,13 @@ class CheckFileReadManager {
                                 if (lastTime != null) {
                                     Thread.sleep(it - lastTime!!)
                                 }
-                                dataDeque?.offer(source)
+                                if (isYcData) {
+                                    getCallback(CommandType.ReadYcData).forEach {callback->
+                                        callback.onData(source)
+                                    }
+                                } else {
+                                    dataDeque?.offer(source)
+                                }
                                 lastTime = time
                             }
                         }

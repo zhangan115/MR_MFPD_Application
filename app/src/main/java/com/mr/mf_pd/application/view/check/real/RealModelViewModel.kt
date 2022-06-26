@@ -70,12 +70,6 @@ class RealModelViewModel(
         }
     }
 
-    private val ycBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-
-        }
-    }
-
     val realBytesDataCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             dealRealData(source)
@@ -318,22 +312,5 @@ class RealModelViewModel(
         super.onCleared()
         prPsDataCallback = null
         mTimeDisposable?.dispose()
-    }
-
-    fun onResume() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
-    }
-
-    fun onPause() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
-
     }
 }

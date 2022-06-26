@@ -48,20 +48,6 @@ class ACFlightModelViewModel(
             this.checkType = filesRepository.getCheckType()
         } else {
             this.checkType = dataRepository.getCheckType()
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-            SocketManager.get().addCallBack(CommandType.RealData, realBytesDataCallback)
-        }
-    }
-
-    private val ycBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-
-        }
-    }
-
-    private val realBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-
         }
     }
 
@@ -175,19 +161,11 @@ class ACFlightModelViewModel(
     }
 
     fun onResume() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
+
     }
 
     fun onPause() {
-        if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
+
     }
 
     override fun onCleared() {

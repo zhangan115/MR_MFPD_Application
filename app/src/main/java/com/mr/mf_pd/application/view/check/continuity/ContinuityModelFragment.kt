@@ -1,12 +1,9 @@
 package com.mr.mf_pd.application.view.check.continuity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.animation.AnimationUtils
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
@@ -15,11 +12,6 @@ import com.mr.mf_pd.application.utils.LineChartUtils
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_continuity.*
-import kotlinx.android.synthetic.main.fragment_continuity.image1
-import kotlinx.android.synthetic.main.fragment_continuity.image2
-import kotlinx.android.synthetic.main.fragment_continuity.image3
-import kotlinx.android.synthetic.main.fragment_continuity.image4
-import kotlinx.android.synthetic.main.fragment_real.*
 import java.text.DecimalFormat
 import kotlin.math.max
 import kotlin.math.min
@@ -30,6 +22,18 @@ import kotlin.math.min
 class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override var TAG = "ContinuityModelFragment"
+
+    @Volatile
+    var fzValue: Float? = null
+
+    @Volatile
+    var yxValue: Float? = null
+
+    @Volatile
+    var f1Hz: Float? = null
+
+    @Volatile
+    var f2Hz: Float? = null
 
     private val viewModel by viewModels<ContinuityModelViewModel> { getViewModelFactory() }
 
@@ -222,13 +226,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.onResume()
         cleanCurrentData()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
     }
 
     override fun updateSettingBean(settingBean: SettingBean) {
@@ -236,20 +234,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         viewModel.updateTitle(settingBean)
     }
 
-    @Volatile
-    var fzValue: Float? = null
-
-    @Volatile
-    var yxValue: Float? = null
-
-    @Volatile
-    var f1Hz: Float? = null
-
-    @Volatile
-    var f2Hz: Float? = null
-
     override fun oneSecondUIChange() {
-        super.oneSecondUIChange()
         val df1 = DecimalFormat("0.0")
         fzValue?.let {
             viewModel.fzValue.postValue(df1.format(it))

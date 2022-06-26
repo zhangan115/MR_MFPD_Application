@@ -15,7 +15,6 @@ import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
@@ -73,7 +72,11 @@ class CheckDataViewModel(
     }
 
     private fun readYcValue() {
-        disposableList.add(dataRepository.readRepeatData())
+        if (mCheckType == CheckType.HF || mCheckType == CheckType.UHF) {
+            disposableList.add(dataRepository.readRepeatData())
+        } else {
+            disposableList.add(dataRepository.readContinuityYcData())
+        }
     }
 
     fun updateCallback() {

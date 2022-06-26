@@ -38,8 +38,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
     }
 
     override fun oneSecondUIChange() {
-        super.oneSecondUIChange()
-        gainChartView.updateFzValue()
+        gainChartView?.updateFzValue()
     }
 
     override fun lazyLoad() {
@@ -74,7 +73,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         viewModel.dataCallback = {
             mrChartView.setValue(it)
         }
-        mrChartView.mQueue = SocketManager.get().realDataDeque
+        mrChartView.mQueue = viewModel.getQueue()
     }
 
     override fun initView() {
@@ -134,14 +133,9 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.onResume()
         cleanCurrentData()
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
-    }
 
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)

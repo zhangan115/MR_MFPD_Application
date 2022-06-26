@@ -19,6 +19,7 @@ import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
@@ -30,6 +31,7 @@ import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.sito.tool.library.utils.DisplayUtil
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_file_data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -47,7 +49,8 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
     var titleList: ArrayList<TextView> = ArrayList()
     var fragments: ArrayList<BaseCheckFragment<*>> = ArrayList()
     var width: Int? = null
-
+    //一秒修改一次页面的定时器
+    private var mOneSecondDisposable: Disposable? = null
     private var fragmentDataListener: ArrayList<FragmentDataListener> = ArrayList()
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -204,6 +207,23 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 return fragments.size
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mOneSecondDisposable?.dispose()
+        mOneSecondDisposable = RepeatActionUtils.execute {
+            runOnUiThread {
+                fragmentDataListener.forEach {
+                    it.onOneSecondUiChange()
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mOneSecondDisposable?.dispose()
     }
 
     override fun onClick(v: View?) {

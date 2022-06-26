@@ -3,10 +3,6 @@ package com.mr.mf_pd.application.view.check.continuity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
-import com.mr.mf_pd.application.manager.file.CheckFileReadManager
-import com.mr.mf_pd.application.manager.socket.SocketManager
-import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -14,6 +10,7 @@ import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import io.reactivex.disposables.Disposable
 import java.io.File
+
 
 class ContinuityModelViewModel(
     val dataRepository: DataRepository,
@@ -25,6 +22,7 @@ class ContinuityModelViewModel(
     var isSaveData: MutableLiveData<Boolean>? = null
 
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
+    var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
     var fzValueList: ArrayList<Float> = ArrayList()
     var yxValueList: ArrayList<Float> = ArrayList()
@@ -47,7 +45,6 @@ class ContinuityModelViewModel(
     var text4: MutableLiveData<String> = MutableLiveData()
 
     lateinit var checkType: CheckType
-    var continuityDisposable: Disposable? = null
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
     var saveDataStartTime: Long = 0
@@ -56,11 +53,35 @@ class ContinuityModelViewModel(
     fun start() {
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            showTimeView.postValue(true)
+            val checkDataFileModel = filesRepository.getCheckFileModel()
+            this.showTimeView.postValue(true)
+            var startTime = 0L
+            checkDataFileModel?.let {
+                mTimeDisposable = RepeatActionUtils.execute {
+                    it.dataTime?.let {
+                        timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
+                        startTime += 1000L
+                        if (startTime > it) {
+                            resetFileRead()
+                            startTime = 0
+                        }
+                    }
+                }
+            }
         } else {
             this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
+            showTimeView.postValue(false)
         }
         updateTitle(checkType.settingBean)
+    }
+
+    /**
+     * 重新从文件中读取
+     */
+    private fun resetFileRead() {
+
     }
 
     fun updateTitle(settingBean: SettingBean) {
@@ -68,12 +89,6 @@ class ContinuityModelViewModel(
         text2.postValue("峰值，" + settingBean.fzUnit)
         text3.postValue("F1(50Hz)，" + settingBean.fzUnit)
         text4.postValue("F2(100Hz)，" + settingBean.fzUnit)
-    }
-
-    private val ycBytesDataCallback = object : BytesDataCallback {
-        override fun onData(source: ByteArray) {
-
-        }
     }
 
     fun setCheckFile(filePath: String) {
@@ -109,27 +124,8 @@ class ContinuityModelViewModel(
         f2ValueList.clear()
     }
 
-    fun onResume() {
-        continuityDisposable = dataRepository.readContinuityYcData()
-        if (isFile.value!!) {
-            CheckFileReadManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
-    }
-
-    fun onPause() {
-        continuityDisposable?.dispose()
-        if (isFile.value!!) {
-            CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        } else {
-            SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
-        continuityDisposable?.dispose()
+        mTimeDisposable?.dispose()
     }
-
 }

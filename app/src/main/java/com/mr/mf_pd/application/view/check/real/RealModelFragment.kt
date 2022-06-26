@@ -164,8 +164,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun oneSecondUIChange() {
-        super.oneSecondUIChange()
-        gainChartView.updateFzValue()
+        gainChartView?.updateFzValue()
     }
 
     override fun cleanCurrentData() {
@@ -208,7 +207,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.onResume()
         cleanCurrentData()
     }
 
@@ -217,6 +215,5 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
-        viewModel.onPause()
     }
 }

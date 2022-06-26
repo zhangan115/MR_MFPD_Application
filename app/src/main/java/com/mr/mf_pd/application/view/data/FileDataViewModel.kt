@@ -13,12 +13,8 @@ import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 class FileDataViewModel(
     var dataRepository: DataRepository,
@@ -28,7 +24,6 @@ class FileDataViewModel(
     var toastStr: MutableLiveData<String> = MutableLiveData()
     var settingBean: SettingBean? = null
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
-    val settingValues: ArrayList<Float> = ArrayList()
     lateinit var mCheckType: CheckType
 
     private var disposable: Disposable? = null
