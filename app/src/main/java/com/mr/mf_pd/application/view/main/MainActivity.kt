@@ -226,7 +226,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 //                        mWiFiManager?.startScan()
 //
 //                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         checkExternalStorageState()
                     }else{
                         val file = MRApplication.instance.fileCacheFile()
@@ -447,7 +447,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun checkExternalStorageState() {
         val isHasStoragePermission = Environment.isExternalStorageManager()
         if (isHasStoragePermission) {
