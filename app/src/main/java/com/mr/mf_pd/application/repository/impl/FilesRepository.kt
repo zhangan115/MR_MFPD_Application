@@ -42,15 +42,6 @@ interface FilesRepository {
      */
     fun getCurrentCheckName(): String?
 
-    /**
-     * 保存数据到文件中
-     */
-    fun toSaveRealData2File(source: ByteArray)
-
-    /**
-     * 保存遥测数据到文件中
-     */
-    fun toSaveYCData2File(source: ByteArray)
 
     /**
      * 数据保存状态

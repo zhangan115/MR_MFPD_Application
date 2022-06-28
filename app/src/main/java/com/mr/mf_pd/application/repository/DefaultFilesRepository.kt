@@ -37,16 +37,8 @@ class DefaultFilesRepository : FilesRepository {
         var realDataMinValue: MutableLiveData<Int> = MutableLiveData()
     }
 
-    private var realDataFOS: FileOutputStream? = null
-    private var ycDataFOS: FileOutputStream? = null
-
-    var realDataEmitter: ObservableEmitter<ByteArray>? = null
-    var ycDataEmitter: ObservableEmitter<ByteArray>? = null
-
     var checkTempFile: File? = null
     var checkFile: File? = null
-    var realDataTempFile: File? = null
-    var ycTempFile: File? = null
 
     private var startTime = 0L
     private var endTime = 0L
@@ -66,53 +58,25 @@ class DefaultFilesRepository : FilesRepository {
             checkTempFile!!.mkdir()
         }
         SocketManager.get().setSaveDataFile(checkTempFile)
-        realDataTempFile = File(checkTempFile, ConstantStr.CHECK_REAL_DATA)
-        ycTempFile = File(checkTempFile, ConstantStr.CHECK_YC_FILE_NAME)
-
-        if (!realDataTempFile!!.exists()) {
-            realDataTempFile!!.createNewFile()
-        }
-        if (!ycTempFile!!.exists()) {
-            ycTempFile!!.createNewFile()
-        }
-        realDataFOS = FileOutputStream(realDataTempFile!!, true)
-        ycDataFOS = FileOutputStream(ycTempFile!!, true)
-        val realObs = ObservableOnSubscribe<ByteArray> {
-            realDataEmitter = it
-        }
         startTime = System.currentTimeMillis()
-        Observable.create(realObs).doOnNext {
-            realDataFOS?.write(it)
-            realDataFOS?.flush()
-        }.observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                Log.d(
-                    "zhangan",
-                    realDataTempFile?.absolutePath.toString() + " file size is " + realDataTempFile?.length()
-                )
-            }.subscribe()
-        val ycObs = ObservableOnSubscribe<ByteArray> {
-            ycDataEmitter = it
-        }
-        Observable.create(ycObs).doOnNext {
-            ycDataFOS?.write(it)
-            ycDataFOS?.flush()
-        }.observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                Log.d(
-                    "zhangan",
-                    ycTempFile?.absolutePath.toString() + " file size is " + ycTempFile?.length()
-                )
-            }.subscribe()
     }
+
+    var flightRowCount = 0
+    var pulseRowCount = 0
+    var ycRowCount = 0
+    var realRowCount = 0
 
     override fun stopSaveData() {
         isSaving.postValue(false)
         SocketManager.get().stopSaveData()
+
+        this.flightRowCount = SocketManager.get().flightRowCount
+        this.pulseRowCount = SocketManager.get().pulseRowCount
+        this.ycRowCount = SocketManager.get().ycRowCount
+        this.realRowCount = SocketManager.get().realRowCount
+
         endTime = System.currentTimeMillis()
-        realDataEmitter?.onComplete()
+
     }
 
     override fun setCurrentClickFile(file: File) {
@@ -121,7 +85,7 @@ class DefaultFilesRepository : FilesRepository {
     }
 
     override fun toCreateCheckFile(checkType: CheckType) {
-        if (ycTempFile != null && realDataTempFile != null && checkFile != null) {
+        if (checkFile != null) {
             GlobalScope.runCatching {
                 try {
                     val g = Gson()
@@ -132,6 +96,11 @@ class DefaultFilesRepository : FilesRepository {
                     val configBean = CheckConfigModel()
                     configBean.type = checkType.checkFile
                     configBean.time = endTime - startTime
+                    configBean.flightRowCount = flightRowCount
+                    configBean.pulseRowCount = flightRowCount
+                    configBean.realRowCount = realRowCount
+                    configBean.ycRowCount = realRowCount
+
                     val configStr = g.toJson(configBean)
                     FileUtils.writeStr2File(
                         configStr,
@@ -144,10 +113,17 @@ class DefaultFilesRepository : FilesRepository {
                         File(checkFile, ConstantStr.CHECK_FILE_SETTING)
                     )
                     //保存实时数据
-                    FileUtils.copyFile(realDataTempFile,
+                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_REAL_DATA),
+                        File(checkFile, ConstantStr.CHECK_REAL_DATA))
+                    //保存飞行数据
+                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_FLIGHT_FILE_NAME),
+                        File(checkFile, ConstantStr.CHECK_FLIGHT_FILE_NAME))
+                    //保存脉冲波形
+                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_PULSE_FILE_NAME),
                         File(checkFile, ConstantStr.CHECK_REAL_DATA))
                     //保存遥测数据
-                    FileUtils.copyFile(ycTempFile, File(checkFile, ConstantStr.CHECK_YC_FILE_NAME))
+                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_YC_FILE_NAME),
+                        File(checkFile, ConstantStr.CHECK_YC_FILE_NAME))
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -171,14 +147,6 @@ class DefaultFilesRepository : FilesRepository {
             return str
         }
         return null
-    }
-
-    override fun toSaveRealData2File(source: ByteArray) {
-        realDataEmitter?.onNext(source)
-    }
-
-    override fun toSaveYCData2File(source: ByteArray) {
-        ycDataEmitter?.onNext(source)
     }
 
     override fun isSaveData(): MutableLiveData<Boolean> {

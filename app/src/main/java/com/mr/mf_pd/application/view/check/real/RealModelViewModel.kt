@@ -9,7 +9,6 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
@@ -20,7 +19,6 @@ import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
@@ -32,7 +30,6 @@ import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 

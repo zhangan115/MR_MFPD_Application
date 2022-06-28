@@ -37,6 +37,9 @@ public class FileUtils {
     }
 
     public static void copyFile(File source, File targetFile) throws IOException {
+        if (source == null || source.exists()) {
+            return;
+        }
         FileInputStream fis = new FileInputStream(source);
         if (!targetFile.exists()) {
             targetFile.createNewFile();

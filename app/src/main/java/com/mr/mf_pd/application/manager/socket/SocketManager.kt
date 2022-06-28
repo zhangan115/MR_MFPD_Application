@@ -102,7 +102,10 @@ class SocketManager private constructor() {
                 pulseFile.createNewFile()
             }
             pulseFw = FileWriter(pulseFile, true)
-
+            flightRowCount = 0
+            pulseRowCount = 0
+            ycRowCount = 0
+            realRowCount = 0
             mIsSaveData2File = true
         }
     }
@@ -249,6 +252,11 @@ class SocketManager private constructor() {
         }
     }
 
+    var flightRowCount = 0
+    var ycRowCount = 0
+    var realRowCount = 0
+    var pulseRowCount = 0
+
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
             when (commandType) {
@@ -258,6 +266,7 @@ class SocketManager private constructor() {
                         if (isSuccess) {
                             if (mIsSaveData2File && flightFw != null) {
                                 saveData2FileFun(flightFw, source)
+                                flightRowCount++
                             }
                         } else {
                             it.clear()
@@ -270,6 +279,7 @@ class SocketManager private constructor() {
                         if (isSuccess) {
                             if (mIsSaveData2File && realFw != null) {
                                 saveData2FileFun(realFw, source)
+                                realRowCount++
                             }
                         } else {
                             it.clear()
@@ -282,6 +292,7 @@ class SocketManager private constructor() {
                         if (isSuccess) {
                             if (mIsSaveData2File && pulseFw != null) {
                                 saveData2FileFun(pulseFw, source)
+                                pulseRowCount++
                             }
                         } else {
                             it.clear()
@@ -291,6 +302,7 @@ class SocketManager private constructor() {
                 CommandType.ReadYcData -> {
                     if (mIsSaveData2File && ycFw != null) {
                         saveData2FileFun(ycFw, source)
+                        ycRowCount++
                     }
                     bytesCallbackMap[commandType]?.forEach {
                         it.onData(source)
