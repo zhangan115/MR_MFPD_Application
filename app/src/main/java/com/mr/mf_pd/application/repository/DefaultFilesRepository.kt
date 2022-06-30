@@ -37,7 +37,7 @@ class DefaultFilesRepository : FilesRepository {
         var realDataMinValue: MutableLiveData<Int> = MutableLiveData()
     }
 
-    var checkTempFile: File? = null
+    private var checkTempFile: File? = null
     var checkFile: File? = null
 
     private var startTime = 0L
@@ -61,10 +61,10 @@ class DefaultFilesRepository : FilesRepository {
         startTime = System.currentTimeMillis()
     }
 
-    var flightRowCount = 0
-    var pulseRowCount = 0
-    var ycRowCount = 0
-    var realRowCount = 0
+    private var flightRowCount = 0
+    private var pulseRowCount = 0
+    private var ycRowCount = 0
+    private var realRowCount = 0
 
     override fun stopSaveData() {
         isSaving.postValue(false)
@@ -99,7 +99,7 @@ class DefaultFilesRepository : FilesRepository {
                     configBean.flightRowCount = flightRowCount
                     configBean.pulseRowCount = flightRowCount
                     configBean.realRowCount = realRowCount
-                    configBean.ycRowCount = realRowCount
+                    configBean.ycRowCount = ycRowCount
 
                     val configStr = g.toJson(configBean)
                     FileUtils.writeStr2File(
@@ -112,18 +112,12 @@ class DefaultFilesRepository : FilesRepository {
                         settingStr,
                         File(checkFile, ConstantStr.CHECK_FILE_SETTING)
                     )
-                    //保存实时数据
-                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_REAL_DATA),
-                        File(checkFile, ConstantStr.CHECK_REAL_DATA))
-                    //保存飞行数据
-                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_FLIGHT_FILE_NAME),
-                        File(checkFile, ConstantStr.CHECK_FLIGHT_FILE_NAME))
-                    //保存脉冲波形
-                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_PULSE_FILE_NAME),
-                        File(checkFile, ConstantStr.CHECK_REAL_DATA))
-                    //保存遥测数据
-                    FileUtils.copyFile(File(checkTempFile, ConstantStr.CHECK_YC_FILE_NAME),
-                        File(checkFile, ConstantStr.CHECK_YC_FILE_NAME))
+                    if (checkTempFile?.exists() == true) {
+                        checkTempFile?.listFiles()?.toList()?.forEach {
+                            FileUtils.copyFile(it, File(checkFile,it.name))
+                        }
+                    }
+                    FileUtils.deleteFile(checkTempFile)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

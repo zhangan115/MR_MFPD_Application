@@ -93,12 +93,10 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
-                checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
                 fragments.add(ContinuityModelFragment.create(false))
                 fragments.add(PhaseModelChartFragment.create(false))
                 fragments.add(ACFlightModelFragment.create(false))
                 fragments.add(RealModelFragment.create(false))
-                fragments.add(ACPulseModelFragment.create(false))
                 clickClass = AESettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1

@@ -37,19 +37,23 @@ public class FileUtils {
     }
 
     public static void copyFile(File source, File targetFile) throws IOException {
-        if (source == null || source.exists()) {
+        if (source == null) {
+            return;
+        }
+        if (!source.exists()) {
             return;
         }
         FileInputStream fis = new FileInputStream(source);
         if (!targetFile.exists()) {
-            targetFile.createNewFile();
-        }
-        FileOutputStream fos = new FileOutputStream(targetFile, true);
-        byte[] buf = new byte[1024 * 4];
-        int size;
-        while ((size = fis.read(buf)) != -1) {
-            fos.write(buf, 0, size);
-            fos.flush();
+            if (targetFile.createNewFile()) {
+                FileOutputStream fos = new FileOutputStream(targetFile, true);
+                byte[] buf = new byte[1024 * 4];
+                int size;
+                while ((size = fis.read(buf)) != -1) {
+                    fos.write(buf, 0, size);
+                    fos.flush();
+                }
+            }
         }
     }
 

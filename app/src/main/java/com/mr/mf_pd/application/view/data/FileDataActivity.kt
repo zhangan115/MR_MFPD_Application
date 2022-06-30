@@ -118,12 +118,10 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 checkFragmentLayout.addView(createTitleTextView("相位模式", "1"))
                 checkFragmentLayout.addView(createTitleTextView("飞行模式", "2"))
                 checkFragmentLayout.addView(createTitleTextView("实时模式", "3"))
-                checkFragmentLayout.addView(createTitleTextView("脉冲波形", "4"))
                 fragments.add(ContinuityModelFragment.create(true))
                 fragments.add(PhaseModelChartFragment.create(true))
                 fragments.add(ACFlightModelFragment.create(true))
                 fragments.add(RealModelFragment.create(true))
-                fragments.add(ACPulseModelFragment.create(true))
             }
             CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))

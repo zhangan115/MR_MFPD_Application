@@ -79,6 +79,7 @@ class SocketManager private constructor() {
 
     fun setSaveDataFile(file: File?) {
         if (file != null && file.exists()) {
+            Log.d("zhangan",file.absolutePath)
             val ycFile = File(file, ConstantStr.CHECK_YC_FILE_NAME)
             if (!ycFile.exists()) {
                 ycFile.createNewFile()
