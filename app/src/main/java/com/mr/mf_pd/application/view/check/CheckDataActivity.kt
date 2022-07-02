@@ -100,7 +100,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 clickClass = AESettingActivity::class.java
                 limitPosition = 7
                 bandDetectionPosition = -1
-                mCommandType = 7
+                mCommandType = 3
             }
             CheckType.AA -> {
                 checkFragmentLayout.addView(createTitleTextView("连续模式", "0"))
