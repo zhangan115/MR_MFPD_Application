@@ -45,6 +45,8 @@ class PhaseModelViewModel(
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
 
+    var fdStateStr: MutableLiveData<String> = MutableLiveData()
+
     var isSaveData: MutableLiveData<Boolean>? = null
 
     var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
@@ -320,5 +322,9 @@ class PhaseModelViewModel(
             PrPdPoint2DList.minValue = minValue
         }
         return value
+    }
+
+    fun setState(stateStr: String) {
+        fdStateStr.value = stateStr
     }
 }

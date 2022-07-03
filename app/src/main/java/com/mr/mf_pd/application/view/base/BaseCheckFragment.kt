@@ -59,6 +59,9 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     //选择文件夹请求Code
     private val requestChooseDirCode = 200
 
+    //检测类型展示
+    protected var ycStateList :Array<String>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {

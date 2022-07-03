@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
@@ -53,6 +54,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
+        ycStateList = if (checkType == CheckType.AE || checkType == CheckType.AA || checkType == CheckType.TEV) {
+            context?.getStringArray(R.array.aa_state_list)
+        } else {
+            context?.getStringArray(R.array.hf_state_list)
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
@@ -125,11 +131,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-        if (viewModel.checkType == CheckType.UHF) {
-            image5.visibility = View.VISIBLE
-        } else {
-            image5.visibility = View.GONE
-        }
+//        if (viewModel.checkType == CheckType.UHF) {
+//            image5.visibility = View.VISIBLE
+//        } else {
+//            image5.visibility = View.GONE
+//        }
         rendererSet = true
     }
 
@@ -154,6 +160,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         if (valueList.size >= 2) {
             view?.let {
                 val df1 = DecimalFormat("0.00")
+                ycStateList?.let {
+                    val state = valueList[0].toInt()
+                    viewModel.setState(it[state])
+                }
                 viewModel.checkType.checkParams.value?.let {
                     it.hzAttr = df1.format(valueList[1])
                     if (!viewModel.canUpdateFz) {

@@ -57,6 +57,15 @@
     <string name="channel_name">设备电量低提示</string>
     <string name="channel_description">设备电量低提示</string>
 
-    <drawable name="bk_color">@color/colorWhite</drawable>
+    <string name="hf_state_1">传感器连接故障</string>
+    <string name="hf_state_2">通道1放电处于警戒状态</string>
+    <string name="hf_state_3">放电处于过高状态</string>
+    <string name="hf_state_4">放电处于告警状态</string>
+
+    <string name="empty_text"/>
+    <string name="aa_state_1">传感器连接故障</string>
+    <string name="aa_state_2">通道1放电处于警戒状态</string>
+    <string name="aa_state_3">放电处于过高状态</string>
+    <string name="aa_state_4">放电处于告警状态</string>
 
 </resources>

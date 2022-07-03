@@ -122,4 +122,6 @@
     <color name="prps_green">#00FFC0</color>
     <color name="prps_blue">#006DFF</color>
 
+    <drawable name="bk_color">@color/colorWhite</drawable>
+
 </resources>

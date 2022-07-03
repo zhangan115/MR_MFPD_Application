@@ -1,9 +1,11 @@
 package com.mr.mf_pd.application.view.check.phase
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
@@ -50,6 +52,11 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
+        ycStateList = if (checkType == CheckType.AE || checkType == CheckType.AA || checkType == CheckType.TEV) {
+            context?.getStringArray(R.array.aa_state_list)
+        } else {
+            context?.getStringArray(R.array.hf_state_list)
+        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
@@ -112,9 +119,6 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-        if (viewModel.checkType == CheckType.HF || viewModel.checkType == CheckType.TEV) {
-            image5.visibility = View.GONE
-        }
         locationText.setOnClickListener {
             createChooseFileIntent()
         }
@@ -143,6 +147,10 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 2) {
             view?.let {
+                ycStateList?.let {
+                    val state = valueList[0].toInt()
+                    viewModel.setState(it[state])
+                }
                 val df1 = DecimalFormat("0.00")
                 viewModel.checkType.checkParams.value?.let {
                     it.hzAttr = df1.format(valueList[1])

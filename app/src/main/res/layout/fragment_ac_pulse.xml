@@ -10,6 +10,8 @@
             type="com.mr.mf_pd.application.view.check.pulse.ACPulseModelViewModel" />
 
         <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <LinearLayout
@@ -18,6 +20,19 @@
         android:background="@color/colorWhite"
         android:orientation="vertical"
         app:toast="@{vm.toastStr}">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/line_chart_color_2"
+            android:gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="@{vm.fdStateStr}"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.GONE:View.VISIBLE}"
+            tools:text="传感器连接故障" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,10 +74,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -71,6 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="增益水平："
+                android:layout_marginStart="8dp"
                 android:textColor="@color/text_content_third_color"
                 android:textSize="14sp" />
 
@@ -91,30 +106,30 @@
 
                 <ImageView
                     android:id="@+id/image1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/uhf_icon_record" />
 
                 <ImageView
                     android:id="@+id/image2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@mipmap/ac_icon_small" />
 
                 <ImageView
                     android:id="@+id/image3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/ac_icon_big" />
 
                 <ImageView
                     android:id="@+id/image4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@mipmap/uhf_icon_reset" />
 
             </LinearLayout>

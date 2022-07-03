@@ -43,6 +43,7 @@ class RealModelViewModel(
     var isSaveData: MutableLiveData<Boolean>? = null
     var isFile: MutableLiveData<Boolean> = MutableLiveData(false)
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    var fdStateStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
@@ -109,6 +110,10 @@ class RealModelViewModel(
     @Volatile
     var canUpdateFz = true
     var emptyCount = 0
+
+    fun setState(stateStr: String) {
+        fdStateStr.value = stateStr
+    }
 
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return

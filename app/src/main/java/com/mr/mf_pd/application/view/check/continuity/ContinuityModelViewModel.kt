@@ -21,6 +21,7 @@ class ContinuityModelViewModel(
 ) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    var fdStateStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var isSaveData: MutableLiveData<Boolean>? = null
 
@@ -33,13 +34,17 @@ class ContinuityModelViewModel(
     var f2ValueList: ArrayList<Float> = ArrayList()
 
     var fzMinValue: MutableLiveData<String> = MutableLiveData()
+    var fzMaxValue: MutableLiveData<String> = MutableLiveData()
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var fzValue: MutableLiveData<String> = MutableLiveData()
     var yxMinValue: MutableLiveData<String> = MutableLiveData()
+    var yxMaxValue: MutableLiveData<String> = MutableLiveData()
     var yxValue: MutableLiveData<String> = MutableLiveData()
     var f1MinValue: MutableLiveData<String> = MutableLiveData()
+    var f1MaxValue: MutableLiveData<String> = MutableLiveData()
     var f1Value: MutableLiveData<String> = MutableLiveData()
     var f2MinValue: MutableLiveData<String> = MutableLiveData()
+    var f2MaxValue: MutableLiveData<String> = MutableLiveData()
     var f2Value: MutableLiveData<String> = MutableLiveData()
 
     var text1: MutableLiveData<String> = MutableLiveData()
@@ -81,6 +86,10 @@ class ContinuityModelViewModel(
             showTimeView.postValue(false)
         }
         updateTitle(checkType.settingBean)
+    }
+
+    fun setState(stateStr: String) {
+        fdStateStr.value = stateStr
     }
 
     /**

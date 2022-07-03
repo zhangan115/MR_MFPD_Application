@@ -10,6 +10,8 @@
             type="com.mr.mf_pd.application.view.check.continuity.ContinuityModelViewModel" />
 
         <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -23,6 +25,20 @@
             android:background="@color/colorWhite"
             android:orientation="vertical"
             app:toast="@{vm.toastStr}">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/line_chart_color_2"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@{vm.fdStateStr}"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.GONE:View.VISIBLE}"
+                tools:text="传感器连接故障" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -153,6 +169,16 @@
                             android:text="@{vm.yxMinValue}"
                             android:textSize="12sp" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/layout1"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="36dp"
+                            android:layout_marginBottom="3dp"
+                            android:text="@{vm.yxMaxValue}"
+                            android:textSize="12sp" />
+
                     </RelativeLayout>
 
                 </LinearLayout>
@@ -230,6 +256,16 @@
                             android:text="@{vm.fzMinValue}"
                             android:textSize="12sp" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/layout2"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="36dp"
+                            android:layout_marginBottom="3dp"
+                            android:text="@{vm.fzMaxValue}"
+                            android:textSize="12sp" />
+
                     </RelativeLayout>
 
 
@@ -305,6 +341,16 @@
                             android:text="@{vm.f1MinValue}"
                             android:textSize="12sp" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/layout3"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="36dp"
+                            android:layout_marginBottom="3dp"
+                            android:text="@{vm.f1MaxValue}"
+                            android:textSize="12sp" />
+
                     </RelativeLayout>
 
                 </LinearLayout>
@@ -336,6 +382,16 @@
                             android:layout_above="@+id/layout4"
                             android:layout_marginBottom="3dp"
                             android:text="@{vm.f2MinValue}"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/layout4"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="36dp"
+                            android:layout_marginBottom="3dp"
+                            android:text="@{vm.f2MaxValue}"
                             android:textSize="12sp" />
 
                         <LinearLayout
@@ -390,16 +446,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="end"
+                android:gravity="end|center"
                 android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="@{vm.limitValueStr}"
                     android:textColor="@color/text_first_content"
@@ -409,7 +466,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="5dp"
                     android:background="@drawable/bg_time"
                     android:gravity="center"
                     android:text="@{vm.timeStr}"
@@ -420,30 +477,29 @@
 
                 <ImageView
                     android:id="@+id/image1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/uhf_icon_record" />
 
                 <ImageView
                     android:id="@+id/image2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@mipmap/uhf_icon_small" />
 
                 <ImageView
                     android:id="@+id/image3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/uhf_icon_big" />
 
                 <ImageView
                     android:id="@+id/image4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
                     android:background="@mipmap/uhf_icon_reset" />
 
             </LinearLayout>
@@ -467,8 +523,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginBottom="20dp"
-                android:text="@{vm.location}"
                 android:minWidth="100dp"
+                android:text="@{vm.location}"
                 android:textColor="@color/blueColor"
                 android:textSize="13sp" />
         </LinearLayout>
