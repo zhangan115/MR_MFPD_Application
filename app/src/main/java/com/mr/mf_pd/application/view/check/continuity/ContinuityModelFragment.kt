@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.mr.mf_pd.application.R
+import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -22,6 +24,11 @@ import kotlin.math.min
 class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override var TAG = "ContinuityModelFragment"
+    private var defaultValues = listOf(20, 20, 5, 5)
+    private var continuityMaxValue1: Int = 20
+    private var continuityMaxValue2: Int = 20
+    private var continuityMaxValue3: Int = 5
+    private var continuityMaxValue4: Int = 5
 
     @Volatile
     var fzValue: Float? = null
@@ -66,6 +73,12 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
+        ycStateList =
+            if (checkType == CheckType.AE || checkType == CheckType.AA || checkType == CheckType.TEV) {
+                context?.getStringArray(R.array.aa_state_list)
+            } else {
+                context?.getStringArray(R.array.hf_state_list)
+            }
         viewModel.toResetEvent.observe(this) {
             cleanCurrentData()
         }
@@ -109,15 +122,23 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         image4.setOnClickListener {
             cleanCurrentData()
         }
+        viewModel.yxMinValue.postValue(minValue.toInt().toString())
+        viewModel.fzMinValue.postValue(minValue.toInt().toString())
+        viewModel.f1MinValue.postValue(minValue.toInt().toString())
+        viewModel.f2MinValue.postValue(minValue.toInt().toString())
     }
 
     var maxValue: Float? = null
-    var minValue: Float? = null
+    var minValue: Float = 0f
 
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 4) {
             view?.let {
+                ycStateList?.let {
+                    val state = valueList[0].toInt()
+                    viewModel.setState(it[state])
+                }
                 var fzValue = valueList[2]
                 var yxValue = valueList[3]
                 var f1Hz = valueList[4]
@@ -131,43 +152,42 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                         if (maxValue!! < it) {
                             maxValue = it
                         }
-                        if (minValue!! > it) {
-                            minValue = it
-                        }
                     }
                 } else {
                     fzValue = min(maxValue!!, fzValue)
-                    fzValue = max(minValue!!, fzValue)
+                    fzValue = max(minValue, fzValue)
 
                     yxValue = min(maxValue!!, yxValue)
-                    yxValue = max(minValue!!, yxValue)
+                    yxValue = max(minValue, yxValue)
 
                     f1Hz = min(maxValue!!, f1Hz)
-                    f1Hz = max(minValue!!, f1Hz)
+                    f1Hz = max(minValue, f1Hz)
 
                     f2Hz = min(maxValue!!, f2Hz)
-                    f2Hz = max(minValue!!, f2Hz)
+                    f2Hz = max(minValue, f2Hz)
                 }
                 this.fzValue = fzValue
                 this.yxValue = yxValue
                 this.f1Hz = f1Hz
                 this.f2Hz = f2Hz
 
-                viewModel.fzValueList.add(fzValue - minValue!!)
-                viewModel.yxValueList.add(yxValue - minValue!!)
-                viewModel.f1ValueList.add(f1Hz - minValue!!)
-                viewModel.f2ValueList.add(f2Hz - minValue!!)
+                viewModel.fzValueList.add(fzValue - minValue)
+                viewModel.yxValueList.add(yxValue - minValue)
+                viewModel.f1ValueList.add(f1Hz - minValue)
+                viewModel.f2ValueList.add(f2Hz - minValue)
 
 
-                calculationProgress(progressBar1, yxValue)
-                calculationProgress(progressBar2, fzValue)
-                calculationProgress(progressBar3, f1Hz)
-                calculationProgress(progressBar4, f2Hz)
+                continuityMaxValue1 =
+                    calculationProgress(progressBar1, yxValue,defaultValues[0])
+                continuityMaxValue2 =
+                    calculationProgress(progressBar2, fzValue,defaultValues[1])
+                continuityMaxValue3 = calculationProgress(progressBar3, f1Hz,defaultValues[2])
+                continuityMaxValue4 = calculationProgress(progressBar4, f2Hz,defaultValues[3])
 
-                viewModel.yxMinValue.postValue(minValue?.toString())
-                viewModel.fzMinValue.postValue(minValue?.toString())
-                viewModel.f1MinValue.postValue(minValue?.toString())
-                viewModel.f2MinValue.postValue(minValue?.toString())
+                viewModel.yxMaxValue.postValue(continuityMaxValue1.toString())
+                viewModel.fzMaxValue.postValue(continuityMaxValue2.toString())
+                viewModel.f1MaxValue.postValue(continuityMaxValue3.toString())
+                viewModel.f2MaxValue.postValue(continuityMaxValue4.toString())
 
                 if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime) {
                     viewModel.fzValueList.removeFirst()
@@ -206,13 +226,30 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         return isAdded
     }
 
-    private fun calculationProgress(progressBar: ProgressBar, value: Float) {
-        val progress = ((value - minValue!!) / (maxValue!! - minValue!!) * 100).toInt()
+    private fun calculationProgress(
+        progressBar: ProgressBar,
+        value: Float,
+        defaultValue:Int
+    ): Int {
+        val mV = when {
+            value < 100 -> {
+                ((value + 10f) / 10).toInt() * 10
+            }
+            value > 100 -> {
+                ((value + 100) / 100).toInt() * 100
+            }
+            else -> {
+                defaultValue
+            }
+        }
+        val m = max(mV, defaultValue)
+        val progress = ((value - minValue) / (m - minValue) * 100).toInt()
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             progressBar.setProgress(progress, true)
         } else {
             progressBar.progress = progress
         }
+        return m
     }
 
     override fun setViewModel(dataBinding: ContinuityDataBinding?) {

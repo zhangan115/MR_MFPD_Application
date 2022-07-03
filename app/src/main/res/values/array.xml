@@ -21,4 +21,18 @@
         <item>@string/file_type_tev</item>
         <item>@string/file_type_hf</item>
     </string-array>
+    <string-array name="hf_state_list">
+        <item>@string/hf_state_1</item>
+        <item>@string/empty_text</item>
+        <item>@string/hf_state_2</item>
+        <item>@string/hf_state_3</item>
+        <item>@string/hf_state_4</item>
+    </string-array>
+    <string-array name="aa_state_list">
+        <item>@string/aa_state_1</item>
+        <item>@string/empty_text</item>
+        <item>@string/aa_state_2</item>
+        <item>@string/aa_state_3</item>
+        <item>@string/aa_state_4</item>
+    </string-array>
 </resources>

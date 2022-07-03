@@ -27,6 +27,7 @@ class ACFlightModelViewModel(
 ) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    var fdStateStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     lateinit var checkType: CheckType
@@ -113,6 +114,10 @@ class ACFlightModelViewModel(
             flightCallback?.flightData(dataMaps, maxXValue)
         }
 
+    }
+
+    fun setState(stateStr: String) {
+        fdStateStr.value = stateStr
     }
 
     fun setCheckFile(filePath: String) {

@@ -28,6 +28,7 @@ class ACPulseModelViewModel(
 ) : ViewModel() {
 
     var toastStr: MutableLiveData<String> = MutableLiveData()
+    var fdStateStr: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<String> = MutableLiveData()
 
     var synchronizationModel: MutableLiveData<String> = MutableLiveData()
@@ -179,6 +180,10 @@ class ACPulseModelViewModel(
             fdCallback?.fdData(valueList)
         }
 
+    }
+
+    fun setState(stateStr: String) {
+        fdStateStr.value = stateStr
     }
 
     fun setCheckFile(filePath: String) {
