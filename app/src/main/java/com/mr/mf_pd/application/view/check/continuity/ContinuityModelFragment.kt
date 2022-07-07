@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.animation.AnimationUtils
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -73,12 +71,6 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
-        ycStateList =
-            if (checkType == CheckType.AE || checkType == CheckType.AA || checkType == CheckType.TEV) {
-                context?.getStringArray(R.array.aa_state_list)
-            } else {
-                context?.getStringArray(R.array.hf_state_list)
-            }
         viewModel.toResetEvent.observe(this) {
             cleanCurrentData()
         }
@@ -135,10 +127,6 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 4) {
             view?.let {
-                ycStateList?.let {
-                    val state = valueList[0].toInt()
-                    viewModel.setState(it[state])
-                }
                 var fzValue = valueList[2]
                 var yxValue = valueList[3]
                 var f1Hz = valueList[4]
@@ -208,6 +196,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
             }
         }
+    }
+
+    override fun fdStrChange(fdType: String?) {
+        viewModel.setState(fdType)
     }
 
     override fun onLimitValueChange(value: Int) {

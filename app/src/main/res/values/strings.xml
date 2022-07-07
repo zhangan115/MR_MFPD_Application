@@ -68,4 +68,13 @@
     <string name="aa_state_3">放电处于过高状态</string>
     <string name="aa_state_4">放电处于告警状态</string>
 
+    <string name="fd_state_0"/>
+    <string name="fd_state_1">尖刺放电</string>
+    <string name="fd_state_2">悬浮放电</string>
+    <string name="fd_state_3">沿面放电</string>
+    <string name="fd_state_4">内部放电</string>
+    <string name="fd_state_5">微粒</string>
+    <string name="fd_state_6">噪声(通讯)</string>
+    <string name="fd_state_7">其它干扰</string>
+
 </resources>

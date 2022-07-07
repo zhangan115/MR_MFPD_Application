@@ -35,4 +35,14 @@
         <item>@string/aa_state_3</item>
         <item>@string/aa_state_4</item>
     </string-array>
+    <string-array name="fd_str_list">
+        <item>@string/fd_state_0</item>
+        <item>@string/fd_state_1</item>
+        <item>@string/fd_state_2</item>
+        <item>@string/fd_state_3</item>
+        <item>@string/fd_state_4</item>
+        <item>@string/fd_state_5</item>
+        <item>@string/fd_state_6</item>
+        <item>@string/fd_state_7</item>
+    </string-array>
 </resources>

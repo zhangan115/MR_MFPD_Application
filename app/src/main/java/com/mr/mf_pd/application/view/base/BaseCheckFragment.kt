@@ -59,9 +59,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     //选择文件夹请求Code
     private val requestChooseDirCode = 200
 
-    //检测类型展示
-    protected var ycStateList :Array<String>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -145,6 +142,18 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     abstract fun setCheckFile(str: String)
 
     abstract fun createCheckFile()
+
+    override fun onFdDataChange(bytes: ByteArray) {
+        if (bytes.size > 12) {
+            val type = bytes[12].toInt()
+            if (type < 8) {
+                val str = requireActivity().resources.getStringArray(R.array.fd_str_list)[type]
+                fdStrChange(str)
+            }
+        }
+    }
+
+    abstract fun fdStrChange(fdType: String?)
 
     /**
      * 显示提示保存的Dialog

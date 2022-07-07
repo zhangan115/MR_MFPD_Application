@@ -133,6 +133,11 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 listener.onYcDataChange(it)
             }
         })
+        viewModel.toFdDataEvent.observe(this, EventObserver {
+            fragmentDataListener.forEach { listener ->
+                listener.onFdDataChange(it)
+            }
+        })
         viewModel.toSettingValueEvent.observe(this, EventObserver {
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
             updateLimitValue(currentValue)

@@ -116,7 +116,7 @@ class ACFlightModelViewModel(
 
     }
 
-    fun setState(stateStr: String) {
+    fun setState(stateStr: String?) {
         fdStateStr.value = stateStr
     }
 

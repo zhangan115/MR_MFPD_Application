@@ -38,6 +38,9 @@ class CheckDataViewModel(
     private val _toYcDataEvent = MutableLiveData<Event<ByteArray>>()
     val toYcDataEvent: LiveData<Event<ByteArray>> = _toYcDataEvent
 
+    private val _toFdDataEvent = MutableLiveData<Event<ByteArray>>()
+    val toFdDataEvent: LiveData<Event<ByteArray>> = _toFdDataEvent
+
     private val _toSettingValueEvent = MutableLiveData<Event<Unit>>()
     val toSettingValueEvent: LiveData<Event<Unit>> = _toSettingValueEvent
 
@@ -52,6 +55,7 @@ class CheckDataViewModel(
         SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
         SocketManager.get().addCallBack(CommandType.WriteValue, writeSettingDataCallback)
         SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().addCallBack(CommandType.FdData, fdBytesDataCallback)
         readYcValue()
     }
 
@@ -239,11 +243,18 @@ class CheckDataViewModel(
         }
     }
 
+    private val fdBytesDataCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            _toFdDataEvent.postValue(Event(source))
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
         SocketManager.get().removeCallBack(CommandType.WriteValue, writeSettingDataCallback)
         SocketManager.get().removeCallBack(CommandType.ReadYcData, ycBytesDataCallback)
+        SocketManager.get().removeCallBack(CommandType.FdData, fdBytesDataCallback)
         dataRepository.closePassageway()
         disposableList.forEach { disposable ->
             if (!disposable.isDisposed) {

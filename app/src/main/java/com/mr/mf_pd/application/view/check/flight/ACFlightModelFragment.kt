@@ -53,11 +53,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
 
     override fun initData() {
         checkType = viewModel.checkType
-        ycStateList = if (checkType == CheckType.AE || checkType == CheckType.AA || checkType == CheckType.TEV) {
-            context?.getStringArray(R.array.aa_state_list)
-        } else {
-            context?.getStringArray(R.array.hf_state_list)
-        }
         if (viewModel.checkType.settingBean.gdCd == 1) {
             viewModel.gainMinValue.postValue(viewModel.checkType.settingBean.minValue.toFloat())
         } else {
@@ -138,13 +133,11 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun onYcDataChange(bytes: ByteArray) {
-       val valueList =  splitBytesToValue(bytes)
-        if (valueList.isNotEmpty()) {
-            ycStateList?.let {
-                val state = valueList[0].toInt()
-                viewModel.setState(it[state])
-            }
-        }
+//       val valueList =  splitBytesToValue(bytes)
+    }
+
+    override fun fdStrChange(fdType: String?) {
+        viewModel.setState(fdType)
     }
 
     override fun cleanCurrentData() {

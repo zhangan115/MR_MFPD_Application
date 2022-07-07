@@ -8,7 +8,6 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
@@ -324,7 +323,7 @@ class PhaseModelViewModel(
         return value
     }
 
-    fun setState(stateStr: String) {
+    fun setState(stateStr: String?) {
         fdStateStr.value = stateStr
     }
 }

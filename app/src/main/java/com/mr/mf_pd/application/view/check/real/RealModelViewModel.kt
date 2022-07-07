@@ -111,7 +111,7 @@ class RealModelViewModel(
     var canUpdateFz = true
     var emptyCount = 0
 
-    fun setState(stateStr: String) {
+    fun setState(stateStr: String?) {
         fdStateStr.value = stateStr
     }
 
