@@ -31,7 +31,7 @@
             android:text="@{vm.fdStateStr}"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.GONE:View.VISIBLE}"
+            android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.INVISIBLE:View.VISIBLE}"
             tools:text="传感器连接故障" />
 
         <LinearLayout

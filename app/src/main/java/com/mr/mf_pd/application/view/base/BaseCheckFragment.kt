@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -19,12 +20,10 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
-import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
 import com.sito.tool.library.utils.ByteLibUtil
-import io.reactivex.disposables.Disposable
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
@@ -82,6 +81,16 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     override fun onPause() {
         super.onPause()
         Log.d("zhangan", "$TAG onPause")
+    }
+
+    var fdStrList: ArrayList<String> = ArrayList()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        activity?.resources?.getStringArray(R.array.fd_str_list)?.let {
+            fdStrList.clear()
+            fdStrList.addAll(it)
+        }
     }
 
     abstract fun setIsFileValue(isFile: Boolean?)
@@ -146,9 +155,13 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     override fun onFdDataChange(bytes: ByteArray) {
         if (bytes.size > 12) {
             val type = bytes[12].toInt()
-            if (type < 8) {
-                val str = requireActivity().resources.getStringArray(R.array.fd_str_list)[type]
-                fdStrChange(str)
+            if (fdStrList.isNotEmpty()) {
+                val s = fdStrList.first()
+                Log.d(TAG, s)
+                if (type in 0 until fdStrList.size) {
+                    val str = fdStrList[type]
+                    fdStrChange(str)
+                }
             }
         }
     }

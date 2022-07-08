@@ -25,7 +25,6 @@ import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.check.continuity.ContinuityModelFragment
 import com.mr.mf_pd.application.view.check.flight.ACFlightModelFragment
 import com.mr.mf_pd.application.view.check.phase.PhaseModelChartFragment
-import com.mr.mf_pd.application.view.check.pulse.ACPulseModelFragment
 import com.mr.mf_pd.application.view.check.real.RealModelFragment
 import com.mr.mf_pd.application.view.setting.aa.AASettingActivity
 import com.mr.mf_pd.application.view.setting.ae.AESettingActivity
@@ -130,12 +129,16 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         viewModel.start(checkType)
         viewModel.toYcDataEvent.observe(this, EventObserver {
             fragmentDataListener.forEach { listener ->
-                listener.onYcDataChange(it)
+                if (listener.isAdd()) {
+                    listener.onYcDataChange(it)
+                }
             }
         })
         viewModel.toFdDataEvent.observe(this, EventObserver {
             fragmentDataListener.forEach { listener ->
-                listener.onFdDataChange(it)
+                if (listener.isAdd()) {
+                    listener.onFdDataChange(it)
+                }
             }
         })
         viewModel.toSettingValueEvent.observe(this, EventObserver {
