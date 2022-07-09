@@ -21,19 +21,6 @@
         android:orientation="vertical"
         app:toast="@{vm.toastStr}">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/line_chart_color_2"
-            android:gravity="center"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="@{vm.fdStateStr}"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.INVISIBLE:View.VISIBLE}"
-            tools:text="传感器连接故障" />
-
         <com.mr.mf_pd.application.widget.CheckParamsView
             android:id="@+id/checkParamsView"
             android:layout_width="match_parent"
@@ -52,8 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="10dp"
             android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
             <TextView
@@ -136,11 +123,25 @@
             app:gain_value="@{vm.gainValues}" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/line_chart_color_2"
+            android:gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="@{vm.fdStateStr}"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.INVISIBLE:View.VISIBLE}"
+            tools:text="传感器连接故障" />
+
+        <TextView
             android:id="@+id/locationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:minWidth="100dp"
             android:text="@{vm.location}"
             android:textColor="@color/blueColor"

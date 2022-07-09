@@ -1,9 +1,9 @@
 package com.mr.mf_pd.application.repository.callback
 
-import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.model.FileBeanModel
 
 interface ReadSettingCallback {
 
-    fun onSettingBean(settingBean: SettingBean)
+    fun onGetFileBean(fileBean: FileBeanModel)
 
 }

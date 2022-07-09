@@ -82,10 +82,11 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
                 }
             }
         })
-        viewModel.toCleanDataEvent.observe(this, EventObserver {
+        viewModel.toFdDataEvent.observe(this, EventObserver {
             fragmentDataListener.forEach { listener ->
-                if (listener.isAdd())
-                    listener.cleanCurrentData()
+                if (listener.isAdd()) {
+                    listener.onFdDataChange(it)
+                }
             }
         })
         val time = DateUtil.date2TimeStamp(currentFile.name, "yyyy_MM_dd_HH_mm_ss")

@@ -5,6 +5,8 @@ class CheckConfigModel {
     var marks: String? = null
     var type: String? = null
     var time: Long? = null
+    //文件开始保存时间
+    var startTime: Long? = null
     //飞行模式数据行数
     var flightRowCount = 0
     //脉冲波形
@@ -13,5 +15,7 @@ class CheckConfigModel {
     var ycRowCount = 0
     //实时数据行数
     var realRowCount = 0
+    //放电数据行数
+    var fdRowCount = 0
 
 }

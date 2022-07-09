@@ -56,6 +56,7 @@ class SocketManager private constructor() {
     private var realFw: FileWriter? = null
     private var flightFw: FileWriter? = null
     private var pulseFw: FileWriter? = null
+    private var fdFw: FileWriter? = null
 
     companion object {
         private var host: String? = null
@@ -103,10 +104,17 @@ class SocketManager private constructor() {
                 pulseFile.createNewFile()
             }
             pulseFw = FileWriter(pulseFile, true)
+
+            val fdFile = File(file, ConstantStr.CHECK_FD_FILE_NAME)
+            if (!fdFile.exists()) {
+                fdFile.createNewFile()
+            }
+            fdFw = FileWriter(fdFile, true)
             flightRowCount = 0
             pulseRowCount = 0
             ycRowCount = 0
             realRowCount = 0
+            fdRowCount = 0
             mIsSaveData2File = true
         }
     }
@@ -118,6 +126,7 @@ class SocketManager private constructor() {
             realFw?.close()
             flightFw?.close()
             pulseFw?.close()
+            fdFw?.close()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -257,6 +266,7 @@ class SocketManager private constructor() {
     var ycRowCount = 0
     var realRowCount = 0
     var pulseRowCount = 0
+    var fdRowCount = 0
 
     private fun commandCallback(commandType: CommandType?, source: ByteArray) {
         if (commandType != null) {
@@ -304,6 +314,15 @@ class SocketManager private constructor() {
                     if (mIsSaveData2File && ycFw != null) {
                         saveData2FileFun(ycFw, source)
                         ycRowCount++
+                    }
+                    bytesCallbackMap[commandType]?.forEach {
+                        it.onData(source)
+                    }
+                }
+                CommandType.FdData -> {
+                    if (mIsSaveData2File && fdFw != null) {
+                        saveData2FileFun(fdFw, source)
+                        fdRowCount++
                     }
                     bytesCallbackMap[commandType]?.forEach {
                         it.onData(source)

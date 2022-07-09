@@ -7,34 +7,34 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.utils.ByteUtil
-import com.mr.mf_pd.application.utils.DateUtil
-import com.mr.mf_pd.application.utils.toHexString
+import com.mr.mf_pd.application.view.file.model.CheckConfigModel
 import io.reactivex.disposables.Disposable
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import java.lang.Exception
 import java.util.*
-import java.util.concurrent.*
-import kotlin.collections.ArrayList
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class CheckFileReadManager {
 
     private var realFR: FileReader? = null
     private var ycFR: FileReader? = null
-    private var fdFR: FileReader? = null
     private var flightFR: FileReader? = null
     private var pulseFR: FileReader? = null
+    private var fdFR: FileReader? = null
 
     private var ycDisposable: Disposable? = null
     private var realDisposable: Disposable? = null
     private var pulseDisposable: Disposable? = null
     private var flightDisposable: Disposable? = null
+    private var fdDisposable: Disposable? = null
 
     var realDataDeque: ArrayBlockingQueue<ByteArray>? = null//实时数据队列
     var flightDeque: ArrayBlockingQueue<ByteArray>? = null//飞行数据队列
     var pulseDataDeque: ArrayBlockingQueue<ByteArray>? = null//脉冲数据队列
-    var ycDataDeque: ArrayBlockingQueue<ByteArray>? = null//遥测数据
 
     private val bytesCallbackMap: LinkedHashMap<CommandType, LinkedList<BytesDataCallback>> =
         LinkedHashMap()
@@ -56,9 +56,9 @@ class CheckFileReadManager {
     var checkFile: File? = null
 
     var settingFile: File? = null
+    var checkConfigFile: File? = null
 
     fun initQueue() {
-        ycDataDeque = ArrayBlockingQueue<ByteArray>(50)
         realDataDeque = ArrayBlockingQueue<ByteArray>(50)
         flightDeque = ArrayBlockingQueue<ByteArray>(50)
         pulseDataDeque = ArrayBlockingQueue<ByteArray>(50)
@@ -67,6 +67,7 @@ class CheckFileReadManager {
     fun setFile(checkFile: File) {
         this.checkFile = checkFile
         this.settingFile = File(checkFile, ConstantStr.CHECK_FILE_SETTING)
+        this.checkConfigFile = File(checkFile, ConstantStr.CHECK_FILE_CONFIG)
     }
 
     private fun getCallback(commandType: CommandType): LinkedList<BytesDataCallback> {
@@ -115,8 +116,10 @@ class CheckFileReadManager {
 
     private val executorService: ExecutorService
         get() {
-            return Executors.newFixedThreadPool(4)
+            return Executors.newFixedThreadPool(5)
         }
+    //文件的保存信息
+    var config:CheckConfigModel?=null
 
     /**
      * 开始读取数据
@@ -146,13 +149,17 @@ class CheckFileReadManager {
             if (pulseFile.exists()) {
                 pulseFR = FileReader(pulseFile)
             }
+            val fdFile = File(file, ConstantStr.CHECK_FD_FILE_NAME)
+            if (fdFile.exists()) {
+                fdFR = FileReader(fdFile)
+            }
 
         }
 
         ycFuture = executorService.submit {
             val startTime = System.currentTimeMillis()
             ycFR?.let { fr ->
-                readDataFromFr(fr, ycDataDeque, true)
+                readDataFromFr(fr, null,CommandType.ReadYcData)
                 Log.d("zhangan", "yc time is ${System.currentTimeMillis() - startTime}")
             }
         }
@@ -177,12 +184,19 @@ class CheckFileReadManager {
                 Log.d("zhangan", "pulse time is ${System.currentTimeMillis() - startTime}")
             }
         }
+        fdFuture = executorService.submit {
+            val startTime = System.currentTimeMillis()
+            fdFR?.let { fr ->
+                readDataFromFr(fr, null,CommandType.FdData)
+                Log.d("zhangan", "fd time is ${System.currentTimeMillis() - startTime}")
+            }
+        }
     }
 
     private fun readDataFromFr(
         fr: FileReader,
         dataDeque: ArrayBlockingQueue<ByteArray>?,
-        isYcData: Boolean = false,
+        type: CommandType? = null,
     ) {
         val br = BufferedReader(fr)
         var result: String?
@@ -196,15 +210,32 @@ class CheckFileReadManager {
                         time?.let {
                             val source = ByteUtil.hexStr2bytes(list[1])
                             if (source != null) {
-                                if (lastTime != null) {
-                                    Thread.sleep(it - lastTime!!)
-                                }
-                                if (isYcData) {
-                                    getCallback(CommandType.ReadYcData).forEach {callback->
-                                        callback.onData(source)
+                                when (type) {
+                                    CommandType.ReadYcData -> {
+                                        if (lastTime != null) {
+                                            Thread.sleep(it - lastTime!!)
+                                        }
+                                        getCallback(type).forEach { callback ->
+                                            callback.onData(source)
+                                        }
                                     }
-                                } else {
-                                    dataDeque?.offer(source)
+                                    CommandType.FdData -> {
+                                        if (lastTime == null) {
+                                            lastTime = config?.startTime
+                                        }
+                                        if (lastTime != null) {
+                                            Thread.sleep(it - lastTime!!)
+                                        }
+                                        getCallback(type).forEach { callback ->
+                                            callback.onData(source)
+                                        }
+                                    }
+                                    else -> {
+                                        if (lastTime != null) {
+                                            Thread.sleep(it - lastTime!!)
+                                        }
+                                        dataDeque?.offer(source)
+                                    }
                                 }
                                 lastTime = time
                             }
@@ -221,28 +252,7 @@ class CheckFileReadManager {
     private var realFuture: Future<*>? = null
     private var flightFuture: Future<*>? = null
     private var pulseFuture: Future<*>? = null
-
-
-    private fun commandCallback(commandType: CommandType?, source: ByteArray) {
-        if (commandType != null) {
-            when (commandType) {
-                CommandType.FlightValue -> {
-                    val isSuccess = flightDeque?.offer(source)
-                }
-                CommandType.RealData -> {
-                    val isSuccess = realDataDeque?.offer(source)
-                }
-                CommandType.SendPulse -> {
-                    pulseDataDeque?.offer(source)
-                }
-                else -> {
-                    bytesCallbackMap[commandType]?.forEach {
-                        it.onData(source)
-                    }
-                }
-            }
-        }
-    }
+    private var fdFuture: Future<*>? = null
 
 
     fun releaseReadFile() {
@@ -262,6 +272,7 @@ class CheckFileReadManager {
             ycDisposable?.dispose()
             pulseDisposable?.dispose()
             flightDisposable?.dispose()
+            fdDisposable?.dispose()
 
             ycFR = null
             realFR = null

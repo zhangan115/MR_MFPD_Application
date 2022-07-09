@@ -1,7 +1,6 @@
 package com.mr.mf_pd.application.repository
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.mr.mf_pd.application.app.MRApplication
@@ -10,6 +9,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.FileBeanModel
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -19,13 +19,11 @@ import com.mr.mf_pd.application.view.file.model.CheckConfigModel
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.GlobalScope
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 class DefaultFilesRepository : FilesRepository {
@@ -100,6 +98,7 @@ class DefaultFilesRepository : FilesRepository {
                     configBean.pulseRowCount = flightRowCount
                     configBean.realRowCount = realRowCount
                     configBean.ycRowCount = ycRowCount
+                    configBean.startTime = startTime
 
                     val configStr = g.toJson(configBean)
                     FileUtils.writeStr2File(
@@ -176,11 +175,14 @@ class DefaultFilesRepository : FilesRepository {
         realDataMinValue.postValue(mCheckType.settingBean.minValue)
         checkType.checkParams.postValue(checkParamsBean)
         CheckFileReadManager.get().setFile(file)
-        return Observable.create { emitter: ObservableEmitter<SettingBean?> ->
+        return Observable.create { emitter: ObservableEmitter<FileBeanModel?> ->
             try {
-                val str = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
-                val settingBean = Gson().fromJson(str, SettingBean::class.java)
-                emitter.onNext(settingBean)
+                val settingStr = FileUtils.readStrFromFile(CheckFileReadManager.get().settingFile)
+                val configStr = FileUtils.readStrFromFile(CheckFileReadManager.get().checkConfigFile)
+                val settingBean = Gson().fromJson(settingStr, SettingBean::class.java)
+                val checkConfigModel = Gson().fromJson(configStr, CheckConfigModel::class.java)
+                val fileBean = FileBeanModel(settingBean,checkConfigModel)
+                emitter.onNext(fileBean)
             } catch (e: Exception) {
                 e.printStackTrace()
                 emitter.onError(e)
@@ -189,7 +191,7 @@ class DefaultFilesRepository : FilesRepository {
             }
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
             it?.let {
-                callback?.onSettingBean(it)
+                callback?.onGetFileBean(it)
             }
         }
     }

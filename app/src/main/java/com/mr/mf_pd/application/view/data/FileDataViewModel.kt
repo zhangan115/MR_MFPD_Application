@@ -9,11 +9,11 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
+import com.mr.mf_pd.application.model.FileBeanModel
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
-import io.reactivex.disposables.Disposable
 import java.io.File
 
 class FileDataViewModel(
@@ -26,11 +26,6 @@ class FileDataViewModel(
     var checkParamsBean: MutableLiveData<CheckParamsBean>? = null
     lateinit var mCheckType: CheckType
 
-    private var disposable: Disposable? = null
-
-    private var ycDisposable: Disposable? = null
-    private var realDisposable: Disposable? = null
-
     private var isStartReadYcData = false
 
     fun start(checkType: CheckType, file: File) {
@@ -38,15 +33,18 @@ class FileDataViewModel(
         dataRepository.setCheckType(checkType)
 
         CheckFileReadManager.get().addCallBack(CommandType.ReadYcData,ycCallback)
+        CheckFileReadManager.get().addCallBack(CommandType.FdData,fdCallback)
 
         fileRepository.openCheckFile(checkType, file, object : ReadSettingCallback {
-            override fun onSettingBean(settingBean: SettingBean) {
-                mCheckType.settingBean = settingBean
+            override fun onGetFileBean(fileBean: FileBeanModel) {
+                mCheckType.settingBean = fileBean.settingBean
+                mCheckType.settingBean = fileBean.settingBean
                 val checkDir = file.parentFile
                 if (checkDir != null) {
                     fileRepository.setCurrentClickFile(checkDir)
                 }
                 checkParamsBean = checkType.checkParams
+                CheckFileReadManager.get().config = fileBean.config
                 CheckFileReadManager.get().startReadData()
             }
         })
@@ -55,24 +53,26 @@ class FileDataViewModel(
     private val _toYcDataEvent = MutableLiveData<Event<ByteArray>>()
     val toYcDataEvent: LiveData<Event<ByteArray>> = _toYcDataEvent
 
-    private val _toCleanDataEvent = MutableLiveData<Event<Unit>>()
-    val toCleanDataEvent: LiveData<Event<Unit>> = _toCleanDataEvent
+    private val _toFdDataEvent = MutableLiveData<Event<ByteArray>>()
+    val toFdDataEvent: LiveData<Event<ByteArray>> = _toFdDataEvent
 
     private val ycCallback = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
-            if (source.isEmpty()) {
-                _toCleanDataEvent.postValue(Event(Unit))
-                ycDisposable?.dispose()
-                realDisposable?.dispose()
-                isStartReadYcData = false
-                CheckFileReadManager.get().startReadData()
-            } else {
+            if (source.isNotEmpty()) {
                 _toYcDataEvent.postValue(Event(source))
             }
             if (!isStartReadYcData) {
-                ycDisposable?.dispose()
-                realDisposable?.dispose()
                 isStartReadYcData = true
+            }
+        }
+    }
+
+    private val fdCallback = object : BytesDataCallback {
+        override fun onData(source: ByteArray) {
+            if (source.isNotEmpty()) {
+                _toFdDataEvent.postValue(Event(source))
+            } else {
+                _toFdDataEvent.postValue(Event(source))
             }
         }
     }
@@ -80,12 +80,7 @@ class FileDataViewModel(
     override fun onCleared() {
         super.onCleared()
         CheckFileReadManager.get().removeCallBack(CommandType.ReadYcData,ycCallback)
-        disposable?.dispose()
-        disposable = null
-        ycDisposable?.dispose()
-        ycDisposable = null
-        realDisposable?.dispose()
-        realDisposable = null
+        CheckFileReadManager.get().removeCallBack(CommandType.FdData,fdCallback)
         fileRepository.releaseReadFile()
     }
 }

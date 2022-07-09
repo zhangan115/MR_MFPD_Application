@@ -14,518 +14,524 @@
         <import type="android.text.TextUtils" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorWhite"
-            android:orientation="vertical"
-            app:toast="@{vm.toastStr}">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/line_chart_color_2"
-                android:gravity="center"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="@{vm.fdStateStr}"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.INVISIBLE:View.VISIBLE}"
-                tools:text="传感器连接故障" />
-
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/shape_content_bg"
+                android:background="@color/colorWhite"
                 android:orientation="vertical"
-                android:paddingStart="15dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="10dp">
+                app:toast="@{vm.toastStr}">
 
-
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/shape_content_bg"
+                    android:orientation="vertical"
+                    android:paddingStart="15dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="10dp">
 
-                    <TextClock
-                        android:id="@+id/textClock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/blueColor"
-                        android:textSize="14sp"
-                        android:textStyle="bold|normal" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true">
-
-                        <TextView
-                            android:id="@+id/tbTextValue"
+                        <TextClock
+                            android:id="@+id/textClock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_title"
-                            android:textSize="13sp" />
+                            android:textColor="@color/blueColor"
+                            android:textSize="14sp"
+                            android:textStyle="bold|normal" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true">
+
+                            <TextView
+                                android:id="@+id/tbTextValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/text_title"
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/shape_content_bg"
+                    android:orientation="vertical"
+                    android:paddingStart="15dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:id="@+id/title1Tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="5dp"
+                                android:text="@{vm.text1}"
+                                android:textColor="@color/text_title"
+                                android:textSize="14sp" />
+
+                            <LinearLayout
+                                android:id="@+id/layout1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/title1Tv"
+                                android:baselineAligned="false"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    tools:ignore="UselessParent">
+
+                                    <ProgressBar
+                                        android:id="@+id/progressBar1"
+                                        style="@style/Progress1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="36dp"
+                                        android:progress="4" />
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp" />
+
+                                    <com.github.mikephil.charting.charts.LineChart
+                                        android:id="@+id/lineChart1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="35dp"
+                                        android:background="@color/white" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="36dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:paddingStart="3dp"
+                                    android:text="@{vm.yxValue}"
+                                    android:textColor="@color/text_title"
+                                    android:textSize="13sp" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout1"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.yxMinValue}"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout1"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="36dp"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.yxMaxValue}"
+                                android:textSize="12sp" />
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/shape_content_bg"
-                android:orientation="vertical"
-                android:paddingStart="15dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/title1Tv"
-                            android:layout_width="wrap_content"
+                        <RelativeLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="5dp"
-                            android:text="@{vm.text1}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
+                            android:layout_weight="1">
 
-                        <LinearLayout
-                            android:id="@+id/layout1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/title1Tv"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/title2Tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="5dp"
+                                android:text="@{vm.text2}"
+                                android:textColor="@color/text_title"
+                                android:textSize="14sp" />
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:id="@+id/layout2"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                tools:ignore="UselessParent">
+                                android:layout_below="@+id/title2Tv"
+                                android:baselineAligned="false"
+                                android:orientation="horizontal">
 
-                                <ProgressBar
-                                    android:id="@+id/progressBar1"
-                                    style="@style/Progress1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="36dp"
-                                    android:progress="4" />
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical"
+                                    tools:ignore="UselessParent">
 
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp" />
+                                    <ProgressBar
+                                        android:id="@+id/progressBar2"
+                                        style="@style/Progress2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="36dp"
+                                        android:progress="40" />
 
-                                <com.github.mikephil.charting.charts.LineChart
-                                    android:id="@+id/lineChart1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="35dp"
-                                    android:background="@color/white" />
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp" />
+
+                                    <com.github.mikephil.charting.charts.LineChart
+                                        android:id="@+id/lineChart2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="35dp"
+                                        android:background="@color/white" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="36dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:paddingStart="3dp"
+                                    android:text="@{vm.fzValue}"
+                                    android:textColor="@color/text_title"
+                                    android:textSize="13sp" />
+
                             </LinearLayout>
 
                             <TextView
-                                android:layout_width="36dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:paddingStart="3dp"
-                                android:text="@{vm.yxValue}"
+                                android:layout_above="@+id/layout2"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.fzMinValue}"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout2"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="36dp"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.fzMaxValue}"
+                                android:textSize="12sp" />
+
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:id="@+id/title3Tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="5dp"
+                                android:text="@{vm.text3}"
                                 android:textColor="@color/text_title"
-                                android:textSize="13sp" />
+                                android:textSize="14sp" />
 
-                        </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/layout3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/title3Tv"
+                                android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <ProgressBar
+                                        android:id="@+id/progressBar3"
+                                        style="@style/Progress3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="36dp"
+                                        android:progress="10" />
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp" />
+
+                                    <com.github.mikephil.charting.charts.LineChart
+                                        android:id="@+id/lineChart3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="35dp"
+                                        android:background="@color/white" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="36dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:paddingStart="3dp"
+                                    android:text="@{vm.f1Value}"
+                                    android:textColor="@color/text_title"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout3"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.f1MinValue}"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout3"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="36dp"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.f1MaxValue}"
+                                android:textSize="12sp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout1"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.yxMinValue}"
-                            android:textSize="12sp" />
+                            android:layout_weight="1">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout1"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="36dp"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.yxMaxValue}"
-                            android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/title4Tv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginBottom="5dp"
+                                android:text="@{vm.text4}"
+                                android:textColor="@color/text_title"
+                                android:textSize="14sp" />
 
-                    </RelativeLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout4"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.f2MinValue}"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_above="@+id/layout4"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="36dp"
+                                android:layout_marginBottom="3dp"
+                                android:text="@{vm.f2MaxValue}"
+                                android:textSize="12sp" />
+
+                            <LinearLayout
+                                android:id="@+id/layout4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/title4Tv"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <ProgressBar
+
+                                        android:id="@+id/progressBar4"
+                                        style="@style/Progress4"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="36dp"
+                                        android:progress="10" />
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp" />
+
+                                    <com.github.mikephil.charting.charts.LineChart
+                                        android:id="@+id/lineChart4"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="35dp"
+                                        android:background="@color/white" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="36dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:paddingStart="3dp"
+                                    android:text="@{vm.f2Value}"
+                                    android:textColor="@color/text_title"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <TextView
-                            android:id="@+id/title2Tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="5dp"
-                            android:text="@{vm.text2}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
-                        <LinearLayout
-                            android:id="@+id/layout2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/title2Tv"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                tools:ignore="UselessParent">
-
-                                <ProgressBar
-                                    android:id="@+id/progressBar2"
-                                    style="@style/Progress2"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="36dp"
-                                    android:progress="40" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp" />
-
-                                <com.github.mikephil.charting.charts.LineChart
-                                    android:id="@+id/lineChart2"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="35dp"
-                                    android:background="@color/white" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="36dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:paddingStart="3dp"
-                                android:text="@{vm.fzValue}"
-                                android:textColor="@color/text_title"
-                                android:textSize="13sp" />
-
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout2"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.fzMinValue}"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout2"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="36dp"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.fzMaxValue}"
-                            android:textSize="12sp" />
-
-                    </RelativeLayout>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <TextView
-                            android:id="@+id/title3Tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="5dp"
-                            android:text="@{vm.text3}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
-                        <LinearLayout
-                            android:id="@+id/layout3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/title3Tv"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <ProgressBar
-                                    android:id="@+id/progressBar3"
-                                    style="@style/Progress3"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="36dp"
-                                    android:progress="10" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp" />
-
-                                <com.github.mikephil.charting.charts.LineChart
-                                    android:id="@+id/lineChart3"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="35dp"
-                                    android:background="@color/white" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="36dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:paddingStart="3dp"
-                                android:text="@{vm.f1Value}"
-                                android:textColor="@color/text_title"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout3"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.f1MinValue}"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout3"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="36dp"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.f1MaxValue}"
-                            android:textSize="12sp" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <TextView
-                            android:id="@+id/title4Tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="5dp"
-                            android:text="@{vm.text4}"
-                            android:textColor="@color/text_title"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout4"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.f2MinValue}"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/layout4"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginEnd="36dp"
-                            android:layout_marginBottom="3dp"
-                            android:text="@{vm.f2MaxValue}"
-                            android:textSize="12sp" />
-
-                        <LinearLayout
-                            android:id="@+id/layout4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/title4Tv"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <ProgressBar
-
-                                    android:id="@+id/progressBar4"
-                                    style="@style/Progress4"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="36dp"
-                                    android:progress="10" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp" />
-
-                                <com.github.mikephil.charting.charts.LineChart
-                                    android:id="@+id/lineChart4"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="35dp"
-                                    android:background="@color/white" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="36dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:paddingStart="3dp"
-                                android:text="@{vm.f2Value}"
-                                android:textColor="@color/text_title"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="10dp"
-                android:gravity="end|center"
-                android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@{vm.limitValueStr}"
-                    android:textColor="@color/text_first_content"
-                    android:textSize="14sp" />
+                    android:layout_marginBottom="10dp"
+                    android:gravity="end|center"
+                    android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@{vm.limitValueStr}"
+                        android:textColor="@color/text_first_content"
+                        android:textSize="14sp" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/bg_time"
+                        android:gravity="center"
+                        android:text="@{vm.timeStr}"
+                        android:textColor="#FF6858"
+                        android:textSize="12sp"
+                        android:visibility="@{vm.isSaveData()?View.VISIBLE:View.INVISIBLE}" />
+
+
+                    <ImageView
+                        android:id="@+id/image1"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@mipmap/uhf_icon_record" />
+
+                    <ImageView
+                        android:id="@+id/image2"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@mipmap/uhf_icon_small" />
+
+                    <ImageView
+                        android:id="@+id/image3"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@mipmap/uhf_icon_big" />
+
+                    <ImageView
+                        android:id="@+id/image4"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@mipmap/uhf_icon_reset" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/bg_time"
                     android:gravity="center"
                     android:text="@{vm.timeStr}"
                     android:textColor="#FF6858"
                     android:textSize="12sp"
-                    android:visibility="@{vm.isSaveData()?View.VISIBLE:View.INVISIBLE}" />
+                    android:visibility="@{vm.showTimeView?View.VISIBLE:View.GONE}" />
 
-
-                <ImageView
-                    android:id="@+id/image1"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@mipmap/uhf_icon_record" />
-
-                <ImageView
-                    android:id="@+id/image2"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@mipmap/uhf_icon_small" />
-
-                <ImageView
-                    android:id="@+id/image3"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@mipmap/uhf_icon_big" />
-
-                <ImageView
-                    android:id="@+id/image4"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@mipmap/uhf_icon_reset" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/line_chart_color_2"
+                    android:gravity="center"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@{vm.fdStateStr}"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:visibility="@{TextUtils.isEmpty(vm.fdStateStr)?View.INVISIBLE:View.VISIBLE}"
+                    tools:text="传感器连接故障" />
 
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_time"
-                android:gravity="center"
-                android:text="@{vm.timeStr}"
-                android:textColor="#FF6858"
-                android:textSize="12sp"
-                android:visibility="@{vm.showTimeView?View.VISIBLE:View.GONE}" />
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp"
+            android:minWidth="100dp"
+            android:text="@{vm.location}"
+            android:textColor="@color/blueColor"
+            android:textSize="13sp" />
+    </RelativeLayout>
 
-            <TextView
-                android:id="@+id/location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginBottom="20dp"
-                android:minWidth="100dp"
-                android:text="@{vm.location}"
-                android:textColor="@color/blueColor"
-                android:textSize="13sp" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 </layout>
