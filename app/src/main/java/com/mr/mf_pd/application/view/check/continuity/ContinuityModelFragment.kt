@@ -166,34 +166,34 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
 
                 continuityMaxValue1 =
-                    calculationProgress(progressBar1, yxValue,defaultValues[0])
+                    calculationProgress(progressBar1, yxValue, defaultValues[0])
                 continuityMaxValue2 =
-                    calculationProgress(progressBar2, fzValue,defaultValues[1])
-                continuityMaxValue3 = calculationProgress(progressBar3, f1Hz,defaultValues[2])
-                continuityMaxValue4 = calculationProgress(progressBar4, f2Hz,defaultValues[3])
+                    calculationProgress(progressBar2, fzValue, defaultValues[1])
+                continuityMaxValue3 = calculationProgress(progressBar3, f1Hz, defaultValues[2])
+                continuityMaxValue4 = calculationProgress(progressBar4, f2Hz, defaultValues[3])
 
                 viewModel.yxMaxValue.postValue(continuityMaxValue1.toString())
                 viewModel.fzMaxValue.postValue(continuityMaxValue2.toString())
                 viewModel.f1MaxValue.postValue(continuityMaxValue3.toString())
                 viewModel.f2MaxValue.postValue(continuityMaxValue4.toString())
 
-                if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime) {
+                if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime * 10) {
                     viewModel.fzValueList.removeFirst()
                 }
-                if (viewModel.yxValueList.size > viewModel.checkType.settingBean.ljTime) {
+                if (viewModel.yxValueList.size > viewModel.checkType.settingBean.ljTime * 10) {
                     viewModel.yxValueList.removeFirst()
                 }
-                if (viewModel.f1ValueList.size > viewModel.checkType.settingBean.ljTime) {
+                if (viewModel.f1ValueList.size > viewModel.checkType.settingBean.ljTime * 10) {
                     viewModel.f1ValueList.removeFirst()
                 }
-                if (viewModel.f2ValueList.size > viewModel.checkType.settingBean.ljTime) {
+                if (viewModel.f2ValueList.size > viewModel.checkType.settingBean.ljTime * 10) {
                     viewModel.f2ValueList.removeFirst()
                 }
 
-                LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
-                LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
-                LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
-                LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
+                LineChartUtils.updateData(lineChart1, viewModel.yxValueList,0f,continuityMaxValue1.toFloat())
+                LineChartUtils.updateData(lineChart2, viewModel.fzValueList,0f,continuityMaxValue2.toFloat())
+                LineChartUtils.updateData(lineChart3, viewModel.f1ValueList,0f,continuityMaxValue3.toFloat())
+                LineChartUtils.updateData(lineChart4, viewModel.f2ValueList,0f,continuityMaxValue4.toFloat())
             }
         }
     }
@@ -208,10 +208,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
-        LineChartUtils.updateData(lineChart1, viewModel.yxValueList)
-        LineChartUtils.updateData(lineChart2, viewModel.fzValueList)
-        LineChartUtils.updateData(lineChart3, viewModel.f1ValueList)
-        LineChartUtils.updateData(lineChart4, viewModel.f2ValueList)
+        LineChartUtils.updateData(lineChart1, viewModel.yxValueList,0f,continuityMaxValue1.toFloat())
+        LineChartUtils.updateData(lineChart2, viewModel.fzValueList,0f,continuityMaxValue2.toFloat())
+        LineChartUtils.updateData(lineChart3, viewModel.f1ValueList,0f,continuityMaxValue3.toFloat())
+        LineChartUtils.updateData(lineChart4, viewModel.f2ValueList,0f,continuityMaxValue4.toFloat())
     }
 
     override fun isAdd(): Boolean {
@@ -221,7 +221,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
     private fun calculationProgress(
         progressBar: ProgressBar,
         value: Float,
-        defaultValue:Int
+        defaultValue: Int,
     ): Int {
         val mV = when {
             value < 100 -> {

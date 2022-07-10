@@ -76,6 +76,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         })
     }
 
+    override fun updateLjView() {
+
+    }
+
     override fun onLimitValueChange(value: Int) {
         viewModel.limitValueStr.postValue("通道门限值:$value")
     }

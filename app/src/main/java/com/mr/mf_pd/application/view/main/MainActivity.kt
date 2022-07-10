@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.PatternMatcher
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -23,7 +22,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.BR
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.adapter.GenericQuickAdapter
@@ -116,6 +114,8 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                         DeviceBean(mrPDStr, deviceNum, 0, power, powerState, null, 0, ip)
                     }
                     if (device != null) {
+                        device.power = power
+                        device.ip = ip
                         deviceMap[deviceNum] = device
                         if (!dataList.contains(device)) {
                             dataList.add(device)

@@ -8,7 +8,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.app.MRApplication
-import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -78,8 +77,19 @@ object LineChartUtils {
         dataSet.highLightColor = highColor
     }
 
-    fun updateData(lineChart: LineChart,list: ArrayList<Float>) {
+    fun updateData(
+        lineChart: LineChart,
+        list: ArrayList<Float>,
+        minValue: Float? = null,
+        maxValue: Float? = null,
+    ) {
         lineChart.data = getLineData(list)
+        if (minValue!=null){
+            lineChart.axisLeft.axisMinimum = minValue
+        }
+        if (maxValue!=null){
+            lineChart.axisLeft.axisMaximum = maxValue
+        }
         lineChart.invalidate()
     }
 
@@ -93,7 +103,9 @@ object LineChartUtils {
                 entries.add(Entry(i.toFloat(), chartDataList[i]))
             }
             val dataSet = LineDataSet(entries, "")
-            initDataSet(dataSet,MRApplication.instance.getColor(R.color.blueColor),MRApplication.instance.getColor(R.color.blueColor))
+            initDataSet(dataSet,
+                MRApplication.instance.getColor(R.color.blueColor),
+                MRApplication.instance.getColor(R.color.blueColor))
             dataSets.add(dataSet)
         }
         return LineData(dataSets)

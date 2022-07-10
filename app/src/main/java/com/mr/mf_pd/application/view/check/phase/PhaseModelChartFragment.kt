@@ -42,6 +42,10 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         gainChartView?.updateFzValue()
     }
 
+    override fun updateLjView() {
+
+    }
+
     override fun lazyLoad() {
         viewModel.start()
     }

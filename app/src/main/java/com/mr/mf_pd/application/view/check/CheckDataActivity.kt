@@ -142,8 +142,10 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
             }
         })
         viewModel.toSettingValueEvent.observe(this, EventObserver {
-            val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
-            updateLimitValue(currentValue)
+            if (viewModel.settingValues.size < getLimitPosition()){
+                val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
+                updateLimitValue(currentValue)
+            }
         })
     }
 

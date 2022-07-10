@@ -78,6 +78,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         }
     }
 
+    override fun updateLjView() {
+
+    }
+
     override fun initView() {
         surfaceView1.setEGLContextClientVersion(3)
         prPsChartsRenderer =

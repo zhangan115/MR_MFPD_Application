@@ -58,6 +58,10 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     //选择文件夹请求Code
     private val requestChooseDirCode = 200
 
+    //
+    private var updateTime:Int?=null
+    private var updateTimeCount:Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -74,6 +78,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         super.onResume()
         checkType?.settingBean?.let {
             it.limitValue?.let { it1 -> onLimitValueChange(it1) }
+            updateTime = it.ljTime
+            updateTimeCount = 0
         }
         Log.d("zhangan", "$TAG onResume")
     }
@@ -146,6 +152,12 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
 
     override fun onOneSecondUiChange() {
         oneSecondUIChange()
+        if (checkType != null) {
+            updateTimeCount++
+            if (updateTimeCount == checkType?.settingBean?.ljTime) {
+                updateLjView()
+            }
+        }
     }
 
     abstract fun setCheckFile(str: String)
@@ -303,6 +315,13 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
      * 一秒修改一次的事件
      */
     open fun oneSecondUIChange() {
+
+    }
+
+    /**
+     * 更新图谱累计事件
+     */
+    open fun updateLjView(){
 
     }
 
