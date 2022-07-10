@@ -156,6 +156,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             updateTimeCount++
             if (updateTimeCount == checkType?.settingBean?.ljTime) {
                 updateLjView()
+                updateTimeCount = 0
             }
         }
     }

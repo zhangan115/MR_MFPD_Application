@@ -135,6 +135,12 @@ class PhaseModelViewModel(
         filesRepository.stopSaveData()
     }
 
+    fun updateLjData(){
+        this.dataMaps = HashMap()
+        this.dataCallback?.invoke(dataMaps)
+        updateSettingValue()
+    }
+
     fun cleanCurrentData() {
         this.gainValues.postValue(null)
         this.dataMaps = HashMap()

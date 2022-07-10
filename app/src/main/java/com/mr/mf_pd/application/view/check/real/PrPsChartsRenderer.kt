@@ -223,12 +223,8 @@ class PrPsChartsRenderer(
         prPs3DXZLines.bindData(colorProgram)
         prPs3DXZLines.draw()
 
-        if (isToCleanData) {
-//            prPsPoints?.cleanAllData()
-        } else {
-            prPsPoints?.bindData(colorPointProgram)
-            prPsPoints?.draw()
-        }
+        prPsPoints?.bindData(colorPointProgram)
+        prPsPoints?.draw()
 
         GLES30.glDepthMask(false)
 
@@ -292,8 +288,12 @@ class PrPsChartsRenderer(
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
     }
 
-    fun cleanData() {
+    fun updateBitmap(){
         updateBitmap = true
+    }
+
+    fun cleanData() {
+        updateBitmap()
         isToCleanData = true
     }
 

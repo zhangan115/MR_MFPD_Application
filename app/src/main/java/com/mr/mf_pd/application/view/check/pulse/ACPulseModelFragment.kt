@@ -76,7 +76,7 @@ class ACPulseModelFragment : BaseCheckFragment<ACPulseDataBinding>() {
     }
 
     override fun updateLjView() {
-
+        pulseRenderer?.cleanData()
     }
 
     override fun onLimitValueChange(value: Int) {

@@ -77,7 +77,7 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
     }
 
     override fun updateLjView() {
-
+        flightChartsRenderer?.cleanData()
     }
 
     override fun onLimitValueChange(value: Int) {

@@ -79,7 +79,8 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
     }
 
     override fun updateLjView() {
-
+        viewModel.updateLjData()
+        prPsChartsRenderer?.updateBitmap()
     }
 
     override fun initView() {

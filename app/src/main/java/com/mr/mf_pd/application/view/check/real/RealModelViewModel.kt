@@ -293,13 +293,17 @@ class RealModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
+    fun updateLjData(){
+        this.dataMaps = ConcurrentHashMap()
+        prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
+    }
+
     fun cleanCurrentData() {
         this.gainValues.postValue(null)
         this.dataMaps = ConcurrentHashMap()
         this.gainFloatList.clear()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
         updateSettingValue()
-
     }
 
     private fun updateSettingValue() {

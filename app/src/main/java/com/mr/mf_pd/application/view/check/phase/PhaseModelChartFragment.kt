@@ -43,7 +43,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
     }
 
     override fun updateLjView() {
-
+        viewModel.updateLjData()
     }
 
     override fun lazyLoad() {
