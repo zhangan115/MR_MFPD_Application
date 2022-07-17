@@ -11,6 +11,10 @@ import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.FileBeanModel
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
@@ -43,6 +47,7 @@ class FileDataViewModel(
                 if (checkDir != null) {
                     fileRepository.setCurrentClickFile(checkDir)
                 }
+                updateSettingValue()
                 checkParamsBean = checkType.checkParams
                 CheckFileReadManager.get().config = fileBean.config
                 CheckFileReadManager.get().startReadData()
@@ -74,6 +79,22 @@ class FileDataViewModel(
             } else {
                 _toFdDataEvent.postValue(Event(source))
             }
+        }
+    }
+
+    private fun updateSettingValue() {
+        settingBean?.let {
+            PrPdPoint2DList.maxValue = it.maxValue.toFloat()
+            PrPdPoint2DList.minValue = it.minValue.toFloat()
+
+            PrpsPointList.maxValue = it.maxValue.toFloat()
+            PrpsPointList.minValue = it.minValue.toFloat()
+
+            PrPsCubeList.maxValue = it.maxValue.toFloat()
+            PrPsCubeList.minValue = it.minValue.toFloat()
+
+            FlightPoint2DList.maxValue = it.maxValue.toFloat()
+            FlightPoint2DList.minValue = it.minValue.toFloat()
         }
     }
 
