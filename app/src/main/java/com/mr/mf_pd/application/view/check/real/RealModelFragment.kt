@@ -74,10 +74,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
             }
 
             override fun addPrpsData(data: Array<Float?>) {
-                if (prPsChartsRenderer!=null){
-                    val v =  prPsChartsRenderer!!.value
-                    for (row in v.size -1 .. 1){
-                        v[row] = v[row -1]
+                if (prPsChartsRenderer != null) {
+                    val v = prPsChartsRenderer!!.value
+                    for (row in v.size - 1..1) {
+                        v[row] = v[row - 1]
                     }
                     v[0] = data
                 }
@@ -102,9 +102,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         prPsChartsRenderer =
             PrPsChartsRenderer(this.requireContext(),
                 checkType == CheckType.HF,
-                checkType!!.settingBean,
-                viewModel.getQueue(),
-                viewModel.realBytesDataCallback)
+                checkType!!.settingBean)
         surfaceView1.setRenderer(prPsChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         surfaceView1.setZOrderOnTop(true)
@@ -219,7 +217,7 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         initChartView(settingBean)
     }
 
-    private fun initChartView(settingBean: SettingBean){
+    private fun initChartView(settingBean: SettingBean) {
         prPsChartsRenderer?.updateAxis(getUnitValue(settingBean),
             getYAxisValue(viewModel.isFile.value!!,
                 settingBean,

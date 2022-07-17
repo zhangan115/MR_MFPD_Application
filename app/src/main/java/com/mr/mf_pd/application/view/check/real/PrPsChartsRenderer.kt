@@ -11,7 +11,6 @@ import android.opengl.Matrix
 import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
-import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.*
 import com.mr.mf_pd.application.opengl.programs.ColorShaderProgram
@@ -20,7 +19,6 @@ import com.mr.mf_pd.application.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
-import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
@@ -30,8 +28,6 @@ class PrPsChartsRenderer(
     var context: Context,
     var isZeroCenter: Boolean = false,
     var settingBean: SettingBean,
-    var queue: ArrayBlockingQueue<ByteArray>?,
-    var dataCallback: BytesDataCallback?,
 ) :
     GLSurfaceView.Renderer {
 
@@ -39,9 +35,6 @@ class PrPsChartsRenderer(
     var value = Array(50) {
         arrayOfNulls<Float>(100)
     }
-
-    @Volatile
-    var startReadData: Boolean = false
 
     @Volatile
     var angleX: Float = -60f
@@ -189,7 +182,6 @@ class PrPsChartsRenderer(
         }
     }
 
-
     fun updateAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
         if (unit != unitList || textList != zList) {
             updateBitmap = true
@@ -202,7 +194,7 @@ class PrPsChartsRenderer(
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        Log.d("zhangan", "onDrawFrame")
+        Log.d("zhangan", "${System.currentTimeMillis()} onDrawFrame ")
         val timeStart = System.currentTimeMillis()
         for (index in value.indices) {
             prpsCubeList[index]
@@ -273,24 +265,6 @@ class PrPsChartsRenderer(
             }
         }
         val timeEnd = System.currentTimeMillis()
-
-//        val list = ArrayList<ByteArray>()
-//        if (queue != null && queue!!.size > 20) {
-//            startReadData = true
-//        }
-//        if (startReadData) {
-//            val bytes = queue?.take()
-//            if (bytes != null) {
-//                dataCallback?.onData(bytes)
-//            }
-//        }
-//        queue?.drainTo(list)
-//
-//        val bytes = queue?.take()
-//
-//        list.forEach {
-//            dataCallback?.onData(it)
-//        }
         Log.d("zhangan", "cost time" + (timeEnd - timeStart))
     }
 
