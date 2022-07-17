@@ -36,6 +36,11 @@ class PrPsChartsRenderer(
     GLSurfaceView.Renderer {
 
     @Volatile
+    var value = Array(50) {
+        arrayOfNulls<Float>(100)
+    }
+
+    @Volatile
     var startReadData: Boolean = false
 
     @Volatile
@@ -72,7 +77,7 @@ class PrPsChartsRenderer(
     private val modelViewProjectionMatrix = FloatArray(16)
 
     @Volatile
-    private var prpsCubeList: CopyOnWriteArrayList<PrPsCubeList>? = CopyOnWriteArrayList()
+    private var prpsCubeList: CopyOnWriteArrayList<PrPsCubeList> = CopyOnWriteArrayList()
 
     @Volatile
     var isToCleanData = false
@@ -89,6 +94,7 @@ class PrPsChartsRenderer(
     private lateinit var prPs3DXZLines: PrPsXZLines
     private var rect: Rect = Rect()
     private val paint = Paint()
+
     @Volatile
     var updateBitmap = true
 
@@ -125,6 +131,15 @@ class PrPsChartsRenderer(
         prPs3DXZLines =
             PrPsXZLines(4, 4, 90, textRectInOpenGl, isZeroCenter)
 
+        initPrpsCubeList()
+        Log.d("zhangan",prpsCubeList.size.toString())
+    }
+
+    private fun initPrpsCubeList() {
+        prpsCubeList.clear()
+        for (v in value) {
+            prpsCubeList.add(PrPsCubeList(textRectInOpenGl, CopyOnWriteArrayList(v), isZeroCenter))
+        }
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -151,13 +166,13 @@ class PrPsChartsRenderer(
     }
 
     private fun addPrpsData(prPsList: PrPsCubeList?) {
-        if (prpsCubeList != null && prPsList != null) {
-            for (i in 0 until prpsCubeList!!.size) {
-                prpsCubeList!![i].updateRow(textRectInOpenGl, i + 1)
+        if (prPsList != null) {
+            for (i in 0 until prpsCubeList.size) {
+                prpsCubeList[i].updateRow(textRectInOpenGl, i + 1)
             }
-            prpsCubeList!!.add(0, prPsList)
-            if (prpsCubeList!!.size > Constants.PRPS_ROW) {
-                prpsCubeList?.removeLast()
+            prpsCubeList.add(0, prPsList)
+            if (prpsCubeList.size > Constants.PRPS_ROW) {
+                prpsCubeList.removeLast()
             }
         }
     }
@@ -170,7 +185,7 @@ class PrPsChartsRenderer(
         if (floatList.isEmpty()) {
             cleanData()
         } else {
-            addPrpsData(PrPsCubeList(textRectInOpenGl, settingBean, floatList, isZeroCenter))
+            addPrpsData(PrPsCubeList(textRectInOpenGl, floatList, isZeroCenter))
         }
     }
 
@@ -187,9 +202,14 @@ class PrPsChartsRenderer(
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        Log.d("zhangan","onDrawFrame")
+        Log.d("zhangan", "onDrawFrame")
         val timeStart = System.currentTimeMillis()
-
+        for (index in value.indices) {
+            prpsCubeList[index]
+                ?.updateRow(textRectInOpenGl, index, CopyOnWriteArrayList(value[index]))
+        }
+        val updateTimeEnd = System.currentTimeMillis()
+        Log.d("zhangan", "update row data time cost is " +( updateTimeEnd - timeStart))
         GLES30.glEnable(GLES20.GL_BLEND)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
@@ -244,10 +264,10 @@ class PrPsChartsRenderer(
         text2Help.draw()
 
         if (isToCleanData) {
-            prpsCubeList?.clear()
+            initPrpsCubeList()
             isToCleanData = false
         } else {
-            prpsCubeList?.forEach {
+            prpsCubeList.forEach {
                 it.bindData(colorPointProgram)
                 it.draw()
             }
@@ -255,16 +275,15 @@ class PrPsChartsRenderer(
         val timeEnd = System.currentTimeMillis()
 
 //        val list = ArrayList<ByteArray>()
-        if (queue != null && queue!!.size > 20) {
-            startReadData = true
-        }
-        if (startReadData) {
-            Log.d("zhangan","queue list size is " + queue?.size)
-            val bytes = queue?.take()
-            if (bytes != null) {
-                dataCallback?.onData(bytes)
-            }
-        }
+//        if (queue != null && queue!!.size > 20) {
+//            startReadData = true
+//        }
+//        if (startReadData) {
+//            val bytes = queue?.take()
+//            if (bytes != null) {
+//                dataCallback?.onData(bytes)
+//            }
+//        }
 //        queue?.drainTo(list)
 //
 //        val bytes = queue?.take()
@@ -288,7 +307,7 @@ class PrPsChartsRenderer(
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
     }
 
-    fun updateBitmap(){
+    fun updateBitmap() {
         updateBitmap = true
     }
 

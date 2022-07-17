@@ -2,26 +2,28 @@ package com.mr.mf_pd.application.app
 
 import android.app.Activity
 import android.app.Application
-import android.os.Environment
 import android.util.Log
 import androidx.annotation.NonNull
 import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.ConstantStr
-import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.repository.RepositoryService
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
+import com.mr.mf_pd.application.view.main.MainActivity
+import com.mr.mf_pd.application.view.splash.SplashActivity
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
 import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import com.sito.tool.library.utils.SPHelper
+import com.tuzhenlei.crashhandler.CrashHandler
 import com.umeng.commonsdk.UMConfigure
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class MRApplication : Application() {
 
@@ -87,6 +89,8 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
+        CrashHandler.getInstance().init(this, BuildConfig.DEBUG, false, 0,
+            SplashActivity::class.java)
         UMConfigure.init(this, BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL,1, null)
     }
 

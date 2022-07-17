@@ -50,4 +50,26 @@ public class NumberUtils {
         return "0000,0000";
     }
 
+    /**
+     * 修改到合适的最大值
+     *
+     * @param max  最大值
+     * @param step 调整参数
+     * @return 修改后的最大值
+     */
+    public static int changeMaxValue(int max, int step) {
+        return ((max / step) + 1) * step;
+    }
+
+    /**
+     * 修改到合适的最小值
+     *
+     * @param min  最小值
+     * @param step 调整参数
+     * @return 修改后的最小值
+     */
+    public static int changeMinValue(int min, int step) {
+        return ((min / step) - 1) * step;
+    }
+
 }

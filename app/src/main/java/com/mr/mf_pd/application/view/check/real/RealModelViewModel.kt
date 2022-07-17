@@ -120,6 +120,7 @@ class RealModelViewModel(
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
+        val vList: Array<Float?> = Array(100) { null }
         for (j in 0 until Constants.PRPS_COLUMN) {
             newValueList.add(null)
         }
@@ -168,6 +169,7 @@ class RealModelViewModel(
                     value *= -1
                 }
                 newValueList[off] = value
+                vList[off] = value
                 if (dataMaps.containsKey(off)) {
                     val map = dataMaps[off]
                     if (map != null && map.containsKey(value)) {
@@ -221,7 +223,8 @@ class RealModelViewModel(
                 emptyCount = 0
             }
         }
-        prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
+//        prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
+        prPsDataCallback?.addPrpsData(vList)
     }
 
     @Synchronized

@@ -4,9 +4,7 @@ import android.graphics.PixelFormat
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.viewModels
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.mr.mf_pd.application.R
-import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ACFlightDataBinding
 import com.mr.mf_pd.application.model.SettingBean
@@ -15,7 +13,9 @@ import com.mr.mf_pd.application.repository.DefaultFilesRepository
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
+
 
 /**
  * AC 飞行模式
@@ -51,6 +51,8 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         gainChartView?.updateFzValue()
     }
 
+    private var disposable: Disposable? = null
+
     override fun initData() {
         checkType = viewModel.checkType
         if (viewModel.checkType.settingBean.gdCd == 1) {
@@ -74,6 +76,11 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 )
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
 
     override fun updateLjView() {
