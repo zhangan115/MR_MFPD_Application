@@ -66,25 +66,11 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
                 data: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>,
                 cubeList: CopyOnWriteArrayList<Float?>,
             ) {
-//                prPsChartsRenderer?.updateAxis(getUnitValue(viewModel.checkType.settingBean),
-//                    getYAxisValue(viewModel.isFile.value!!,
-//                        viewModel.checkType.settingBean,
-//                        viewModel.gainMinValue))
-//                prPsChartsRenderer?.updatePrpsData(data, cubeList)
-            }
-
-            override fun addPrpsData(data: Array<Float?>) {
-                if (prPsChartsRenderer != null) {
-                    val v = prPsChartsRenderer!!.value
-                    for (row in v.size - 1..1) {
-                        v[row] = v[row - 1]
-                    }
-                    v[0] = data
-                }
                 prPsChartsRenderer?.updateAxis(getUnitValue(viewModel.checkType.settingBean),
                     getYAxisValue(viewModel.isFile.value!!,
                         viewModel.checkType.settingBean,
                         viewModel.gainMinValue))
+                prPsChartsRenderer?.updatePrpsData(data, cubeList)
             }
         }
         viewModel.toResetEvent.observe(this) {
@@ -102,7 +88,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         prPsChartsRenderer =
             PrPsChartsRenderer(this.requireContext(),
                 checkType == CheckType.HF,
-                checkType!!.settingBean)
+                checkType!!.settingBean,
+                viewModel.getQueue(),
+                viewModel.realBytesDataCallback)
         surfaceView1.setRenderer(prPsChartsRenderer)
         surfaceView1.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         surfaceView1.setZOrderOnTop(true)
@@ -184,10 +172,6 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
 
     override fun fdStrChange(fdType: String?) {
         viewModel.setState(fdType)
-    }
-
-    override fun onRealDataChange(bytes: ByteArray?) {
-        viewModel.dealRealData(bytes)
     }
 
     override fun oneSecondUIChange() {

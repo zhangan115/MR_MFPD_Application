@@ -212,10 +212,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         }
     }
 
-    override fun onRealDataChange(bytes: ByteArray?) {
-
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity is BaseCheckActivity<*> && activity is CheckActivityListener) {

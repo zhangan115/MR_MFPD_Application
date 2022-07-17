@@ -190,7 +190,7 @@ class PhaseModelViewModel(
     var canUpdateFz = true
     var emptyCount = 0
 
-    fun dealRealData(source: ByteArray) {
+    private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)

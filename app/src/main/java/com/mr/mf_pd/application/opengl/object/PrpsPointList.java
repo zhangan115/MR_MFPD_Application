@@ -25,16 +25,15 @@ public class PrpsPointList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-    @Volatile
-    public static float minValue = -80.0f;
-    @Volatile
-    public static float maxValue = -20.0f;
+
+    public volatile static float minValue = -80.0f;
+    public volatile static float maxValue = -20.0f;
 
     private final ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> values = new ConcurrentHashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
 
 
-    private short[] indices;
+    private volatile short[] indices;
 
     private final List<Float> color1 = new ArrayList<>();
     private final List<Float> color2 = new ArrayList<>();

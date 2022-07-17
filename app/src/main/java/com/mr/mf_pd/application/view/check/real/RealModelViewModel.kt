@@ -23,17 +23,13 @@ import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -125,11 +121,9 @@ class RealModelViewModel(
         val bytes = ByteArray(source.size - 7)
         System.arraycopy(source, 5, bytes, 0, source.size - 7)
         val newValueList: CopyOnWriteArrayList<Float?> = CopyOnWriteArrayList()
-        val vList: Array<Float?> = Array(100) { null }
         for (j in 0 until Constants.PRPS_COLUMN) {
             newValueList.add(null)
         }
-        var startTime = System.currentTimeMillis()
         for (i in 0 until (bytes.size / 6)) {
             val values = ByteArray(6)
             System.arraycopy(bytes, 6 * i, values, 0, 6)
@@ -174,7 +168,6 @@ class RealModelViewModel(
                     value *= -1
                 }
                 newValueList[off] = value
-                vList[off] = value
                 if (dataMaps.containsKey(off)) {
                     val map = dataMaps[off]
                     if (map != null && map.containsKey(value)) {
@@ -228,8 +221,7 @@ class RealModelViewModel(
                 emptyCount = 0
             }
         }
-//        prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
-        prPsDataCallback?.addPrpsData(vList)
+        prPsDataCallback?.prpsDataChange(dataMaps, newValueList)
     }
 
     @Synchronized
@@ -345,29 +337,6 @@ class RealModelViewModel(
         } else {
             SocketManager.get().realDataDeque
         }
-    }
-
-    private fun getRealData(
-        time: Long = 20,
-        unit: TimeUnit = TimeUnit.MILLISECONDS,
-    ): Disposable {
-        return Observable.create { emitter: ObservableEmitter<ByteArray?> ->
-            try {
-                getQueue()?.let {
-                    val data = it.poll()
-                    if (data!=null){
-                        dealRealData(data)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                emitter.onError(e)
-            } finally {
-                emitter.onComplete()
-            }
-        }.repeatWhen { objectObservable: Observable<Any?> ->
-            objectObservable.delay(time, unit)
-        }.subscribeOn(Schedulers.io()).subscribe()
     }
 
     override fun onCleared() {

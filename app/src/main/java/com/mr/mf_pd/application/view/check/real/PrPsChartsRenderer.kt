@@ -11,6 +11,7 @@ import android.opengl.Matrix
 import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.*
 import com.mr.mf_pd.application.opengl.programs.ColorShaderProgram
@@ -19,6 +20,7 @@ import com.mr.mf_pd.application.opengl.programs.TextureShader3DProgram
 import com.mr.mf_pd.application.opengl.utils.MatrixUtils
 import com.mr.mf_pd.application.opengl.utils.TextureUtils
 import com.sito.tool.library.utils.DisplayUtil
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.microedition.khronos.egl.EGLConfig
@@ -28,13 +30,13 @@ class PrPsChartsRenderer(
     var context: Context,
     var isZeroCenter: Boolean = false,
     var settingBean: SettingBean,
+    var queue: ArrayBlockingQueue<ByteArray>?,
+    var dataCallback: BytesDataCallback?,
 ) :
     GLSurfaceView.Renderer {
 
     @Volatile
-    var value = Array(50) {
-        arrayOfNulls<Float>(100)
-    }
+    var startReadData: Boolean = false
 
     @Volatile
     var angleX: Float = -60f
@@ -70,7 +72,7 @@ class PrPsChartsRenderer(
     private val modelViewProjectionMatrix = FloatArray(16)
 
     @Volatile
-    private var prpsCubeList: CopyOnWriteArrayList<PrPsCubeList> = CopyOnWriteArrayList()
+    private var prpsCubeList: CopyOnWriteArrayList<PrPsCubeList>? = CopyOnWriteArrayList()
 
     @Volatile
     var isToCleanData = false
@@ -87,7 +89,6 @@ class PrPsChartsRenderer(
     private lateinit var prPs3DXZLines: PrPsXZLines
     private var rect: Rect = Rect()
     private val paint = Paint()
-
     @Volatile
     var updateBitmap = true
 
@@ -124,15 +125,6 @@ class PrPsChartsRenderer(
         prPs3DXZLines =
             PrPsXZLines(4, 4, 90, textRectInOpenGl, isZeroCenter)
 
-        initPrpsCubeList()
-        Log.d("zhangan",prpsCubeList.size.toString())
-    }
-
-    private fun initPrpsCubeList() {
-        prpsCubeList.clear()
-        for (v in value) {
-            prpsCubeList.add(PrPsCubeList(textRectInOpenGl, CopyOnWriteArrayList(v), isZeroCenter))
-        }
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -159,13 +151,13 @@ class PrPsChartsRenderer(
     }
 
     private fun addPrpsData(prPsList: PrPsCubeList?) {
-        if (prPsList != null) {
-            for (i in 0 until prpsCubeList.size) {
-                prpsCubeList[i].updateRow(textRectInOpenGl, i + 1)
+        if (prpsCubeList != null && prPsList != null) {
+            for (i in 0 until prpsCubeList!!.size) {
+                prpsCubeList!![i].updateRow(textRectInOpenGl, i + 1)
             }
-            prpsCubeList.add(0, prPsList)
-            if (prpsCubeList.size > Constants.PRPS_ROW) {
-                prpsCubeList.removeLast()
+            prpsCubeList!!.add(0, prPsList)
+            if (prpsCubeList!!.size > Constants.PRPS_ROW) {
+                prpsCubeList?.removeLast()
             }
         }
     }
@@ -178,9 +170,10 @@ class PrPsChartsRenderer(
         if (floatList.isEmpty()) {
             cleanData()
         } else {
-            addPrpsData(PrPsCubeList(textRectInOpenGl, floatList, isZeroCenter))
+            addPrpsData(PrPsCubeList(textRectInOpenGl, settingBean, floatList, isZeroCenter))
         }
     }
+
 
     fun updateAxis(unit: CopyOnWriteArrayList<String>, textList: CopyOnWriteArrayList<String>) {
         if (unit != unitList || textList != zList) {
@@ -194,14 +187,8 @@ class PrPsChartsRenderer(
     }
 
     override fun onDrawFrame(gl: GL10?) {
-        Log.d("zhangan", "${System.currentTimeMillis()} onDrawFrame ")
         val timeStart = System.currentTimeMillis()
-        for (index in value.indices) {
-            prpsCubeList[index]
-                ?.updateRow(textRectInOpenGl, index, CopyOnWriteArrayList(value[index]))
-        }
-        val updateTimeEnd = System.currentTimeMillis()
-        Log.d("zhangan", "update row data time cost is " +( updateTimeEnd - timeStart))
+
         GLES30.glEnable(GLES20.GL_BLEND)
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
         GLES30.glClear(GLES30.GL_DEPTH_BUFFER_BIT)
@@ -256,16 +243,31 @@ class PrPsChartsRenderer(
         text2Help.draw()
 
         if (isToCleanData) {
-            initPrpsCubeList()
+            prpsCubeList?.clear()
             isToCleanData = false
         } else {
-            prpsCubeList.forEach {
+            prpsCubeList?.forEach {
                 it.bindData(colorPointProgram)
                 it.draw()
             }
         }
-        val timeEnd = System.currentTimeMillis()
-        Log.d("zhangan", "cost time" + (timeEnd - timeStart))
+        if (queue != null && queue!!.size > 20) {
+            startReadData = true
+        }
+        if (startReadData) {
+            Log.d("zhangan","queue list size is " + queue?.size)
+            val bytes = queue?.poll()
+            if (bytes != null) {
+                dataCallback?.onData(bytes)
+            }
+        }
+        val costTime = System.currentTimeMillis() - timeStart
+        Log.d("zhangan", "onDrawFrame cost time $costTime")
+        if (costTime<=20){
+            Thread.sleep(20 - costTime)
+        }else{
+            Log.d("zhangan", "onDrawFrame cost time over 20ms")
+        }
     }
 
     private fun position() {
@@ -281,7 +283,7 @@ class PrPsChartsRenderer(
         Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
     }
 
-    fun updateBitmap() {
+    fun updateBitmap(){
         updateBitmap = true
     }
 
