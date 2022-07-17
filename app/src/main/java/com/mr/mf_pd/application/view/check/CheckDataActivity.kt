@@ -14,6 +14,7 @@ import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.FileDataDataBinding
 import com.mr.mf_pd.application.manager.socket.SocketManager
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback1
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.model.EventObserver
 import com.mr.mf_pd.application.utils.RepeatActionUtils
@@ -147,6 +148,15 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
                 updateLimitValue(currentValue)
             }
         })
+        viewModel.realDataCallback = object : BytesDataCallback1{
+            override fun onData(source: ByteArray?) {
+                fragmentDataListener.forEach { listener ->
+                    if (listener.isAdd()) {
+                        listener.onRealDataChange(source)
+                    }
+                }
+            }
+        }
     }
 
     override fun onClick(v: View?) {

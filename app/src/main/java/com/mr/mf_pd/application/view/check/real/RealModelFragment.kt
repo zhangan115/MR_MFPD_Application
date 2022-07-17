@@ -186,6 +186,10 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         viewModel.setState(fdType)
     }
 
+    override fun onRealDataChange(bytes: ByteArray?) {
+        viewModel.dealRealData(bytes)
+    }
+
     override fun oneSecondUIChange() {
         gainChartView?.updateFzValue()
     }

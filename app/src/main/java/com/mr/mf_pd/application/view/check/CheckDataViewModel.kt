@@ -1,12 +1,15 @@
 package com.mr.mf_pd.application.view.check
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.Constants
+import com.mr.mf_pd.application.common.EmptyDataError
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback1
 import com.mr.mf_pd.application.manager.socket.callback.ReadSettingDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
@@ -20,7 +23,12 @@ import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.sito.tool.library.utils.ByteLibUtil
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class CheckDataViewModel(
     private val dataRepository: DataRepository,
@@ -46,6 +54,8 @@ class CheckDataViewModel(
 
     private val disposableList = ArrayList<Disposable>()
 
+    var realDataCallback: BytesDataCallback1? = null
+
     fun start(checkType: CheckType) {
         mCheckType = checkType
         settingBean = settingRepository.getSettingData(checkType)
@@ -57,6 +67,36 @@ class CheckDataViewModel(
         SocketManager.get().addCallBack(CommandType.ReadYcData, ycBytesDataCallback)
         SocketManager.get().addCallBack(CommandType.FdData, fdBytesDataCallback)
         readYcValue()
+        startListenerRealData()
+    }
+
+    private fun startListenerRealData() {
+        disposableList.add(getRealData())
+    }
+
+    private fun getRealData(
+        time: Long = 20,
+        unit: TimeUnit = TimeUnit.MILLISECONDS,
+    ): Disposable {
+        return Observable.create { emitter: ObservableEmitter<ByteArray?> ->
+            try {
+                val data = SocketManager.get().realDataDeque?.poll()
+                if (data==null){
+                    emitter.onNext(ByteArray(7) { 1;8;0;0;0;27;-96 })
+                }else{
+                    emitter.onNext(data)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emitter.onError(e)
+            } finally {
+                emitter.onComplete()
+            }
+        }.repeatWhen { objectObservable: Observable<Any?> ->
+            objectObservable.delay(time, unit)
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnNext {
+            realDataCallback?.onData(it)
+        }.subscribe()
     }
 
     private fun updateSettingValue() {

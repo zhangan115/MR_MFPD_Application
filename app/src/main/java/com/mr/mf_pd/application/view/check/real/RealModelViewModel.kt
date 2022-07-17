@@ -51,7 +51,6 @@ class RealModelViewModel(
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
-
     //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
@@ -91,7 +90,6 @@ class RealModelViewModel(
             }
         } else {
             this.checkType = dataRepository.getCheckType()
-            getRealData()
         }
     }
 
@@ -303,7 +301,7 @@ class RealModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
-    fun updateLjData() {
+    fun updateLjData(){
         this.dataMaps = ConcurrentHashMap()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
     }

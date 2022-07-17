@@ -24,6 +24,11 @@ interface FragmentDataListener {
     fun onFdDataChange(bytes: ByteArray)
 
     /**
+     * 实时数据发生变化
+     */
+    fun onRealDataChange(bytes: ByteArray?)
+
+    /**
      * 通道门限值发生变化
      */
     fun onLimitValueChange(value: Int)

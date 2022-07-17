@@ -330,11 +330,11 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             mCanvas?.let {
                 mSurfaceHolder?.unlockCanvasAndPost(it)
             }
-            val list = ArrayList<ByteArray>()
-            mQueue?.drainTo(list)
-            list.forEach {
-                dataCallback?.onData(it)
-            }
+//            val list = ArrayList<ByteArray>()
+//            mQueue?.drainTo(list)
+//            list.forEach {
+//                dataCallback?.onData(it)
+//            }
         }
     }
 

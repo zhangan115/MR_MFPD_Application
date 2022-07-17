@@ -124,6 +124,10 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         rendererSet = true
     }
 
+    override fun onRealDataChange(bytes: ByteArray?) {
+
+    }
+
     override fun setCheckFile(str: String) {
         viewModel.setCheckFile(str)
     }

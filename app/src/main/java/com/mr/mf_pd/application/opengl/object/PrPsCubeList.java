@@ -54,15 +54,20 @@ public class PrPsCubeList {
         }
     }
 
-    public void updateRow(TextRectInOpenGl rect, int row, CopyOnWriteArrayList<Float> values){
+    public void updateRow(TextRectInOpenGl rect, int row, CopyOnWriteArrayList<Float> values) {
         this.values = values;
-        updateRow(rect,row);
+        updateRow(rect, row);
     }
 
     public void updateRow(TextRectInOpenGl rect, int row) {
+        if (row == 0){
+            colorBuffer = null;
+        }
         updateTextRect(rect);
         if (rect != null) {
+            float ratio = 0;
             float[] vertexPoints = new float[values.size() * 8 * VERTEX_POSITION_SIZE];
+            float[] colors = new float[values.size() * 8 * VERTEX_COLOR_SIZE];
             float spaceWidth = 1.5f * rect.getTextWidth();
             float spaceHeight = 2f * rect.getTextHeight();
             float maxV = maxValue;
@@ -80,12 +85,14 @@ public class PrPsCubeList {
                 float zTopPosition = 0;
                 if (values.get(i) != null) {
                     if (isZeroCenter) {
+                        ratio = values.get(i) / maxV;
                         if (values.get(i) >= 0) {
                             zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
                         } else {
                             zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
                         }
                     } else {
+                        ratio = (values.get(i) - minValue) / (maxValue - minValue);
                         zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
                     }
                 }
@@ -104,9 +111,37 @@ public class PrPsCubeList {
                         startX + stepX / 2, startY, zTopPosition,
                 };
                 System.arraycopy(vertexPoint, 0, vertexPoints, 8 * i * VERTEX_POSITION_SIZE, vertexPoint.length);
+                if (colorBuffer == null) {
+                    float[] color;
+                    if (values.get(i) == null) {
+                        color = Constants.INSTANCE.getTransparentColors();
+                    } else {
+                        if (ratio >= 0 && ratio < 0.2f) {
+                            color = Constants.INSTANCE.getPrpsBlueColors();
+                        } else if (ratio >= 0.2f && ratio < 0.4f) {
+                            color = Constants.INSTANCE.getPrpsGreenColors();
+                        } else if (ratio >= 0.4f && ratio < 0.6f) {
+                            color = Constants.INSTANCE.getYellowColors();
+                        } else if (ratio >= 0.6f && ratio < 0.8f) {
+                            color = Constants.INSTANCE.getPrpsOrangeColors();
+                        } else {
+                            color = Constants.INSTANCE.getPrpsRedColors();
+                        }
+                    }
+                    System.arraycopy(color, 0, colors, 8 * i * VERTEX_COLOR_SIZE, color.length);
+                }
             }
             vertexBuffer.put(vertexPoints);
             vertexBuffer.position(0);
+            if (colorBuffer == null) {
+                //分配内存空间,每个浮点型占4字节空间
+                colorBuffer = ByteBuffer.allocateDirect(colors.length * 4)
+                        .order(ByteOrder.nativeOrder())
+                        .asFloatBuffer();
+                //传入指定的数据
+                colorBuffer.put(colors);
+                colorBuffer.position(0);
+            }
         }
     }
 
