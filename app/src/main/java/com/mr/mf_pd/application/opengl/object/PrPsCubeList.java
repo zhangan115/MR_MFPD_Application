@@ -140,13 +140,13 @@ public class PrPsCubeList {
                     if (isZeroCenter) {
                         ratio = values.get(i) / maxV;
                         if (values.get(i) >= 0) {
-                            zTopPosition = ratio * (2.0f - spaceHeight * 2) / 2 + startZPosition;
+                            zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
                         } else {
-                            zTopPosition = ratio * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
+                            zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
                         }
                     } else {
                         ratio = (values.get(i) - minValue) / (maxValue - minValue);
-                        zTopPosition = ratio * (2.0f - spaceHeight * 2);
+                        zTopPosition = (values.get(i) - minValue) / (maxValue - minValue) * (2.0f - spaceHeight * 2);
                     }
                 }
                 float startX = -1 + spaceWidth + stepX * i;

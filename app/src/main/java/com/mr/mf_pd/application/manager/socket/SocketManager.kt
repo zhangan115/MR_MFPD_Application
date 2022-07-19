@@ -132,7 +132,7 @@ class SocketManager private constructor() {
         }
     }
 
-    private val dataQueue: ArrayBlockingQueue<ByteArray> = ArrayBlockingQueue(50)
+    private val dataQueue: ArrayBlockingQueue<ByteArray> = ArrayBlockingQueue(100)
 
     //执行请求任务的线程池
     private var mRequestExecutor: ExecutorService? = null
@@ -293,7 +293,12 @@ class SocketManager private constructor() {
                                 realRowCount++
                             }
                         } else {
+                            val list = ArrayList<ByteArray>()
+                            it.drainTo(list)
                             it.clear()
+                            if (list.size > 25){
+                                list.dropLast(25).forEach {bytes->  it.offer(bytes)}
+                            }
                         }
                     }
                 }
@@ -318,6 +323,8 @@ class SocketManager private constructor() {
                     bytesCallbackMap[commandType]?.forEach {
                         it.onData(source)
                     }
+                    Log.d("zhangan",
+                        "ReadYCData " + ByteUtil.bytes2HexStr(source).chunked(2).joinToString(" "))
                 }
                 CommandType.FdData -> {
                     if (mIsSaveData2File && fdFw != null) {
@@ -542,6 +549,8 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
+                    Log.d("zhangan",
+                        "sendRepeatData " + ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
                 } else {
                     Log.d("zhangan", "发送失败")
                     emitter.onNext(false)
