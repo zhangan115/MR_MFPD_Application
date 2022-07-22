@@ -80,6 +80,8 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     private var mSurfaceHolder: SurfaceHolder? = null
 
+    private var refreshTime = 20
+
     //绘图的Canvas
     private var mCanvas: Canvas? = null
 
@@ -147,9 +149,9 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             cleanRectDraw(chartRect)
             draw()
             val end = System.currentTimeMillis()
-            if (end - start < 16) {
+            if (end - start < refreshTime) {
                 try {
-                    Thread.sleep(16 - (end - start))
+                    Thread.sleep(refreshTime - (end - start))
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
@@ -330,9 +332,7 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             mCanvas?.let {
                 mSurfaceHolder?.unlockCanvasAndPost(it)
             }
-            val list = ArrayList<ByteArray>()
-            mQueue?.drainTo(list)
-            list.forEach {
+            mQueue?.poll()?.let {
                 dataCallback?.onData(it)
             }
         }

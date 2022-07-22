@@ -182,6 +182,7 @@ class FlightChartsRenderer(
     }
 
     override fun onDrawFrame(gl: GL10?) {
+        val timeStart = System.currentTimeMillis()
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
         GLES30.glEnable(GL_BLEND)
@@ -214,14 +215,16 @@ class FlightChartsRenderer(
         textHelp.bindData(textureProgram)
         textHelp.draw()
 
-        val list = ArrayList<ByteArray>()
-        queue?.drainTo(list)
         if (isToCleanData) {
-            list.clear()
+            queue?.clear()
             isToCleanData = false
         }
-        list.forEach {
+        queue?.poll()?.let {
             dataCallback?.onData(it)
+        }
+        val costTime = System.currentTimeMillis() - timeStart
+        if (costTime<=20){
+            Thread.sleep(20 - costTime)
         }
     }
 

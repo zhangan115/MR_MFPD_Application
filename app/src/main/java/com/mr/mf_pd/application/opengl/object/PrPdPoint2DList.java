@@ -23,10 +23,8 @@ public class PrPdPoint2DList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-    @Volatile
-    public static float minValue = -80.0f;
-    @Volatile
-    public static float maxValue = -20.0f;
+    public volatile static float minValue = -80.0f;
+    public volatile static float maxValue = -20.0f;
 
     private Point2DColorPointShaderProgram colorProgram;
 
@@ -113,10 +111,6 @@ public class PrPdPoint2DList {
             colorList.clear();
             indicesList.clear();
         }
-    }
-
-    public void cleanAllData() {
-
     }
 
     public void bindData(Point2DColorPointShaderProgram colorProgram) {

@@ -22,7 +22,6 @@ public class PrPsCubeList {
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 4;
     private final boolean isZeroCenter;
-    private final SettingBean settingBean;
     @Volatile
     public static float minValue = -80.0f;
     @Volatile
@@ -38,9 +37,8 @@ public class PrPsCubeList {
 
     //默认数据
 
-    public PrPsCubeList(TextRectInOpenGl rect, SettingBean settingBean, CopyOnWriteArrayList<Float> height, boolean isZeroCenter) {
+    public PrPsCubeList(TextRectInOpenGl rect, CopyOnWriteArrayList<Float> height, boolean isZeroCenter) {
         this.isZeroCenter = isZeroCenter;
-        this.settingBean = settingBean;
         updateTextRect(rect);
         appPrPsCubeList(rect, height);
     }

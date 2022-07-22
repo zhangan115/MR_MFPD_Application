@@ -8,7 +8,6 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import android.util.Log
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
@@ -30,8 +29,8 @@ class PrPsChartsRenderer(
     var context: Context,
     var isZeroCenter: Boolean = false,
     var settingBean: SettingBean,
-    var queue: ArrayBlockingQueue<ByteArray>?,
-    var dataCallback: BytesDataCallback?,
+    private var queue: ArrayBlockingQueue<ByteArray>?,
+    private var dataCallback: BytesDataCallback?,
 ) :
     GLSurfaceView.Renderer {
 
@@ -124,7 +123,6 @@ class PrPsChartsRenderer(
             PrPsXYLines(5, 4, 90, textRectInOpenGl, isZeroCenter)
         prPs3DXZLines =
             PrPsXZLines(4, 4, 90, textRectInOpenGl, isZeroCenter)
-
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -170,7 +168,7 @@ class PrPsChartsRenderer(
         if (floatList.isEmpty()) {
             cleanData()
         } else {
-            addPrpsData(PrPsCubeList(textRectInOpenGl, settingBean, floatList, isZeroCenter))
+            addPrpsData(PrPsCubeList(textRectInOpenGl, floatList, isZeroCenter))
         }
     }
 
@@ -243,6 +241,7 @@ class PrPsChartsRenderer(
         text2Help.draw()
 
         if (isToCleanData) {
+            queue?.clear()
             prpsCubeList?.clear()
             isToCleanData = false
         } else {
@@ -255,18 +254,14 @@ class PrPsChartsRenderer(
             startReadData = true
         }
         if (startReadData) {
-            Log.d("zhangan","queue list size is " + queue?.size)
             val bytes = queue?.poll()
             if (bytes != null) {
                 dataCallback?.onData(bytes)
             }
         }
         val costTime = System.currentTimeMillis() - timeStart
-        Log.d("zhangan", "onDrawFrame cost time $costTime")
         if (costTime<=20){
             Thread.sleep(20 - costTime)
-        }else{
-            Log.d("zhangan", "onDrawFrame cost time over 20ms")
         }
     }
 

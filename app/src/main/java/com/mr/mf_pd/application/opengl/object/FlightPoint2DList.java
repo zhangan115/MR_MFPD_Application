@@ -20,8 +20,8 @@ public class FlightPoint2DList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-    public static float minValue = -80.0f;
-    public static float maxValue = -20.0f;
+    public volatile static float minValue = -80.0f;
+    public volatile static float maxValue = -20.0f;
 
     //保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private Point2DColorPointShaderProgram colorProgram;
@@ -51,11 +51,10 @@ public class FlightPoint2DList {
     }
 
     public void setValue(Map<Integer, Map<Float, Integer>> values,int column, TextRectInOpenGl rect) {
-
         float spaceWidth = 1.5f * rect.getTextWidth();
+        float endWidth = rect.getTextWidth();
         float spaceHeight = 2f * rect.getTextHeight();
-        float stepX = (2 - 2 * spaceWidth) / column;
-
+        float stepX = (2 - spaceWidth - endWidth) / column;
         Set<Map.Entry<Integer, Map<Float, Integer>>> entrySet1 = values.entrySet();
         short count = 0;
         float h = 2 - 2 * spaceHeight;
