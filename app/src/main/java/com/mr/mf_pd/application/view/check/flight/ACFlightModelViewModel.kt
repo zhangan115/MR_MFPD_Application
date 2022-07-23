@@ -1,25 +1,29 @@
 package com.mr.mf_pd.application.view.check.flight
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
-import com.mr.mf_pd.application.manager.socket.comand.CommandType
+import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 import java.io.File
+import java.text.DecimalFormat
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import kotlin.collections.HashMap
 import kotlin.math.max
+import kotlin.math.min
 
 class ACFlightModelViewModel(
     val dataRepository: DataRepository,
@@ -41,10 +45,11 @@ class ACFlightModelViewModel(
     var timeStr: MutableLiveData<String> = MutableLiveData()
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
-
+    val df1 = DecimalFormat("0.00")
     var receiverCount = 0
 
     fun start() {
+        this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
         } else {
@@ -65,21 +70,29 @@ class ACFlightModelViewModel(
             if (source.isEmpty() || source.size < 7) return
             var maxXValue = -1
             val bytes = ByteArray(source.size - 7)
+            val count  =  ByteLibUtil.mergeByte2Int(source[3],source[4])
+            Log.d("zhangan", "length is $count")
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
             if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
                 for (i in 0 until (bytes.size / 6)) {
                     val values = ByteArray(6)
                     System.arraycopy(bytes, 6 * i, values, 0, 6)
-                    val lengthBytes = byteArrayOf(0x00, 0x00, values[0], values[1])
                     val height = ByteArray(4)
                     System.arraycopy(values, 2, height, 0, 4)
-                    val value = ByteLibUtil.byteArrayToFloat(height)
-                    val key = ByteLibUtil.getInt(lengthBytes)
+                    val key = ByteLibUtil.mergeByte2Int(values[0],values[1])
+                    val f = df1.format(ByteLibUtil.byteArrayToFloat(height)).toFloat()
+                    //根据设置处理数据
+                    val setting = checkType.settingBean
+                    //处理固定尺度
+                    var value = dealMaxAndMinValue(setting, f)
                     maxXValue = max(key, maxXValue)
                     maxGainValue = if (maxGainValue == null) {
                         value
                     } else {
                         max(value, maxGainValue!!)
+                    }
+                    if ((checkType == CheckType.AA || checkType == CheckType.AE) && value < 0) {
+                        value *= -1
                     }
                     if (dataMaps.containsKey(key)) {
                         val map = dataMaps[key]
@@ -115,6 +128,44 @@ class ACFlightModelViewModel(
         }
 
     }
+
+
+    private fun dealMaxAndMinValue(
+        setting: SettingBean,
+        f: Float,
+    ): Float {
+        var value = f
+        if (setting.gdCd == 1) {
+            if (f > setting.maxValue) {
+                value = setting.maxValue.toFloat()
+            } else if (f < setting.minValue) {
+                value = setting.minValue.toFloat()
+            }
+        } else {
+            if (DefaultDataRepository.realDataMaxValue.value != null) {
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
+                if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
+                    DefaultDataRepository.realDataMaxValue.postValue(maxValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
+            }
+            if (DefaultDataRepository.realDataMinValue.value != null) {
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
+                if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
+                    DefaultDataRepository.realDataMinValue.postValue(minValue)
+                }
+            } else {
+                DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
+            }
+            val maxValue = max(PrPdPoint2DList.maxValue, f)
+            val minValue = min(PrPdPoint2DList.minValue, f)
+            PrPdPoint2DList.maxValue = maxValue
+            PrPdPoint2DList.minValue = minValue
+        }
+        return value
+    }
+
 
     fun setState(stateStr: String?) {
         fdStateStr.value = stateStr
@@ -163,14 +214,6 @@ class ACFlightModelViewModel(
         } else {
             SocketManager.get().flightDeque
         }
-    }
-
-    fun onResume() {
-
-    }
-
-    fun onPause() {
-
     }
 
     override fun onCleared() {

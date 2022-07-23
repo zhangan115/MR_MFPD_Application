@@ -165,7 +165,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         if (rendererSet) {
             surfaceView1.onResume()
         }
-        viewModel.onResume()
         cleanCurrentData()
     }
 
@@ -174,7 +173,6 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         if (rendererSet) {
             surfaceView1.onPause()
         }
-        viewModel.onPause()
     }
 
     override fun isSaving(): Boolean {

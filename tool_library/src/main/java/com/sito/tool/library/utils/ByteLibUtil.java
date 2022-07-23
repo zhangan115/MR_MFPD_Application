@@ -17,6 +17,10 @@ public class ByteLibUtil {
         return Float.intBitsToFloat(intBits);
     }
 
+    public static int mergeByte2Int(byte high, byte low) {
+        return (((0x000000ff & high) << 8) & 0x0000ff00) | (0x000000ff & low);
+    }
+
     /**
      * 字节数组转换成对应的16进制表示的字符串
      *

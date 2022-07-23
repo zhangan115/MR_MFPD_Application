@@ -133,7 +133,7 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 var f2Hz = valueList[5]
                 val settingBean = viewModel.checkType.settingBean
                 maxValue = settingBean.maxValue.toFloat()
-                minValue = settingBean.minValue.toFloat()
+//                minValue = settingBean.minValue.toFloat()
 
                 if (settingBean.gdCd == 0) {
                     valueList.forEach {
