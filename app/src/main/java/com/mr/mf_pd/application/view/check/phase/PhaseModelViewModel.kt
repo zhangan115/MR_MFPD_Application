@@ -136,7 +136,7 @@ class PhaseModelViewModel(
         filesRepository.stopSaveData()
     }
 
-    fun updateLjData(){
+    fun updateLjData() {
         this.dataMaps = HashMap()
         this.dataCallback?.invoke(dataMaps)
         updateSettingValue()
@@ -299,6 +299,7 @@ class PhaseModelViewModel(
         f: Float,
     ): Float {
         var value = f
+        val step = if (setting.maxValue > 1000) 100 else 10
         if (setting.gdCd == 1) {
             if (f > setting.maxValue) {
                 value = setting.maxValue.toFloat()
@@ -306,8 +307,13 @@ class PhaseModelViewModel(
                 value = setting.minValue.toFloat()
             }
         } else {
+            val maxV = max(PrPdPoint2DList.maxValue, f)
+            val minV = min(PrPdPoint2DList.minValue, f)
+            val changeMaxValue = NumberUtils.changeMaxValue(maxV.toInt(), step).toFloat()
+            val changeMinValue = NumberUtils.changeMinValue(minV.toInt(), step).toFloat()
             if (DefaultDataRepository.realDataMaxValue.value != null) {
-                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
+                val maxValue =
+                    max(DefaultDataRepository.realDataMaxValue.value!!, changeMaxValue.toInt())
                 if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
                     DefaultDataRepository.realDataMaxValue.postValue(maxValue)
                 }
@@ -315,17 +321,16 @@ class PhaseModelViewModel(
                 DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
             }
             if (DefaultDataRepository.realDataMinValue.value != null) {
-                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
+                val minValue =
+                    min(DefaultDataRepository.realDataMinValue.value!!, changeMinValue.toInt())
                 if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
                     DefaultDataRepository.realDataMinValue.postValue(minValue)
                 }
             } else {
                 DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             }
-            val maxValue = max(PrPdPoint2DList.maxValue, f)
-            val minValue = min(PrPdPoint2DList.minValue, f)
-            PrPdPoint2DList.maxValue = NumberUtils.changeMaxValue(maxValue.toInt(),10).toFloat()
-            PrPdPoint2DList.minValue = NumberUtils.changeMinValue(minValue.toInt(),10).toFloat()
+            PrPdPoint2DList.maxValue = changeMaxValue
+            PrPdPoint2DList.minValue = changeMinValue
         }
         return value
     }
