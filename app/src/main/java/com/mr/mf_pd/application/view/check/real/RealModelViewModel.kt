@@ -20,6 +20,7 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.NumberUtils
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
@@ -47,6 +48,7 @@ class RealModelViewModel(
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
     var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
+
     //图表数据
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
 
@@ -61,6 +63,8 @@ class RealModelViewModel(
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
     var mGetDataDisposable: Disposable? = null
+    var chartMaxValue: Float? = null
+    var chartMinValue: Float? = null
 
     private val _toResetEvent = MutableLiveData<Event<Unit>>()
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
@@ -234,6 +238,7 @@ class RealModelViewModel(
         f: Float,
     ): Float {
         var value = f
+        val step = if (setting.maxValue > 1000 ) 100 else 10
         if (setting.gdCd == 1) {
             if (f > setting.maxValue) {
                 value = setting.maxValue.toFloat()
@@ -241,8 +246,12 @@ class RealModelViewModel(
                 value = setting.minValue.toFloat()
             }
         } else {
+            val maxV = max(PrPsCubeList.maxValue, f)
+            val minV = min(PrPsCubeList.minValue, f)
+            val changeMaxValue = NumberUtils.changeMaxValue(maxV.toInt(), step).toFloat()
+            val changeMinValue = NumberUtils.changeMinValue(minV.toInt(), step).toFloat()
             if (DefaultDataRepository.realDataMaxValue.value != null) {
-                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, f.toInt())
+                val maxValue = max(DefaultDataRepository.realDataMaxValue.value!!, changeMaxValue.toInt())
                 if (maxValue != DefaultDataRepository.realDataMaxValue.value!!) {
                     DefaultDataRepository.realDataMaxValue.postValue(maxValue)
                 }
@@ -250,19 +259,19 @@ class RealModelViewModel(
                 DefaultDataRepository.realDataMaxValue.postValue(setting.maxValue)
             }
             if (DefaultDataRepository.realDataMinValue.value != null) {
-                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, f.toInt())
+                val minValue = min(DefaultDataRepository.realDataMinValue.value!!, changeMinValue.toInt())
                 if (minValue != DefaultDataRepository.realDataMinValue.value!!) {
                     DefaultDataRepository.realDataMinValue.postValue(minValue)
                 }
             } else {
                 DefaultDataRepository.realDataMinValue.postValue(setting.minValue)
             }
-            val maxValue = max(PrPsCubeList.maxValue, f)
-            val minValue = min(PrPsCubeList.minValue, f)
-            PrPsCubeList.maxValue = maxValue
-            PrPsCubeList.minValue = minValue
-            PrpsPointList.maxValue = maxValue
-            PrpsPointList.minValue = minValue
+            PrPsCubeList.maxValue = changeMaxValue
+            PrPsCubeList.minValue = changeMinValue
+            PrpsPointList.maxValue = changeMaxValue
+            PrpsPointList.minValue = changeMinValue
+            chartMaxValue = changeMaxValue
+            chartMinValue = changeMinValue
         }
         return value
     }
@@ -293,7 +302,7 @@ class RealModelViewModel(
         filesRepository.toCreateCheckFile(checkType)
     }
 
-    fun updateLjData(){
+    fun updateLjData() {
         this.dataMaps = ConcurrentHashMap()
         prPsDataCallback?.prpsDataChange(this.dataMaps, CopyOnWriteArrayList())
     }

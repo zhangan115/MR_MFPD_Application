@@ -1,6 +1,7 @@
 package com.mr.mf_pd.application.utils;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -58,7 +59,9 @@ public class NumberUtils {
      * @return 修改后的最大值
      */
     public static int changeMaxValue(int max, int step) {
-        return ((max / step) + 1) * step;
+        if (max%step == 0)return max;
+        int v = ((max / step) + 1) * step;
+        return v;
     }
 
     /**
@@ -69,7 +72,9 @@ public class NumberUtils {
      * @return 修改后的最小值
      */
     public static int changeMinValue(int min, int step) {
-        return ((min / step) - 1) * step;
+        if (min%step == 0)return min;
+        int v = ((min / step) - 1) * step;
+        return v;
     }
 
 }

@@ -19,6 +19,7 @@ import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.DateUtil
+import com.mr.mf_pd.application.utils.NumberUtils
 import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
@@ -323,8 +324,8 @@ class PhaseModelViewModel(
             }
             val maxValue = max(PrPdPoint2DList.maxValue, f)
             val minValue = min(PrPdPoint2DList.minValue, f)
-            PrPdPoint2DList.maxValue = maxValue
-            PrPdPoint2DList.minValue = minValue
+            PrPdPoint2DList.maxValue = NumberUtils.changeMaxValue(maxValue.toInt(),10).toFloat()
+            PrPdPoint2DList.minValue = NumberUtils.changeMinValue(minValue.toInt(),10).toFloat()
         }
         return value
     }
