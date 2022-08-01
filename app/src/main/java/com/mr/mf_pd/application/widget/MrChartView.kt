@@ -283,7 +283,6 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
             //draw values
 
             //draw point
-
             val entrySet1 = dataMaps.entries
             pointValues[0].clear()
             pointValues[1].clear()

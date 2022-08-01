@@ -110,7 +110,6 @@ class PrPdChartsRenderer(
             4,
             90,
             textRectInOpenGl)
-
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
