@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.model.CheckParamsBean
+import com.mr.mf_pd.application.model.DataModel
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
@@ -37,8 +38,12 @@ class PhaseModelViewModel(
 ) : ViewModel() {
 
     lateinit var checkType: CheckType
+    //三维数组， 第一个相位 第二个 值 第三个 次数
+    val array3d = Array(100) { Array(200) { Array(1) { it } } }
 
     var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
+
+    val dataModelList = Vector<DataModel>()
 
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()//图表的最低值
@@ -238,6 +243,8 @@ class PhaseModelViewModel(
                 if ((checkType == CheckType.AA || checkType == CheckType.AE) && value < 0) {
                     value *= -1
                 }
+                //column value count
+                array3d[column][value.toInt()][0]++
                 if (dataMaps.containsKey(column)) {
                     val map = dataMaps[column]
                     if (map != null && map.containsKey(value)) {

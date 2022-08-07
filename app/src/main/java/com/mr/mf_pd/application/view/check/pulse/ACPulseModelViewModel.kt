@@ -136,9 +136,6 @@ class ACPulseModelViewModel(
         }
     }
 
-    @Volatile
-    var isAddGainValue = true
-
     val pulseValueCallBack = object : BytesDataCallback {
         override fun onData(source: ByteArray) {
             val valueList = CopyOnWriteArrayList<Float?>()
