@@ -244,7 +244,7 @@ class PhaseModelViewModel(
                     value *= -1
                 }
                 //column value count
-                array3d[column][value.toInt()][0]++
+//                array3d[column][value.toInt()][0]++
                 if (dataMaps.containsKey(column)) {
                     val map = dataMaps[column]
                     if (map != null && map.containsKey(value)) {
