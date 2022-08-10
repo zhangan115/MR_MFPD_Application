@@ -6,7 +6,7 @@ class CheckConfigModel {
     var type: String? = null
     var time: Long? = null
     //文件开始保存时间
-    var startTime: Long? = null
+    var beginTime: Long? = null
     //飞行模式数据行数
     var flightRowCount = 0
     //脉冲波形

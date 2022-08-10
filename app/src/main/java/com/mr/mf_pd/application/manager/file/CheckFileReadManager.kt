@@ -221,7 +221,7 @@ class CheckFileReadManager {
                                     }
                                     CommandType.FdData -> {
                                         if (lastTime == null) {
-                                            lastTime = config?.startTime
+                                            lastTime = config?.beginTime
                                         }
                                         if (lastTime != null) {
                                             Thread.sleep(it - lastTime!!)

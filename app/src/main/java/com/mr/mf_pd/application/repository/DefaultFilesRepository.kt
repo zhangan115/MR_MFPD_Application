@@ -98,7 +98,7 @@ class DefaultFilesRepository : FilesRepository {
                     configBean.pulseRowCount = flightRowCount
                     configBean.realRowCount = realRowCount
                     configBean.ycRowCount = ycRowCount
-                    configBean.startTime = startTime
+                    configBean.beginTime = startTime
 
                     val configStr = g.toJson(configBean)
                     FileUtils.writeStr2File(
