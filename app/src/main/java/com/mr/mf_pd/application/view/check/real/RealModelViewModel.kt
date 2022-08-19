@@ -66,6 +66,8 @@ class RealModelViewModel(
     var chartMaxValue: Float? = null
     var chartMinValue: Float? = null
 
+    private val df1 = DecimalFormat("0.00")
+
     private val _toResetEvent = MutableLiveData<Event<Unit>>()
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
 
@@ -135,7 +137,7 @@ class RealModelViewModel(
             val column = values[1].toInt()
             val height = ByteArray(4)
             System.arraycopy(values, 2, height, 0, 4)
-            val f = ByteLibUtil.byteArrayToFloat(height)
+            val f:Float = df1.format(ByteLibUtil.byteArrayToFloat(height)).toFloat()
             maxValue = if (maxValue == null) {
                 f
             } else {
@@ -206,7 +208,6 @@ class RealModelViewModel(
             canUpdateFz = emptyCount != 50
             val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
             if (canUpdateFz && maxValue != null) {
-                val df1 = DecimalFormat("0.00")
                 checkParamsBean?.fzAttr = df1.format(maxValue) + checkType.settingBean.fzUnit
             }
             checkParamsBean?.mcCountAttr = "${mcCount}个/秒"

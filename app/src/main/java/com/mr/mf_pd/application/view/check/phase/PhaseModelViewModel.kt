@@ -39,7 +39,7 @@ class PhaseModelViewModel(
 
     lateinit var checkType: CheckType
     //三维数组， 第一个相位 第二个 值 第三个 次数
-    val array3d = Array(100) { Array(200) { Array(1) { it } } }
+//    val array3d = Array(100) { Array(200) { Array(1) { it } } }
 
     var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
@@ -64,6 +64,8 @@ class PhaseModelViewModel(
     var timeStr: MutableLiveData<String> = MutableLiveData()
     var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
+
+    private val df1 = DecimalFormat("0.00")
 
     private val _toResetEvent = MutableLiveData<Event<Unit>>()
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
@@ -207,7 +209,7 @@ class PhaseModelViewModel(
             val column = values[1].toInt()
             val height = ByteArray(4)
             System.arraycopy(values, 2, height, 0, 4)
-            val f = ByteLibUtil.byteArrayToFloat(height)
+            val f:Float = df1.format(ByteLibUtil.byteArrayToFloat(height)).toFloat()
             maxValue = if (maxValue == null) {
                 f
             } else {
@@ -277,7 +279,7 @@ class PhaseModelViewModel(
             canUpdateFz = emptyCount != 50
             val checkParamsBean: CheckParamsBean? = checkType.checkParams.value
             if (canUpdateFz && maxValue != null) {
-                val df1 = DecimalFormat("0.00")
+
                 checkParamsBean?.fzAttr = df1.format(maxValue) + checkType.settingBean.fzUnit
             }
             checkParamsBean?.mcCountAttr = "${mcCount}个/秒"
