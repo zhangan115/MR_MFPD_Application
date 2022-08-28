@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             app:check_params="@{vm.checkType.checkParams}" />
 
-        <com.mr.mf_pd.application.widget.MrChartView
+        <com.mr.mf_pd.application.widget.MrChartView1
             android:id="@+id/mrChartView"
             android:layout_width="match_parent"
             android:layout_height="0dp"

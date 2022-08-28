@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
@@ -14,7 +15,8 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.sin
 
-class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
+class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable,
+    ViewTreeObserver.OnGlobalLayoutListener {
 
     var mQueue: ArrayBlockingQueue<ByteArray>? = null
 
@@ -87,6 +89,9 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
     //绘图的Canvas
     private var mCanvas: Canvas? = null
 
+    @Volatile
+    private var scaleValue:Float = 1f
+
     //子线程标志位
     private var mIsDrawing = false
 
@@ -124,12 +129,23 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
         pointValues.add(ArrayList())
         if (context != null) {
             scaleGestureDetector = ScaleGestureDetector(context,object :ScaleGestureDetector.OnScaleGestureListener{
+
                 override fun onScale(detector: ScaleGestureDetector?): Boolean {
-                    return false
+                    val scale = detector?.scaleFactor
+                    if (scale != null) {
+                        scaleValue *= scale
+                    }
+                    if (scaleValue > 5f){
+                        scaleValue = 5f
+                    }else if (scaleValue < 0.5){
+                        scaleValue = 0.5f
+                    }
+                    Log.d("zhangan","scaleValue->$scaleValue")
+                    return true
                 }
 
-                override fun onScaleBegin(p0detector: ScaleGestureDetector?): Boolean {
-                    return false
+                override fun onScaleBegin(p0: ScaleGestureDetector?): Boolean {
+                   return true
                 }
 
                 override fun onScaleEnd(detector: ScaleGestureDetector?) {
@@ -144,7 +160,7 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
                     distanceX: Float,
                     distanceY: Float
                 ): Boolean {
-                    return super.onScroll(e1, e2, distanceX, distanceY)
+                    return true
                 }
 
                 override fun onFling(
@@ -158,12 +174,13 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
                 //单击事件
                 override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                    return super.onSingleTapConfirmed(e)
+                    return true
                 }
 
                 //双击事件
                 override fun onDoubleTap(e: MotionEvent?): Boolean {
-                    return super.onDoubleTap(e)
+                    scaleValue = 1f
+                    return true
                 }
 
             })
@@ -382,7 +399,7 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
             val list4 = pointValues[3]
             val list5 = pointValues[4]
             mPaint?.let {
-                it.strokeWidth = 8f
+                it.strokeWidth = 8f * scaleValue
                 it.color = findColor(R.color.prps_blue)
                 list1.let { it1 -> mCanvas?.drawPoints(it1.toFloatArray(), it) }
                 it.color = findColor(R.color.prps_green)
@@ -425,6 +442,16 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     private var xx: Float = -1f
     private var yy: Float = -1f
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewTreeObserver.addOnGlobalLayoutListener(this)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewTreeObserver.removeOnGlobalLayoutListener(this)
+    }
 
     override fun performClick(): Boolean {
         return super.performClick()
@@ -491,7 +518,9 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
                 xx = e.x
                 yy = e.y
             }
-            return scaleGestureDetector!!.onTouchEvent(event)||gestureDetector!!.onTouchEvent(event)
+            val scaleEvent = scaleGestureDetector!!.onTouchEvent(event)
+            val gestureEvent = gestureDetector!!.onTouchEvent(event)
+            return scaleEvent || gestureEvent
         }
         return super.onTouchEvent(event)
     }
@@ -547,5 +576,9 @@ class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
             return color
         }
         return 0
+    }
+
+    override fun onGlobalLayout() {
+
     }
 }
