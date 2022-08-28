@@ -5,9 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.view.*
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.opengl.`object`.TextRectInOpenGl
@@ -16,13 +14,17 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.sin
 
-class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
+class MrChartView1 : SurfaceView, SurfaceHolder.Callback2, Runnable {
 
     var mQueue: ArrayBlockingQueue<ByteArray>? = null
 
     //默认的最大最小值
     var defaultMaxValue: Float = 0f
     var defaultMinValue: Float = 0f
+
+    var maxScale:Float = 10f
+    var scaleGestureDetector:ScaleGestureDetector?=null
+    var gestureDetector:GestureDetector?=null
 
     @Volatile
     var drawSinLines = false
@@ -120,7 +122,52 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
         pointValues.add(ArrayList())
         pointValues.add(ArrayList())
         pointValues.add(ArrayList())
+        if (context != null) {
+            scaleGestureDetector = ScaleGestureDetector(context,object :ScaleGestureDetector.OnScaleGestureListener{
+                override fun onScale(detector: ScaleGestureDetector?): Boolean {
+                    return false
+                }
 
+                override fun onScaleBegin(p0detector: ScaleGestureDetector?): Boolean {
+                    return false
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector?) {
+
+                }
+            })
+
+            gestureDetector = GestureDetector(context,object : GestureDetector.SimpleOnGestureListener() {
+                override fun onScroll(
+                    e1: MotionEvent?,
+                    e2: MotionEvent?,
+                    distanceX: Float,
+                    distanceY: Float
+                ): Boolean {
+                    return super.onScroll(e1, e2, distanceX, distanceY)
+                }
+
+                override fun onFling(
+                    e1: MotionEvent?,
+                    e2: MotionEvent?,
+                    velocityX: Float,
+                    velocityY: Float
+                ): Boolean {
+                    return super.onFling(e1, e2, velocityX, velocityY)
+                }
+
+                //单击事件
+                override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+                    return super.onSingleTapConfirmed(e)
+                }
+
+                //双击事件
+                override fun onDoubleTap(e: MotionEvent?): Boolean {
+                    return super.onDoubleTap(e)
+                }
+
+            })
+        }
         initView()
     }
 
@@ -379,69 +426,74 @@ class MrChartView : SurfaceView, SurfaceHolder.Callback2, Runnable {
     private var xx: Float = -1f
     private var yy: Float = -1f
 
-    @SuppressLint("ClickableViewAccessibility")
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        event?.let { e ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
+        if (scaleGestureDetector != null && gestureDetector != null) {
+            event?.let { e ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        performClick()
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        if (xx != -1f) {
+                            val m = e.x - xx
+                            moveX += m
+                            if (xStepValuePixel > 0) {
+                                val v = (maxXValue - minXValue) * m / (xStepValuePixel * xStepCount)
+                                xOffValue += v
+                                if (moveX >= xStepValuePixel) {
+                                    xOffValue = 0f
+                                    moveX %= xStepValuePixel
+                                    minXValue += xStepValue
+                                    maxXValue += xStepValue
+                                    updateXAxis()
+                                } else if (moveX <= -1 * xStepValuePixel) {
+                                    xOffValue = 0f
+                                    moveX %= xStepValuePixel
+                                    minXValue -= xStepValue
+                                    maxXValue -= xStepValue
+                                    updateXAxis()
+                                }
+                            }
+                        }
+                        if (yy != -1f) {
+                            val m = e.y - yy
+                            moveY += m
+                            if (yStepValuePixel >= 0) {
+                                val v = (maxValue - minValue) * m / (yStepValuePixel * stepCount)
+                                yOffValue += v
+                                if (moveY > yStepValuePixel) {
+                                    yOffValue = 0f
+                                    moveY %= yStepValuePixel
+                                    minValue += yStepValue
+                                    maxValue += yStepValue
+                                    updateYAxis()
+                                } else if (moveY <= -1 * yStepValuePixel) {
+                                    yOffValue = 0f
+                                    moveY %= yStepValuePixel
+                                    minValue -= yStepValue
+                                    maxValue -= yStepValue
+                                    updateYAxis()
+                                }
 
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    if (xx != -1f) {
-                        val m = e.x - xx
-                        moveX += m
-                        if (xStepValuePixel > 0) {
-                            val v = (maxXValue - minXValue) * m / (xStepValuePixel * xStepCount)
-                            xOffValue += v
-                            if (moveX >= xStepValuePixel) {
-                                xOffValue = 0f
-                                moveX %= xStepValuePixel
-                                minXValue += xStepValue
-                                maxXValue += xStepValue
-                                updateXAxis()
-                            } else if (moveX <= -1 * xStepValuePixel) {
-                                xOffValue = 0f
-                                moveX %= xStepValuePixel
-                                minXValue -= xStepValue
-                                maxXValue -= xStepValue
-                                updateXAxis()
                             }
                         }
                     }
-                    if (yy != -1f) {
-                        val m = e.y - yy
-                        moveY += m
-                        if (yStepValuePixel >= 0) {
-                            val v = (maxValue - minValue) * m / (yStepValuePixel * stepCount)
-                            yOffValue += v
-                            if (moveY > yStepValuePixel) {
-                                yOffValue = 0f
-                                moveY %= yStepValuePixel
-                                minValue += yStepValue
-                                maxValue += yStepValue
-                                updateYAxis()
-                            } else if (moveY <= -1 * yStepValuePixel) {
-                                yOffValue = 0f
-                                moveY %= yStepValuePixel
-                                minValue -= yStepValue
-                                maxValue -= yStepValue
-                                updateYAxis()
-                            }
+                    MotionEvent.ACTION_UP -> {
 
-                        }
+                    }
+                    else -> {
                     }
                 }
-                MotionEvent.ACTION_UP -> {
-
-                }
-                else -> {
-                }
+                xx = e.x
+                yy = e.y
             }
-            xx = e.x
-            yy = e.y
+            return scaleGestureDetector!!.onTouchEvent(event)||gestureDetector!!.onTouchEvent(event)
         }
-
-        return true
+        return super.onTouchEvent(event)
     }
 
     fun updateXAxis() {

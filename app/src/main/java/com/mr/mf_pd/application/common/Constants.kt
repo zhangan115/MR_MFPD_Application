@@ -124,4 +124,19 @@ object Constants {
 
     val PHASE_MODEL_LIST = listOf("内同步", "无线同步", "智能同步")
     val BAND_DETECTION_LIST = listOf("全通", "高通", "低通")
+
+    const val TEV_MAX_VALUE = 70
+    const val TEV_MIN_VALUE = -20
+
+    const val AE_MIN_VALUE = 0
+    const val AE_MAX_VALUE = 300
+
+    const val AA_MIN_VALUE = 0
+    const val AA_MAX_VALUE = 80
+
+    const val UHF_MIN_VALUE = -80
+    const val UHF_MAX_VALUE = -10
+
+    const val HF_MIN_VALUE = -1200
+    const val HF_MAX_VALUE = 1200
 }

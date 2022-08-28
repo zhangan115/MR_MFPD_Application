@@ -196,7 +196,7 @@ class PhaseModelViewModel(
 
     @Volatile
     var canUpdateFz = true
-    var emptyCount = 0
+    private var emptyCount = 0
 
     private fun dealRealData(source: ByteArray) {
         if (source.isEmpty() || source.size < 7) return
