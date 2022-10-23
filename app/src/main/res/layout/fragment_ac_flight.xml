@@ -58,7 +58,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="@{vm.isFile?View.GONE:View.VISIBLE}">
 
             <TextView
                 android:layout_width="0dp"
@@ -117,6 +118,19 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bg_time"
+            android:gravity="center"
+            android:text="@{vm.timeStr}"
+            android:textColor="#FF6858"
+            android:textSize="12sp"
+            android:visibility="@{vm.showTimeView?View.VISIBLE:View.GONE}" />
 
         <com.mr.mf_pd.application.widget.GainChartView
             android:id="@+id/gainChartView"

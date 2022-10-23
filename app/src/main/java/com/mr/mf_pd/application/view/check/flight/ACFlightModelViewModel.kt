@@ -1,12 +1,13 @@
 package com.mr.mf_pd.application.view.check.flight
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.manager.file.CheckFileReadManager
 import com.mr.mf_pd.application.manager.socket.SocketManager
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
+import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
 import com.mr.mf_pd.application.repository.DefaultDataRepository
@@ -39,6 +40,7 @@ class ACFlightModelViewModel(
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
     var gainMinValue: MutableLiveData<Float?> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
+    var showTimeView: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
     private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
@@ -48,13 +50,41 @@ class ACFlightModelViewModel(
     val df1 = DecimalFormat("0.00")
     var receiverCount = 0
 
+    private val _toResetEvent = MutableLiveData<Event<Unit>>()
+    val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
+
     fun start() {
         this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
+            showTimeView.postValue(true)
+            val checkDataFileModel = filesRepository.getCheckFileModel()
+            this.showTimeView.postValue(true)
+            var startTime = 0L
+            checkDataFileModel?.let {
+                mTimeDisposable = RepeatActionUtils.execute {
+                    it.dataTime?.let {
+                        timeStr.postValue(DateUtil.timeFormat((it - startTime), "mm:ss"))
+                        startTime += 1000L
+                        if (startTime > it) {
+                            resetFileRead()
+                            startTime = 0
+                        }
+                    }
+                }
+            }
         } else {
             this.checkType = dataRepository.getCheckType()
+            showTimeView.postValue(false)
         }
+    }
+
+    /**
+     * 重新从文件中读取
+     */
+    private fun resetFileRead() {
+        _toResetEvent.postValue(Event(Unit))
+        CheckFileReadManager.get().startReadData()
     }
 
     private var flightCallback: FlightDataCallback? = null
@@ -71,7 +101,6 @@ class ACFlightModelViewModel(
             var maxXValue = -1
             val bytes = ByteArray(source.size - 7)
             val count  =  ByteLibUtil.mergeByte2Int(source[3],source[4])
-            Log.d("zhangan", "length is $count")
             System.arraycopy(source, 5, bytes, 0, source.size - 7)
             if (bytes.isNotEmpty() && bytes.size % 6 == 0) {
                 for (i in 0 until (bytes.size / 6)) {

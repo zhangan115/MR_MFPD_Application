@@ -169,11 +169,11 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         if (bytes.size > 12) {
             val type = bytes[12].toInt()
             if (fdStrList.isNotEmpty()) {
-                val s = fdStrList.first()
-                Log.d(TAG, s)
                 if (type in 0 until fdStrList.size) {
                     val str = fdStrList[type]
                     fdStrChange(str)
+                }else{
+                    Log.e(TAG,"放电类型错误，无法显示")
                 }
             }
         }

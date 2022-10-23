@@ -42,6 +42,7 @@ import com.mr.mf_pd.application.manager.wifi.listener.OnWifiEnabledListener
 import com.mr.mf_pd.application.manager.wifi.listener.OnWifiScanResultsListener
 import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
@@ -88,6 +89,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         SocketManager.get().release()
         DeviceListenerManager.addListener(object : UDPListener {
             override fun onData(byteArray: ByteArray) {
+                ZLog.i(TAG,byteArray.toString())
                 val mrPDByteArray = ByteArray(4)
                 val ipAddressByteArray = ByteArray(4)
                 val deviceNumByteArray = ByteArray(6)
@@ -105,32 +107,45 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                         intList[index] = byte.toInt() and 0xff
                     }
                     val ip = intList.joinToString(".")
+//                    val power = (Math.random() * 100).toInt()
                     val power = devicePowerByteArray.first().toInt()
+                    val powerState = if (power <= 20) 0 else 1
                     val device = if (deviceMap.containsKey(deviceNum)) {
                         deviceMap[deviceNum]
                     } else {
-                        val powerState =
-                            if (power < 20) 0 else if (power in 20..59) 1 else 2
                         DeviceBean(mrPDStr, deviceNum, 0, power, powerState, null, 0, ip)
                     }
                     if (device != null) {
                         device.power = power
                         device.ip = ip
+                        device.powerAttr.set(String.format("%d",device.power)+"%")
+                        device.powerStateAttr.set(powerState)
+                        ZLog.i(TAG, "device power is $power ip = $ip powerState = $powerState")
                         deviceMap[deviceNum] = device
                         if (!dataList.contains(device)) {
                             dataList.add(device)
                         }
-                        viewModel.deviceExist.postValue(dataList.isNotEmpty())
-                        recycleView.adapter?.notifyDataSetChanged()
-                    }
-                    runOnUiThread {
-                        showNotification(power)
+                        runOnUiThread {
+                            viewModel.deviceExist.postValue(dataList.isNotEmpty())
+                            recycleView.adapter?.notifyDataSetChanged()
+                        }
                     }
                     if (device == null || SocketManager.get().getConnection()) {
                         return
                     }
-                    linkToDevice(device)
+                    runOnUiThread {
+                        linkToDevice(device)
+                        showNotification(power)
+                    }
                 }
+            }
+
+            override fun onError() {
+                viewModel.toastStr.value = "搜索设备失败！"
+            }
+
+            override fun onStart() {
+                viewModel.toastStr.value = "开始搜索设备！"
             }
         })
     }
@@ -189,7 +204,14 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         }
         refreshLayout.setEnableRefresh(false)
         refreshLayout.setEnableLoadMore(false)
+
+        val wifiManager = getSystemService(WIFI_SERVICE) as WifiManager
+        multicastLock = wifiManager
+            .createMulticastLock("multicast.tag")
+        multicastLock?.acquire()
     }
+
+    var multicastLock :WifiManager.MulticastLock? = null
 
     override fun initData(savedInstanceState: Bundle?) {
         dataBinding.vm = viewModel
@@ -229,9 +251,9 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
 //                    }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         checkExternalStorageState()
-                    }else{
+                    } else {
                         val file = MRApplication.instance.fileCacheFile()
-                        if (file!=null && file.exists()) {
+                        if (file != null && file.exists()) {
                             file.mkdir()
                         }
                     }
@@ -361,6 +383,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         mWiFiManager?.removeOnWifiScanResultsListener()
         mWiFiManager?.removeOnWifiConnectListener()
         disposable?.dispose()
+        multicastLock?.release()
         SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
         SocketManager.get().release()
         unregisterReceiver(wifiReceiver)
@@ -453,7 +476,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         val isHasStoragePermission = Environment.isExternalStorageManager()
         if (isHasStoragePermission) {
             val file = MRApplication.instance.fileCacheFile()
-            if (file!=null && file.exists()) {
+            if (file != null && file.exists()) {
                 file.mkdir()
             }
             return

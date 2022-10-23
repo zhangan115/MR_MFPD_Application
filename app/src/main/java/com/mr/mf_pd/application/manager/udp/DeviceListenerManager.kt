@@ -2,7 +2,6 @@ package com.mr.mf_pd.application.manager.udp
 
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.util.*
@@ -15,6 +14,10 @@ import java.util.*
  */
 object DeviceListenerManager {
 
+    const val DEVICE_NUM = 1
+    const val ERROR_NUM = 2
+    const val START_NUM = 3
+
     private var thread: Thread? = null
     private var socket: DatagramSocket? = null
     private val callback: Vector<UDPListener> = Vector()
@@ -22,10 +25,22 @@ object DeviceListenerManager {
     private class DeviceHandle : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            if (msg.what == 1) {
-                val byteArray = msg.obj as ByteArray
-                callback.forEach {
-                    it.onData(byteArray)
+            when (msg.what) {
+                DEVICE_NUM -> {
+                    val byteArray = msg.obj as ByteArray
+                    callback.forEach {
+                        it.onData(byteArray)
+                    }
+                }
+                ERROR_NUM -> {
+                    callback.forEach {
+                        it.onError()
+                    }
+                }
+                START_NUM -> {
+                    callback.forEach {
+                        it.onStart()
+                    }
                 }
             }
         }
@@ -54,11 +69,12 @@ object DeviceListenerManager {
                     val resultByteArray = ByteArray(length)
                     System.arraycopy(buff, 0, resultByteArray, 0, length)
                     val message = Message()
-                    message.what = 1
+                    message.what = DEVICE_NUM
                     message.obj = resultByteArray
                     handle.sendMessage(message)
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    handle.sendEmptyMessage(ERROR_NUM)
                 }
             }
         }

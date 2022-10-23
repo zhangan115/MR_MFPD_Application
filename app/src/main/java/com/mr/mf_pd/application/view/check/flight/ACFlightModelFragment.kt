@@ -76,6 +76,10 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
                 )
             }
         })
+
+        viewModel.toResetEvent.observe(this) {
+            cleanCurrentData()
+        }
     }
 
     override fun onDestroy() {
