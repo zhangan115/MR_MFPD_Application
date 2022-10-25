@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
@@ -20,6 +19,7 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.DefaultFilesRepository
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.view.callback.CheckActivityListener
 import com.mr.mf_pd.application.view.callback.FragmentDataListener
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -81,12 +81,12 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             updateTime = it.ljTime
             updateTimeCount = 0
         }
-        Log.d("zhangan", "$TAG onResume")
+        ZLog.d(TAG, "onResume")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("zhangan", "$TAG onPause")
+        ZLog.d(TAG, "onPause")
     }
 
     var fdStrList: ArrayList<String> = ArrayList()
@@ -173,7 +173,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                     val str = fdStrList[type]
                     fdStrChange(str)
                 }else{
-                    Log.e(TAG,"放电类型错误，无法显示")
+                    ZLog.e(TAG,"放电类型错误，无法显示")
                 }
             }
         }

@@ -22,11 +22,11 @@ import kotlin.math.min
 class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override var TAG = "ContinuityModelFragment"
-    private var defaultValues = listOf(20, 20, 5, 5)
-    private var continuityMaxValue1: Int = 20
-    private var continuityMaxValue2: Int = 20
-    private var continuityMaxValue3: Int = 5
-    private var continuityMaxValue4: Int = 5
+    private var defaultValues = listOf(5, 5, 1, 1)
+    private var continuityMaxValue1: Int = 5
+    private var continuityMaxValue2: Int = 5
+    private var continuityMaxValue3: Int = 1
+    private var continuityMaxValue4: Int = 1
 
     @Volatile
     var fzValue: Float? = null
@@ -135,25 +135,31 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 maxValue = settingBean.maxValue.toFloat()
 //                minValue = settingBean.minValue.toFloat()
 
-                if (settingBean.gdCd == 0) {
-                    valueList.forEach {
-                        if (maxValue!! < it) {
-                            maxValue = it
-                        }
+                valueList.forEach {
+                    if (maxValue!! < it) {
+                        maxValue = it
                     }
-                } else {
-                    fzValue = min(maxValue!!, fzValue)
-                    fzValue = max(minValue, fzValue)
-
-                    yxValue = min(maxValue!!, yxValue)
-                    yxValue = max(minValue, yxValue)
-
-                    f1Hz = min(maxValue!!, f1Hz)
-                    f1Hz = max(minValue, f1Hz)
-
-                    f2Hz = min(maxValue!!, f2Hz)
-                    f2Hz = max(minValue, f2Hz)
                 }
+
+//                if (settingBean.gdCd == 0) {
+//                    valueList.forEach {
+//                        if (maxValue!! < it) {
+//                            maxValue = it
+//                        }
+//                    }
+//                } else {
+//                    fzValue = min(maxValue!!, fzValue)
+//                    fzValue = max(minValue, fzValue)
+//
+//                    yxValue = min(maxValue!!, yxValue)
+//                    yxValue = max(minValue, yxValue)
+//
+//                    f1Hz = min(maxValue!!, f1Hz)
+//                    f1Hz = max(minValue, f1Hz)
+//
+//                    f2Hz = min(maxValue!!, f2Hz)
+//                    f2Hz = max(minValue, f2Hz)
+//                }
                 this.fzValue = fzValue
                 this.yxValue = yxValue
                 this.f1Hz = f1Hz
@@ -224,7 +230,10 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         defaultValue: Int,
     ): Int {
         val mV = when {
-            value < 100 -> {
+            value < 10 -> {
+                ((value + 1f) / 10).toInt()
+            }
+            value < 100 && value >= 10 -> {
                 ((value + 10f) / 10).toInt() * 10
             }
             value > 100 -> {
