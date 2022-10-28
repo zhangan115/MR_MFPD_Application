@@ -9,6 +9,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.ContinuityDataBinding
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.utils.LineChartUtils
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import kotlinx.android.synthetic.main.fragment_continuity.*
@@ -114,74 +115,36 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         image4.setOnClickListener {
             cleanCurrentData()
         }
-        viewModel.yxMinValue.postValue(minValue.toInt().toString())
-        viewModel.fzMinValue.postValue(minValue.toInt().toString())
-        viewModel.f1MinValue.postValue(minValue.toInt().toString())
-        viewModel.f2MinValue.postValue(minValue.toInt().toString())
     }
 
     var maxValue: Float? = null
-    var minValue: Float = 0f
 
     override fun onYcDataChange(bytes: ByteArray) {
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= 4) {
             view?.let {
-                var fzValue = valueList[2]
-                var yxValue = valueList[3]
-                var f1Hz = valueList[4]
-                var f2Hz = valueList[5]
+                val fzValue = valueList[2]
+                val yxValue = valueList[3]
+                val f1Hz = valueList[4]
+                val f2Hz = valueList[5]
                 val settingBean = viewModel.checkType.settingBean
                 maxValue = settingBean.maxValue.toFloat()
-//                minValue = settingBean.minValue.toFloat()
 
                 valueList.forEach {
                     if (maxValue!! < it) {
                         maxValue = it
                     }
                 }
-
-//                if (settingBean.gdCd == 0) {
-//                    valueList.forEach {
-//                        if (maxValue!! < it) {
-//                            maxValue = it
-//                        }
-//                    }
-//                } else {
-//                    fzValue = min(maxValue!!, fzValue)
-//                    fzValue = max(minValue, fzValue)
-//
-//                    yxValue = min(maxValue!!, yxValue)
-//                    yxValue = max(minValue, yxValue)
-//
-//                    f1Hz = min(maxValue!!, f1Hz)
-//                    f1Hz = max(minValue, f1Hz)
-//
-//                    f2Hz = min(maxValue!!, f2Hz)
-//                    f2Hz = max(minValue, f2Hz)
-//                }
                 this.fzValue = fzValue
                 this.yxValue = yxValue
                 this.f1Hz = f1Hz
                 this.f2Hz = f2Hz
 
-                viewModel.fzValueList.add(fzValue - minValue)
-                viewModel.yxValueList.add(yxValue - minValue)
-                viewModel.f1ValueList.add(f1Hz - minValue)
-                viewModel.f2ValueList.add(f2Hz - minValue)
+                viewModel.fzValueList.add(fzValue)
+                viewModel.yxValueList.add(yxValue)
+                viewModel.f1ValueList.add(f1Hz)
+                viewModel.f2ValueList.add(f2Hz)
 
-
-                continuityMaxValue1 =
-                    calculationProgress(progressBar1, yxValue, defaultValues[0])
-                continuityMaxValue2 =
-                    calculationProgress(progressBar2, fzValue, defaultValues[1])
-                continuityMaxValue3 = calculationProgress(progressBar3, f1Hz, defaultValues[2])
-                continuityMaxValue4 = calculationProgress(progressBar4, f2Hz, defaultValues[3])
-
-                viewModel.yxMaxValue.postValue(continuityMaxValue1.toString())
-                viewModel.fzMaxValue.postValue(continuityMaxValue2.toString())
-                viewModel.f1MaxValue.postValue(continuityMaxValue3.toString())
-                viewModel.f2MaxValue.postValue(continuityMaxValue4.toString())
 
                 if (viewModel.fzValueList.size > viewModel.checkType.settingBean.ljTime * 10) {
                     viewModel.fzValueList.removeFirst()
@@ -196,10 +159,34 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                     viewModel.f2ValueList.removeFirst()
                 }
 
-                LineChartUtils.updateData(lineChart1, viewModel.yxValueList,0f,continuityMaxValue1.toFloat())
-                LineChartUtils.updateData(lineChart2, viewModel.fzValueList,0f,continuityMaxValue2.toFloat())
-                LineChartUtils.updateData(lineChart3, viewModel.f1ValueList,0f,continuityMaxValue3.toFloat())
-                LineChartUtils.updateData(lineChart4, viewModel.f2ValueList,0f,continuityMaxValue4.toFloat())
+                continuityMaxValue1 =
+                    calculationProgress(progressBar1, yxValue, defaultValues[0])
+                continuityMaxValue2 =
+                    calculationProgress(progressBar2, fzValue, defaultValues[1])
+                continuityMaxValue3 = calculationProgress(progressBar3, f1Hz, defaultValues[2])
+                continuityMaxValue4 = calculationProgress(progressBar4, f2Hz, defaultValues[3])
+
+                viewModel.yxMaxValue.postValue(continuityMaxValue1.toString())
+                viewModel.fzMaxValue.postValue(continuityMaxValue2.toString())
+                viewModel.f1MaxValue.postValue(continuityMaxValue3.toString())
+                viewModel.f2MaxValue.postValue(continuityMaxValue4.toString())
+
+                LineChartUtils.updateData(lineChart1,
+                    viewModel.yxValueList,
+                    0f,
+                    calculationMaxValue(continuityMaxValue1.toFloat(),viewModel.yxValueList))
+                LineChartUtils.updateData(lineChart2,
+                    viewModel.fzValueList,
+                    0f,
+                    calculationMaxValue(continuityMaxValue2.toFloat(),viewModel.fzValueList))
+                LineChartUtils.updateData(lineChart3,
+                    viewModel.f1ValueList,
+                    0f,
+                    calculationMaxValue(continuityMaxValue3.toFloat(),viewModel.f1ValueList))
+                LineChartUtils.updateData(lineChart4,
+                    viewModel.f2ValueList,
+                    0f,
+                    calculationMaxValue(continuityMaxValue4.toFloat(),viewModel.f2ValueList))
             }
         }
     }
@@ -214,14 +201,35 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
 
     override fun cleanCurrentData() {
         viewModel.cleanCurrentData()
-        LineChartUtils.updateData(lineChart1, viewModel.yxValueList,0f,continuityMaxValue1.toFloat())
-        LineChartUtils.updateData(lineChart2, viewModel.fzValueList,0f,continuityMaxValue2.toFloat())
-        LineChartUtils.updateData(lineChart3, viewModel.f1ValueList,0f,continuityMaxValue3.toFloat())
-        LineChartUtils.updateData(lineChart4, viewModel.f2ValueList,0f,continuityMaxValue4.toFloat())
+        LineChartUtils.updateData(lineChart1,
+            viewModel.yxValueList,
+            0f,
+            continuityMaxValue1.toFloat())
+        LineChartUtils.updateData(lineChart2,
+            viewModel.fzValueList,
+            0f,
+            continuityMaxValue2.toFloat())
+        LineChartUtils.updateData(lineChart3,
+            viewModel.f1ValueList,
+            0f,
+            continuityMaxValue3.toFloat())
+        LineChartUtils.updateData(lineChart4,
+            viewModel.f2ValueList,
+            0f,
+            continuityMaxValue4.toFloat())
     }
 
     override fun isAdd(): Boolean {
         return isAdded
+    }
+
+    private fun calculationMaxValue(currentMaxValue: Float, values: ArrayList<Float>): Float {
+        values.maxOrNull()?.let {
+            if (it < currentMaxValue) {
+                return it
+            }
+        }
+        return currentMaxValue
     }
 
     private fun calculationProgress(
@@ -229,9 +237,21 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
         value: Float,
         defaultValue: Int,
     ): Int {
-        val mV = when {
+        ZLog.d(TAG,"progress is = "+progressBar + "value = " + value,showLog = false)
+        val m = max(getMaxValue(value,defaultValue), defaultValue)
+        val progress = ((value) / (m) * 100).toInt()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            progressBar.setProgress(progress, true)
+        } else {
+            progressBar.progress = progress
+        }
+        return m
+    }
+
+    private fun getMaxValue(value: Float,defaultValue: Int):Int{
+       return when {
             value < 10 -> {
-                ((value + 1f) / 10).toInt()
+                (value + 1f).toInt()
             }
             value < 100 && value >= 10 -> {
                 ((value + 10f) / 10).toInt() * 10
@@ -243,14 +263,6 @@ class ContinuityModelFragment : BaseCheckFragment<ContinuityDataBinding>() {
                 defaultValue
             }
         }
-        val m = max(mV, defaultValue)
-        val progress = ((value - minValue) / (m - minValue) * 100).toInt()
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            progressBar.setProgress(progress, true)
-        } else {
-            progressBar.progress = progress
-        }
-        return m
     }
 
     override fun setViewModel(dataBinding: ContinuityDataBinding?) {

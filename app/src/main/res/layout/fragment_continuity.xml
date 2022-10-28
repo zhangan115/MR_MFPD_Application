@@ -396,7 +396,6 @@
                                     android:orientation="vertical">
 
                                     <ProgressBar
-
                                         android:id="@+id/progressBar4"
                                         style="@style/Progress4"
                                         android:layout_width="match_parent"

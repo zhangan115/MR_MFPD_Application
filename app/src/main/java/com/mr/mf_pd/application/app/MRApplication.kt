@@ -12,6 +12,7 @@ import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.view.main.MainActivity
 import com.mr.mf_pd.application.view.splash.SplashActivity
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -89,6 +90,7 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
+        ZLog.init(false,"")
         CrashHandler.getInstance().init(this, BuildConfig.DEBUG, false, 0,
             SplashActivity::class.java)
         UMConfigure.init(this, BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL,1, null)
