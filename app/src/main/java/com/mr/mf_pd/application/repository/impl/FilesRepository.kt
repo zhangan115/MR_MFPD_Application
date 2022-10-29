@@ -42,11 +42,15 @@ interface FilesRepository {
      */
     fun getCurrentCheckName(): String?
 
-
     /**
      * 数据保存状态
      */
     fun isSaveData(): MutableLiveData<Boolean>?
+
+    /**
+     * 数据保存时间
+     */
+    fun getSaveDataTime(): MutableLiveData<String>
 
     /**
      * 设置检测文件

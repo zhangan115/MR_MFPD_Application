@@ -118,7 +118,7 @@ class PhaseModelChartFragment : BaseCheckFragment<PhaseDataChartBinding>() {
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
         }
-        locationText.setOnClickListener {
+        locationLayout.setOnClickListener {
             createChooseFileIntent()
         }
         rendererSet = true

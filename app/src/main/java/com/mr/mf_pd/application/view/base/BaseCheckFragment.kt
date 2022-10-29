@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
@@ -59,8 +60,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     private val requestChooseDirCode = 200
 
     //
-    private var updateTime:Int?=null
-    private var updateTimeCount:Int = 0
+    private var updateTime: Int? = null
+    private var updateTimeCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +107,11 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             MaterialDialog(it).show {
                 it.setTheme(R.style.AppTheme_MaterialDialog)
                 title(text = "提示")
-                message(text = "是否保存当前数据？")
+                if (TextUtils.isEmpty(getLocationValue())) {
+                    message(text = "是否保存当前数据？")
+                } else {
+                    message(text = "数据将保存至 $location")
+                }
                 positiveButton(res = R.string.ok, click = { dialog ->
                     dialog.dismiss()
                     if (getLocationValue() == null) {
@@ -117,6 +122,9 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                 })
                 negativeButton(res = R.string.cancel, click = { dialog ->
                     dialog.dismiss()
+                })
+                neutralButton(res = R.string.save_other, click = {
+                    createChooseFileIntent()
                 })
                 lifecycleOwner(this@BaseCheckFragment)
             }
@@ -143,7 +151,6 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
         if (requestCode == requestChooseDirCode && resultCode == Activity.RESULT_OK) {
             val fileDir = data?.getStringExtra(ConstantStr.KEY_BUNDLE_STR)
             fileDir?.let {
-                location = fileDir
                 setLocationValue(fileDir)
                 setCheckFile(it)
             }
@@ -172,8 +179,8 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                 if (type in 0 until fdStrList.size) {
                     val str = fdStrList[type]
                     fdStrChange(str)
-                }else{
-                    ZLog.e(TAG,"放电类型错误，无法显示")
+                } else {
+                    ZLog.e(TAG, "放电类型错误，无法显示")
                 }
             }
         }
@@ -189,11 +196,15 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
             MaterialDialog(it).show {
                 it.setTheme(R.style.AppTheme_MaterialDialog)
                 title(text = "提示")
-                message(text = "是否保存当前数据？")
+                if (TextUtils.isEmpty(getLocationValue())) {
+                    message(text = "是否保存当前数据？")
+                } else {
+                    message(text = "数据将保存至 $location")
+                }
                 positiveButton(res = R.string.ok, click = { dialog ->
                     cancelSaveData()
                     dialog.dismiss()
-                    if (getLocationValue() == null) {
+                    if (TextUtils.isEmpty(getLocationValue())) {
                         //选择保存位置
                         val intent = Intent(activity, FilePickerActivity::class.java)
                         intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
@@ -206,6 +217,11 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
                     cancelSaveData()
                     onCancel()
                     dialog.dismiss()
+                })
+                neutralButton(res = R.string.save_other, click = {
+                    val intent = Intent(activity, FilePickerActivity::class.java)
+                    intent.putExtra(ConstantStr.KEY_BUNDLE_BOOLEAN, true)
+                    startActivityForResult(intent, requestChooseDirCode)
                 })
                 lifecycleOwner(this@BaseCheckFragment)
             }
@@ -322,7 +338,7 @@ abstract class BaseCheckFragment<T : ViewDataBinding> : BaseFragment<T>(), Fragm
     /**
      * 更新图谱累计事件
      */
-    open fun updateLjView(){
+    open fun updateLjView() {
 
     }
 

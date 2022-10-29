@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.repository.callback.ReadSettingCallback
 import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.FileUtils
+import com.mr.mf_pd.application.utils.RepeatActionUtils
 import com.mr.mf_pd.application.view.file.model.CheckConfigModel
 import com.mr.mf_pd.application.view.file.model.CheckDataFileModel
 import io.reactivex.Observable
@@ -29,6 +30,8 @@ import java.io.IOException
 class DefaultFilesRepository : FilesRepository {
 
     var isSaving: MutableLiveData<Boolean> = MutableLiveData(false)
+    var saveDataTimeStr: MutableLiveData<String> = MutableLiveData()
+    var mTimeDisposable: Disposable? = null
 
     companion object {
         var realDataMaxValue: MutableLiveData<Int> = MutableLiveData()
@@ -55,8 +58,15 @@ class DefaultFilesRepository : FilesRepository {
         if (!checkTempFile!!.exists()) {
             checkTempFile!!.mkdir()
         }
-        SocketManager.get().setSaveDataFile(checkTempFile)
         startTime = System.currentTimeMillis()
+        if (mTimeDisposable!=null){
+            mTimeDisposable?.dispose()
+        }
+        mTimeDisposable = RepeatActionUtils.execute {
+            val time = System.currentTimeMillis() - startTime
+            saveDataTimeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
+        }
+        SocketManager.get().setSaveDataFile(checkTempFile)
     }
 
     private var flightRowCount = 0
@@ -73,8 +83,8 @@ class DefaultFilesRepository : FilesRepository {
         this.ycRowCount = SocketManager.get().ycRowCount
         this.realRowCount = SocketManager.get().realRowCount
 
+        this.mTimeDisposable?.dispose()
         endTime = System.currentTimeMillis()
-
     }
 
     override fun setCurrentClickFile(file: File) {
@@ -144,6 +154,10 @@ class DefaultFilesRepository : FilesRepository {
 
     override fun isSaveData(): MutableLiveData<Boolean> {
         return isSaving
+    }
+
+    override fun getSaveDataTime(): MutableLiveData<String> {
+        return saveDataTimeStr
     }
 
     override fun getCheckType(): CheckType {

@@ -16,6 +16,12 @@ import com.mr.mf_pd.application.view.base.BaseCheckFragment
 import com.mr.mf_pd.application.view.base.ext.getViewModelFactory
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import kotlinx.android.synthetic.main.fragment_real.*
+import kotlinx.android.synthetic.main.fragment_real.gainChartView
+import kotlinx.android.synthetic.main.fragment_real.image1
+import kotlinx.android.synthetic.main.fragment_real.image2
+import kotlinx.android.synthetic.main.fragment_real.image3
+import kotlinx.android.synthetic.main.fragment_real.image4
+import kotlinx.android.synthetic.main.fragment_real.locationLayout
 import java.text.DecimalFormat
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -128,6 +134,9 @@ class RealModelFragment : BaseCheckFragment<RealDataBinding>() {
         }
         image5.setOnClickListener {
             checkActionListener?.changeBandDetectionModel()
+        }
+        locationLayout.setOnClickListener {
+            createChooseFileIntent()
         }
 //        if (viewModel.checkType == CheckType.UHF) {
 //            image5.visibility = View.VISIBLE

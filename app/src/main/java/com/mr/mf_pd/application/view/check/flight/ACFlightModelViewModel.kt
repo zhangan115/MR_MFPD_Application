@@ -45,7 +45,6 @@ class ACFlightModelViewModel(
     private var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
-    var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
     val df1 = DecimalFormat("0.00")
     var receiverCount = 0
@@ -54,7 +53,6 @@ class ACFlightModelViewModel(
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
 
     fun start() {
-        this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
             showTimeView.postValue(true)
@@ -74,7 +72,9 @@ class ACFlightModelViewModel(
                 }
             }
         } else {
+            this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
+            this.timeStr = filesRepository.getSaveDataTime()
             showTimeView.postValue(false)
         }
     }
@@ -212,17 +212,10 @@ class ACFlightModelViewModel(
     }
 
     fun startSaveData() {
-        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
-        mTimeDisposable?.dispose()
-        mTimeDisposable = RepeatActionUtils.execute {
-            val time = System.currentTimeMillis() - saveDataStartTime
-            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
-        }
     }
 
     fun stopSaveData() {
-        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

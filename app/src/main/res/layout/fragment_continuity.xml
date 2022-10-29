@@ -452,7 +452,7 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="5dp"
                         android:background="@drawable/bg_time"
                         android:gravity="center"
@@ -460,7 +460,6 @@
                         android:textColor="#FF6858"
                         android:textSize="12sp"
                         android:visibility="@{vm.isSaveData()?View.VISIBLE:View.INVISIBLE}" />
-
 
                     <ImageView
                         android:id="@+id/image1"
@@ -520,17 +519,31 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+        <LinearLayout
+            android:id="@+id/locationLayout"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="8dp"
-            android:minWidth="100dp"
-            android:text="@{vm.location}"
-            android:textColor="@color/blueColor"
-            android:textSize="13sp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/dp_10">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save_location"
+                android:textColor="@color/blueColor"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@{vm.location}"
+                android:textColor="@color/blueColor"
+                android:textSize="14sp" />
+        </LinearLayout>
     </RelativeLayout>
 
 </layout>

@@ -16,7 +16,6 @@ import com.mr.mf_pd.application.view.callback.FlightDataCallback
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_ac_flight.*
 
-
 /**
  * AC 飞行模式
  */
@@ -135,6 +134,9 @@ class ACFlightModelFragment : BaseCheckFragment<ACFlightDataBinding>() {
         }
         image4.setOnClickListener {
             cleanCurrentData()
+        }
+        locationLayout.setOnClickListener {
+            createChooseFileIntent()
         }
         rendererSet = true
     }

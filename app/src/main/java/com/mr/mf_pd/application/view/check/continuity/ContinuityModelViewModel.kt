@@ -55,7 +55,6 @@ class ContinuityModelViewModel(
     lateinit var checkType: CheckType
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
-    var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
     private val _toResetEvent = MutableLiveData<Event<Unit>>()
@@ -82,6 +81,7 @@ class ContinuityModelViewModel(
             }
         } else {
             this.isSaveData = filesRepository.isSaveData()
+            this.timeStr = filesRepository.getSaveDataTime()
             this.checkType = dataRepository.getCheckType()
             showTimeView.postValue(false)
         }
@@ -101,10 +101,10 @@ class ContinuityModelViewModel(
     }
 
     fun updateTitle(settingBean: SettingBean) {
-        text1.postValue("有效值，" + settingBean.fzUnit)
-        text2.postValue("峰值，" + settingBean.fzUnit)
-        text3.postValue("F1(50Hz)，" + settingBean.fzUnit)
-        text4.postValue("F2(100Hz)，" + settingBean.fzUnit)
+        text1.postValue("有效值" + settingBean.fzUnit)
+        text2.postValue("峰值" + settingBean.fzUnit)
+        text3.postValue("F1(50Hz)" + settingBean.fzUnit)
+        text4.postValue("F2(100Hz)" + settingBean.fzUnit)
     }
 
     fun setCheckFile(filePath: String) {
@@ -119,17 +119,10 @@ class ContinuityModelViewModel(
     }
 
     fun startSaveData() {
-        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
-        mTimeDisposable?.dispose()
-        mTimeDisposable = RepeatActionUtils.execute {
-            val time = System.currentTimeMillis() - saveDataStartTime
-            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
-        }
     }
 
     fun stopSaveData() {
-        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

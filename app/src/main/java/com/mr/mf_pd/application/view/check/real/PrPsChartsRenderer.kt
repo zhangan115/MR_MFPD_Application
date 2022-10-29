@@ -112,7 +112,6 @@ class PrPsChartsRenderer(
         paint.typeface = typeface
         paint.textSize = DisplayUtil.sp2px(context, 12f).toFloat()
 
-
         prPsPoints = PrpsPointList()
 
         textureProgram = TextureShader3DProgram(context)
@@ -164,7 +163,7 @@ class PrPsChartsRenderer(
         values: ConcurrentHashMap<Int, ConcurrentHashMap<Float, Int>>,
         floatList: CopyOnWriteArrayList<Float?>,
     ) {
-        this.prPsPoints?.setValue(textRectInOpenGl, values)
+        this.prPsPoints?.setValue(textRectInOpenGl, values,isZeroCenter)
         if (floatList.isEmpty()) {
             cleanData()
         } else {

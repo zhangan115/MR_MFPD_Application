@@ -42,7 +42,6 @@ class ACPulseModelViewModel(
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
-    var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
     private val _toResetEvent = MutableLiveData<Event<Unit>>()
@@ -67,7 +66,10 @@ class ACPulseModelViewModel(
                 }
             }
         } else {
+            this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
+            this.timeStr = filesRepository.getSaveDataTime()
+            showTimeView.postValue(false)
         }
     }
 
@@ -79,17 +81,10 @@ class ACPulseModelViewModel(
     var isSaveData: MutableLiveData<Boolean>? = null
 
     fun startSaveData() {
-        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
-        mTimeDisposable?.dispose()
-        mTimeDisposable = RepeatActionUtils.execute {
-            val time = System.currentTimeMillis() - saveDataStartTime
-            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
-        }
     }
 
     fun stopSaveData() {
-        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

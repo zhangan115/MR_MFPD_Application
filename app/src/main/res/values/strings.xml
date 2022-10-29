@@ -2,6 +2,7 @@
     <string name="ok">确定</string>
     <string name="sure">确定</string>
     <string name="cancel">取消</string>
+    <string name="save_other">其他位置</string>
     <string name="next">下一步</string>
     <string name="no_data">暂时没有数据</string>
     <string name="more">更多</string>
@@ -76,5 +77,6 @@
     <string name="fd_state_5">微粒</string>
     <string name="fd_state_6">噪声(通讯)</string>
     <string name="fd_state_7">其它干扰</string>
+    <string name="save_location">保存位置:</string>
 
 </resources>

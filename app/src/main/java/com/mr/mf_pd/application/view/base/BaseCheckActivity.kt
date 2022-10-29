@@ -112,10 +112,12 @@ abstract class BaseCheckActivity<T : ViewDataBinding> : AbsBaseActivity<T>(), Vi
             return
         }
         if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
-            fragments[currentIndex].showToSaveDialog {
-                currentIndex = tag
-                getViewPager().setCurrentItem(tag, true)
-            }
+//            fragments[currentIndex].showToSaveDialog {
+//                currentIndex = tag
+//                getViewPager().setCurrentItem(tag, true)
+//            }
+            currentIndex = tag
+            getViewPager().setCurrentItem(tag, true)
         } else {
             currentIndex = tag
             getViewPager().setCurrentItem(tag, true)

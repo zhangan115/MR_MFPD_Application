@@ -60,7 +60,6 @@ class RealModelViewModel(
     var prPsDataCallback: PrPsDataCallback? = null
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
-    var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
     var mGetDataDisposable: Disposable? = null
     var chartMaxValue: Float? = null
@@ -72,7 +71,6 @@ class RealModelViewModel(
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
 
     fun start() {
-        this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
             val checkDataFileModel = filesRepository.getCheckFileModel()
@@ -91,7 +89,10 @@ class RealModelViewModel(
                 }
             }
         } else {
+            this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
+            this.timeStr = filesRepository.getSaveDataTime()
+            showTimeView.postValue(false)
         }
     }
 
@@ -278,17 +279,10 @@ class RealModelViewModel(
     }
 
     fun startSaveData() {
-        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
-        mTimeDisposable?.dispose()
-        mTimeDisposable = RepeatActionUtils.execute {
-            val time = System.currentTimeMillis() - saveDataStartTime
-            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
-        }
     }
 
     fun stopSaveData() {
-        mTimeDisposable?.dispose()
         filesRepository.stopSaveData()
     }
 

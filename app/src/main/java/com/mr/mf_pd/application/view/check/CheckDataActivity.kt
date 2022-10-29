@@ -154,7 +154,8 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         if (currentIndex == tag) {
             return
         }
-        if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
+        //屏蔽点击保存的dialog，在切换数据类型中可以进行数据保存
+        /*if (fragments.isNotEmpty() && fragments[currentIndex].isSaving()) {
             fragments[currentIndex].showToSaveDialog {
                 currentIndex = tag
                 viewPager.setCurrentItem(tag, false)
@@ -162,7 +163,9 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
         } else {
             currentIndex = tag
             viewPager.setCurrentItem(tag, false)
-        }
+        }*/
+        currentIndex = tag
+        viewPager.setCurrentItem(tag, false)
     }
 
     override fun onResume() {

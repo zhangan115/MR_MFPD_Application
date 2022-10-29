@@ -25,9 +25,9 @@ public class PrpsPointList {
 
     private static final int VERTEX_POSITION_SIZE = 3;
     private static final int VERTEX_COLOR_SIZE = 3;
-
     public volatile static float minValue = -80.0f;
     public volatile static float maxValue = -20.0f;
+
 
     private final ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> values = new ConcurrentHashMap<>();//保存的数据，第一个是数值，底二个是X位置 第三个是出现第次数
     private PrPsColorPointShaderProgram colorProgram;
@@ -58,7 +58,7 @@ public class PrpsPointList {
      *
      * @param map 数据
      */
-    public void setValue(TextRectInOpenGl rect, ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> map) {
+    public void setValue(TextRectInOpenGl rect, ConcurrentHashMap<Integer, ConcurrentHashMap<Float, Integer>> map,boolean isZeroCenter) {
         this.values.clear();
         this.values.putAll(map);
 
@@ -76,8 +76,28 @@ public class PrpsPointList {
             Set<Map.Entry<Float, Integer>> entrySet2 = entry1.getValue().entrySet();
             for (Map.Entry<Float, Integer> entry2 : entrySet2) {
                 indicesList.add(count);
-                float zTopPosition = (entry2.getKey() - minValue) / (maxValue - minValue) * (2.0f - 2 * spaceHeight);
+                float maxV = maxValue;
+                float minV = minValue;
                 float startX = -1 + spaceWidth + stepX * entry1.getKey();
+                float zTopPosition;
+                float startZPosition = 0;
+                if (isZeroCenter) {
+                    startZPosition = 1 - spaceHeight;
+                    if (minValue < 0 && maxValue < -1 * minV) {
+                        maxV = minValue * -1;
+                    } else {
+                        minV = maxValue * -1;
+                    }
+                }
+                if (isZeroCenter){
+                    if (entry2.getKey() >= 0) {
+                        zTopPosition = entry2.getKey() / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
+                    } else {
+                        zTopPosition = entry2.getKey() / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
+                    }
+                }else {
+                    zTopPosition = (entry2.getKey() - minValue) / (maxValue - minValue) * (2.0f - 2 * spaceHeight);
+                }
                 vertexPointList.add(startX);
                 vertexPointList.add(1 - spaceHeight);
                 vertexPointList.add(zTopPosition);

@@ -136,10 +136,11 @@ public class PrPsCubeList {
                 float zTopPosition = 0;
                 if (values.get(i) != null) {
                     if (isZeroCenter) {
-                        ratio = values.get(i) / maxV;
                         if (values.get(i) >= 0) {
+                            ratio = values.get(i) / maxV;
                             zTopPosition = values.get(i) / maxV * (2.0f - spaceHeight * 2) / 2 + startZPosition;
                         } else {
+                            ratio = values.get(i) / minV;
                             zTopPosition = values.get(i) / minV * (2.0f - spaceHeight * 2) / 2 * -1 + startZPosition;
                         }
                     } else {

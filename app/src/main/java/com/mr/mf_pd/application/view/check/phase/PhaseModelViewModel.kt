@@ -38,8 +38,6 @@ class PhaseModelViewModel(
 ) : ViewModel() {
 
     lateinit var checkType: CheckType
-    //三维数组， 第一个相位 第二个 值 第三个 次数
-//    val array3d = Array(100) { Array(200) { Array(1) { it } } }
 
     var dataMaps: HashMap<Int, HashMap<Float, Int>> = HashMap()
 
@@ -62,7 +60,6 @@ class PhaseModelViewModel(
     var location: MutableLiveData<String> = MutableLiveData(filesRepository.getCurrentCheckName())
 
     var timeStr: MutableLiveData<String> = MutableLiveData()
-    var saveDataStartTime: Long = 0
     var mTimeDisposable: Disposable? = null
 
     private val df1 = DecimalFormat("0.00")
@@ -71,7 +68,6 @@ class PhaseModelViewModel(
     val toResetEvent: LiveData<Event<Unit>> = _toResetEvent
 
     fun start() {
-        this.isSaveData = filesRepository.isSaveData()
         if (isFile.value!!) {
             this.checkType = filesRepository.getCheckType()
             val checkDataFileModel = filesRepository.getCheckFileModel()
@@ -90,7 +86,10 @@ class PhaseModelViewModel(
                 }
             }
         } else {
+            this.isSaveData = filesRepository.isSaveData()
             this.checkType = dataRepository.getCheckType()
+            this.timeStr = filesRepository.getSaveDataTime()
+            showTimeView.postValue(false)
         }
     }
 
@@ -129,13 +128,7 @@ class PhaseModelViewModel(
     }
 
     fun startSaveData() {
-        saveDataStartTime = System.currentTimeMillis()
         filesRepository.startSaveData()
-        mTimeDisposable?.dispose()
-        mTimeDisposable = RepeatActionUtils.execute {
-            val time = System.currentTimeMillis() - saveDataStartTime
-            timeStr.postValue(DateUtil.timeFormat(time, "mm:ss"))
-        }
     }
 
     fun stopSaveData() {
