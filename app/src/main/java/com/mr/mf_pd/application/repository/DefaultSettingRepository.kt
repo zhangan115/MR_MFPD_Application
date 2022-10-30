@@ -6,9 +6,12 @@ import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.model.SettingBean
 import com.mr.mf_pd.application.repository.impl.SettingRepository
+import com.mr.mf_pd.application.utils.ZLog
 import com.sito.tool.library.utils.SPHelper
 
 class DefaultSettingRepository : SettingRepository {
+
+    val TAG = "DefaultSettingRepository"
 
     override fun toSaveSettingData(checkType: CheckType) {
         val settingBean = checkType.settingBean
@@ -59,6 +62,7 @@ class DefaultSettingRepository : SettingRepository {
 
             settingBean.phaseValue = cacheSettingBean.phaseValue
         }
+        ZLog.d(TAG, "settingBean $settingBean")
         return settingBean
     }
 

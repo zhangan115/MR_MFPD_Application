@@ -78,5 +78,6 @@
     <string name="fd_state_6">噪声(通讯)</string>
     <string name="fd_state_7">其它干扰</string>
     <string name="save_location">保存位置:</string>
+    <string name="save_log">保存Log：</string>
 
 </resources>

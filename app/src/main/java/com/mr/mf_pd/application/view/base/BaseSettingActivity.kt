@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.list.listItems
 import com.mr.mf_pd.application.R
 import com.mr.mf_pd.application.common.CheckType
 import com.mr.mf_pd.application.common.ConstantStr
+import com.mr.mf_pd.application.utils.ZLog
 import kotlinx.android.synthetic.main.activity_uhf_setting.*
 
 abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
@@ -25,6 +26,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
             MaterialDialog(this)
                 .show {
                     listItems(R.array.choose_phase_model) { _, index, text ->
+                        ZLog.d(TAG, "相位同步: $text")
                         onPhaseModelChange(text.toString(), index)
                     }
                     lifecycleOwner(this@BaseSettingActivity)
@@ -35,6 +37,7 @@ abstract class BaseSettingActivity<T : ViewDataBinding> : AbsBaseActivity<T>(),
             MaterialDialog(this)
                 .show {
                     listItems(R.array.choose_band_detection) { _, index, text ->
+                        ZLog.d(TAG, "检测频带: $text")
                         onBandDetectionChange(text.toString(), index)
                     }
                     lifecycleOwner(this@BaseSettingActivity)

@@ -8,6 +8,7 @@ interface ConstantStr {
     companion object {
 
         const val MR_FILE = "MR"
+        const val MR_LOG = "Logs"
         const val cancelVersion = "cancelVersion" //取消的版本升级
         const val USER_CONFIG_FILE = "user_config"
         const val APP_HOST = "app_host"
@@ -32,11 +33,6 @@ interface ConstantStr {
          * 登录账户的信息key值
          */
         const val PROFILE_ACCOUNT = "account"
-
-        /**
-         * 消息临时存储
-         */
-        const val NEWS_COUNT = "news_count"
 
         /**
          * 设置ip信息
@@ -72,6 +68,7 @@ interface ConstantStr {
         const val USER_VERSION = "user_version"
         const val DEVICE = "device"
         const val USER_BEAN = "user_bean"
+        const val USER_CONFIG_LOG_OPEN = "open_log"
 
         /**
          * Bundle Key

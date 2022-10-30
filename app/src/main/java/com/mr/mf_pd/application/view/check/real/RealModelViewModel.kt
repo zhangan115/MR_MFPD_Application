@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.view.check.real
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +21,7 @@ import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.utils.DateUtil
 import com.mr.mf_pd.application.utils.NumberUtils
 import com.mr.mf_pd.application.utils.RepeatActionUtils
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.view.callback.PrPsDataCallback
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
@@ -38,7 +38,7 @@ class RealModelViewModel(
     val dataRepository: DataRepository,
     val filesRepository: FilesRepository,
 ) : ViewModel() {
-
+    val TAG = "RealModelViewModel"
     lateinit var checkType: CheckType
     var gainValues: MutableLiveData<Vector<Float>> = MutableLiveData()
     var isSaveData: MutableLiveData<Boolean>? = null
@@ -191,7 +191,7 @@ class RealModelViewModel(
                     dataMaps[off] = newMap
                 }
             } else {
-                Log.d("zhangan", "数据相位异常：$off")
+                ZLog.d(TAG, "数据相位异常：$off")
             }
             mcCount++
         }
@@ -242,7 +242,7 @@ class RealModelViewModel(
         var value = f
         val step = if (setting.maxValue > 1000 ) 100 else 10
         if (setting.gdCd == 1) {
-            if (f > setting.maxValue) {
+            if (f >= setting.maxValue) {
                 value = setting.maxValue.toFloat()
             } else if (f < setting.minValue) {
                 value = setting.minValue.toFloat()

@@ -30,7 +30,7 @@ class MRApplication : Application() {
 
     companion object {
         lateinit var instance: MRApplication
-
+        const val TAG = "MRApplication"
         @JvmStatic
         fun appHost(): String {
             return SPHelper.readString(
@@ -90,7 +90,6 @@ class MRApplication : Application() {
         super.onCreate()
         instance = this
         activityList = ArrayList()
-        ZLog.init(false,"")
         CrashHandler.getInstance().init(this, BuildConfig.DEBUG, false, 0,
             SplashActivity::class.java)
         UMConfigure.init(this, BuildConfig.UMENG_APP_KEY,BuildConfig.UMENG_CHANNEL,1, null)
@@ -148,10 +147,10 @@ class MRApplication : Application() {
         )
         val saveDir = Objects.requireNonNull(externalFileRootDir)?.absolutePath;
         val file = File(saveDir, ConstantStr.MR_FILE)
-        Log.d("zhangan", file.absolutePath)
+        ZLog.d(TAG, "cache file ="+file.absolutePath)
         if (!file.exists()) {
             if (file.mkdir()) {
-                Log.d("zhangan", "create file success")
+                ZLog.d(TAG, "create file success")
             }
         }
         return file

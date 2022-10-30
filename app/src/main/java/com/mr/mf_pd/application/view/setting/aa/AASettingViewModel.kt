@@ -14,6 +14,8 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.repository.DefaultDataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.ZLog
+import com.mr.mf_pd.application.utils.toHexString
 import com.sito.tool.library.utils.ByteLibUtil
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,6 +23,7 @@ import java.text.DecimalFormat
 
 class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
 
+    val TAG = "AASettingViewModel"
 
     lateinit var checkType: CheckType
 
@@ -31,10 +34,13 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //警戒门限
     var jjLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
     //频带上限
     var pdUpStr: MutableLiveData<String> = MutableLiveData("30")
+
     //频带下限
     var pdDownStr: MutableLiveData<String> = MutableLiveData("30")
+
     //幅值单位
     var fzUnitStr: MutableLiveData<String> = MutableLiveData("mV")
 
@@ -58,22 +64,29 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
 
     //通道门限值
     var limitValueStr: MutableLiveData<String> = MutableLiveData()
+
     //通道门限值滑动条的值
     var limitProgressValue: MutableLiveData<Int> = MutableLiveData()
+
     //通道门限值调整步长
     var limitStepValueStr: MutableLiveData<String> = MutableLiveData()
+
     //触发门限值
     var cfLimitValueStr: MutableLiveData<String> = MutableLiveData()
+
     //低通滤波器
     var lowPassFilteringStr: MutableLiveData<String> = MutableLiveData()
+
     //高通滤波器
     var highPassFilteringStr: MutableLiveData<String> = MutableLiveData()
 
     //相位同步
     var phaseModelStr: MutableLiveData<String> = MutableLiveData()
     var phaseModelInt: MutableLiveData<Int> = MutableLiveData()
+
     //内同步的同步频率
     var phaseValueStr: MutableLiveData<String> = MutableLiveData()
+
     //频带检测
     var bandDetectionStr: MutableLiveData<String> = MutableLiveData()
     var bandDetectionInt: MutableLiveData<Int> = MutableLiveData()
@@ -127,7 +140,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
         this.checkType = checkType
         val settingBean = checkType.settingBean
         phaseModelInt.postValue(settingBean.xwTb)
-        if (settingBean.xwTb<Constants.PHASE_MODEL_LIST.size){
+        if (settingBean.xwTb < Constants.PHASE_MODEL_LIST.size) {
             phaseModelStr.postValue(Constants.PHASE_MODEL_LIST[settingBean.xwTb])
         }
         isAutoSync.postValue(settingBean.autoTb == 1)
@@ -154,7 +167,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
         if (settingBean.overLimitValue != null) {
             overLimitValueStr.postValue(settingBean.overLimitValue.toString())
         }
-        if (settingBean.alarmLimitValue!=null) {
+        if (settingBean.alarmLimitValue != null) {
             alarmLimitValueStr.postValue(settingBean.alarmLimitValue.toString())
         }
         if (settingBean.maxAverageValue != null) {
@@ -183,13 +196,14 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
             phaseValueStr.postValue(df1.format(settingBean.phaseValue))
         }
         val fzUnit = settingBean.fzUnit
-        if (!TextUtils.isEmpty(fzUnit)){
+        if (!TextUtils.isEmpty(fzUnit)) {
             fzUnitStr.postValue(fzUnit)
-        }else{
+        } else {
             fzUnitStr.postValue(checkType.defaultUnit)
         }
-        SocketManager.get().addCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
-        val readSettingCommand = CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
+        SocketManager.get().addCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
+        val readSettingCommand =
+            CommandHelp.readSettingValue(checkType.passageway, checkType.settingLength)
         SocketManager.get()
             .sendData(readSettingCommand)
     }
@@ -201,6 +215,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
     }
 
     private fun dealSettingValue(bytes: ByteArray) {
+        ZLog.d(TAG, "dealSettingValue " + bytes.toHexString())
         val valueList = splitBytesToValue(bytes)
         if (valueList.size >= checkType.settingLength) {
             jjLimitValueStr.postValue(valueList[0].toInt().toString())
@@ -225,6 +240,7 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
 
 
     private fun splitBytesToValue(bytes: ByteArray): ArrayList<Float> {
+        ZLog.d(TAG, "splitBytesToValue " + bytes.toHexString())
         val valueList = ArrayList<Float>()
         if (bytes.size > 2) {
             val length = bytes[2].toInt()
@@ -238,11 +254,13 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
                 valueList.add(f)
             }
         }
+        ZLog.d(TAG, "valueList " + valueList.joinToString { " " })
         return valueList
     }
 
 
     fun toSave() {
+        ZLog.d(TAG, "toSave()")
         GlobalScope.launch {
             toWriteSettingValue()
             val settingBean = checkType.settingBean
@@ -254,12 +272,12 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
             settingBean.ljTime = totalTimeStr.value!!.toInt()
             settingBean.maxValue = maximumAmplitudeStr1.value!!.toInt()
             settingBean.minValue = minimumAmplitudeStr1.value!!.toInt()
-            settingBean.maxValue2= maximumAmplitudeStr2.value!!.toInt()
+            settingBean.maxValue2 = maximumAmplitudeStr2.value!!.toInt()
             settingBean.minValue2 = minimumAmplitudeStr2.value!!.toInt()
             settingBean.limitValue = limitValueStr.value?.toInt()
-           limitStepValueStr.value?.toIntOrNull()?.let {
-               settingBean.limitStepValue = it
-           }
+            limitStepValueStr.value?.toIntOrNull()?.let {
+                settingBean.limitStepValue = it
+            }
             settingBean.jjLimitValue = jjLimitValueStr.value?.toInt()
             settingBean.overLimitValue = overLimitValueStr.value?.toInt()
             settingBean.alarmLimitValue = alarmLimitValueStr.value?.toInt()
@@ -279,13 +297,14 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
             }
             settingBean.phaseValue = phaseValueStr.value?.toFloatOrNull()
             val fzUnit = fzUnitStr.value
-            if (!TextUtils.isEmpty(fzUnit)){
+            if (!TextUtils.isEmpty(fzUnit)) {
                 settingBean.fzUnit = fzUnit!!
-            }else{
+            } else {
                 settingBean.fzUnit = checkType.defaultUnit
             }
             DefaultDataRepository.realDataMaxValue.postValue(settingBean.maxValue)
             DefaultDataRepository.realDataMinValue.postValue(settingBean.minValue)
+            ZLog.d(TAG, "checkType = $checkType")
             setting.toSaveSettingData(checkType)
         }
     }
@@ -321,14 +340,14 @@ class AASettingViewModel(val setting: SettingRepository) : ViewModel() {
     }
 
     private fun writeValue() {
-        Log.d("zhangan","values ${values.toArray()}")
+        ZLog.d(TAG, "values $values")
         val writeCommand = CommandHelp.writeSettingValue(checkType.passageway, values)
         SocketManager.get().sendData(writeCommand)
     }
 
     override fun onCleared() {
         super.onCleared()
-        SocketManager.get().removeCallBack(CommandType.ReadSettingValue,readSettingDataCallback)
+        SocketManager.get().removeCallBack(CommandType.ReadSettingValue, readSettingDataCallback)
     }
 
 }

@@ -230,13 +230,13 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
 
     override fun onBackAction() {
         when {
+            currentActionType != ActionType.NULL -> {
+                finishDealAction()
+            }
             supportFragmentManager.backStackEntryCount > 1 -> {
                 supportFragmentManager.popBackStack()
                 mCurrent = FileUtils.getParentOrNull(mCurrent)
                 updateTitle()
-            }
-            currentActionType != ActionType.NULL -> {
-                finishDealAction()
             }
             else -> {
                 setResult(RESULT_CANCELED)
@@ -312,7 +312,7 @@ class FilePickerActivity : AbsBaseActivity<FileListDataBinding>(), FileClickList
                         mFileTypeTv?.text = text
                         mFileType = FileTypeUtils.getFileType(index)
                         directoryListeners.forEach {
-                            it.onFileTypeChange(mFileType!!)
+                            it.onFileTypeChange(mFileType)
                         }
                     }
                     lifecycleOwner(this@FilePickerActivity)

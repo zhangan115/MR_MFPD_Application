@@ -47,7 +47,7 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
+        viewType: Int,
     ): DirectoryViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_file, parent, false)
@@ -71,16 +71,21 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
             holder.mNextImage.visibility = View.VISIBLE
             holder.mPhotoImage.visibility = View.GONE
             holder.mLabelImage.visibility = View.GONE
-            holder.mFileSubtitle.text = "对象：" + currentFile.file?.listFiles()?.size
+            holder.mFileSubtitle.text = "对象：" + currentFile.checkDataList.size
         } else {
             holder.mFileTitle.text = fileName
             val color = currentFile.color
-            if ( color!= -1) {
-                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],null))
-                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],null))
+            if (color != -1) {
+                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(colorList[color],
+                    null))
+                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(
+                    colorList[color],
+                    null))
             } else {
-                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,null))
-                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,null))
+                holder.mFileTitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,
+                    null))
+                holder.mFileSubtitle.setTextColor(MRApplication.instance.resources.getColor(R.color.text_title,
+                    null))
             }
 
             if (currentFile.isHasPhoto && !currentFile.isToChooseModel) {
@@ -143,7 +148,7 @@ internal class DirectoryAdapter(private val dataList: List<CheckDataFileModel>) 
     internal class DirectoryViewHolder(
         itemView: View,
         photoClickListener: OnItemPhotoClickListener?,
-        labelClickListener: OnItemLabelClickListener?
+        labelClickListener: OnItemLabelClickListener?,
     ) :
         RecyclerView.ViewHolder(itemView) {
         val layout: LinearLayout

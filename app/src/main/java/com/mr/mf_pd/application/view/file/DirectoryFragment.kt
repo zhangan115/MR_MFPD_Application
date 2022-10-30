@@ -15,6 +15,7 @@ import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.databinding.DirectoryDataBinding
 import com.mr.mf_pd.application.utils.FileTypeUtils
 import com.mr.mf_pd.application.utils.FileUtils
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.view.base.BaseFragment
 import com.mr.mf_pd.application.view.base.ext.choosePhoto
 import com.mr.mf_pd.application.view.base.ext.takePhoto
@@ -32,12 +33,10 @@ import java.io.File
 
 class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListener,
     UpdateDirectoryListener {
-
     private var mEmptyView: View? = null
     private var mFileType: FileTypeUtils.FileType = FileTypeUtils.FileType.DIRECTORY
     private var currentCheckData: CheckDataFileModel? = null
     private var mFile: File? = null
-    private var mFilter: FileFilter? = null
     private var mDirectoryRecyclerView: EmptyRecyclerView? = null
     private var mDirectoryAdapter: DirectoryAdapter? = null
     private var mFileClickListener: FileClickListener? = null
@@ -46,21 +45,30 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        ZLog.d(TAG, "onAttach")
         mFileClickListener = context as FileClickListener
+        initArgs()
     }
 
     override fun onDetach() {
         super.onDetach()
+        ZLog.d(TAG, "onDetach")
         mFileClickListener = null
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        ZLog.d(TAG, "onActivityCreated")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initArgs()
+        ZLog.d(TAG, "onViewCreated")
         initFilesList()
     }
 
     private fun initFilesList() {
+        ZLog.d(TAG, "initFilesList")
         mDirectoryAdapter = DirectoryAdapter(checkDataFileModels)
         mDirectoryAdapter?.setOnItemClickListener(object : ThrottleClickListener() {
 
@@ -93,6 +101,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
     }
 
     private fun updateData(fileType: FileTypeUtils.FileType) {
+        ZLog.d(TAG, "file type " + fileType.name)
         FileUtils.getFileList(mFile, fileType) {
             this.checkDataFileModels.clear()
             this.checkDataFileModels.addAll(it)
@@ -101,11 +110,11 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
     }
 
     private fun initArgs() {
+        ZLog.d(TAG, "initArgs")
         val arguments = arguments
         if (arguments != null && arguments.containsKey(ARG_FILE)) {
             mFile = arguments.getSerializable(ARG_FILE) as File?
         }
-        mFilter = arguments?.getSerializable(ARG_FILTER) as FileFilter?
         mFileType = arguments?.getSerializable(ARG_FILE_TYPE) as FileTypeUtils.FileType
     }
 
@@ -117,6 +126,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
 
     companion object {
 
+        private const val TAG = "DirectoryFragment"
         private const val ARG_FILE = "arg_file_path"
         private const val ARG_FILTER = "arg_filter"
         private const val ARG_FILE_TYPE = "file_type"
@@ -125,7 +135,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
         fun getInstance(
             file: File?,
             filter: FileFilter?,
-            fileType: FileTypeUtils.FileType
+            fileType: FileTypeUtils.FileType,
         ): DirectoryFragment {
             val instance = DirectoryFragment()
             val args = Bundle()
@@ -138,6 +148,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
     }
 
     override fun onFileTypeChange(fileType: FileTypeUtils.FileType) {
+        ZLog.d(TAG, "onFileTypeChange fileType = " + fileType.name)
         this.mFileType = fileType
         updateData(fileType)
     }
@@ -194,6 +205,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
     }
 
     override fun updateDirectory(action: FilePickerActivity.ActionType) {
+        ZLog.d(TAG, "updateDirectory action = " + action.name)
         if (action == FilePickerActivity.ActionType.NULL || action == FilePickerActivity.ActionType.Paste) {
             checkDataFileModels.forEach { model ->
                 model.isSelect = false
@@ -245,6 +257,7 @@ class DirectoryFragment : BaseFragment<DirectoryDataBinding>(), DirectoryListene
 
     override fun dealFile(requestCode: Int, file: File) {
         super.dealFile(requestCode, file)
+        ZLog.d(TAG, "dealFile requestCode = $requestCode file$file")
         currentCheckData?.isHasPhoto = true
         mDirectoryRecyclerView?.adapter?.notifyDataSetChanged()
     }

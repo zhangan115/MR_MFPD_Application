@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.common.primitives.Bytes;
 import com.mr.mf_pd.application.model.SettingBean;
 import com.mr.mf_pd.application.utils.ByteUtil;
+import com.mr.mf_pd.application.utils.ZLog;
 import com.sito.tool.library.utils.ByteLibUtil;
 import com.sito.tool.library.utils.NumberLibUtils;
 
@@ -19,6 +20,8 @@ import java.util.List;
  * @author anson
  */
 public class CommandHelp {
+
+    private final static String TAG = "CommandHelp";
 
     /**
      * 获取对时命令
@@ -60,6 +63,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"switchPassageway "+ByteUtil.bytes2HexStr(data));
         return data;
     }
 
@@ -69,6 +73,7 @@ public class CommandHelp {
      * @return 命令
      */
     public static byte[] closePassageway() {
+        ZLog.INSTANCE.d(TAG,"closePassageway");
         return switchPassageway(0, 0);
     }
 
@@ -87,6 +92,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"readYcValue " + ByteUtil.bytes2HexStr(data));
         return data;
     }
 
@@ -107,6 +113,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"readSettingValue " + ByteUtil.bytes2HexStr(data));
         return data;
     }
 
@@ -130,6 +137,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"writeSettingValue " + ByteUtil.bytes2HexStr(data));
         return data;
     }
 
@@ -141,6 +149,7 @@ public class CommandHelp {
      * @return 命令
      */
     public static byte[] writeSettingValue(int passageway, ArrayList<Float> value) {
+        ZLog.INSTANCE.d(TAG,"writeSettingValue value " + value.toString());
         byte b = (byte) passageway;
         List<Byte> byteList = new ArrayList<>(Bytes.asList(new byte[]{0x01, 0x10}));
         byte size = (byte) (value.size() * 4 + 1);
@@ -155,6 +164,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"writeSettingValue " + ByteUtil.bytes2HexStr(data));
         return data;
     }
 
@@ -191,8 +201,7 @@ public class CommandHelp {
         byte[] data = new byte[crcByte.length + bytes.length];
         System.arraycopy(bytes, 0, data, 0, bytes.length);
         System.arraycopy(crcByte, 0, data, bytes.length, crcByte.length);
+        ZLog.INSTANCE.d(TAG,"stopReadPulseData value " +ByteUtil.bytes2HexStr(data));
         return data;
     }
-
-
 }

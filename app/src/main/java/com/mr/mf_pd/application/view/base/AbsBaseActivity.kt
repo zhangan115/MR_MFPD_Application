@@ -30,7 +30,7 @@ import java.io.IOException
 
 
 abstract class AbsBaseActivity<T : ViewDataBinding> : BaseActivity() {
-    val TAG = this.javaClass.simpleName
+    open val TAG = this.javaClass.simpleName
     lateinit var dataBinding: T
     open val showToolbar = true
     open var showClose = false

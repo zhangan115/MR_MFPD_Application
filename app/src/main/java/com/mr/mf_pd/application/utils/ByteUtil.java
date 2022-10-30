@@ -93,6 +93,7 @@ public class ByteUtil {
             buffer[0] = Character.forDigit((src[i] >>> 4) & 0x0F, 16);
             buffer[1] = Character.forDigit(src[i] & 0x0F, 16);
             builder.append(buffer);
+            builder.append(" ");
         }
         return builder.toString().toUpperCase();
     }

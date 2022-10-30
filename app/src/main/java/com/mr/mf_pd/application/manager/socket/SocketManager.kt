@@ -1,6 +1,5 @@
 package com.mr.mf_pd.application.manager.socket
 
-import android.util.Log
 import androidx.annotation.MainThread
 import com.google.common.primitives.Bytes
 import com.mr.mf_pd.application.app.MRApplication.Companion.appHost
@@ -10,7 +9,7 @@ import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.callback.LinkStateListener
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
-import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.toHexString
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.Observable
@@ -27,6 +26,8 @@ import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 
 class SocketManager private constructor() {
+
+    val TAG = "SocketManager"
 
     private var inputStream //输入流
             : InputStream? = null
@@ -80,7 +81,7 @@ class SocketManager private constructor() {
 
     fun setSaveDataFile(file: File?) {
         if (file != null && file.exists()) {
-            Log.d("zhangan",file.absolutePath)
+            ZLog.d(TAG, file.absolutePath)
             val ycFile = File(file, ConstantStr.CHECK_YC_FILE_NAME)
             if (!ycFile.exists()) {
                 ycFile.createNewFile()
@@ -296,8 +297,8 @@ class SocketManager private constructor() {
                             val list = ArrayList<ByteArray>()
                             it.drainTo(list)
                             it.clear()
-                            if (list.size > 25){
-                                list.dropLast(25).forEach {bytes->  it.offer(bytes)}
+                            if (list.size > 25) {
+                                list.dropLast(25).forEach { bytes -> it.offer(bytes) }
                             }
                         }
                     }
@@ -323,8 +324,8 @@ class SocketManager private constructor() {
                     bytesCallbackMap[commandType]?.forEach {
                         it.onData(source)
                     }
-                    Log.d("zhangan",
-                        "ReadYCData " + ByteUtil.bytes2HexStr(source).chunked(2).joinToString(" "))
+                    ZLog.d(TAG,
+                        "ReadYCData " + source.toHexString())
                 }
                 CommandType.FdData -> {
                     if (mIsSaveData2File && fdFw != null) {
@@ -477,7 +478,7 @@ class SocketManager private constructor() {
             } finally {
                 try {
                     fos?.close()
-                    Log.d("zhangan", "file close")
+                    ZLog.e(TAG, "file close")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -522,13 +523,13 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
-                    Log.d("zhangan",
-                        "send data " + ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
+                    ZLog.d(TAG, "send data " + data.toHexString())
                 } else {
-                    Log.d("zhangan", "发送失败")
+                    ZLog.e(TAG, "发送失败")
                     emitter.onNext(false)
                 }
             } catch (e: Exception) {
+                ZLog.e(TAG, "error" + e.localizedMessage)
                 e.printStackTrace()
 //                emitter.onError(e)
             } finally {
@@ -549,10 +550,9 @@ class SocketManager private constructor() {
                     outputStream!!.write(data)
                     outputStream!!.flush()
                     emitter.onNext(true)
-                    Log.d("zhangan",
-                        "sendRepeatData " + ByteUtil.bytes2HexStr(data).chunked(2).joinToString(" "))
+                    ZLog.d(TAG, "sendRepeatData " + data.toHexString())
                 } else {
-                    Log.d("zhangan", "发送失败")
+                    ZLog.d(TAG, "发送失败")
                     emitter.onNext(false)
                 }
             } catch (e: Exception) {

@@ -30,6 +30,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class FileUtils {
 
+    private final static String TAG = "FileUtils";
+
     public interface FilterCallback {
 
         void onResult(List<CheckDataFileModel> list);
@@ -59,6 +61,7 @@ public class FileUtils {
 
     public static Disposable getFileList(File directory, @Nullable FileTypeUtils.FileType checkType, FilterCallback callback) {
         Observable<List<CheckDataFileModel>> observable = Observable.create(emitter -> {
+            ZLog.INSTANCE.d(TAG, "start read check file");
             List<CheckDataFileModel> checkDataFileModels = new ArrayList<>();
             File[] files = directory.listFiles();
             try {
@@ -68,8 +71,10 @@ public class FileUtils {
                     for (int i = 0; i < filterFiles.size(); i++) {
                         File file = filterFiles.get(i);
                         if (file.isDirectory()) {
-                            CheckDataFileModel model = isCheckDataFile(file);
-                            if (model != null) {
+                            CheckDataFileModel model = isCheckDataFile(file, checkType);
+                            if (model != null && (checkType == model.getFileType()
+                                    || checkType == FileTypeUtils.FileType.DIRECTORY
+                                    || model.getFileType() == FileTypeUtils.FileType.DIRECTORY)) {
                                 checkDataFileModels.add(model);
                             }
                         }
@@ -78,6 +83,7 @@ public class FileUtils {
             } catch (Exception e) {
                 emitter.onError(e);
             } finally {
+                ZLog.INSTANCE.d(TAG, "finish read check file");
                 emitter.onNext(checkDataFileModels);
                 emitter.onComplete();
             }
@@ -88,7 +94,7 @@ public class FileUtils {
     }
 
     @Nullable
-    public static CheckDataFileModel isCheckDataFile(File file) throws IOException {
+    public static CheckDataFileModel isCheckDataFile(File file, @Nullable FileTypeUtils.FileType checkType) throws IOException {
         if (file.isDirectory()) {
             CheckDataFileModel model = new CheckDataFileModel();
             model.setFile(file);
@@ -121,9 +127,23 @@ public class FileUtils {
                     model = null;
                 }
             } else {
+                model.setFileType(FileTypeUtils.FileType.DIRECTORY);
                 model.setCheckFile(false);
+                model.getCheckDataList().clear();
+                File[] files = file.listFiles();
+                if (files != null && files.length > 0) {
+                    for (File f : files) {
+                        CheckDataFileModel nextMode = isCheckDataFile(f, checkType);
+                        model.getCheckDataList().add(nextMode);
+                    }
+                }
             }
-            return model;
+            if (checkType == null) {
+                return model;
+            }
+            if (model != null && (checkType == model.getFileType() || checkType == FileTypeUtils.FileType.DIRECTORY || model.getFileType() == FileTypeUtils.FileType.DIRECTORY)) {
+                return model;
+            }
         }
         return null;
     }

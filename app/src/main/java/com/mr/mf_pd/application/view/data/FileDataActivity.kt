@@ -60,7 +60,7 @@ class FileDataActivity : AbsBaseActivity<FileDataDataBinding>(), View.OnClickLis
         intent.getStringExtra(ConstantStr.KEY_BUNDLE_STR)?.let {
             currentFile = File(it)
             GlobalScope.runCatching {
-                val checkDataFileModel = FileUtils.isCheckDataFile(currentFile)
+                val checkDataFileModel = FileUtils.isCheckDataFile(currentFile,null)
                 GlobalScope.launch(Dispatchers.Main) {
                     if (checkDataFileModel != null) {
                         initViewData(checkDataFileModel)

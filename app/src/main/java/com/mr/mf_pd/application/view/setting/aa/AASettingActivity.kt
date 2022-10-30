@@ -11,11 +11,14 @@ import com.mr.mf_pd.application.common.ConstantInt
 import com.mr.mf_pd.application.common.ConstantStr
 import com.mr.mf_pd.application.common.Constants
 import com.mr.mf_pd.application.databinding.AASettingDataBinding
+import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.BaseSettingActivity
 import kotlinx.android.synthetic.main.activity_aa_setting.*
 
 class AASettingActivity : BaseSettingActivity<AASettingDataBinding>() {
+
+    override val TAG = "AASettingActivity"
 
     private val viewModel by viewModels<AASettingViewModel> { getViewModelFactory() }
 
@@ -27,11 +30,12 @@ class AASettingActivity : BaseSettingActivity<AASettingDataBinding>() {
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        viewModel.limitProgressValue.observe(this){
-            limitValueProgressBar.setProgress(it,false)
+        viewModel.limitProgressValue.observe(this) {
+            limitValueProgressBar.setProgress(it, false)
         }
         limitValueProgressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                ZLog.d(TAG, "fromUser: $fromUser progress $progress")
                 if (fromUser) {
                     val value = ConstantInt.LIMIT_VALUE_MAX * progress / 100
                     limitValueEt.setText(value.toString())
@@ -78,7 +82,7 @@ class AASettingActivity : BaseSettingActivity<AASettingDataBinding>() {
         super.onPause()
         viewModel.toSave()
         val intent = Intent(Constants.UPDATE_SETTING)
-        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT,viewModel.checkType.settingBean)
+        intent.putExtra(ConstantStr.KEY_BUNDLE_OBJECT, viewModel.checkType.settingBean)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 }

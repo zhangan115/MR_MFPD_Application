@@ -44,6 +44,7 @@ import com.mr.mf_pd.application.model.DeviceBean
 import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.getViewModelFactory
+import com.mr.mf_pd.application.utils.toHexString
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -53,10 +54,12 @@ import com.qw.soul.permission.SoulPermission
 import com.qw.soul.permission.bean.Permission
 import com.qw.soul.permission.bean.Permissions
 import com.qw.soul.permission.callbcak.CheckRequestPermissionsListener
+import com.sito.tool.library.utils.SPHelper
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_device_check.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.checkDataLayout
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -89,7 +92,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         SocketManager.get().release()
         DeviceListenerManager.addListener(object : UDPListener {
             override fun onData(byteArray: ByteArray) {
-                ZLog.i(TAG,byteArray.toString())
+                ZLog.i(TAG, byteArray.toHexString())
                 val mrPDByteArray = ByteArray(4)
                 val ipAddressByteArray = ByteArray(4)
                 val deviceNumByteArray = ByteArray(6)
@@ -118,7 +121,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                     if (device != null) {
                         device.power = power
                         device.ip = ip
-                        device.powerAttr.set(String.format("%d",device.power)+"%")
+                        device.powerAttr.set(String.format("%d", device.power) + "%")
                         device.powerStateAttr.set(powerState)
                         ZLog.i(TAG, "device power is $power ip = $ip powerState = $powerState")
                         deviceMap[deviceNum] = device
@@ -149,6 +152,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             }
         })
     }
+
 
     override fun initView(savedInstanceState: Bundle?) {
         val adapter = GenericQuickAdapter(
@@ -211,7 +215,7 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
         multicastLock?.acquire()
     }
 
-    var multicastLock :WifiManager.MulticastLock? = null
+    var multicastLock: WifiManager.MulticastLock? = null
 
     override fun initData(savedInstanceState: Bundle?) {
         dataBinding.vm = viewModel
@@ -479,6 +483,9 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
             if (file != null && file.exists()) {
                 file.mkdir()
             }
+            file?.let {
+                initLog(it)
+            }
             return
         }
         if (!isHasStoragePermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -498,6 +505,14 @@ class MainActivity : AbsBaseActivity<MainDataBinding>(),
                     lifecycleOwner(this@MainActivity)
                 }
         }
+    }
+
+    private fun initLog(file:File) {
+        val openLog = SPHelper.readBoolean(MRApplication.instance.applicationContext,
+            ConstantStr.USER,
+            ConstantStr.USER_CONFIG_LOG_OPEN,
+            false)
+        ZLog.init(openLog,file)
     }
 
 }

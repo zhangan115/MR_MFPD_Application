@@ -29,7 +29,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -41,6 +41,7 @@
                     android:background="@drawable/shape_content_bg">
 
                     <TextView
+                        android:id="@+id/settingIPTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="15dp"
@@ -64,13 +65,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="12dp"
                     android:background="@drawable/shape_content_bg">
 
                     <TextView
+                        android:id="@+id/setPortTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="15dp"
@@ -90,6 +92,35 @@
                         android:textColor="#ff333333"
                         android:textSize="14sp"
                         tools:text="8000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/saveLogLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/shape_content_bg"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="15dp"
+                        android:text="@string/save_log"
+                        android:textColor="@color/text_content_third_color"
+                        android:textSize="14sp" />
+
+                    <Switch
+                        android:id="@+id/saveLogSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 </LinearLayout>
 
