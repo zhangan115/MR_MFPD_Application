@@ -13,12 +13,14 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.model.CheckParamsBean
 import com.mr.mf_pd.application.model.Event
 import com.mr.mf_pd.application.model.SettingBean
+import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
+import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
+import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
 import com.mr.mf_pd.application.repository.impl.DataRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
-import com.mr.mf_pd.application.opengl.`object`.FlightPoint2DList
-import com.mr.mf_pd.application.opengl.`object`.PrPsCubeList
-import com.mr.mf_pd.application.opengl.`object`.PrPdPoint2DList
-import com.mr.mf_pd.application.opengl.`object`.PrpsPointList
+import com.mr.mf_pd.application.utils.ByteUtil
+import com.mr.mf_pd.application.utils.ZLog
 import com.sito.tool.library.utils.ByteLibUtil
 import io.reactivex.disposables.Disposable
 
@@ -26,6 +28,7 @@ class CheckDataViewModel(
     private val dataRepository: DataRepository,
     private val settingRepository: SettingRepository,
 ) : ViewModel() {
+    private val TAG = "CheckDataViewModel"
     lateinit var mCheckType: CheckType
     var writeSetting = false
     var toastStr: MutableLiveData<String> = MutableLiveData()
@@ -97,6 +100,7 @@ class CheckDataViewModel(
     private val writeSettingDataCallback = object : BytesDataCallback {
 
         override fun onData(source: ByteArray) {
+            ZLog.d(TAG, "writeSettingDataCallback value = " + ByteUtil.bytes2HexStr(source))
             writeSetting = false
             if (source.contentEquals(writeSettingCommand)) {
                 dealWriteSettingValue(source)

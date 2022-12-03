@@ -228,7 +228,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     }
 
     override fun addLimitValue() {
-        if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
+        if (viewModel.settingValues.size == checkType.settingLength /*&& !viewModel.writeSetting*/) {
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
             viewModel.settingBean?.limitStepValue?.let {
                 var newValue = currentValue + it
@@ -243,7 +243,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     }
 
     override fun downLimitValue() {
-        if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
+        if (viewModel.settingValues.size == checkType.settingLength /*&& !viewModel.writeSetting*/) {
             val currentValue = viewModel.settingValues[getLimitPosition()].toInt()
             viewModel.settingBean?.limitStepValue?.let {
                 var newValue = currentValue - it
@@ -268,7 +268,7 @@ class CheckDataActivity : BaseCheckActivity<FileDataDataBinding>(), View.OnClick
     }
 
     override fun changeBandDetectionModel() {
-        if (viewModel.settingValues.size == checkType.settingLength && !viewModel.writeSetting) {
+        if (viewModel.settingValues.size == checkType.settingLength /*&& !viewModel.writeSetting*/) {
             val currentModel = viewModel.settingValues[getBandDetectionPosition()].toInt()
             var newModel = currentModel + 1
             if (currentModel + 1 > 2) {
