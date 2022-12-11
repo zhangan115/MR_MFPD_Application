@@ -2,7 +2,7 @@ package com.mr.mf_pd.application.app
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
+import android.os.Handler
 import androidx.annotation.NonNull
 import com.mr.mf_pd.application.BuildConfig
 import com.mr.mf_pd.application.R
@@ -13,7 +13,6 @@ import com.mr.mf_pd.application.repository.impl.FilesRepository
 import com.mr.mf_pd.application.repository.impl.SettingRepository
 import com.mr.mf_pd.application.repository.impl.UserRepository
 import com.mr.mf_pd.application.utils.ZLog
-import com.mr.mf_pd.application.view.main.MainActivity
 import com.mr.mf_pd.application.view.splash.SplashActivity
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter
@@ -51,6 +50,13 @@ class MRApplication : Application() {
             )
         }
 
+        private val sHandler = Handler()
+
+        fun runUi(runnable: Runnable?) {
+            if (runnable != null) {
+                sHandler.post(runnable)
+            }
+        }
     }
 
     init {
