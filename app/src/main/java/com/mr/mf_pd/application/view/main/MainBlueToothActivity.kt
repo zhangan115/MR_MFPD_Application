@@ -4,15 +4,12 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
+import android.bluetooth.le.*
 import android.content.Context
 import android.content.Intent
 import android.net.*
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.provider.Settings
-import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.Nullable
@@ -35,12 +32,9 @@ import com.mr.mf_pd.application.manager.socket.callback.BytesDataCallback
 import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.udp.DeviceListenerManager
-import com.mr.mf_pd.application.manager.udp.UDPListener
 import com.mr.mf_pd.application.model.DeviceBean
-import com.mr.mf_pd.application.utils.ByteUtil
 import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.getViewModelFactory
-import com.mr.mf_pd.application.utils.toHexString
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
 import com.mr.mf_pd.application.view.check.DeviceCheckActivity
 import com.mr.mf_pd.application.view.file.FilePickerActivity
@@ -60,13 +54,12 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>(), BtReceiver.Listener {
+class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
 
     private val viewModel by viewModels<MainViewModel> { getViewModelFactory() }
 
     private var dataList = ArrayList<DeviceBean>()
-    private var scanDataList = HashMap<String, BluetoothDevice>()
-    private val deviceMap = HashMap<String, DeviceBean>()
+    private var scanDataList = HashMap<String, ScanResult>()
     private val REQUEST_ENABLE_BT = 200
     private var mBtReceiver: BtReceiver? = null
 
@@ -76,7 +69,6 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>(), BtReceiver.Lis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
-        mBtReceiver = BtReceiver(this, this) //注册蓝牙广播
         DeviceListenerManager.startListener()
         SocketManager.get().release()
         /*DeviceListenerManager.addListener(object : UDPListener {
@@ -201,8 +193,53 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>(), BtReceiver.Lis
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
             return
         }
-        if (!adapter.isDiscovering) {
-            adapter.startDiscovery()
+        bluetoothLeScanner = adapter.bluetoothLeScanner
+        if (bluetoothLeScanner == null) {
+            Toast.makeText(this, "不支持当前设备", Toast.LENGTH_LONG).show()
+            return
+        }
+        scanLeDevice()
+    }
+
+    private var scanning = false
+    private val handler = Handler()
+    private var bluetoothLeScanner: BluetoothLeScanner? = null
+    private val SCAN_PERIOD: Long = 10000
+
+    private fun scanLeDevice() {
+        if (!scanning) {
+            handler.postDelayed({
+                scanning = false
+                refreshLayout.finishRefresh()
+                bluetoothLeScanner?.stopScan(leScanCallback)
+            }, SCAN_PERIOD)
+            scanning = true
+            refreshLayout.autoRefresh()
+//            val uuid = ParcelUuid.fromString("0201060A-0945-7370-7265-737369660303")
+////            val uuid = ParcelUuid.fromString("0000110B-0000-1000-8000-00805F9B34FB")
+//            val scanFilter = ScanFilter.Builder().setServiceUuid(uuid).build()
+//            val list = ArrayList<ScanFilter>()
+//            list.add(scanFilter)
+//            val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build()
+//            bluetoothLeScanner?.startScan(list,settings,leScanCallback)
+            bluetoothLeScanner?.startScan(leScanCallback)
+        } else {
+            scanning = false
+            refreshLayout.finishRefresh()
+            bluetoothLeScanner?.stopScan(leScanCallback)
+        }
+    }
+
+    private val leScanCallback: ScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            super.onScanResult(callbackType, result)
+            val name = result.scanRecord?.deviceName
+            ZLog.d(TAG, "ScanResult device name = $name")
+            if (name.equals("PDM-H600")){
+                ZLog.d(TAG,result.toString())
+                scanDataList[result.device.address] = result
+                updateBlueDeviceList()
+            }
         }
     }
 
@@ -404,29 +441,11 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>(), BtReceiver.Lis
         ZLog.init(openLog, file)
     }
 
-    override fun foundDev(dev: BluetoothDevice?) {
-        ZLog.d(TAG, "found bluetooth device:" + dev?.name)
-        dev?.let {
-            if (!TextUtils.isEmpty(it.name)) {
-                scanDataList[it.address] = dev
-            }
-        }
-        updateBlueDeviceList()
-    }
-
-    override fun actionState(state: Int) {
-        if (state == BtReceiver.START) {
-            refreshLayout.autoRefresh()
-        } else if (state == BtReceiver.FINISH) {
-            refreshLayout.finishRefresh()
-        }
-    }
-
     private fun updateBlueDeviceList() {
         dataList.clear()
         scanDataList.forEach { (_, bluetoothDevice) ->
             val device =
-                DeviceBean(bluetoothDevice.name, bluetoothDevice.address, 0, 0, 0, null, 0, "")
+                DeviceBean(bluetoothDevice.device.name, bluetoothDevice.device.address, 0, 0, 0, null, 0, "")
             dataList.add(device)
             ZLog.d(TAG, "device = $device")
         }
