@@ -5,11 +5,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.*
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.net.*
 import android.os.*
 import android.provider.Settings
+import android.text.TextUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.Nullable
@@ -33,6 +33,7 @@ import com.mr.mf_pd.application.manager.socket.comand.CommandHelp
 import com.mr.mf_pd.application.manager.socket.comand.CommandType
 import com.mr.mf_pd.application.manager.udp.DeviceListenerManager
 import com.mr.mf_pd.application.model.DeviceBean
+import com.mr.mf_pd.application.service.BluetoothLeService
 import com.mr.mf_pd.application.utils.ZLog
 import com.mr.mf_pd.application.utils.getViewModelFactory
 import com.mr.mf_pd.application.view.base.AbsBaseActivity
@@ -65,9 +66,76 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
 
     var disposable: Disposable? = null
     var isShowTips = false
+    var mServiceConnectionState = false
+    var connected = false
+    var mBleAddress: String? = null
+
+    private var bluetoothService: BluetoothLeService? = null
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
+            ZLog.d(TAG, "onServiceConnected")
+            bluetoothService = (service as BluetoothLeService.LocalBinder).getService()
+            bluetoothService?.let { bluetooth ->
+                if (!bluetooth.initialize()) {
+                    ZLog.e(TAG, "Unable to initialize Bluetooth")
+                    mServiceConnectionState = false
+                    finish()
+                }
+                mServiceConnectionState = true
+            }
+        }
+
+        override fun onServiceDisconnected(cn: ComponentName?) {
+            ZLog.d(TAG, "onServiceDisconnected")
+            bluetoothService = null
+            mServiceConnectionState = false
+        }
+    }
+
+    private val gattUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            ZLog.d(TAG,"onReceive action = " + intent.action)
+            when (intent.action) {
+                BluetoothLeService.ACTION_GATT_CONNECTED -> {
+                    connected = true
+                    updateConnectionState()
+                }
+                BluetoothLeService.ACTION_GATT_DISCONNECTED -> {
+                    connected = false
+                    updateConnectionState()
+                }
+            }
+        }
+    }
+
+    private fun connectBleDevice(deviceAddress: String?) {
+        ZLog.d(TAG,
+            "mServiceConnectionState = $mServiceConnectionState deviceAddress = $deviceAddress")
+        if (mServiceConnectionState && !TextUtils.isEmpty(deviceAddress)) {
+            bluetoothService?.connect(deviceAddress!!)
+            mBleAddress = deviceAddress
+        }
+    }
+
+    private fun updateConnectionState() {
+        val bleDevice = dataList.find { it.serialNo.equals(mBleAddress) }
+        bleDevice?.let {
+            if (connected) {
+                it.linkState = 1
+                it.linkStateStr = "已连接"
+            } else {
+                it.linkState = 0
+                it.linkStateStr = "未连接"
+            }
+        }
+        recycleView.adapter?.notifyDataSetChanged()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val gattServiceIntent = Intent(this, BluetoothLeService::class.java)
+        bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         createNotificationChannel()
         DeviceListenerManager.startListener()
         SocketManager.get().release()
@@ -144,15 +212,17 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         adapter.addChildClickViewIds(R.id.layout_item_root)
         adapter.setOnItemChildClickListener { _, _, position ->
             val device = dataList[position]
-            if (SocketManager.get().linkedDeviceSerialNo != null) {
-                if (dataList[position].serialNo == SocketManager.get().linkedDeviceSerialNo) {
-                    openCheckActivity(device)
-                } else {
-                    linkToDevice(device)
-                }
-            } else {
-                linkToDevice(device)
-            }
+            ZLog.d(TAG, "device = $device")
+            connectBleDevice(device.serialNo)
+//            if (SocketManager.get().linkedDeviceSerialNo != null) {
+//                if (dataList[position].serialNo == SocketManager.get().linkedDeviceSerialNo) {
+//                    openCheckActivity(device)
+//                } else {
+//                    linkToDevice(device)
+//                }
+//            } else {
+//                linkToDevice(device)
+//            }
         }
         checkDataLayout.setOnClickListener {
             val intent = Intent(this, FilePickerActivity::class.java)
@@ -235,8 +305,8 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
             super.onScanResult(callbackType, result)
             val name = result.scanRecord?.deviceName
             ZLog.d(TAG, "ScanResult device name = $name")
-            if (name.equals("PDM-H600")){
-                ZLog.d(TAG,result.toString())
+            if (name.equals("PDM-H600")) {
+                ZLog.d(TAG, result.toString())
                 scanDataList[result.device.address] = result
                 updateBlueDeviceList()
             }
@@ -318,7 +388,6 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         SocketManager.get().removeCallBack(CommandType.SendTime, sendTimeCallback)
         SocketManager.get().release()
         DeviceListenerManager.disableListener()
-        unregisterReceiver(mBtReceiver)
     }
 
     private fun linkToDevice(device: DeviceBean) {
@@ -433,6 +502,16 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(gattUpdateReceiver)
+    }
+
     private fun initLog(file: File) {
         val openLog = SPHelper.readBoolean(MRApplication.instance.applicationContext,
             ConstantStr.USER,
@@ -441,11 +520,25 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         ZLog.init(openLog, file)
     }
 
+    private fun makeGattUpdateIntentFilter(): IntentFilter? {
+        return IntentFilter().apply {
+            addAction(BluetoothLeService.ACTION_GATT_CONNECTED)
+            addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED)
+        }
+    }
+
     private fun updateBlueDeviceList() {
         dataList.clear()
         scanDataList.forEach { (_, bluetoothDevice) ->
             val device =
-                DeviceBean(bluetoothDevice.device.name, bluetoothDevice.device.address, 0, 0, 0, null, 0, "")
+                DeviceBean(bluetoothDevice.device.name,
+                    bluetoothDevice.device.address,
+                    0,
+                    0,
+                    0,
+                    null,
+                    0,
+                    "")
             dataList.add(device)
             ZLog.d(TAG, "device = $device")
         }
