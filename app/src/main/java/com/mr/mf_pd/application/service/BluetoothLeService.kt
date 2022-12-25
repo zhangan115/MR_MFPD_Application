@@ -1,10 +1,7 @@
 package com.mr.mf_pd.application.service
 
 import android.app.Service
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
-import android.bluetooth.BluetoothProfile
+import android.bluetooth.*
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -23,9 +20,11 @@ class BluetoothLeService : Service() {
 
     companion object {
         const val ACTION_GATT_CONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_CONNECTED"
+            "com.mr.bluetooth.le.ACTION_GATT_CONNECTED"
         const val ACTION_GATT_DISCONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED"
+            "com.mr.bluetooth.le.ACTION_GATT_DISCONNECTED"
+        const val ACTION_GATT_SERVICES_DISCOVERED =
+            "com.mr.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED"
 
         private const val STATE_DISCONNECTED = 0
         private const val STATE_CONNECTED = 2
@@ -48,10 +47,10 @@ class BluetoothLeService : Service() {
         }
     }
 
-    fun initialize():Boolean {
+    fun initialize(): Boolean {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (bluetoothAdapter == null){
-            ZLog.e(TAG,"Unable to obtain a BluetoothAdapter.")
+        if (bluetoothAdapter == null) {
+            ZLog.e(TAG, "Unable to obtain a BluetoothAdapter.")
             return false
         }
         return true
@@ -61,7 +60,7 @@ class BluetoothLeService : Service() {
         bluetoothAdapter?.let { adapter ->
             try {
                 val device = adapter.getRemoteDevice(address)
-                bluetoothGatt = device.connectGatt(this,false,bluetoothGattCallback)
+                bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback)
             } catch (exception: IllegalArgumentException) {
                 ZLog.d(TAG, "Device not found with provided address.")
                 return false
@@ -86,6 +85,14 @@ class BluetoothLeService : Service() {
                 broadcastUpdate(ACTION_GATT_DISCONNECTED)
             }
         }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
+            } else {
+                ZLog.e(TAG, "onServicesDiscovered received: $status")
+            }
+        }
     }
 
     private fun broadcastUpdate(action: String) {
@@ -93,9 +100,13 @@ class BluetoothLeService : Service() {
         sendBroadcast(intent)
     }
 
-    inner class LocalBinder:Binder(){
+    fun getSupportedGattServices(): List<BluetoothGattService>? {
+        return bluetoothGatt?.services
+    }
 
-        fun getService():BluetoothLeService{
+    inner class LocalBinder : Binder() {
+
+        fun getService(): BluetoothLeService {
             return this@BluetoothLeService
         }
     }

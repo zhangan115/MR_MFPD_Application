@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattService
 import android.bluetooth.le.*
 import android.content.*
 import android.net.*
@@ -95,7 +97,7 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
 
     private val gattUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            ZLog.d(TAG,"onReceive action = " + intent.action)
+            ZLog.d(TAG, "onReceive action = " + intent.action)
             when (intent.action) {
                 BluetoothLeService.ACTION_GATT_CONNECTED -> {
                     connected = true
@@ -105,7 +107,30 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
                     connected = false
                     updateConnectionState()
                 }
+                BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED -> {
+                    displayGattServices(bluetoothService?.getSupportedGattServices())
+                }
             }
+        }
+    }
+    var mGattCharacteristics: MutableList<BluetoothGattCharacteristic>? = null
+    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
+        if (gattServices == null) {
+            ZLog.e(TAG, "displayGattServices services is null.")
+            return
+        }
+        var uuid: String?
+        val unknownServiceString: String
+        val unknownCharaString: String
+        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
+        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
+            mutableListOf()
+        mGattCharacteristics = mutableListOf()
+        gattServices.forEach { gattService ->
+            val currentServiceData = HashMap<String, String>()
+            uuid = gattService.uuid.toString()
+            ZLog.d(TAG, "uuid = $uuid")
+            gattServiceData += currentServiceData
         }
     }
 
@@ -520,10 +545,11 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         ZLog.init(openLog, file)
     }
 
-    private fun makeGattUpdateIntentFilter(): IntentFilter? {
+    private fun makeGattUpdateIntentFilter(): IntentFilter {
         return IntentFilter().apply {
             addAction(BluetoothLeService.ACTION_GATT_CONNECTED)
             addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED)
+            addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED)
         }
     }
 
