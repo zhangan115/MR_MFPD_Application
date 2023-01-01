@@ -76,9 +76,10 @@ class BluetoothLeService : Service() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             ZLog.d(TAG, "onConnectionStateChange status = $status newState = $newState")
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                broadcastUpdate(ACTION_GATT_CONNECTED)
                 // successfully connected to the GATT Server
                 connectionState = STATE_CONNECTED
-                broadcastUpdate(ACTION_GATT_CONNECTED)
+                bluetoothGatt?.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 // disconnected from the GATT Server
                 connectionState = STATE_DISCONNECTED
@@ -87,6 +88,7 @@ class BluetoothLeService : Service() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+            ZLog.d(TAG, "onServicesDiscovered status = $status")
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
             } else {
