@@ -113,25 +113,29 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
             }
         }
     }
-    var mGattCharacteristics: MutableList<BluetoothGattCharacteristic>? = null
+
     private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
         if (gattServices == null) {
             ZLog.e(TAG, "displayGattServices services is null.")
             return
         }
-        var uuid: String?
-        val unknownServiceString: String
-        val unknownCharaString: String
-        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
-        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
-            mutableListOf()
-        mGattCharacteristics = mutableListOf()
-        gattServices.forEach { gattService ->
-            val currentServiceData = HashMap<String, String>()
-            uuid = gattService.uuid.toString()
-            ZLog.d(TAG, "uuid = $uuid")
-            gattServiceData += currentServiceData
+        val gattService =
+            gattServices.find { it.uuid.equals(UUID.fromString("0000a002-0000-1000-8000-00805f9b34fb")) }
+        gattService?.let { service ->
+            service.characteristics.forEach {
+                ZLog.d(TAG, "characteristics uuid = " + it.uuid)
+                when(it.uuid){
+                    bluetoothService?.notifyCharacterUuid->{
+                        bluetoothService?.setCharacteristicNotification(it,true)
+                    }
+                    bluetoothService?.writeCharacterUuid->{
+                        bluetoothService?.setWriteCharacteristic(it)
+                        //bluetoothService?.writeData(CommandHelp.getTimeCommand())
+                    }
+                }
+            }
         }
+        bluetoothService?.writeData(CommandHelp.switchPassageway(0,1))
     }
 
     private fun connectBleDevice(deviceAddress: String?) {
@@ -162,7 +166,7 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
         val gattServiceIntent = Intent(this, BluetoothLeService::class.java)
         bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         createNotificationChannel()
-        DeviceListenerManager.startListener()
+        //DeviceListenerManager.startListener()
         SocketManager.get().release()
         /*DeviceListenerManager.addListener(object : UDPListener {
             override fun onData(byteArray: ByteArray) {
@@ -310,8 +314,7 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
             }, SCAN_PERIOD)
             scanning = true
             refreshLayout.autoRefresh()
-//            val uuid = ParcelUuid.fromString("0201060A-0945-7370-7265-737369660303")
-////            val uuid = ParcelUuid.fromString("0000110B-0000-1000-8000-00805F9B34FB")
+//            val uuid = ParcelUuid.fromString("0000a002-0000-1000-8000-00805f9b34fb")
 //            val scanFilter = ScanFilter.Builder().setServiceUuid(uuid).build()
 //            val list = ArrayList<ScanFilter>()
 //            list.add(scanFilter)
