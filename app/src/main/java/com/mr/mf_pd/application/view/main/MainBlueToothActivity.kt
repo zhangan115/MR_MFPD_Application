@@ -123,9 +123,9 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
             gattServices.find { it.uuid.equals(UUID.fromString("0000a002-0000-1000-8000-00805f9b34fb")) }
         gattService?.let { service ->
             service.characteristics.forEach {
-                ZLog.d(TAG, "characteristics uuid = " + it.uuid)
+                ZLog.d(TAG, "characteristics uuid = " + it.uuid + " properties = " +  it.properties)
                 when(it.uuid){
-                    bluetoothService?.notifyCharacterUuid->{
+                    bluetoothService?.notifyCharacterUuid1->{
                         bluetoothService?.setCharacteristicNotification(it,true)
                     }
                     bluetoothService?.writeCharacterUuid->{
@@ -337,6 +337,7 @@ class MainBlueToothActivity : AbsBaseActivity<MainDataBinding>() {
                 ZLog.d(TAG, result.toString())
                 scanDataList[result.device.address] = result
                 updateBlueDeviceList()
+                bluetoothLeScanner?.stopScan(this)
             }
         }
     }

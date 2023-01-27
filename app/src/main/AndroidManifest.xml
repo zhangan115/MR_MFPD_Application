@@ -38,6 +38,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <!--扫描蓝牙设备或修改蓝牙设置权限-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!--Android 6.0及后续版本扫描蓝牙,需要定位权限(进入GPS设置,可以看到蓝牙定位)-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!--网络请求权限-->

@@ -25,6 +25,7 @@ class BluetoothLeService : Service() {
     val writeCharacterUuid = UUID.fromString("0000c304-0000-1000-8000-00805f9b34fb")
     val notifyCharacterUuid = UUID.fromString("0000c305-0000-1000-8000-00805f9b34fb")
     val notifyCharacterUuid1 = UUID.fromString("0000c306-0000-1000-8000-00805f9b34fb")
+    val descriptorUUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
     companion object {
         const val ACTION_GATT_CONNECTED =
@@ -193,6 +194,13 @@ class BluetoothLeService : Service() {
             val enable = gatt.setCharacteristicNotification(characteristic, enabled)
             ZLog.d(TAG, "setCharacteristicNotification $enable")
             notifyCharacteristic = characteristic
+            /*if (notifyCharacterUuid1 == characteristic.uuid) {
+                val descriptor = characteristic.getDescriptor(descriptorUUID)
+                descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+                //descriptor.value = byteArrayOf(0x20,0x00)
+                val descriptorState = gatt.writeDescriptor(descriptor)
+                ZLog.d(TAG, "descriptorState = $descriptorState")
+            }*/
         } ?: run {
             ZLog.e(TAG, "BluetoothGatt not initialized")
         }
