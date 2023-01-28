@@ -55,6 +55,10 @@ data class DeviceBean(
         return 0
     }
 
+    override fun toString(): String {
+        return "DeviceBean(deviceName=$deviceName, serialNo=$serialNo, rSSI=$rSSI, power=$power, powerState=$powerState, versionCode=$versionCode, deviceType=$deviceType, ip=$ip, linkState=$linkState, linkStateStr=$linkStateStr, deviceNameAttr=$deviceNameAttr, serialNoAttr=$serialNoAttr, powerAttr=$powerAttr, powerStateAttr=$powerStateAttr)"
+    }
+
     companion object CREATOR : Parcelable.Creator<DeviceBean> {
         override fun createFromParcel(parcel: Parcel): DeviceBean {
             return DeviceBean(parcel)

@@ -38,7 +38,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         mf_pd_default {
-            applicationId "com.mr.mf_pd.application"
+            applicationId "com.mr.mf_pd.application.bluetooth"
             dimension "default"
             resValue "string", "app_name", "MRs-M4Plus"
             buildConfigField "String", "UMENG_CHANNEL", '"defaultChannel"'
