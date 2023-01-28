@@ -240,8 +240,8 @@ class PhaseModelViewModel(
                 }
                 //column value count
 //                array3d[column][value.toInt()][0]++
-                if (dataMaps.containsKey(column)) {
-                    val map = dataMaps[column]
+                if (dataMaps.containsKey(off)) {
+                    val map = dataMaps[off]
                     if (map != null && map.containsKey(value)) {
                         val value1 = map[value]
                         if (value1 != null) {
@@ -253,7 +253,7 @@ class PhaseModelViewModel(
                 } else {
                     val newMap: HashMap<Float, Int> = HashMap()
                     newMap[value] = 1
-                    dataMaps[column] = newMap
+                    dataMaps[off] = newMap
                 }
             }
             mcCount++
